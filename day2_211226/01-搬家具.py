@@ -32,6 +32,6 @@ class Furniture(object):
         pass
 
 
-house = House(100)  # 创建一个area为100的房子对象house
-f1 = Furniture(20)  # 创建一个area为20的家居对象f1
+house = House(10000)  # 创建一个area为100的房子对象house
+f1 = Furniture(5000)  # 创建一个area为20的家居对象f1
 house.move_furniture(f1)    # 使用move_furniture(f1)将f1搬入house
