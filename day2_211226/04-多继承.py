@@ -18,3 +18,4 @@ class Donkey(object):
 
 class mule(Horse, Donkey):
     pass
+
