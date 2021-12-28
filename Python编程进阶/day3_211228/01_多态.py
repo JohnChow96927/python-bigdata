@@ -1,21 +1,36 @@
-class AliPay(object):
+class ChinaPay(object):
     def pay(self):
-        pass
+        print("检测....")
+        print("支付....")
 
-
-class WechatPay(object):
+class AliPay(ChinaPay):
     def pay(self):
-        pass
+        print("扫二维码...")
+        super(AliPay, self).pay()
+        print("支付成功...")
 
 
-def ali_qrcode(alipay):
-    alipay.pay()
+class WXPay(ChinaPay):
+    def pay(self):
+        print("微信支付功能....")
+        super().pay()
+        print("微信支付成功....")
 
 
-def wechat_qrcode(wechatpay):
-    wechatpay.pay()
+class JXPay(ChinaPay):
+    def jxlPay(self):
+        print("使用我的进行支付")
 
 
-# 多态
-def qrcode(unipay):
-    unipay.pay()
+# 商家提供二维码
+def shop_pay(pay):
+    pay.pay()
+
+alipay = AliPay()
+shop_pay(alipay)
+
+wxpay = WXPay()
+shop_pay(wxpay)
+#
+jxpay = JXPay()
+shop_pay(jxpay)
