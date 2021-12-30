@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--
+    给class的值为 my_div 标签以及 id的值为 my_span的标签 以及 h1标签 添加相同的样式
+
+    -->
+    <style>
+        /* .my_div {
+             font-size: 50px;
+             color: red;
+         }
+
+         #my_span {
+             font-size: 50px;
+             color: red;
+         }
+
+         h1 {
+             font-size: 50px;
+             color: red;
+         }*/
+
+        /*
+        组合选择器:
+        格式
+        选择器1,选择器2,...{
+           css样式
+        }
+        将所有的选择器选择到的元素 统一添加相同的样式
+        */
+
+        .my_div, #my_span, h1 {
+            font-size: 50px;
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+<div class="my_div">
+    我是div
+</div>
+<div>
+    我是div
+</div>
+<div>
+    我是div
+</div>
+<span>
+    我是span
+</span>
+<span id="my_span">
+    我是span
+</span>
+
+<h1>
+    我是标题
+</h1>
+
+</body>
+</html>
