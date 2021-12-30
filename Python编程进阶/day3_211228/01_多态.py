@@ -3,6 +3,7 @@ class ChinaPay(object):
         print("检测....")
         print("支付....")
 
+
 class AliPay(ChinaPay):
     def pay(self):
         print("扫二维码...")
@@ -23,14 +24,16 @@ class JXPay(ChinaPay):
 
 
 # 商家提供二维码
+# 解决通用性问题, 增强通用性
 def shop_pay(pay):
     pay.pay()
+
 
 alipay = AliPay()
 shop_pay(alipay)
 
 wxpay = WXPay()
 shop_pay(wxpay)
-#
+
 jxpay = JXPay()
 shop_pay(jxpay)
