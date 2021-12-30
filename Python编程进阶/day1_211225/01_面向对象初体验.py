@@ -1,6 +1,6 @@
 # 定义类
 class Washer(object):
-    # 行为
+    # 行为, 功能函数
     def wash(self):
         print("洗衣机洗衣服...")
 
