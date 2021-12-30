@@ -3,7 +3,8 @@ class Horse(object):
         self.name = name
         self.age = age
 
-    def eat(self):
+    @staticmethod
+    def eat():
         print("马吃草")
 
 
@@ -12,10 +13,11 @@ class Donkey(object):
         self.name = name
         self.age = age
 
-    def eat(self):
+    @staticmethod
+    def eat():
         print("驴吃草")
 
 
-class mule(Horse, Donkey):
+class Mule(Horse, Donkey):
     pass
 

@@ -75,7 +75,7 @@ class FootballCoach(Coach):
         print("教运动员踢足球...")
 
 
-ppp = PingPangPlayer("马龙",30)
+ppp = PingPangPlayer("马龙", 30)
 ppp.eat()
 ppp.study()
 ppp.speak()

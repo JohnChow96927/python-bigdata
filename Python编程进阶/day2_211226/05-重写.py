@@ -1,4 +1,4 @@
-# 重写 子类中出现了父类中一摸一样的方法
+# 重写 子类中出现了父类中一模一样的方法
 class Animal(object):
     def __init__(self, name, age):
         self.name = name
@@ -13,6 +13,7 @@ class Dog(Animal):
     # 特有的功能
     def look_house(self):
         print("狗看家....")
+
     # 重写父类的方法
     def eat(self):
         print("狗吃骨头...")

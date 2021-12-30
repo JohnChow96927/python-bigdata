@@ -20,7 +20,7 @@ class Dog(Animal):
         # Animal.eat(self)
         # 第二种格式
         # super(子类,self).eat() 调用的是谁的方法:给定的这个子类对应的父类的方法
-        # super(Dog,self).eat()
+        super(Dog, self).eat()
         # 第二种格式的简写形式 super().父类的方法() 只能调用当前这个类的父类方法
         super().eat()
         print("打扫卫生")

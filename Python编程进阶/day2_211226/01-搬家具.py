@@ -5,13 +5,12 @@ class House(object):
         :param area: 房屋面积
         """
         self.area = area
-        pass
 
     def move_furniture(self, furniture):
         """
         搬家具方法函数
         :param furniture: 家具类参数
-        :return:
+        :return: None
         """
         if self.area >= furniture.area:
             # 对房子面积进行累减
@@ -19,7 +18,6 @@ class House(object):
             print("放下了")
         else:
             print("放不下")
-        pass
 
 
 class Furniture(object):
@@ -27,9 +25,9 @@ class Furniture(object):
         """
         初始化家具类
         :param area: 家具面积属性
+        :return: None
         """
         self.area = area
-        pass
 
 
 house = House(10000)  # 创建一个area为100的房子对象house
