@@ -1,5 +1,6 @@
 class Student(object):
     # 魔法方法
+    # 创建对象时的初始化方法
     def __init__(self, name, age):
         # 将局部的变量 变成属性
         # 对象.属性名 = 值

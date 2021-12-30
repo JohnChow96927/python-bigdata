@@ -25,8 +25,7 @@ class SweetPotato(object):
         self.status = status
         pass
 
-    #
-
+    # 烤地瓜方法
     def baked_sweet_potato(self, time):
         # 给定的time 是负数
         # 将烤地瓜的时间进行累加
@@ -60,4 +59,3 @@ print(sp)
 
 sp.baked_sweet_potato(-3)
 print(sp)
-

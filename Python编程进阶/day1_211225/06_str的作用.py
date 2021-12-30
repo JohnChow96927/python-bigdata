@@ -11,6 +11,7 @@ class Student(object):
     def study(self):
         print("学生爱学习...")
 
+    # 直接print实例对象时调用, 打印返回值
     def __str__(self):
         return f"name:{self.name}\nage:{self.age}"
 

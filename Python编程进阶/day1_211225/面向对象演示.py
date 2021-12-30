@@ -1,5 +1,6 @@
 from cleaning_tools import *
 
+
 # 面向过程
 def add_water():
     print("添加水...")
@@ -33,7 +34,6 @@ print("=" * 30)
 # 创建洗衣机对象
 washer = Washer("海尔")
 # 创建衣服对象
-clothes = Clothes("鸿星尔克","脏衣服")
+clothes = Clothes("鸿星尔克", "脏衣服")
 # 使用洗衣机洗衣服
 washer.wash(clothes)
-

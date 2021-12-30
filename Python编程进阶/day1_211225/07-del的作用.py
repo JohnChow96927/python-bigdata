@@ -11,6 +11,7 @@ class Student(object):
     def study(self):
         print("学生爱学习...")
 
+    # 实例对象被删除(del)时或程序结束被释放时执行
     def __del__(self):
         # 释放资源
         print("对象被释放了...")

@@ -42,6 +42,7 @@ class SweetPotato(object):
             self.status = "糊了"
         pass
 
+    # 添加作料方法函数
     def add_flavour(self, flavour):
         self.flavours.append(flavour)
 

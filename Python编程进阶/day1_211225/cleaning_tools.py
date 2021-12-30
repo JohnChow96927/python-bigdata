@@ -1,11 +1,12 @@
 __all__ = ["Washer", "Clothes"]
 
 
-# 定义洗衣机对象
+# 定义洗衣机类
 class Washer(object):
     def __init__(self, name):
         self.name = name
 
+    # 洗衣方法
     def wash(self, clothes):
         print("添加水...")
         print("添加洗衣液...")
@@ -16,7 +17,7 @@ class Washer(object):
         return clothes
 
 
-# 定义衣服对象
+# 定义衣服类
 class Clothes(object):
     def __init__(self, name, dirty):
         self.__name = name
