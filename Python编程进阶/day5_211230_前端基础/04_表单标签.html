@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--
+action 服务器地址
+method 发送方式 如果没有这个属性 默认发送方式为 get
+get请求方式
+  如何发送数据: 服务器地址?key=value&key1=value1&key2=value2
+  数据不安全 数据发送大小有限制
+post请求方式
+   将数据进行隐藏 数据相对安全
+   数据发送的大小没有限制
+aJax 提交数据
+-->
+<form action="01-标签初体验.html" method="post">
+    账号:<input type="text" name="username"> <br>
+    <!--    收集数据-->
+    密码:<input type="password" name="password"> <br>
+    <!--    提交按钮-->
+    <input type="submit">
+</form>
+</body>
+</html>

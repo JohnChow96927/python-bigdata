@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "E:\01_WorkTeach\Python就业34期\day04_闭包与装饰器\02_代码\day04_装饰器\log.py", line 8, in inner
+    result = fn(*args, **kwargs)
+  File "E:/01_WorkTeach/Python就业34期/day04_闭包与装饰器/02_代码/day04_装饰器/11_错误日志打印.py", line 13, in demo
+    print(num / 0)
+ZeroDivisionError: division by zero

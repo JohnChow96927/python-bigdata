@@ -1,0 +1,7 @@
+/*
+将选择器与样式 写入到css文件中
+*/
+div {
+    font-size: 50px;
+    color: red;
+}
