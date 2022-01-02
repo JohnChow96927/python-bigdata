@@ -1,17 +1,20 @@
 import socket
 
+my_ip = "192.168.41.44"
 # 创建服务端监听的套接字
 # socket.AF_INET表示使用IPv4地址
 # socket.SOCK_STREAM表示使用TCP协议
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # 门迎
 
 # 绑定服务器程序的IP和端口号
-server_socket.bind(('192.168.41.44', 8080))
+server_socket.bind((my_ip, 8080))
+print(f'服务器ip: {my_ip}, 端口号为8080, 已绑定')
 
 # 设置监听
 # 127: 表示服务端监听套接字同一时间最多支持127个客户端发起连接请求
 server_socket.listen(127)
-print("服务端程序开始监听...")
+print("服务端开始监听...")
+print("等待客户端连接...")
 
 # 等待客户端请求来连接服务端程序
 # accept方法默认会阻塞, 直到有客户端进行连接

@@ -18,7 +18,7 @@ import socket
 # 创建一个服务端监听套接字socket对象
 # socket.AF_INET：表示使用 IPV4 地址
 # socket.SOCK_STREAM：表示使用 TCP 协议
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # 门迎
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # 门迎
 # 设置端口重用，服务器程序关闭之后，端口马上能够重复使用
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
 
@@ -38,7 +38,7 @@ print(f'接受到来自客户端{ip_port}的连接请求...')
 # 接受客户端发送的消息，1024表示最多接受1024个字节
 # 如果客户端没有发消息，recv方法会阻塞等待
 print('服务端recv方法阻塞等待...')
-recv_msg = server_client.recv(1024) # 返回值是 bytes 类型
+recv_msg = server_client.recv(1024)  # 返回值是 bytes 类型
 print('服务端recv方法解阻塞，客户端发送的消息为：', recv_msg.decode())
 
 # 关闭和客户端通信的套接字、监听套接字
