@@ -24,12 +24,15 @@ while True:
     # ⑤ 文件读取结束，结束循环
     if len(data) == 0:
         # TODO：客户端关闭输出流，让服务端程序的recv解阻塞
+        # client.shutdown(socket.SHUT_WR)
         break
 
 # ⑥ 关闭文件
 f.close()
 print('客户端发送文件完成！')
 # TODO：收客户端回复的消息
-
+print("阻塞等待服务端回复消息")
+res_msg = client.recv(1024)
+print("服务端回复: ", res_msg.decode())
 # 关闭客户端套接字
 client.close()

@@ -10,7 +10,7 @@ import socket
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # 客户端请求和服务端程序建立连接
-client.connect(('192.168.41.30', 8080))
+client.connect(('127.0.0.1', 8080))
 print('客户端连接服务器成功！')
 
 # TODO：给服务端程序发送文件数据

@@ -25,11 +25,13 @@ f = open("./dest/小电影.mp4", "wb")
 # ② 循环接收客户端发送过来的数据，直到客户端发送完毕
 while True:
     # ③ 每次接受 1024 个字节
+    print("服务端等待接收客户端发送的数据...")
     data = service_client.recv(1024)
     # ④ 将接收到的数据写入到文件中
     f.write(data)
     # ⑤ 读取结束，结束循环
     if len(data) == 0:
+        print("data为空")
         break
 
 # ⑥ 关闭文件
@@ -37,6 +39,7 @@ f.close()
 print('服务器接收文件完成！')
 
 # TODO：给客户端回复消息：接收完成！
+service_client.send("接收完成!".encode())
 
 # 关闭和客户端通信的套接字
 service_client.close()
