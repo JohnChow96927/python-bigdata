@@ -31,7 +31,6 @@ while True:
     f.write(data)
     # ⑤ 读取结束，结束循环
     if len(data) == 0:
-        print("data为空")
         break
 
 # ⑥ 关闭文件

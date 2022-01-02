@@ -24,7 +24,7 @@ while True:
     # ⑤ 文件读取结束，结束循环
     if len(data) == 0:
         # TODO：客户端关闭输出流，让服务端程序的recv解阻塞
-        # client.shutdown(socket.SHUT_WR)
+        client.shutdown(socket.SHUT_WR)
         break
 
 # ⑥ 关闭文件
