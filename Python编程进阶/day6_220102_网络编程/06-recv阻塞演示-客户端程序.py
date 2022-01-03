@@ -20,7 +20,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('127.0.0.1', 8080))
 
 # 服务端recv解阻塞情况1：给服务器发送一个消息
-# time.sleep(10)
+time.sleep(10)
 send_msg = 'hello!'
 client.send(send_msg.encode())
 
@@ -28,5 +28,5 @@ client.send(send_msg.encode())
 # client.shutdown(socket.SHUT_WR)
 
 # 服务端recv解阻塞情况3：关闭客户端的套接字对象
-# time.sleep(10)
+time.sleep(10)
 client.close()
