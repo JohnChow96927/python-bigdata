@@ -32,7 +32,13 @@ while True:
     print('客户端发送的消息为：\n', recv_msg.decode())
 
     # TODO：给浏览器返回 gdp.html 网页的内容
-    # ...
+    response_line = 'HTTP/1.1 200 OK\r\n'
+    response_head = 'Server: JohnChow\r\nContent-Type: text/html;charset=utf-8\r\n'
+    file = open('./sources/html/gdp.html', 'r', encoding='utf8')
+    response_body = file.read()
+    file.close()
+    response_msg = response_line + response_head + '\r\n' + response_body
+    server_client.send(response_msg.encode())
 
     # 关闭和客户端通信的套接字、监听套接字
     server_client.close()

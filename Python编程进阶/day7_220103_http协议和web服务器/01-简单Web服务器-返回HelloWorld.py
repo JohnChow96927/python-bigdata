@@ -43,7 +43,7 @@ while True:
 
     # TODO：给浏览器返回 Hello World 响应内容
     response_line = 'HTTP/1.1 200 OK\r\n'
-    response_head = 'Server: YYDS\r\nContent-Type: text/html\r\n'
+    response_head = 'Server: YYDS\r\nContent-Type: text/html;charset=utf-8\r\n'
     response_body = 'Hello world!'
     # 拼接响应报文
     response_msg = response_line + response_head + '\r\n' + response_body

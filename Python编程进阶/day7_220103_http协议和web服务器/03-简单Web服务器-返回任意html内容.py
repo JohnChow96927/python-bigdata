@@ -2,7 +2,7 @@
 简单Web服务器-返回任意html内容
 学习目标：能够实现Web服务器给浏览器返回任意html内容
 """
-
+import os
 import socket
 
 # 创建一个服务端监听套接字socket对象
@@ -32,10 +32,30 @@ while True:
     print('客户端发送的消息为：\n', recv_msg.decode())
 
     # TODO：解析请求报文内容，获取浏览器请求的 URL 地址
-    # ...
-
+    # 将请求报文按照\r\n进行切割, 然后获取请求行的内容
+    recv_msg = recv_msg.decode()
+    recv_msg_list = recv_msg.split('\r\n')  # list
+    request_line = recv_msg_list[0]
+    # 将请求行按照空格进行切割, 然后获取资源路径内容
+    request_line_tags = request_line.split(' ')  # list
+    request_url = request_line_tags[1]
     # TODO：组织 HTTP 响应报文并返回，根据浏览器请求的 URL 地址并返回相应的 html 内容
-    # ...
+    # 响应行
+    response_line = b'HTTP/1.1 200 OK\r\n'
+    # 响应头
+    response_head = b'Server: JohnChow\r\nContent-Type: text/html;charset=utf-8\r\n'
+    if request_url == '/':
+        file_path = './sources/html/gdp.html'
+    else:
+        file_path = './sources/html' + request_url
+    if os.path.isfile(file_path):   # os.path.exists()只判断路径是否存在, 并不能保证是一个文件, 应使用isfile()
+        file = open(file_path, 'rb')
+        response_body = file.read()
+        file.close()
+    else:
+        response_body = b'not found!'
+    response_msg = response_line + response_head + b'\r\n' + response_body
+    server_client.send(response_msg)
 
     # 关闭和客户端通信的套接字、监听套接字
     server_client.close()
