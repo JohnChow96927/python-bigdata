@@ -459,14 +459,142 @@
     - 多线程会共享全局变量, 当多个线程同时操作同一个共享的全局变量时, 可能会造成错误的结果!
 
     ```python
+    """
+    多线程会共享全局变量，当多个线程同时操作同一个共享的全局变量时，可能会造成错误的结果！
+    """
     
+    import threading
+    
+    # 定义全局变量
+    g_num = 0
+    
+    
+    def sum_num1():
+        global g_num
+        # 循环一次给全局变量加1
+        for i in range(1000000):
+            g_num += 1
+    
+        print('sum1：', g_num)
+    
+    
+    def sum_num2():
+        global g_num
+        # 循环一次给全局变量加1
+        for i in range(1000000):
+            g_num += 1
+    
+        print('sum2：', g_num)
+    
+    
+    if __name__ == '__main__':
+        # 创建两个线程
+        first_thread = threading.Thread(target=sum_num1)
+        second_thread = threading.Thread(target=sum_num2)
+    
+        # 启动两个线程
+        first_thread.start()
+        second_thread.start()
     ```
-
-    
 
 16. ### 线程资源共享问题解决: 线程等待vs互斥锁
 
+    - 实现**线程同步**
+
+    - 线程等待: **join**: 等待一个线程完全执行结束之后, 再执行另外一个线程
+
+        ```python
+        """
+        多线程会共享全局变量，当多个线程同时操作同一个共享的全局变量时，可能会造成错误的结果！
+        """
+        
+        import threading
+        
+        # 定义全局变量
+        g_num = 0
+        
+        
+        def sum_num1():
+            global g_num
+            # 循环一次给全局变量加1
+            for i in range(1000000):
+                g_num += 1
+        
+            print('sum1：', g_num)
+        
+        
+        def sum_num2():
+            global g_num
+            # 循环一次给全局变量加1
+            for i in range(1000000):
+                g_num += 1
+        
+            print('sum2：', g_num)
+        
+        
+        if __name__ == '__main__':
+            # 创建两个线程
+            first_thread = threading.Thread(target=sum_num1)
+            second_thread = threading.Thread(target=sum_num2)
+        
+            # 启动两个线程
+            first_thread.start()
+            # 线程等待: 等待first_thread执行完成, 主线程的代码再继续向下执行
+            first_thread.join()
+            second_thread.start()
+        ```
+
+    - 互斥锁: 操作共享资源时, 多个线程去抢同一把锁, 抢到锁的线程执行, 没抢到的线程会阻塞等待
+
+        ```python
+        # 互斥锁：多个线程去抢同一把"锁"，抢到锁的线程执行，没抢到锁的线程会阻塞等待
+        import threading
+        
+        # 定义全局变量
+        g_num = 0
+        
+        # 创建一把全局的互斥锁
+        lock = threading.Lock()
+        
+        
+        def sum_num1():
+            global g_num
+            # 循环一次给全局变量加1
+            for i in range(1000000):
+                lock.acquire()
+                g_num += 1
+                lock.release()
+        
+            print('sum1：', g_num)
+        
+        
+        def sum_num2():
+            global g_num
+        
+            # 循环一次给全局变量加1
+            for i in range(1000000):
+                lock.acquire()
+                g_num += 1
+                lock.release()
+        
+            print('sum2：', g_num)
+        
+        
+        if __name__ == '__main__':
+            # 创建两个线程
+            first_thread = threading.Thread(target=sum_num1)
+            second_thread = threading.Thread(target=sum_num2)
+        
+            # 启动两个线程
+            first_thread.start()
+            second_thread.start()
+        ```
+
+    - **线程等待部署在主线程中, 互斥锁放置在各子线程中**, 线程等待会降低程序的执行效率
+
 17. ### 进程和线程对比
+
+    
 
 ## II. 深拷贝和浅拷贝
 
