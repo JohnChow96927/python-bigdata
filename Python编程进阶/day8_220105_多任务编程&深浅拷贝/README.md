@@ -223,13 +223,205 @@
     2. 主进程结束时终止子进程
 
     ```python
+    import multiprocessing
+    import time
     
+    
+    # 任务函数
+    def task():
+        for i in range(10):
+            print('任务执行中...')
+            time.sleep(0.2)
+    
+    
+    if __name__ == '__main__':
+        # 创建子进程并启动
+        sub_process = multiprocessing.Process(target=task)
+        sub_process.start()
+    
+        # 主进程延时 1s
+        time.sleep(1)
+        print('主进程结束！')
+        # TODO: 终止子进程
+        sub_process.terminate()
+        # 退出程序
+        exit()
     ```
 
+10. ### 线程的基本概念
+
+    - CPU调度的基本单位
+
+    > 进程理解为公司, 线程理解为公司中的员工. 公司负责提供资源, 员工负责实际干活
+
+11. Python中多线程的基本使用
+
+    ```python
+    """
+    多线程的基本使用
+    学习目标：能够使用多线程同时执行两个不同的函数
+    """
     
+    import time
+    # 导入线程模块
+    import threading
+    
+    
+    # 跳舞任务函数
+    def dance():
+        for i in range(5):
+            print('正在跳舞...%d' % i)
+            time.sleep(1)
+    
+    
+    # 唱歌任务函数
+    def sing():
+        for i in range(5):
+            print('正在唱歌...%d' % i)
+            time.sleep(1)
+    
+    
+    if __name__ == '__main__':
+        # 创建一个线程, 执行dance任务函数
+        dance_thread = threading.Thread(target=dance)
+    
+        # 再创建一个线程, 执行sing任务函数
+        sing_thread = threading.Thread(target=sing)
+    
+        # 启动这两个线程
+        dance_thread.start()
+        sing_thread.start()
+    ```
+
+12. 线程执行带有参数的任务
+
+    ```python
+    """
+    线程执行带有参数的任务(函数)
+    学习目录：能够使用多线程执行带有参数的任务
+    """
+    # 导入线程模块
+    import threading
+    import time
+    
+    
+    # 带有参数的任务(函数)
+    def task(count):
+        for i in range(count):
+            print('任务执行中...')
+            time.sleep(0.2)
+        else:
+            print('任务执行完成')
+    
+    
+    if __name__ == '__main__':
+        # 创建一个线程，执行 task 任务函数
+        # sub_thread = threading.Thread(target=task, args=(3, ))
+        sub_thread = threading.Thread(target=task, kwargs={'count': 5})
+        # 启动线程
+        sub_thread.start()
+    ```
+
+13. 线程使用的3个注意点
+
+    1. 线程之间的执行是无序的
+
+    ```python
+    # 注意点1：线程之间执行是无序的
+    import threading
+    import time
+    
+    
+    def task():
+        time.sleep(1)
+        print(f'当前线程：{threading.current_thread().name}')
+    
+    
+    if __name__ == '__main__':
+        for i in range(5):
+            sub_thread = threading.Thread(target=task)
+            sub_thread.start()
+    ```
+
+    2. 主线程会等待所有的子线程执行结束再结束
+
+    ```python
+    # 注意点2：主线程会等待所有的子线程执行结束再结束
+    import threading
+    import time
+    
+    
+    def task():
+        for i in range(5):
+            print('任务执行中...')
+            time.sleep(0.5)
+    
+    
+    if __name__ == '__main__':
+        # 创建子线程
+        sub_thread = threading.Thread(target=task)
+        sub_thread.start()
+    
+        # 主进程延时 1s
+        time.sleep(1)
+        print('主线程结束！')
+    ```
+
+    3. 线程之间共享全局变量
+
+    ```python
+    # 注意点3：线程之间共享全局变量
+    import threading
+    import time
+    
+    # 定义全局变量
+    g_list = []
+    
+    
+    # 添加数据的函数
+    def add_data():
+        for i in range(5):
+            g_list.append(i)
+            print('add：', i)
+            time.sleep(0.2)
+    
+        print('add_data：', g_list)
+    
+    
+    # 读取数据的函数
+    def read_data():
+        print('read_data：', g_list)
+    
+    
+    if __name__ == '__main__':
+        # 创建添加数据的子线程
+        add_data_thread = threading.Thread(target=add_data)
+        # 创建读取数据的子线程
+        read_data_thread = threading.Thread(target=read_data)
+    
+        # 启动添加数据子线程
+        add_data_thread.start()
+        # 主线程等待 add_data_thread 执行完成，再向下继续执行
+        add_data_thread.join()
+        # 启动读取数据子线程
+        read_data_thread.start()
+    
+        print('main：', g_list)
+    ```
+
+14. ### 守护线程设置
+
+15. ### 线程的资源共享问题
+
+16. ### 线程资源共享问题解决: 线程等待vs互斥锁
+
+17. ### 进程和线程对比
 
 ## II. 深拷贝和浅拷贝
 
-1. 
-2. 
+1. ### 浅拷贝
+
+
+
+2. ### 深拷贝
 

@@ -4,6 +4,8 @@
 """
 
 import time
+# 导入线程模块
+import threading
 
 
 # 跳舞任务函数
@@ -19,3 +21,14 @@ def sing():
         print('正在唱歌...%d' % i)
         time.sleep(1)
 
+
+if __name__ == '__main__':
+    # 创建一个线程, 执行dance任务函数
+    dance_thread = threading.Thread(target=dance)
+
+    # 再创建一个线程, 执行sing任务函数
+    sing_thread = threading.Thread(target=sing)
+
+    # 启动这两个线程
+    dance_thread.start()
+    sing_thread.start()
