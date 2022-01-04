@@ -1,6 +1,6 @@
 # ITheima_python_bigdata
  - 课程大纲：
- 	1. Python进阶
+ 	1. Python编程进阶
  	2. MySQL
  	3. pandas
  	4. Linux
