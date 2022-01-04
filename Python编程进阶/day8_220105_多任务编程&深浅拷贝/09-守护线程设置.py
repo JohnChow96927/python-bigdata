@@ -23,7 +23,8 @@ if __name__ == '__main__':
     # 创建子线程并启动
     sub_thread = threading.Thread(target=task)
     # TODO：设置子线程为守护线程
-
+    # sub_thread.daemon = True
+    sub_thread.setDaemon(True)
     sub_thread.start()
 
     # 主线程延时 1s

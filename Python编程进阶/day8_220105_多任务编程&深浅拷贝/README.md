@@ -411,7 +411,58 @@
 
 14. ### 守护线程设置
 
+    - 设置守护线程, 让子线程在主线程执行结束时就结束执行
+
+    - **sub_thread.daemon = True**
+
+        或
+
+        **sub_thread.setDaemon(True)**
+
+    ```python
+    """
+    守护线程
+    学习目标：能够设置守护线程
+    """
+    
+    """
+    如何让主线程执行结束时，子线程就结束执行？
+    答：将子线程设置为守护线程
+    """
+    
+    import threading
+    import time
+    
+    
+    # 任务函数
+    def task():
+        for i in range(10):
+            print('任务执行中...')
+            time.sleep(0.2)
+    
+    
+    if __name__ == '__main__':
+        # 创建子线程并启动
+        sub_thread = threading.Thread(target=task)
+        # TODO：设置子线程为守护线程
+        # sub_thread.daemon = True
+        sub_thread.setDaemon(True)
+        sub_thread.start()
+    
+        # 主线程延时 1s
+        time.sleep(1)
+        print('主线程结束！')
+    ```
+
 15. ### 线程的资源共享问题
+
+    - 多线程会共享全局变量, 当多个线程同时操作同一个共享的全局变量时, 可能会造成错误的结果!
+
+    ```python
+    
+    ```
+
+    
 
 16. ### 线程资源共享问题解决: 线程等待vs互斥锁
 
