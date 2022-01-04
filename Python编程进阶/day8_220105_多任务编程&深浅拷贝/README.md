@@ -620,17 +620,153 @@
         ##### 线程
 
         - 优点: 资源开销小
-        - 缺点: 不能使用多核
+        - 缺点: 不能使用多核(**仅针对Python**)
+
+        GIL: 全局解释器锁, Python中任何线程想要执行, 必须先拿到GIL, 同一时刻只有一个线程线程可以执行Python代码
 
 ## II. 深拷贝和浅拷贝
 
 1. ### 简单容器类型和嵌套容器类型
 
-    
+    无论简单容器类型还是嵌套容器类型, 其中存放的元素本质都是地址
 
 2. ### 浅拷贝
 
+    #### 可变容器类型: 列表
 
+    > ##### 可变容器类型, 进行浅拷贝时, 只会对第一层数据重新开辟内存, 进行拷贝
+
+    ```python
+    import copy
+    
+    # 简单列表
+    my_li1 = [3, 5, 1]
+    
+    # 浅拷贝
+    my_li3 = copy.copy(my_li1)
+    
+    print('id(my_li1)：', id(my_li1))
+    print('id(my_li3)：', id(my_li3))
+    
+    print('id(my_li1[0])：', id(my_li1[0]))
+    print('id(my_li3[0])：', id(my_li3[0]))
+    
+    print('=' * 20)
+    
+    # 嵌套列表
+    my_li2 = [[2, 4], 6, 7]
+    
+    # 浅拷贝
+    my_li4 = copy.copy(my_li2)
+    
+    print('id(my_li2)：', id(my_li2))
+    print('id(my_li4)：', id(my_li4))
+    
+    print('id(my_li2[0])：', id(my_li2[0]))
+    print('id(my_li4[0])：', id(my_li4[0]))
+    ```
+
+    #### 不可变容器类型: 元组
+
+    > ##### 不可变容器类型, 进行浅拷贝时, 不会重新开辟内存, 等同于=号赋值
+
+    ```python
+    import copy
+    
+    # 简单元组
+    my_tuple1 = (2, 3, 5)
+    
+    # 浅拷贝
+    my_tuple3 = copy.copy(my_tuple1)
+    
+    print('id(my_tuple1)：', id(my_tuple1))
+    print('id(my_tuple3)：', id(my_tuple3))
+    
+    print('=' * 20)
+    
+    # 嵌套元组
+    my_tuple2 = ([3, 5], 2, 1)
+    
+    # 浅拷贝
+    my_tuple4 = copy.copy(my_tuple2)
+    
+    print('id(my_tuple2)：', id(my_tuple2))
+    print('id(my_tuple4)：', id(my_tuple4))
+    ```
 
 3. ### 深拷贝
+
+    #### 可变容器类型: 列表
+
+    > ##### 可变容器类型, 进行深拷贝时, 每一层可变数据都会重新开辟内存, 进行拷贝
+
+    ```python
+    import copy
+    
+    # 简单列表
+    my_li1 = [3, 5, 1]
+    
+    # 深拷贝
+    my_li3 = copy.deepcopy(my_li1)
+    
+    print('id(my_li1)：', id(my_li1))
+    print('id(my_li3)：', id(my_li3))
+    
+    print('id(my_li1[0])：', id(my_li1[0]))
+    print('id(my_li3[0])：', id(my_li3[0]))
+    
+    print('=' * 20)
+    
+    # 嵌套列表
+    my_li2 = [[2, 4], 6, 7]
+    
+    # 深拷贝
+    my_li4 = copy.deepcopy(my_li2)
+    
+    print('id(my_li2)：', id(my_li2))
+    print('id(my_li4)：', id(my_li4))
+    
+    print('id(my_li2[0])：', id(my_li2[0]))
+    print('id(my_li4[0])：', id(my_li4[0]))
+    ```
+
+    #### 不可变容器类型: 元组
+
+    > ##### 不可变容器类型, 进行深拷贝时, 其本身不会重新开辟内存, 等同于=号赋值, 若其内层有可变容器类型, 则会对此可变容器类型重新开辟内存空间, 进行拷贝
+
+    ```python
+    import copy
+    
+    # 简单元组
+    my_tuple1 = (2, 3, 5)
+    
+    # 深拷贝
+    my_tuple3 = copy.deepcopy(my_tuple1)
+    
+    print('id(my_tuple1)：', id(my_tuple1))
+    print('id(my_tuple3)：', id(my_tuple3))
+    
+    print('=' * 20)
+    
+    # 嵌套元组
+    my_tuple2 = ([3, 5], 2, 1)
+    
+    # 深拷贝
+    my_tuple4 = copy.deepcopy(my_tuple2)
+    
+    print('id(my_tuple2)：', id(my_tuple2))
+    print('id(my_tuple4)：', id(my_tuple4))
+    ```
+
+4. ### 深拷贝和浅拷贝总结
+
+    #### 浅拷贝:
+
+    - 可变容器类型进行浅拷贝时, 只会对第一层数据重新开辟内存空间进行拷贝
+    - 不可变容器类型进行浅拷贝时, 不会重新开辟内存空间, 等同于=赋值
+
+    #### 深拷贝:
+
+    - 可变容器类型进行深拷贝时, 每一层可变数据都会重新开辟内存进行拷贝
+    - 不可变容器类型进行深拷贝时, 对于每一层不可变数据不会重新开辟内存, 等同于=号赋值, 对于每一层中的可变数据类型则会重新开辟内存空间进行拷贝
 

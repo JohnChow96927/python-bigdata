@@ -28,7 +28,7 @@ print('id(my_li4[0])：', id(my_li4[0]))
 
 print('=' * 20)
 
-# 简单元祖
+# 简单元组
 my_tuple1 = (2, 3, 5)
 
 # 浅拷贝
@@ -39,7 +39,7 @@ print('id(my_tuple3)：', id(my_tuple3))
 
 print('=' * 20)
 
-# 嵌套元祖
+# 嵌套元组
 my_tuple2 = ([3, 5], 2, 1)
 
 # 浅拷贝
