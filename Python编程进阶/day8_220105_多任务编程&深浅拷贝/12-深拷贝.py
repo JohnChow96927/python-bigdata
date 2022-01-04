@@ -32,7 +32,7 @@ print('=' * 20)
 # 简单元祖
 my_tuple1 = (2, 3, 5)
 
-# 浅拷贝
+# 深拷贝
 my_tuple3 = copy.deepcopy(my_tuple1)
 
 print('id(my_tuple1)：', id(my_tuple1))
