@@ -11,7 +11,7 @@ import os
 # 跳舞函数
 def dance():
     # TODO：获取 dance 进程的编号和其父进程的编号
-
+    print(f'子进程编号: {os.getpid()}, 父进程编号: {os.getppid()}')
     for i in range(5):
         print('跳舞中...')
         time.sleep(1)
@@ -26,7 +26,7 @@ def sing():
 
 if __name__ == '__main__':
     # TODO：获取主进程的编号和其父进程的编号
-
+    print(f'主进程编号: {os.getpid()}, 父进程编号: {os.getppid()}')
     # 创建一个进程，执行 dance 函数
     dance_process = multiprocessing.Process(target=dance) # 注意：target指定的是函数名或方法名，不要再函数名或方法名后加()
 

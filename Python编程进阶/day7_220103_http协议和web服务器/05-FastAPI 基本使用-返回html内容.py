@@ -54,4 +54,4 @@ if __name__ == '__main__':
     # 启动 Web 服务器
     # reload=True：检测到代码修改之后，服务器会自动进行重启
     # 注意：设置reload=True时，第一个参数的格式："文件名:app"
-    uvicorn.run(app, host='127.0.0.1', port=8080, reload=True)
+    uvicorn.run("05-FastAPI 基本使用-返回html内容:app", host='127.0.0.1', port=8080, reload=True)
