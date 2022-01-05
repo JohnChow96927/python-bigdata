@@ -23,7 +23,7 @@ def sing():
 
 
 if __name__ == '__main__':
-    print(f"父进程编号: {os.getppid()}")
+    print(f"父进程编号: {os.getppid()}, 子进程编号: {os.getpid()}")
     # 创建一个进程, 指定执行dance函数
     dance_process = multiprocessing.Process(target=dance)
     # 再创建一个进程, 指定执行sing函数
