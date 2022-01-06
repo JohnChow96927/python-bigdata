@@ -17,6 +17,10 @@ import re
 
 my_str = '123 123 123'
 
+res = re.match(r'(?P<num>\d+)\s(?P=num)\s\1', my_str)
+print(res)
+
+print(res.group(1))
 
 
 
