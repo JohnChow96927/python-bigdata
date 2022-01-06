@@ -1,4 +1,6 @@
 # 导入 FastAPI 类
+import os.path
+
 from fastapi import FastAPI, Path
 # 导入 uvicorn
 import uvicorn
@@ -31,6 +33,15 @@ def gdp():
 
 
 # TODO：需求：定义通用处理函数，给浏览器返回图片数据
+@app.get('/images/{image_name}')
+def get_image(image_name):
+    file_path = './sources/images/' + image_name
+    if not os.path.isfile(file_path):
+        return "Not Found!"
+    else:
+        with open('./sources/images/' + image_name, 'rb') as f:
+            content = f.read()
+        return Response(content, media_type='jpg')
 
 
 if __name__ == '__main__':

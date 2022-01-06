@@ -323,14 +323,245 @@
 
 ## II. 爬虫程序
 
-1. ### 爬虫工作的流程
+1. ### 浏览器的请求过程-渲染
 
-    ![爬虫工作的流程](爬虫工作的流程.png)
+    ![HTTP单次请求过程](HTTP单次请求过程.png)
+
+    1. ##### 浏览器通过域名解析服务器(DNS)获取IP地址
+
+    2. ##### 浏览器先向IP发起请求, 并获取响应
+
+    3. ##### 在返回的响应内容(html)中, 可能会带有css, js, 图片等url地址, 浏览器按照响应内容中的顺序依次发送其他的请求, 并获取响应的响应
+
+    4. ##### 浏览器每获取一个响应就对展示出的地址进行添加(加载), js, css等内容可能会修改页面的内容, js也可以重新发送请求, 获取响应
+
+    5. ##### 从获取第一个响应并在浏览器中展示, 直到最终获取全部响应, 并在展示的结果中添加内容或修改, 这个过程叫做浏览器的渲染
 
 2. ### FastAPI返回图片数据
 
+    ```python
+    # 导入 FastAPI 类
+    from fastapi import FastAPI
+    # 导入 uvicorn
+    import uvicorn
+    # 导入 Response 响应类
+    from fastapi import Response
+    
+    # 创建 FastAPI 对象
+    app = FastAPI()
+    
+    
+    # 定义业务处理函数并设置对应的 URL 地址
+    # get：表示请求方式
+    # /index.html：表示请求的 URL 地址
+    @app.get('/index.html')
+    def index():
+        with open('./sources/html/index.html', 'r', encoding='utf8') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='html')
+    
+    
+    @app.get('/gdp.html')
+    def gdp():
+        with open('./sources/html/gdp.html', 'r', encoding='utf8') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='html')
+    
+    
+    # TODO：需求：定义处理函数，给浏览器返回图片数据
+    @app.get('/images/0.jpg')
+    def get_image_0():
+        with open('./sources/images/0.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/1.jpg')
+    def get_image_1():
+        with open('./sources/images/1.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/2.jpg')
+    def get_image_2():
+        with open('./sources/images/2.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/3.jpg')
+    def get_image_3():
+        with open('./sources/images/3.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/4.jpg')
+    def get_image_4():
+        with open('./sources/images/4.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/5.jpg')
+    def get_image_5():
+        with open('./sources/images/5.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    @app.get('/images/6.jpg')
+    def get_image_6():
+        with open('./sources/images/6.jpg', 'rb') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='jpg')
+    
+    
+    if __name__ == '__main__':
+        # 启动 Web 服务器
+        uvicorn.run(app, host='127.0.0.1', port=8080)
+    ```
+
 3. ### FastAPI提取URL地址数据
+
+    - ##### FastAPI可以从URL地址中提取数据, 并将提取的数据传递给对应的处理函数, 格式如下:
+
+    ```python
+    from fastapi import FastAPI
+    
+    app = FastAPI()
+    
+    
+    #@app.get('/.../{参数名}')
+    @app.get("/items/{item_id}")
+    def read_item(item_id): # FastAPI 提取了数据之后，会将提取的数据传递给下面处理函数的对应形参
+    	pass
+    ```
+
+    - #### 动态返回图片数据实例代码
+
+    ```python
+    # 导入 FastAPI 类
+    from fastapi import FastAPI, Path
+    # 导入 uvicorn
+    import uvicorn
+    # 导入 Response 响应类
+    from fastapi import Response
+    
+    # 创建 FastAPI 对象
+    app = FastAPI()
+    
+    
+    # 定义业务处理函数并设置对应的 URL 地址
+    # get：表示请求方式
+    # /index.html：表示请求的 URL 地址
+    @app.get('/index.html')
+    def index():
+        with open('./sources/html/index.html', 'r', encoding='utf8') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='html')
+    
+    
+    @app.get('/gdp.html')
+    def gdp():
+        with open('./sources/html/gdp.html', 'r', encoding='utf8') as f:
+            content = f.read()
+    
+        # 返回响应对象
+        return Response(content, media_type='html')
+    
+    
+    # TODO：需求：定义通用处理函数，给浏览器返回图片数据
+    @app.get('/images/{image_name}')
+    def get_image(image_name):
+        with open('./sources/images/' + image_name, 'rb') as f:
+            content = f.read()
+        return Response(content, media_type='jpg')
+    
+    
+    if __name__ == '__main__':
+        # 启动 Web 服务器
+        uvicorn.run(app, host='127.0.0.1', port=8080)
+    ```
+
+    
 
 4. ### 爬虫的概念和作用
 
+    - ##### 网络爬虫就是模拟浏览器发送网络请求, 接收请求响应, 一种按照一定的规则, 自动的抓取互联网信息的程序
+
+        - 原则上, 只要是浏览器(客户端)能做的事情, 爬虫都能做
+        - 爬虫只能获取到浏览器(客户端)所展示出来的数据
+
+    - ##### 爬虫的作用: 数据分析中, 进行数据采集的一种方式
+
+    - ##### 爬虫工作的流程
+
+    ![爬虫工作的流程](爬虫工作的流程.png)
+
+    1. 向起始url地址发送请求, 并获取响应数据
+    2. 对相应内容进行提取
+    3. 如果提取url, 则继续发送请求获取响应
+    4. 如果提取数据, 则对数据进行保存
+
 5. ### requests的简单使用
+
+    - ##### requests模块: 一个用Python编写的开源HTTP库, 可以通过requests库编写Python代码发送网络请求, 简单易用, 是编写爬虫程序时必知必会的一个模块
+
+        > ##### 安装方法:
+        >
+        > pip install requests
+        >
+        > **或者**
+        >
+        > pip install requests -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+    - 使用示例: 请求任意网址url(完整的url), 并获取响应内容
+
+        ```python
+        """
+        requests模块基本使用
+        学习目标：能够使用 requests 模块请求URL地址并获取响应内容
+        """
+        
+        # TODO：需求：使用 requests 请求百度，并获取响应内容
+        # 导入requests模块
+        import requests
+        
+        # 准备请求的目标url地址
+        url = input("请输入准备请求的url地址: ")
+        
+        headers_dict = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers_dict)
+        
+        print(response.content.decode())
+        
+        # 查看requests发起请求时的请求头
+        print(response.request.headers)
+        
+        ```
+
+        

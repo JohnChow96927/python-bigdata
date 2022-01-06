@@ -31,6 +31,67 @@ def gdp():
 
 
 # TODO：需求：定义处理函数，给浏览器返回图片数据
+@app.get('/images/0.jpg')
+def get_image_0():
+    with open('./sources/images/0.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/1.jpg')
+def get_image_1():
+    with open('./sources/images/1.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/2.jpg')
+def get_image_2():
+    with open('./sources/images/2.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/3.jpg')
+def get_image_3():
+    with open('./sources/images/3.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/4.jpg')
+def get_image_4():
+    with open('./sources/images/4.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/5.jpg')
+def get_image_5():
+    with open('./sources/images/5.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
+
+
+@app.get('/images/6.jpg')
+def get_image_6():
+    with open('./sources/images/6.jpg', 'rb') as f:
+        content = f.read()
+
+    # 返回响应对象
+    return Response(content, media_type='jpg')
 
 
 if __name__ == '__main__':
