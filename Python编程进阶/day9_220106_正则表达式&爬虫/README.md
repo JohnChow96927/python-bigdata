@@ -214,10 +214,111 @@
     print(res.group(1))
     ```
 
-4. ### 贪婪模式vs非贪婪模式
+    - sub方法
 
     ```python
+    """
+    re模块：sub函数
+    学习目标：能够使用 re 模块中的 sub 函数进行字符串的替换
+    """
     
+    """
+    sub函数：re.sub(pattern, repl, string, count=0, flags=0)
+    功能：根据正则表达式匹配字符串中的所有子串，然后使用指定内容进行替换
+        1）函数返回的是替换后的新字符串
+    """
+    
+    """
+    示例1:
+    """
+    import re
+    
+    my_str = "传智播客-Python-666"
+    
+    # 需求： 将字符串中的 - 替换成 _
+    new_str = re.sub(r'-', r'_', my_str, count=1)
+    print(new_str)
+    
+    my_str2 = "传智播客,Python:666"
+    
+    new_str2 = re.sub(r'[,:]', r'-', my_str2)
+    print(new_str2)
+    """
+    示例2：
+    """
+    import re
+    
+    # 需求：将字符串 `abc.123` 替换为 `123.abc`
+    my_str3 = 'abc.123'
+    new_str3 = re.sub(r'([a-z]+)\.(\d+)', r'\2.\1', my_str3)
+    print(new_str3)
+    ```
+
+    - 正则表达式修饰符
+
+    ```python
+    """
+    正则表达式修饰符
+    学习目标：知道re.I、re.M、re.S三个正则表示式修饰符的作用
+    """
+    
+    """
+    re.I：匹配时不区分大小写
+    re.M：多行匹配，影响 ^ 和 $
+    re.S：影响 . 符号，设置之后，.符号就能匹配\n了
+    """
+    
+    import re
+    
+    my_str = 'aB'
+    res = re.match(r'ab', my_str, flags=re.I)   # re.I: 匹配时不区分字母的大小写
+    print(res.group())
+    
+    my_str2 = 'aabb\nbbcc'
+    res2 = re.search(r'^[a-z]{4}$', my_str2, flags=re.M)    # 多行匹配, 影响^和$
+    
+    print(bool(res2))
+    print(res2.group())
+    
+    my_str3 = '\nabc'
+    res3 = re.match(r'.', my_str3, flags=re.S)  # re.S使`.`能够匹配\n
+    print(bool(res))
+    print(res3.group())
+    ```
+
+4. ### 贪婪模式vs非贪婪模式
+
+    - #### 贪婪模式: 在整个表达式匹配成功的前提下, 尽可能多的匹配
+
+    - #### 非贪婪模式: 在整个表达式匹配成功的前提下, 尽可能少的匹配
+
+        > ##### 正则中的量词包括: `{m, n}`, `?`, `*`和`+`, 这些量词默认都是贪婪模式的匹配, 可以在这些量词后面加`?`将其变为非贪婪模式.
+
+    ```python
+    """
+    贪婪模式和非贪婪模式
+    学习目标：知道正则中贪婪模式和非贪婪模式的区别
+    """
+    
+    """
+    贪婪模式：在整个表达式匹配成功的前提下，尽可能多的匹配
+    非贪婪模式：在整个表达式匹配成功的前提下，尽可能少的匹配
+    正则中的量词包括：{m,n}、?、*和+，这些量词默认都是贪婪模式的匹配，可以在这些量词后面加?将其变为非贪婪模式。
+    """
+    
+    import re
+    
+    my_str = '<div>test1</div><div>test2</div>'
+    
+    # 贪婪模式：在整个表达式匹配成功的前提下，尽可能多的匹配
+    re_obj_greedy = re.match('<div>.*</div>', my_str)
+    print(re_obj_greedy)
+    print(re_obj_greedy.group())  # 获取整个正则表达式匹配的内容
+    
+    # 非贪婪模式：在整个表达式匹配成功的前提下，尽可能少的匹配
+    re_obj_not_greedy = re.match('<div>.*?</div>', my_str)
+    print(re_obj_not_greedy)
+    print(re_obj_not_greedy.group())  # 获取整个正则表达式匹配的内容
     ```
 
 ## II. 爬虫程序

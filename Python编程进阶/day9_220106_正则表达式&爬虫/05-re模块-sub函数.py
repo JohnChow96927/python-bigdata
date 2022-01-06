@@ -17,12 +17,19 @@ import re
 my_str = "传智播客-Python-666"
 
 # 需求： 将字符串中的 - 替换成 _
+new_str = re.sub(r'-', r'_', my_str, count=1)
+print(new_str)
 
+my_str2 = "传智播客,Python:666"
 
+new_str2 = re.sub(r'[,:]', r'-', my_str2)
+print(new_str2)
 """
 示例2：
 """
 import re
 
 # 需求：将字符串 `abc.123` 替换为 `123.abc`
-# my_str1 = 'abc.123'
+my_str3 = 'abc.123'
+new_str3 = re.sub(r'([a-z]+)\.(\d+)', r'\2.\1', my_str3)
+print(new_str3)

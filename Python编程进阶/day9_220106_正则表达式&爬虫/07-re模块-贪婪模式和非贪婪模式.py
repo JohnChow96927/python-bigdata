@@ -14,9 +14,11 @@ import re
 my_str = '<div>test1</div><div>test2</div>'
 
 # 贪婪模式：在整个表达式匹配成功的前提下，尽可能多的匹配
-re_obj = re.match('<div>.*</div>', my_str)
-print(re_obj)
-print(re_obj.group()) # 获取整个正则表达式匹配的内容
+re_obj_greedy = re.match('<div>.*</div>', my_str)
+print(re_obj_greedy)
+print(re_obj_greedy.group())  # 获取整个正则表达式匹配的内容
 
 # 非贪婪模式：在整个表达式匹配成功的前提下，尽可能少的匹配
-
+re_obj_not_greedy = re.match('<div>.*?</div>', my_str)
+print(re_obj_not_greedy)
+print(re_obj_not_greedy.group())  # 获取整个正则表达式匹配的内容
