@@ -14,7 +14,7 @@ import re
 my_str = 'aB'
 
 
-# my_str = 'aabb\nbbcc'
+# my_str1 = 'aabb\nbbcc'
 
 
-# my_str = '\nabc'
+# my_str1 = '\nabc'

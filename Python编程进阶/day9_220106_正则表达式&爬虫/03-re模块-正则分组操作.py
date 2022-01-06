@@ -21,8 +21,8 @@ my_str = '13155667788'
 语法：(?P<分组别名>正则表达式)
 """
 
-# my_str = '<div><a href="https://www.itcast.cn" target="_blank">传智播客</a><p>Python</p></div>'
+# my_str1 = '<div><a href="https://www.itcast.cn" target="_blank">传智播客</a><p>Python</p></div>'
 
-# 需求：使用正则提取出 my_str 字符串中的 `传智播客` 文本
+# 需求：使用正则提取出 my_str1 字符串中的 `传智播客` 文本
 
 

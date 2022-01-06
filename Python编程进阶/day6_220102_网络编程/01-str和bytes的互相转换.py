@@ -9,7 +9,7 @@ my_str = '你好！中国！'  # str
 print(type(my_str), my_str)
 
 # bytes: 字节流
-res1 = my_str.encode()  # 等价于 res1 = my_str.encode('utf8')
+res1 = my_str.encode()  # 等价于 res1 = my_str1.encode('utf8')
 print(type(res1), res1)
 
 print(res1.decode())

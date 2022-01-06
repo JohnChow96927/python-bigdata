@@ -25,4 +25,4 @@ my_str = "传智播客-Python-666"
 import re
 
 # 需求：将字符串 `abc.123` 替换为 `123.abc`
-# my_str = 'abc.123'
+# my_str1 = 'abc.123'
