@@ -14,11 +14,11 @@ match函数：re.match(pattern, string, flags=0)
 my_str1 = 'abc_123_DFG_456'
 
 # 匹配字符串bc(注：从头开始)
-res1 = re.match('bc', my_str1)
-print(res1)  # None, 因为match从头开始匹配
+res1 = re.match(r'[a-z]{1,3}', my_str1)
+print(res1.group())  # None, 因为match从头开始匹配
 
 # 匹配字符串abc(注：从头开始)
-res2 = re.match('abc', my_str1)
+res2 = re.match(r'abc', my_str1)
 # 匹配成功返回一个Match对象
 
 print("=" * 20)
@@ -32,7 +32,7 @@ search函数：re.search(pattern, string, flags=0)
 my_str2 = 'abc_123_DFG_456'
 
 # 匹配连续的3位数字
-print(re.search('\d{3}', my_str2).group())
+print(re.search(r'\d{3}', my_str2).group())
 print("=" * 20)
 """
 findall函数：re.findall(pattern, string, flags=0)
@@ -44,4 +44,4 @@ findall函数：re.findall(pattern, string, flags=0)
 my_str3 = 'abc_123_DFG_456'
 
 # 匹配字符串中的所有连续的3位数字
-print(re.findall('\d{3}', my_str3))
+print(re.findall(r'\d{3}', my_str3))
