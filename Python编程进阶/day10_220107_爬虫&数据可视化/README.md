@@ -160,18 +160,125 @@
     
     if __name__ == '__main__':
         get_gdp_data()
-    
     ```
 
 4. ### 多任务爬虫
 
+    ```python
+    """
+    爬虫示例-爬虫多任务版
+    学习目标：能够使用多线程的方式执行多任务爬虫
+    """
     
+    # 需求：使用多线程实现分别爬取图片数据和 GDP 数据。
+    import threading
+    
+    import requests
+    import re
+    
+    
+    def get_images():
+        # ① 先请求 http://127.0.0.1:8080/index.html，获取响应内容
+        url = 'http://127.0.0.1:8080/index.html'
+        # 发送请求
+        response = requests.get(url)
+    
+        # 获取响应的内容
+        html_str = response.content.decode()
+        # print(html_str)
+    
+        # ② 从上一步的响应内容中提取所有图片的地址
+        image_url_list = re.findall(r'<img src="(.*?)"', html_str)
+        # print(image_url_list)
+    
+        # ③ 遍历每一个图片地址，向每个图片地址发送请求，并将响应的内容保存成图片文件
+        base_url = 'http://127.0.0.1:8080'
+    
+        for i, image_url in enumerate(image_url_list):
+            # 拼接完整的图片地址
+            image_url = base_url + image_url[1:]
+            # 发送请求
+            image_response = requests.get(image_url)
+    
+            # 将响应内容保存成本地图片
+            with open(f'./spider/{i}.jpg', 'wb') as f:
+                f.write(image_response.content)
+    
+        print('保存图片完毕!!!')
+    
+    
+    def get_gdp_data():
+        # ① 先请求 http://127.0.0.1:8080/gdp.html，获取响应内容
+        url = 'http://127.0.0.1:8080/gdp.html'
+        # 发送请求
+        response = requests.get(url)
+    
+        # 获取响应的内容
+        html_str = response.content.decode()
+        # print(html_str)
+    
+        # ② 使用正则提取页面上的国家和GDP数据
+        gdp_data = re.findall('<a href=""><font>(.*?)</font></a>.*?<font>￥(.*?)亿元</font>', html_str, flags=re.S)
+        # print(gdp_data)
+    
+        # ③ 将提取的 GDP 保存到文件 gdp.txt 中
+        with open('./spider/gdp.txt', 'w', encoding='utf8') as f:
+            f.write(str(gdp_data))
+    
+        print('保存GDP数据完毕!!!')
+    
+    
+    if __name__ == '__main__':
+        image_thread = threading.Thread(target=get_images)
+        gdp_thread = threading.Thread(target=get_gdp_data)
+    
+        # 启动线程
+        image_thread.start()
+        gdp_thread.start()
+    ```
 
 ## II. 数据可视化
 
 1. ### pyecharts绘制饼图
 
+    ```python
+    """
+    pyecharts-GDP数据可视化
+    学习目标：能够使用 pyecharts 绘制饼图
+    """
     
+    # 需求
+    # ① 从文件中读取 GDP 数据
+    # ② 使用 pyecharts 绘制饼状图显示GDP前十的国家
+    from pyecharts.charts import Pie
+    import pyecharts.options as opts
+    
+    
+    def data_view_pie():
+        with open('./spider/gdp.txt', 'r', encoding='utf8') as f:
+            gdp_data = f.read()  # str
+            gdp_data = eval(gdp_data)  # list, eval()方法本质就是把字符串两边引号去掉
+    
+        # 获取GDP前十国家
+        gdp_top_10 = gdp_data[:10]
+    
+        # 创建饼图
+        pie = Pie(init_opts=opts.InitOpts(width='1400px', height='800px'))
+        # 给饼图添加数据
+        pie.add(
+            "GDP",
+            gdp_top_10,
+            label_opts=opts.LabelOpts(formatter='{b}:{d}%')
+        )
+        # 给饼图设置标题
+        pie.set_global_opts(title_opts=opts.TitleOpts(title="2020年世界GDP前10", subtitle="美元"))
+        # 保存结果, 默认保存到render.html文件中
+        pie.render()
+    
+    
+    if __name__ == '__main__':
+        data_view_pie()
+    ```
 
 ## III. 程序日志记录
 
