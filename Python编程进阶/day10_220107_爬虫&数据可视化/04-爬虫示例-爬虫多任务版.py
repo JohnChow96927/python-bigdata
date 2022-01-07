@@ -4,6 +4,7 @@
 """
 
 # 需求：使用多线程实现分别爬取图片数据和 GDP 数据。
+import threading
 
 import requests
 import re
@@ -60,4 +61,10 @@ def get_gdp_data():
     print('保存GDP数据完毕!!!')
 
 
+if __name__ == '__main__':
+    image_thread = threading.Thread(target=get_images)
+    gdp_thread = threading.Thread(target=get_gdp_data)
 
+    # 启动线程
+    image_thread.start()
+    gdp_thread.start()
