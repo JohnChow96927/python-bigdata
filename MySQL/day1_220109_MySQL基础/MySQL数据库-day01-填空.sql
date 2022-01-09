@@ -56,27 +56,30 @@ CREATE DATABASE IF NOT EXISTS bigdata_db CHARSET=utf8;
 USE bigdata_db;
 
 -- 示例1：创建一个 category 数据表
-
+CREATE TABLE category(
+    cid INT PRIMARY KEY NOT NULL,
+    cname VARCHAR(100)
+);
 
 -- 查看表语法
 -- SHOW TABLES; -- 显示当前数据库中有哪些表
 -- DESC 表名; -- 查看指定数据表的表结构
 
 -- 示例2：查看当前数据库中有哪些表
-
+SHOW TABLES;
 
 -- 示例3：查看 category 数据表的结构
-
+DESC category;
 
 -- 修改表语法
 -- RENAME TABLE 表名 TO 新表名; -- 修改表名
 
 -- 示例4：将 category 表重命名为 categories
-
+RENAME TABLE category TO categories;
 
 -- 删除表语法
 -- DROP TABLE 表名; -- 删除指定数据表
-
+DROP TABLE categories;
 
 -- 3. DDL-表结构(字段)操作
 
@@ -91,11 +94,11 @@ CREATE TABLE category(
 -- ALTER  TABLE  表名  ADD  列名  类型(长度)  [约束];
 
 -- 示例1：给 category 表添加一个 num 字段
-
+ALTER TABLE category ADD num INT NOT NULL;
 
 -- 示例2：给 category 表添加一个 desc 字段
 -- 注意：添加字段如果和SQL关键字同名，字段两边必须加反引号``
-
+ALTER TABLE category ADD `desc` VARCHAR(100);
 
 -- 修改字段语法
 -- ALTER TABLE 表名 CHANGE 旧列名 新列名 类型(长度) 约束;

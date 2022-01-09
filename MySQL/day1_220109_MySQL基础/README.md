@@ -143,6 +143,47 @@
 - ### DDL - 数据表操作
 
     ```mysql
+    -- 2. DDL-表操作
+    -- 创建表语法
+    # CREATE TABLE 表名(
+    #     字段名1 数据类型(长度) 约束,
+    #     字段名2 数据类型(长度) 约束
+    #     ...
+    # );
+    
+    CREATE DATABASE IF NOT EXISTS bigdata_db CHARSET=utf8;
+    USE bigdata_db;
+    
+    -- 示例1：创建一个 category 数据表
+    CREATE TABLE category(
+        cid INT PRIMARY KEY NOT NULL,
+        cname VARCHAR(100)
+    );
+    
+    -- 查看表语法
+    -- SHOW TABLES; -- 显示当前数据库中有哪些表
+    -- DESC 表名; -- 查看指定数据表的表结构
+    
+    -- 示例2：查看当前数据库中有哪些表
+    SHOW TABLES;
+    
+    -- 示例3：查看 category 数据表的结构
+    DESC category;
+    
+    -- 修改表语法
+    -- RENAME TABLE 表名 TO 新表名; -- 修改表名
+    
+    -- 示例4：将 category 表重命名为 categories
+    RENAME TABLE category TO categories;
+    
+    -- 删除表语法
+    -- DROP TABLE 表名; -- 删除指定数据表
+    DROP TABLE categories;
+    ```
+
+- ### DDL - 表结构(字段)操作
+
+    ```mysql
     
     ```
 
