@@ -90,6 +90,7 @@ CREATE TABLE category(
     cname VARCHAR(100)
 );
 
+
 -- 添加字段语法
 -- ALTER  TABLE  表名  ADD  列名  类型(长度)  [约束];
 
@@ -104,13 +105,13 @@ ALTER TABLE category ADD `desc` VARCHAR(100);
 -- ALTER TABLE 表名 CHANGE 旧列名 新列名 类型(长度) 约束;
 
 -- 示例3：将 category 表的 desc 字段修改为 description 字段
-
+ALTER TABLE category CHANGE `desc` description VARCHAR(100);
 
 -- 删除字段语法
 -- ALTER TABLE 表名 DROP 列名;
 
 -- 示例4：删除 category 表的 num 字段
-
+ALTER TABLE category DROP num;
 
 
 # =================================== DML数据操作语言 ===================================
@@ -120,10 +121,10 @@ ALTER TABLE category ADD `desc` VARCHAR(100);
 -- 指定字段：INSERT INTO 表 (字段1, 字段2, 字段3...) VALUES(值1, 值2, 值3...);
 
 -- 示例1：在 category 表中插入一条记录：cid=1, cname='服饰', description='秋冬装5折'
-
+INSERT INTO category VALUES (1, '服饰', '秋冬装5折');
 
 -- 示例2：在 category 表中插入一条记录：cid=2, cname='电器'
-
+INSERT INTO category(cid, cname) VALUES (2, '电器');
 
 -- 一次添加多行数据
 -- 不指定字段：INSERT INTO 表 VALUES(值1, 值2, 值3...), (值1, 值2, 值3...), ...;
@@ -134,38 +135,50 @@ ALTER TABLE category ADD `desc` VARCHAR(100);
 -- cid=4, cname='蔬菜', description='时令蔬菜，新鲜速达'
 INSERT INTO category
 VALUES
-(3, '玩具', '奥迪双钻我的伙伴'),
-(4, '蔬菜', '时令蔬菜，新鲜速达');
+        (3, '玩具', '奥迪双钻我的伙伴'),
+        (4, '蔬菜', '时令蔬菜，新鲜速达');
 
 -- 示例2：在 category 表中插入3条记录
 INSERT INTO category (cid, cname)
 VALUES
-(5, '化妆品'),
-(6, '书籍'),
-(7, NULL);
+        (5, '化妆品'),
+        (6, '书籍'),
+        (7, NULL);
 
 -- 2. 更新表记录
 -- 更新所有行：UPDATE 表名 SET 字段名=值, 字段名=值, ...;
 -- 更新满足条件的行：UPDATE 表名 SET 字段名=值, 字段名=值, ... WHERE 条件;
 
 -- 示例1：将 category 表中所有行的 cname 改为 '家电'
-
+UPDATE category SET cname='家电';
 
 -- 示例2：将 category 表中 cid 为 1 的记录的 cname 改为 '服装'
-
+UPDATE category SET cname='服饰' WHERE cid=1;
 
 -- 3. 删除表记录
 -- 语法：DELETE FROM 表名 [WHERE 条件];
 
 -- 示例1：删除 category 表中 cid 为 5 的记录
-
+DELETE FROM category WHERE cid=5;
 
 -- 示例2：删除 category 表中的所有记录
-
+DELETE FROM category;   # 主键自增队列不清零
 
 -- 语法：TRUNCATE TABLE 表名; -- 清空表数据
 -- 示例3：清空 category 表中的数据
+TRUNCATE TABLE category;    # 主键自增队列清零
 
+-- 补充.逻辑删除: 在表中添加一列, 这一列表示数据是否被逻辑删除, 比如0表示未被删除, 1表示删除
+ALTER TABLE category ADD is_delete BIT;
+
+INSERT INTO category
+VALUES
+    (1, '服饰', '棉毛衫', 0),
+    (2, '玩具', '四驱车', 0),
+    (3, '蔬菜', '时令蔬菜', 0);
+
+-- 逻辑删除的本质是更新删除标记, 标记某个数据被逻辑删除了, 但其实数据还在表中
+UPDATE category SET is_delete=1 WHERE cid=1;
 
 -- 3. SQL约束进阶
 -- PRIMARY KEY主键约束：主键唯一标识表中的一条记录，主键必须唯一且不能为NULL
