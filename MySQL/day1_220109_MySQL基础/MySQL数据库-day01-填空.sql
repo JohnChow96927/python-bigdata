@@ -363,7 +363,7 @@ SELECT * FROM product WHERE price >= 200 AND price <= 2000;
 -- 示例2：获取所有商品中，价格大于3000或价格小于600的所有商品信息
 SELECT * FROM product WHERE price > 3000 OR  price < 600;
 -- 示例3：获取所有商品中价格不在200-2000范围内的所有商品信息
-SELECT * FROM product WHERE price NOT BETWEEN 200 AND 2000;
+SELECT * FROM product WHERE NOT (price >= 200 AND price <= 2000);
 # 模糊查询
 # LIKE
 # %：表示任意多个任意字符
