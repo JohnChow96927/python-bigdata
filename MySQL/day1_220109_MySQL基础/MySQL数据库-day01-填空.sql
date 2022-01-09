@@ -216,10 +216,10 @@ ALTER TABLE person1 DROP PRIMARY KEY;
 DESC person1;
 
 -- 示例4：主键约束必须是非空且唯一
-INSERT INTO person (last_name, first_name, address, city)
-VALUES('fang', 'xiao', '石景山', '北京');
+# INSERT INTO person (last_name, first_name, address, city)
+# VALUES('fang', 'xiao', '石景山', '北京');
 
-INSERT INTO person VALUES(NULL, 'fang', 'xiao', '石景山', '北京');
+# INSERT INTO person VALUES(NULL, 'fang', 'xiao', '石景山', '北京');
 
 INSERT INTO person VALUES(1, 'fang', 'xiao', '石景山', '北京');
 
@@ -264,10 +264,10 @@ CREATE TABLE person3(
 # 查看表结构
 DESC person3;
 
-INSERT INTO person3(id, first_name, address, city)
-VALUES(1, 'xiao', '昌平', '北京');
+# INSERT INTO person3(id, first_name, address, city)
+# VALUES(1, 'xiao', '昌平', '北京');
 
-INSERT INTO person3 VALUES(1, NULL, 'xiao','昌平', '北京');
+# INSERT INTO person3 VALUES(1, NULL, 'xiao','昌平', '北京');
 
 -- UNIQUE唯一约束：指定字段的值必须唯一，不能重复
 
@@ -308,7 +308,7 @@ INSERT INTO person5(id, last_name, first_name, address) VALUES (1, 'ming', 'xiao
 
 # 创建表
 CREATE TABLE product (
-    pid         INT PRIMARY KEY,
+    pid         INT PRIMARY KEY AUTO_INCREMENT,
     pname       VARCHAR(20),
     price       DOUBLE,
     category_id VARCHAR(32)
@@ -337,10 +337,10 @@ INSERT INTO product(pid,pname,price,category_id) VALUES(13,'海澜之家',1,'c00
 # SELECT 列1, 列2, ... FROM 表名;
 
 -- 示例1：获取全部商品信息
-
+SELECT * FROM product;
 
 -- 示例2：获取所有商品的名称和价格
-
+SELECT pname, price FROM product;
 
 -- 2. 条件查询操作
 -- 语法
@@ -349,44 +349,46 @@ INSERT INTO product(pid,pname,price,category_id) VALUES(13,'海澜之家',1,'c00
 # 比较运算符
 # =、>、<、>=、<=、!=、<>
 -- 示例1：查询所价格等于800的所有商品信息
-
+SELECT * FROM product WHERE price=800;
 -- 示例2：查询所有价格不为800的所有商品信息
-
+SELECT * FROM product WHERE price<>800;
 -- 示例3：查询价格大于600元的所有商品信息
-
+SELECT * FROM product WHERE price>600;
 -- 示例4：查询价格小于2000元的所有商品的名称和价格
-
+SELECT pname, price FROM product WHERE price<2000;
 # 逻辑运算符
 # AND、OR、NOT
 -- 示例1：获取所有商品中，价格在200-2000之间的所有商品
-
+SELECT * FROM product WHERE price >= 200 AND price <= 2000;
 -- 示例2：获取所有商品中，价格大于3000或价格小于600的所有商品信息
-
+SELECT * FROM product WHERE price > 3000 OR  price < 600;
 -- 示例3：获取所有商品中价格不在200-2000范围内的所有商品信息
-
+SELECT * FROM product WHERE price NOT BETWEEN 200 AND 2000;
 # 模糊查询
 # LIKE
 # %：表示任意多个任意字符
 # _：表示一个任意字符
 -- 示例1：例1：查询所有商品中，商品名以'斯'结尾的商品信息
-
+SELECT * FROM product WHERE pname LIKE '%斯';
 -- 示例2：查询所有商品中，商品名以'斯'结尾，并且是三个字的商品信息
-
+SELECT * FROM product WHERE pname LIKE '__斯';
 -- 示例3：询所有商品中，名字中带'霸'的商品信息
-
+SELECT * FROM product WHERE pname LIKE '%霸%';
 
 # 范围查询
 # BETWEEN ... AND ... 表示在一个连续的范围内查询
 # IN 表示在一个非连续的范围内查询
 -- 示例1：查询价格在800-2000范围内的所有商品
-
+SELECT * FROM product WHERE price BETWEEN 200 AND 2000;
 -- 示例2：查询所有商品中价格是600、800、2000的商品信息
-
+SELECT * FROM product WHERE price IN (600, 800, 2000);
 -- 示例3：查询商品名称是 '劲霸'和 '香奈儿' 的商品信息(可以对于字符型数据使用IN)
+SELECT * FROM product WHERE pname IN ('劲霸', '香奈儿');
 
 # 空判断查询
 # 判断为空使用：IS NULL
 # 判断非空使用：IS NOT NULL
 -- 示例1：查询所有商品中category_id的值为NULL的商品信息
-
+SELECT * FROM product WHERE category_id IS NULL;
 -- 示例2：查询所有商品中category_id的值不为NULL的商品信息
+SELECT * FROM product WHERE category_id IS NOT NULL;
