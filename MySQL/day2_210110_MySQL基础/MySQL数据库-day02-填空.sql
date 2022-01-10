@@ -273,4 +273,25 @@ LEFT JOIN hero
 ON hero.kongfu_id = kongfu.kid;
 
 
-s
+-- 4. 自连接
+-- 进行关联时，左表和右表是同一个表，这样的连接叫自关联
+
+-- 创建一个地区表
+CREATE TABLE IF NOT EXISTS areas(
+    id VARCHAR(30) NOT NULL PRIMARY KEY,
+    title VARCHAR(30),
+    pid VARCHAR(30)
+);
+
+-- 示例1：查询'山西省'下的所有市的信息
+-- 查询结果字段：
+--   市级地区id、市级地区名称、父级地区id、父级地区名称
+SELECT
+    city.id,
+    city.title,
+    city.pid,
+    province.title
+FROM areas city    -- 理解为市表
+JOIN areas province    -- 理解为省表
+ON city.pid = province.id
+WHERE province.title = '山西省';

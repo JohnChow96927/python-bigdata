@@ -31,7 +31,7 @@
 
 **题干：**MySQL对查询结果进行升序排序的关键字是( ) 
 
-- [ ] ASC
+- [x] ASC
 - [ ] DESC
 - [ ] LIMIT
 - [ ] ORDER
@@ -44,7 +44,7 @@
 
 - [ ] 求每个部门中的工资
 - [ ] 求每个部门中工资的大小
-- [ ] 求每个部门中工资的总和
+- [x] 求每个部门中工资的总和
 - [ ] 求每个部门中工资的个数
 
 
@@ -57,7 +57,9 @@
 
 ```bash
 # 你的答案
-
+一对一: 人和身份证
+一对多: 每个淘宝账号对应多(≥1)个收货地址
+多对多: 学生和选课
 ```
 
 
@@ -78,7 +80,16 @@
 
 ```mysql
 # 你的答案
+CREATE DATABASE IF NOT EXISTS itcast_demo;
 
+USE itcast_demo;
+
+CREATE TABLE t_user(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    gender CHAR(4),
+    username VARCHAR(20),
+    password VARCHAR(20)
+);
 ```
 
 2）向 **t_user** 表中插入以下数据
@@ -91,9 +102,13 @@
 
 **参考答案**：
 
-```sql
+```mysql
 # 你的答案
-
+INSERT INTO t_user(gender, username, password)
+values
+       ('男', 'zhangsan', '123123'),
+       ('女', 'lisi', '000000'),
+       ('男', 'wangwu', '000000');
 ```
 
 3）编写SQL语句查询所有的性别为 男 的用户名
@@ -102,7 +117,9 @@
 
 ~~~mysql
 # 你的答案
-
+SELECT username
+FROM t_user
+WHERE gender = '男';
 ~~~
 
 4）统计男、女的人数
@@ -111,7 +128,11 @@
 
 ~~~mysql
 # 你的答案
-
+SELECT
+gender '性别',
+COUNT(*) '人数'
+FROM t_user
+GROUP BY gender;
 ~~~
 
 #### 2. 练习2
@@ -128,14 +149,30 @@
 
  ~~~mysql
 # 你的答案
-
+CREATE DATABASE IF NOT EXISTS db_student;
  ~~~
 
 2）根据图中两张表的定义，在**db_student** 中创建两张表
 
  ~~~mysql
 # 你的答案
+USE db_student;
 
+CREATE TABLE IF NOT EXISTS  student(
+    Id INT(10) PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(20) NOT NULL,
+    Sex VARCHAR(4),
+    Birth YEAR,
+    Department VARCHAR(20) NOT NULL,
+    Address VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS Score(
+    Id INT(10) PRIMARY KEY AUTO_INCREMENT,
+    Stu_id INT(10) NOT NULL,
+    C_name VARCHAR(20),
+    Grade INT(10)
+);
  ~~~
 
 3）将以下信息插入student表
@@ -153,7 +190,13 @@
 
 ~~~mysql
 # 你的答案
-
+INSERT INTO student VALUES
+                           (901, '张老大', '男', 1985, '计算机系', '北京市海淀区'),
+                           (902, '张老二', '男', 1986, '中文系', '北京市昌平区'),
+                           (903, '张三', '女', 1990, '英语系', '湖南省永州市'),
+                           (904, '李四', '男', 1990, '英语系', '辽宁省阜新市'),
+                           (905, '王五', '女', 1991, '英语系', '福建省厦门市'),
+                           (906, '王六', '男', 1988, '计算机系', '湖南省衡阳市');
 ~~~
 
 4）将以下信息插入score表
@@ -173,9 +216,19 @@
 
 **参考答案**：
 
-```sql
+```mysql
 # 你的答案
-
+INSERT INTO Score(Stu_id, C_name, Grade) VALUES
+                                                (901, '计算机', 98),
+                                                (901, '英语', 80),
+                                                (902, '计算机', 65),
+                                                (902, '中文', 88),
+                                                (903, '中文', 95),
+                                                (904, '计算机', 70),
+                                                (904, '英语', 92),
+                                                (905, '英语', 94),
+                                                (906, '计算机', 90),
+                                                (906, '英语', 85);
 ```
 
 5）从student表中查询每个院系有多少人
@@ -184,18 +237,24 @@
 
 **参考答案**：
 
-```sql
+```mysql
 # 你的答案
-
+SELECT
+Department, COUNT(*)
+FROM student
+GROUP BY Department;
 ```
 
 6）从score表中查询每个科目的最高分
 
 ![img](images/3.png) 
 
-```sql
+```mysql
 # 你的答案
-
+SELECT
+C_name, MAX(Grade)
+FROM Score
+GROUP BY C_name;
 ```
 
 7）从score表中计算每个考试科目的平均分
@@ -204,9 +263,12 @@
 
 **参考答案**：
 
-```sql
+```mysql
 # 你的答案
-
+SELECT
+C_name, AVG(Grade)
+FROM Score
+GROUP BY C_name;
 ```
 
 8）从score表中将计算机考试成绩按从高到低进行排序
@@ -217,7 +279,12 @@
 
 ```sql
 # 你的答案
-
+SELECT
+Id, Stu_id, C_name, Grade
+FROM Score
+WHERE
+C_name = '计算机'
+ORDER BY Grade DESC;
 ```
 
 #### 3. 练习3
@@ -257,9 +324,9 @@
 
 **参考答案**：
 
-```sql
+```mysql
 # 你的答案
-
+CREATE DATABASE IF NOT EXISTS db_emp;
 ```
 
 2）请根据以上表的定义，在db_emp中创建emp和dept表，salgrade表
@@ -268,12 +335,35 @@
 
  ~~~mysql
 # 你的答案
+USE db_emp;
 
+CREATE TABLE IF NOT EXISTS emp(
+    empno INT PRIMARY KEY,
+    empname VARCHAR(10) NOT NULL,
+    job VARCHAR(10) NOT NULL,
+    manager INT,
+    hiredate DATE,
+    salary DOUBLE,
+    comm DOUBLE,
+    deptno INT
+);
+
+CREATE TABLE IF NOT EXISTS dept(
+    deptno INT PRIMARY KEY,
+    dname VARCHAR(20) NOT NULL,
+    loc VARCHAR(20)
+);
+
+CREATE TABLE IF NOT EXISTS salgrade(
+    grade INT PRIMARY KEY,
+    losal DOUBLE,
+    hisal DOUBLE
+);
  ~~~
 
 3）执行下面的 SQL 语句，添加测试数据
 
-```sql
+```mysql
 INSERT INTO emp VALUES (7369, 'SMITH', 'CLERK', 7902, '1980-12-17', 800, NULL, 20);
 INSERT INTO emp VALUES (7499, 'ALLEN', 'SALESMAN', 7698, '1981-02-20', 1600, 300, 30);
 INSERT INTO emp VALUES (7521, 'WARD', 'SALESMAN', 7698, '1981-02-22', 1250, 500, 30);
@@ -310,7 +400,9 @@ INSERT INTO salgrade VALUES (5, 3000, 19999);
 
 ```sql
 # 你的答案
-
+SELECT empno, empname, job, manager, hiredate, salary, comm, deptno
+FROM emp
+ORDER BY job DESC , salary;
 ```
 
 5）查询每个工作岗位的员工人数并按照人数降序排序
@@ -321,7 +413,10 @@ INSERT INTO salgrade VALUES (5, 3000, 19999);
 
 ```sql
 # 你的答案
-
+SELECT job, COUNT(*)
+FROM emp
+GROUP BY job
+ORDER BY COUNT(*) DESC;
 ```
 
 6）查询每个工作岗位的最高薪资
@@ -330,7 +425,9 @@ INSERT INTO salgrade VALUES (5, 3000, 19999);
 
  ~~~mysql
 # 你的答案
-
+SELECT job, MAX(salary)
+FROM emp
+GROUP BY job;
  ~~~
 
 7）查询所有员工的信息及所在部门名称
@@ -341,7 +438,10 @@ INSERT INTO salgrade VALUES (5, 3000, 19999);
 
 ~~~mysql
 # 你的答案
-
+SELECT empno, empname, job, manager, hiredate, salary, comm, emp.deptno, dname
+FROM emp
+LEFT JOIN dept d
+ON emp.deptno = d.deptno;
 ~~~
 
 8）列出所有员工的姓名及其直接上级的姓名(**自关联，将一张表当做多张表使用**)
@@ -352,5 +452,9 @@ INSERT INTO salgrade VALUES (5, 3000, 19999);
 
 ~~~mysql
 # 你的答案
-
+SELECT
+    e.empname, leader.empname
+FROM emp e
+LEFT JOIN emp leader
+ON e.manager = leader.empno;
 ~~~
