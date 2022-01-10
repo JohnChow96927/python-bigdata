@@ -348,7 +348,9 @@
         ON hero.kongfu_id = kongfu.kid;
         ```
 
-        
+        结果: 
+
+        ![image-20220110154625147](image-20220110154625147.png)
 
     - #### 左外连接(左连接): LEFT OUTER JOIN, 简写为LEFT JOIN
 
@@ -359,10 +361,17 @@
         ![image-20220110152611608](image-20220110152611608.png)
 
         ```mysql
-        
+        -- 示例2：查询所有英雄对应的武功，没有武功的的英雄也需要展示出来(左连接)
+        SELECT
+        hname, kongfu_id, kid, kname
+        FROM hero
+        LEFT JOIN kongfu
+        ON hero.kongfu_id = kongfu.kid;
         ```
 
-        
+        结果: 
+
+        ![image-20220110154743701](image-20220110154743701.png)
 
     - #### 右外连接(右连接): RIGHT OUTER JOIN, 简写为RIGHT JOIN
 
@@ -373,10 +382,17 @@
         ![image-20220110152723249](image-20220110152723249.png)
 
         ```mysql
-        
+        -- 示例3：查询所有武功对应的英雄，保留所有的武功，没有武功的英雄不展示(右连接)
+        SELECT
+        hname, kongfu_id, kid, kname
+        FROM hero
+        RIGHT JOIN kongfu
+        ON hero.kongfu_id = kongfu.kid;
         ```
 
-        
+        结果: 
+
+        ![image-20220110154921219](image-20220110154921219.png)
 
     - #### 全外连接(全连接): FULL OUTER JOIN, 简写为 FULL JOIN
 
@@ -391,6 +407,8 @@
         ```mysql
         
         ```
+
+        结果: 
 
         
 

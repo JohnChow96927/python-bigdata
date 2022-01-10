@@ -246,10 +246,18 @@ INNER JOIN kongfu
 ON hero.kongfu_id = kongfu.kid;
 
 -- 示例2：查询所有英雄对应的武功，没有武功的的英雄也需要展示出来(左连接)
-
+SELECT
+hname, kongfu_id, kid, kname
+FROM hero
+LEFT JOIN kongfu
+ON hero.kongfu_id = kongfu.kid;
 
 -- 示例3：查询所有武功对应的英雄，保留所有的武功，没有武功的英雄不展示(右连接)
-
+SELECT
+hname, kongfu_id, kid, kname
+FROM hero
+RIGHT JOIN kongfu
+ON hero.kongfu_id = kongfu.kid;
 
 -- 示例4：查询所有英雄对应的武功，保留所有的英雄和武功，没有武功的英雄和没有英雄的武功也都有展示(全连接)
 
