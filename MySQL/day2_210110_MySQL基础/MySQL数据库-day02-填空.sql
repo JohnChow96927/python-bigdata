@@ -239,7 +239,11 @@ VALUES
 
 
 -- 示例1：查询所有英雄所对应的功夫名称，如果没有则不显示(内连接)
-
+SELECT
+hname, kid, kname
+FROM hero
+INNER JOIN kongfu
+ON hero.kongfu_id = kongfu.kid;
 
 -- 示例2：查询所有英雄对应的武功，没有武功的的英雄也需要展示出来(左连接)
 
