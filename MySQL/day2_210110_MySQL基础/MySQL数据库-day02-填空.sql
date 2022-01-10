@@ -260,20 +260,17 @@ RIGHT JOIN kongfu
 ON hero.kongfu_id = kongfu.kid;
 
 -- 示例4：查询所有英雄对应的武功，保留所有的英雄和武功，没有武功的英雄和没有英雄的武功也都有展示(全连接)
+SELECT
+hname, kongfu_id, kid, kname
+FROM hero
+LEFT JOIN kongfu
+ON hero.kongfu_id = kongfu.kid
+UNION
+SELECT
+hname, kongfu_id, kid, kname
+FROM kongfu
+LEFT JOIN hero
+ON hero.kongfu_id = kongfu.kid;
 
 
-
--- 4. 自连接
--- 进行关联时，左表和右表是同一个表，这样的连接叫自关联
-
--- 创建一个地区表
-CREATE TABLE areas(
-    id VARCHAR(30) NOT NULL PRIMARY KEY,
-    title VARCHAR(30),
-    pid VARCHAR(30)
-);
-
--- 示例1：查询'山西省'下的所有市的信息
--- 查询结果字段：
---   市级地区id、市级地区名称、父级地区id、父级地区名称
-
+s
