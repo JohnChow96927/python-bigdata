@@ -323,3 +323,144 @@
 
 5. ### 自定义window frame
 
+    ##### 分区数据范围和window frame范围:
+
+    在使用窗口函数处理表中的每行数据时, 每行数据关联的数据有两种:
+
+    1. ##### 每行数据关联的分区数据(PARTITION BY 列名)
+
+    2. ##### 每行数据关联的分区中的window frame数据
+
+        每行数据关联的分区window frame数据范围 <= 每行关联的分区数据范围
+
+    ##### 自定义window frame范围:
+
+    > 自定义window frame有两种方式: `ROWS`和`RANGE`
+
+    ```mysql
+    -- 基本语法
+    <window function> OVER(
+        PARTITION BY 列名, ...
+        ORDER BY 列名, ...
+        [ROWS|RANGE] BETWEEN 上线 AND 下限
+    )
+    ```
+
+    ##### 上限和下限的设置:
+
+    `UNBOUNDED PRECEDING`: 对上限无限制
+
+    `n PRECEDING`: 当前行之前的n行, n为具体数字
+
+    `CURRENT ROW`: 仅当前行
+
+    `n FOLLOWING`: 当前行之后的n行, n为具体数字
+
+    `UNBOUNDED FOLLOWING`: 对下限无限制
+
+    **注意**: **上限要在下限之前! ! !**
+
+    `ROWS`: 
+
+    ```mysql
+    -- 示例1
+    -- 需求：计算截止到每个月的累计销量。1月：1月销量，2月：1月销量 + 2月销量，3月：1月销量 + 2月销量 + 3月销量，依次类推
+    -- 查询结果字段：
+    --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
+    SELECT month,
+           sales,
+           SUM(sales) OVER (
+               ORDER BY month
+               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+               ) AS `running_total`
+    FROM tb_sales;
+    ```
+
+    > ##### 简略写法: 当使用了`CURRENT ROW` 作为上边界或下边界, 可以使用, 但`不适合于FOLLOWING`的情况:
+
+    `ROWS UNBOUNDED PRECEDING == ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
+
+    `ROWS 5 PRECEDING == ROWS BETWEEN 5 PRECEDING AND CURRENT ROW`
+
+    `ROWS CURRENT ROW == ROWS BETWEEN CURRENT ROW AND CURRENT ROW`
+
+    ##### 上面的例子可以简写为: 
+
+    ```mysql
+    SELECT month,
+           sales,
+           SUM(sales) OVER (
+               ORDER BY month
+               ROWS UNBOUNDED PRECEDING
+               ) AS `running_total`
+    FROM tb_sales;
+    ```
+
+    `RANGE`: 
+
+    ##### ROWS和RANGE的区别: 
+
+    ##### 	ROWS是根据分区数据ROW_NUMBER()排序值确定每行关联的window frame范围
+
+    ##### 	RANGE是根据分区数据DENSE_RANK()排序值确定每行关联的window frame范围
+
+    ```mysql
+    SELECT month,
+           sales,
+           SUM(sales) OVER (
+               ORDER BY month
+               ROWS UNBOUNDED PRECEDING
+               ) AS `running_total`
+    FROM tb_sales;
+    
+    SELECT month,
+           sales,
+           SUM(sales) OVER (
+               ORDER BY month
+               RANGE UNBOUNDED PRECEDING
+               ) AS `running_total`
+    FROM tb_sales;	# RANGE表示和当前行排序列的值相同的所有行
+    ```
+
+    ![image-20220111160945036](image-20220111160945036.png)
+
+    ##### 默认的window frame:
+
+    1. 在OVER中只要添加了ORDER BY并没有指定ROWS或RANGE的情况下, 默认的window frame范围是
+
+        `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
+
+    ```mysql
+    -- 示例1：需求：计算截止到每个月的累计销量。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
+    -- 查询结果字段：
+    --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
+    SELECT month `月份`,
+           sales `当月销量`,
+           SUM(sales) OVER (
+               ORDER BY month
+               ) AS `截止当前累计销量`
+    FROM tb_sales;
+    ```
+
+    ##### PARTITION BY和自定义window frame:
+
+    ```mysql
+    -- 示例1
+    -- 需求：计算每个商店截止到每个月的累计销售额。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
+    -- 查询结果字段：
+    --  store_id(商店id)、month(月份)、revenue(当月销售额)、sum(截止当月累计销售额)
+    SELECT store_id,
+           month,
+           revenue,
+           SUM(revenue) OVER (
+               PARTITION BY store_id
+               ORDER BY month
+               ROWS UNBOUNDED PRECEDING
+               ) AS `sum`
+    FROM tb_revenue;
+    ```
+
+    
+
+
+

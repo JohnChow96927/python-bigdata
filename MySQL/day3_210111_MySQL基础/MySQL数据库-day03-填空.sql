@@ -308,6 +308,14 @@ WHERE `dense_rank` = 2;
 -- 需求：计算截止到每个月的累计销量。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
 -- 查询结果字段：
 --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
+SELECT month,
+       sales,
+       SUM(sales) OVER (
+           ORDER BY month
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+           ) AS `running_total`
+FROM tb_sales;
+
 
 SELECT *
 FROM tb_sales;
@@ -341,7 +349,13 @@ VALUES (6, 10);
 SELECT *
 FROM tb_sales;
 -- 查看 tb_sales 表的数据
-
+SELECT month,
+       sales,
+       SUM(sales) OVER (
+           ORDER BY month
+           RANGE UNBOUNDED PRECEDING
+           ) AS `running_total`
+FROM tb_sales;	# RANGE表示和当前行排序列的值相同的所有行
 
 -- 默认的 window frame
 -- 在 OVER 中只要添加了 ORDER BY，在没有写ROWS或RANGE的情况下，会有一个默认的 window frame范围：
@@ -350,6 +364,12 @@ FROM tb_sales;
 -- 示例1：需求：计算截止到每个月的累计销量。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
 -- 查询结果字段：
 --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
+SELECT month `月份`,
+       sales `当月销量`,
+       SUM(sales) OVER (
+           ORDER BY month
+           ) AS `截止当前累计销量`
+FROM tb_sales;
 
 
 -- PARTITION BY和自定义window frame
@@ -361,4 +381,12 @@ FROM tb_revenue;
 -- 需求：计算每个商店截止到每个月的累计销售额。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
 -- 查询结果字段：
 --  store_id(商店id)、month(月份)、revenue(当月销售额)、sum(截止当月累计销售额)
-
+SELECT store_id,
+       month,
+       revenue,
+       SUM(revenue) OVER (
+           PARTITION BY store_id
+           ORDER BY month
+           ROWS UNBOUNDED PRECEDING
+           ) AS `sum`
+FROM tb_revenue;
