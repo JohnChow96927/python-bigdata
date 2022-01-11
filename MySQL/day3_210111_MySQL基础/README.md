@@ -426,9 +426,11 @@
 
     ##### 默认的window frame:
 
-    1. 在OVER中只要添加了ORDER BY并没有指定ROWS或RANGE的情况下, 默认的window frame范围是
+    1. 在OVER中只要添加了ORDER BY并没有指定ROWS或RANGE的情况下, 默认的window frame范围是: 
 
         `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
+
+    > ##### OVER()中不写ORDER BY只写RANGE是没有效果的, 但是只写ROWS是有效果的
 
     ```mysql
     -- 示例1：需求：计算截止到每个月的累计销量。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
