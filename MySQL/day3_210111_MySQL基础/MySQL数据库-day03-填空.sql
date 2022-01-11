@@ -4,11 +4,23 @@
 
 -- 给字段起别名
 -- 示例1：查询每个分类的商品数量
+SELECT
+       category_id,
+       COUNT(*) product_count
+FROM products
+GROUP BY category_id;
 
-
-
+SELECT category_id, COUNT(*) `desc`
+FROM products
+GROUP BY category_id;
 -- 示例2：查询每个分类名称所对应的商品数量(没有商品的分类的也要显示)
-
+SELECT
+c.cname, COUNT(*) product_count
+FROM
+category c
+LEFT JOIN products p
+ON c.cid = p.category_id
+GROUP BY c.cname;
 
 
 -- 2. 子查询
