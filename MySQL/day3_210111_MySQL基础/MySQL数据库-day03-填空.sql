@@ -4,8 +4,7 @@
 
 -- 给字段起别名
 -- 示例1：查询每个分类的商品数量
-SELECT
-       category_id,
+SELECT category_id,
        COUNT(*) product_count
 FROM products
 GROUP BY category_id;
@@ -14,12 +13,11 @@ SELECT category_id, COUNT(*) `desc`
 FROM products
 GROUP BY category_id;
 -- 示例2：查询每个分类名称所对应的商品数量(没有商品的分类的也要显示)
-SELECT
-c.cname, COUNT(*) product_count
-FROM
-category c
-LEFT JOIN products p
-ON c.cid = p.category_id
+SELECT c.cname,
+       COUNT(*) product_count
+FROM category c
+         LEFT JOIN products p
+                   ON c.cid = p.category_id
 GROUP BY c.cname;
 
 
@@ -33,24 +31,53 @@ GROUP BY c.cname;
 # 3）子查询是可以独立存在的语句，是一条完整的 SELECT 语句
 
 -- 示例1：查询当前商品大于平均价格的商品
+SELECT pname, price
+FROM products
+WHERE price > (
+    SELECT AVG(price)
+    FROM products
+);
 
-
--- 示例2：获取所有商品中，平均价格大于1000的分类的全部商品
-
+-- 示例2：获取所有商品中，平均价格大于800的分类的全部商品
+SELECT *
+FROM products
+WHERE category_id IN (
+    SELECT category_id
+    FROM products
+    GROUP BY category_id
+    HAVING AVG(price) > 800
+);
 
 -- 示例3：获取所有商品中价格最高的商品(价格最高的商品不只一个)
-
+-- STEP1. 查询商品最高价格
+SELECT pname,
+       price
+FROM products
+WHERE price = (SELECT MAX(price) FROM products);
 
 
 -- 示例4：查询不同类型商品的平均价格
 -- 查询结果字段：
 --  category_id(分类id)、cname(分类名称)、avg(分类商品平均价格)
-
+SELECT category_id `分类id`,
+       cname       `分类名称`,
+       `avg`       `分类商品平均价格`
+FROM (
+         SELECT category_id,
+                AVG(price) `avg`
+         FROM products
+         GROUP BY category_id
+     ) `a`
+         JOIN category `b`
+              ON a.category_id = b.cid;
 
 
 -- 示例5：针对 students 表的数据，计算每个同学的Score分数和整体平均分数的差值
-
-
+SELECT ID                                        `学生ID`,
+       Name                                      `学生姓名`,
+       (SELECT AVG(Score) FROM students)         `平均分`,
+       Score - (SELECT AVG(Score) FROM students) `差值`
+FROM students;
 
 # =================================== SQL进阶-窗口函数 ===================================
 
@@ -59,10 +86,9 @@ GROUP BY c.cname;
 -- 窗口函数是 MySQL8.0 以后加入的功能，之前需要通过定义临时变量和大量的子查询才能完成的工作，使用窗口函数实现起来更加简洁高效
 
 -- 示例1：针对 students 表的数据，计算每个同学的Score分数和整体平均分数的差值
-SELECT
-    *,
-    AVG(Score) OVER() AS `avg`,
-    Score - AVG(Score) OVER() AS `difference`
+SELECT *,
+       AVG(Score) OVER ()         AS `avg`,
+       Score - AVG(Score) OVER () AS `difference`
 FROM students;
 
 
@@ -75,14 +101,13 @@ FROM students;
 
 -- SQL示例
 
-SELECT
-    ID,
-    Name,
-    Gender,
-    Score,
-    -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
-    -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
-    AVG(Score) OVER() AS `AVG_Score`
+SELECT ID,
+       Name,
+       Gender,
+       Score,
+       -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
+       -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
+       AVG(Score) OVER () AS `AVG_Score`
 FROM students;
 
 -- 典型应用场景1：计算每个值和整体平均值的差值
@@ -91,18 +116,30 @@ FROM students;
 # 需求：计算每个学生的 Score 分数和所有学生整体平均分的差值。
 # 查询结果字段：
 #   ID、Name、Gender、Score、AVG_Score(学生整体平均分)、difference(每位学生分数和整体平均分的差值)
-
-
-
+SELECT ID,
+       Name,
+       Gender,
+       Score,
+       -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
+       -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
+       AVG(Score) OVER () AS `AVG_Score`,
+       Score - AVG(Score) OVER() AS `difference`
+FROM students;
 
 -- 典型应用场景2：计算每个值占整体之和的占比
 
 # 需求：计算每个学生的Score分数占所有学生分数之和的百分比
 # 查询结果字段：
 #   ID、Name、Gender、Score、sum(所有学生分数之和)、ratio(每位学生分数占所有学生分数之和的百分比)
-
-
-
+SELECT ID,
+       Name,
+       Gender,
+       Score,
+       -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
+       -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
+       SUM(Score) OVER () AS `SUM`,
+       Score * 100 / SUM(Score) OVER() AS `ratio`
+FROM students;
 
 -- 2. PARTITION BY分区
 
@@ -112,14 +149,13 @@ FROM students;
 
 -- SQL 示例
 
-SELECT
-    ID,
-    Name,
-    Gender,
-    Score,
-    -- PARTITION BY Gender：按照性别对整张表的数据进行分区，此处会分成2个区
-    -- AVG(Score)：处理每行数据时，应用 AVG 对该行关联分区数据中的 Score 求平均
-    AVG(Score) OVER(PARTITION BY Gender) AS `Avg`
+SELECT ID,
+       Name,
+       Gender,
+       Score,
+       -- PARTITION BY Gender：按照性别对整张表的数据进行分区，此处会分成2个区
+       -- AVG(Score)：处理每行数据时，应用 AVG 对该行关联分区数据中的 Score 求平均
+       AVG(Score) OVER (PARTITION BY Gender) AS `Avg`
 FROM students;
 
 -- 应用示例
@@ -130,13 +166,10 @@ FROM students;
 --  ID、Name、Gender、Score、Avg(同性别学生的平均分)、difference(每位学生分数和同性别学生平均分的差值)
 
 
-
 -- 示例2
 -- 需求：计算每人各科分数与对应科目最高分的占比
 -- 查询结果字段：
 --  name、course、score、max(对应科目最高分数)、ratio(每人各科分数与对应科目最高分的占比)
-
-
 
 
 -- 3. 排序函数
@@ -145,21 +178,19 @@ FROM students;
 -- OVER() 中可以指定 ORDER BY 按照指定列对每一行关联的分区数据进行排序，然后使用排序函数对分区内的每行数据产生一个排名序号
 
 -- SQL 示例
-SELECT
-    name,
-    course,
-    score,
-    -- 此处 OVER() 中没有 PARTITION BY，所以整张表就是一个分区
-    -- ORDER BY score DESC：按照 score 对每个分区内的数据降序排序
-    -- RANK() 窗口函数的作用是对每个分区内的每一行产生一个排名序号
-    RANK() OVER(ORDER BY score DESC) as `rank`
+SELECT name,
+       course,
+       score,
+       -- 此处 OVER() 中没有 PARTITION BY，所以整张表就是一个分区
+       -- ORDER BY score DESC：按照 score 对每个分区内的数据降序排序
+       -- RANK() 窗口函数的作用是对每个分区内的每一行产生一个排名序号
+       RANK() OVER (ORDER BY score DESC) as `rank`
 FROM tb_score;
 
 -- 排序函数
 -- RANK()：产生的排名序号 ，有并列的情况出现时序号不连续
 -- DENSE_RANK() ：产生的排序序号是连续的，有并列的情况出现时序号会重复
 -- ROW_NUMBER() ：返回连续唯一的行号，排名序号不会重复
-
 
 
 -- PARTITION BY和排序函数配合
@@ -170,14 +201,12 @@ FROM tb_score;
 --  name、course、score、dense_rank(排名序号)
 
 
-
 -- 典型应用：获取指定排名的数据
 
 -- 示例1
 -- 需求：获取每个科目，排名第二的学生信息
 -- 查询结果字段：
 --  name、course、score
-
 
 
 -- CTE(公用表表达式)
@@ -195,7 +224,6 @@ FROM tb_score;
 -- 需求：获取每个科目，排名第二的学生信息
 -- 查询结果字段：
 --  name、course、score
-
 
 
 -- 4. 自定义window frame
@@ -235,15 +263,15 @@ FROM tb_score;
 -- 查询结果字段：
 --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
 
-SELECT * FROM tb_sales; -- 查看 tb_sales 表的数据
-
+SELECT *
+FROM tb_sales;
+-- 查看 tb_sales 表的数据
 
 
 -- 示例2
 -- 需求：计算每3个月(前1个月、当前月、后1一个月)的累计销量。1月：1月销量+2月销量，2月：1月销量+2月销量+3月销量，3月：2月销量+3月销量+4月销量，依次类推
 -- 查询结果字段：
 --  month(月份)、sales(当月销量)、running_total(每3个月累计销量)
-
 
 
 -- ROWS和RANGE的区别
@@ -261,10 +289,12 @@ SELECT * FROM tb_sales; -- 查看 tb_sales 表的数据
 --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
 
 -- 向表中在添加一条6月份的销售记录，这样表中就有2条六月份的销售记录
-INSERT INTO tb_sales VALUES (6, 10);
+INSERT INTO tb_sales
+VALUES (6, 10);
 
-SELECT * FROM tb_sales; -- 查看 tb_sales 表的数据
-
+SELECT *
+FROM tb_sales;
+-- 查看 tb_sales 表的数据
 
 
 -- 默认的 window frame
@@ -276,10 +306,10 @@ SELECT * FROM tb_sales; -- 查看 tb_sales 表的数据
 --  month(月份)、sales(当月销量)、running_total(截止当月累计销量)
 
 
-
 -- PARTITION BY和自定义window frame
 -- 查看 tb_revenue 表的内容
-SELECT * FROM tb_revenue;
+SELECT *
+FROM tb_revenue;
 
 -- 示例1
 -- 需求：计算每个商店截止到每个月的累计销售额。1月：1月销量，2月：1月销量+2月销量，3月：1月销量+2月销量+3月销量，依次类推
