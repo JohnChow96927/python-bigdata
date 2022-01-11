@@ -180,7 +180,46 @@
 
 3. ### PARTITION BY分区
 
+    ```mysql
+    -- 基础语法
+    <window function> OVER(PARTITION BY 列名, ...)
+    ```
+
+    - `PARTITION BY 列名, ...`: 按照指定的列对整张表的数据进行分区
+    - 分区之后, 在处理每行数据时, `<window function>`是作用在该行数据关联的分区上, 不再是整张表上
+
+    ```mysql
+    -- 示例1
+    -- 需求：计算每个学生的 Score 分数和同性别学生平均分的差值
+    -- 查询结果字段：
+    --  ID、Name、Gender、Score、Avg(同性别学生的平均分)、difference(每位学生分数和同性别学生平均分的差值)
+    SELECT ID,
+           Name,
+           Gender,
+           Score,
+           -- PARTITION BY Gender：按照性别对整张表的数据进行分区，此处会分成2个区
+           -- AVG(Score)：处理每行数据时，应用 AVG 对该行关联分区数据中的 Score 求平均
+           AVG(Score) OVER (PARTITION BY Gender) AS `分性别学生平均分`,
+           Score - AVG(Score) OVER (PARTITION BY Gender) `与同性别学生平均分的差值`
+    FROM students;
     
+    -- 示例2
+    -- 需求：计算每人各科分数与对应科目最高分的占比
+    -- 查询结果字段：
+    --  name、course、score、max(对应科目最高分数)、ratio(每人各科分数与对应科目最高分的占比)
+    SELECT Name,
+           course,
+           Score,
+           MAX(Score) OVER (PARTITION BY course) AS      `各科最高分`,
+           Score / MAX(Score) OVER (PARTITION BY course) `与对应科目最高分的占比`
+    FROM tb_score;
+    ```
+
+    `PARTITION BY`和`GROUP BY`的区别:
+
+    GROUP BY为多进一处, 去重; PARTITION BY多进多出
+
+    ![image-20220111114008841](image-20220111114008841.png)
 
 4. ### 排序函数: 产生排名
 

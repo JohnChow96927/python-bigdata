@@ -122,8 +122,8 @@ SELECT ID,
        Score,
        -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
        -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
-       AVG(Score) OVER () AS `AVG_Score`,
-       Score - AVG(Score) OVER() AS `difference`
+       AVG(Score) OVER ()         AS `AVG_Score`,
+       Score - AVG(Score) OVER () AS `difference`
 FROM students;
 
 -- 典型应用场景2：计算每个值占整体之和的占比
@@ -137,8 +137,8 @@ SELECT ID,
        Score,
        -- OVER()：表示每行关联的窗口数据范围都是整张表的数据
        -- AVG(Score)：表示处理每行数据时，应用 AVG 对每行关联的窗口数据中的 Score 求平均
-       SUM(Score) OVER () AS `SUM`,
-       Score * 100 / SUM(Score) OVER() AS `ratio`
+       SUM(Score) OVER ()               AS `SUM`,
+       Score * 100 / SUM(Score) OVER () AS `ratio`
 FROM students;
 
 -- 2. PARTITION BY分区
@@ -164,13 +164,26 @@ FROM students;
 -- 需求：计算每个学生的 Score 分数和同性别学生平均分的差值
 -- 查询结果字段：
 --  ID、Name、Gender、Score、Avg(同性别学生的平均分)、difference(每位学生分数和同性别学生平均分的差值)
-
+SELECT ID,
+       Name,
+       Gender,
+       Score,
+       -- PARTITION BY Gender：按照性别对整张表的数据进行分区，此处会分成2个区
+       -- AVG(Score)：处理每行数据时，应用 AVG 对该行关联分区数据中的 Score 求平均
+       AVG(Score) OVER (PARTITION BY Gender) AS      `分性别学生平均分`,
+       Score - AVG(Score) OVER (PARTITION BY Gender) `与同性别学生平均分的差值`
+FROM students;
 
 -- 示例2
 -- 需求：计算每人各科分数与对应科目最高分的占比
 -- 查询结果字段：
 --  name、course、score、max(对应科目最高分数)、ratio(每人各科分数与对应科目最高分的占比)
-
+SELECT Name,
+       course,
+       Score,
+       MAX(Score) OVER (PARTITION BY course) AS      `各科最高分`,
+       Score / MAX(Score) OVER (PARTITION BY course) `与对应科目最高分的占比`
+FROM tb_score;
 
 -- 3. 排序函数
 
