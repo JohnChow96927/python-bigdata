@@ -223,6 +223,103 @@
 
 4. ### 排序函数: 产生排名
 
+    ```mysql
+    -- 基础语法
+    <ranking function> OVER(ORDER BY 列名, ...)
+    ```
+
+    - ##### OVER()中可以指定ORDER BY按照指定列对每一行关联的分区数据进行排序, 然后使用排序函数对分区内的每行数据产生一个排名序号
+
+    - ##### 不同的排序函数: 
+
+    ```mysql
+    -- RANK()：产生的排名序号 ，有并列的情况出现时序号不连续(1,2,3,3,5,6,6,6,9)
     
+    -- DENSE_RANK() ：产生的排序序号是连续的，有并列的情况出现时序号会重复(1,2,3,3,4,5,5,6,7,7,8)
+    
+    -- ROW_NUMBER() ：返回连续唯一的行号，排名序号不会重复(按照行先后赋予名次)
+    ```
+
+    - ##### PARTITION BY和排序函数配合使用:
+
+    ```mysql
+    -- 示例1：
+    -- 需求：按照不同科目(PARTITION BY course)，对学生的分数从高到低进行排名(要求：连续可重复 --> dense_rank)
+    -- 查询结果字段：
+    -- name、course、score、dense_rank(排名序号)
+    SELECT name,
+           course,
+           score,
+           DENSE_RANK() OVER (
+               PARTITION BY course
+               ORDER BY score DESC) `dense_rank`
+    FROM tb_score;
+    ```
+
+    - ##### 典型应用场景: 获取指定排名数据(子查询含排序函数作为数据源)
+
+    ```mysql
+    -- 示例1
+    -- 需求：获取每个科目，排名第二的学生信息
+    -- 查询结果字段：
+    --  name、course、score
+    SELECT name,
+           course,
+           score
+    FROM (
+             SELECT name,
+                    course,
+                    score,
+                    DENSE_RANK() OVER (
+                        PARTITION BY course
+                        ORDER BY score DESC
+                        ) `dense_rank`
+             FROM tb_score
+         ) `s`
+    WHERE `dense_rank` = 2;		# 切记要加反引号, 不是单引号或双引号, 那样会被认为是字符串
+    ```
+
+    - ##### **_CTE公用表表达式_**: Common Table Expression, 类似于子查询, 也相当于一张临时表, 可以在CTE结果的基础上, 进行进一步的查询操作
+
+        ```mysql
+        -- 标准语法
+        WITH some_name AS (
+        	--- your cte---
+        )
+        SELECT
+        	...
+        FROM some_name
+        ```
+
+        - ##### 需要给CTE起一个名字(上例中使用了`some_name`), 具体的查询语句写在括号中
+
+        - ##### 在括号后即可使用`SELECT`将CTE作为一张表来使用
+
+        - > ##### 将CTE称为'内部查询', 其后部分称为'外部查询'.
+
+        - ##### 需要在外部查询的`SELECT`之前定义CTE
+
+    ```mysql
+    -- 示例1
+    -- 需求：获取每个科目，排名第二的学生信息
+    -- 查询结果字段：
+    --  name、course、score
+    WITH ranking AS (
+        SELECT name,
+               course,
+               score,
+               DENSE_RANK() over (
+                   PARTITION BY course
+                   ORDER BY score DESC
+                   ) AS `dense_rank`
+        FROM tb_score
+    )
+    SELECT name,
+           course,
+           score
+    FROM ranking
+    WHERE `dense_rank` = 2;
+    ```
 
 5. ### 自定义window frame
+

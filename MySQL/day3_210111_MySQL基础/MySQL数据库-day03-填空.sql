@@ -211,8 +211,14 @@ FROM tb_score;
 -- 示例1：
 -- 需求：按照不同科目，对学生的分数从高到低进行排名(要求：连续可重复)
 -- 查询结果字段：
---  name、course、score、dense_rank(排名序号)
-
+-- name、course、score、dense_rank(排名序号)
+SELECT name,
+       course,
+       score,
+       DENSE_RANK() OVER (
+           PARTITION BY course
+           ORDER BY score DESC) `dense_rank`
+FROM tb_score;
 
 -- 典型应用：获取指定排名的数据
 
@@ -220,7 +226,20 @@ FROM tb_score;
 -- 需求：获取每个科目，排名第二的学生信息
 -- 查询结果字段：
 --  name、course、score
-
+SELECT name,
+       course,
+       score
+FROM (
+         SELECT name,
+                course,
+                score,
+                DENSE_RANK() OVER (
+                    PARTITION BY course
+                    ORDER BY score DESC
+                    ) `dense_rank`
+         FROM tb_score
+     ) `s`
+WHERE `dense_rank` = 2;
 
 -- CTE(公用表表达式)
 
@@ -237,7 +256,21 @@ FROM tb_score;
 -- 需求：获取每个科目，排名第二的学生信息
 -- 查询结果字段：
 --  name、course、score
-
+WITH ranking AS (
+    SELECT name,
+           course,
+           score,
+           DENSE_RANK() over (
+               PARTITION BY course
+               ORDER BY score DESC
+               ) AS `dense_rank`
+    FROM tb_score
+)
+SELECT name,
+       course,
+       score
+FROM ranking
+WHERE `dense_rank` = 2;
 
 -- 4. 自定义window frame
 
