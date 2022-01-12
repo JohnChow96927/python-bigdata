@@ -34,4 +34,3 @@ def data_view_pie():
 
 if __name__ == '__main__':
     data_view_pie()
-    
