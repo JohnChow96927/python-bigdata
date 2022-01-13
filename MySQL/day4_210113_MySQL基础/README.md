@@ -719,6 +719,14 @@
     GROUP BY o.order_id;
     ```
 
+    > ##### 如果CASE WHEN THEN ELSE中只有一种条件, 则可以转换为IF语句
+
+    ```mysql
+    CASE WHEN A > 100 THEN B ELSE C;
+    等价于
+    IF(A > 100, B, C);
+    ```
+
     
 
 

@@ -485,4 +485,19 @@ FROM orders o
 GROUP BY o.order_id;
 
 
-UPDATE 
+CREATE TABLE Product_practice
+(
+    Product VARCHAR(30),
+    Price   INT
+);
+
+INSERT INTO Product_practice
+VALUES ('笔记本', 3050),
+       ('手机', 2800),
+       ('台式电脑', 2050);
+
+UPDATE Product_practice
+SET Price = CASE WHEN Price > 3000 THEN Price * 0.9 ELSE Price * 1.2 END;
+
+UPDATE Product_practice
+SET Price = IF(Price > 3000, Price * 0.9, Price * 1.2);
