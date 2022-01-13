@@ -158,9 +158,6 @@ WHERE o.ship_country = 'France'
 GROUP BY o.order_id, c.company_name;
 
 
-
-
-
 -- 1.5 GROUP BY 分组操作
 
 -- 注意1：使用GROUP BY分组聚合统计时，需要考虑分组字段中的相同值的业务含义是否相同
@@ -170,7 +167,14 @@ GROUP BY o.order_id, c.company_name;
 --
 -- 查询结果字段：
 -- 	first_name和last_name(员工姓和名)、orders_count(员工销售订单数)
-
+SELECT e.first_name,
+       e.last_name,
+       COUNT(*) `orders_count`
+FROM employees e
+JOIN orders o on e.employee_id = o.employee_id
+GROUP BY e.employee_id,
+         e.first_name,
+         e.last_name;
 
 
 
@@ -185,8 +189,14 @@ GROUP BY o.order_id, c.company_name;
 --
 -- 查询结果字段：
 -- 	company_name(客户公司名称)、total_paid(客户总下单金额-折扣后)
-
-
+SELECT c.company_name,
+       SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) `total_paid`
+FROM customers c
+JOIN orders o on c.customer_id = o.customer_id
+JOIN order_items oi on o.order_id = oi.order_id
+WHERE YEAR(o.order_date) = 2016 AND MONTH(o.order_date) BETWEEN 6 AND 7
+GROUP BY c.customer_id, c.company_name
+ORDER BY total_paid DESC;
 
 
 
