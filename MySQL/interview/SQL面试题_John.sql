@@ -8,8 +8,10 @@ LEFT JOIN dim_city dc on ds.city_id = dc.city_id
 LEFT JOIN dim_province dp on dc.province_id = dp.province_id
 GROUP BY MONTH(order_datetime), province_name;
 
--- Q2：求每个月的每个产品的销街额及其在当月的销售额占比
-
+-- Q2：求每个月的每个产品的销售额及其在当月的销售额占比
+SELECT *
+FROM
+GROUP BY MONTH
 
 -- Q3:求每个月的销售额及其环比（销售额环比 =（本月销售额 - 上月销售额）/上月销售额）
 
