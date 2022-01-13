@@ -31,7 +31,15 @@ DESC order_items;
 
 -- 练习8
 -- 需求：查询每一个商品的`product_name`、`category_name`、`quantity_per_unit`、`unit_price`、`units_in_stock` 并且通过 `unit_price` 字段排序
-
+SELECT product_name,
+       category_name,
+       quantity_per_unit,
+       unit_price,
+       units_in_stock
+FROM products
+JOIN categories
+ON products.category_id = categories.category_id
+ORDER BY unit_price;
 
 
 
@@ -39,8 +47,14 @@ DESC order_items;
 -- 需求：查询提供了3种以上不同商品的供应商列表
 -- 查询结果字段：
 -- 	suppler_id(供应商ID)、company_name(供应商公司名称)、products_count(提供的商品数量)
-
-
+SELECT s.supplier_id,
+       s.company_name,
+       COUNT(*) `products_count`
+FROM suppliers s
+JOIN products p
+ON s.supplier_id = p.supplier_id
+GROUP BY s.supplier_id, s.company_name
+HAVING products_count > 3;
 
 
 -- 在标准的 SQL 分组聚合中，除了聚合的结果，其他的列如果在GROUP BY没有出现，不允许出现在 SELECT 中
@@ -60,7 +74,18 @@ DESC order_items;
 --
 -- 查询结果字段：
 -- customer_company_name(客户公司名称)、employee_first_name和employee_last_name(销售员工姓名)、order_date(下单日期)、shipped_date(发货日期)、ship_country(收货国家)
-
+SELECT c.company_name `customer_company_name`,
+       e.first_name `employee_first_name`,
+       e.last_name `emloyee_last_name`,
+       o.order_date,
+       o.shipped_date,
+       o.ship_country
+FROM orders o
+JOIN employees e
+ON o.employee_id = e.employee_id
+JOIN customers c
+ON o.customer_id = c.customer_id
+WHERE o.ship_country = 'France';
 
 
 
@@ -68,7 +93,16 @@ DESC order_items;
 -- 需求：查询订单编号为10250的订单详情，按商品名称排序，返回如下结果
 -- 查询结果字段：
 -- 	product_name(商品名称)、quantity(购买数量)、unit_price(购买单价)、discount(折扣)、order_date(下单日期)
-
+SELECT p.product_name,
+       oi.quantity,
+       oi.unit_price,
+       oi.discount,
+       o.order_date
+FROM orders o
+JOIN order_items oi on o.order_id = oi.order_id
+JOIN products p on oi.product_id = p.product_id
+WHERE o.order_id = 10250
+ORDER BY p.product_name;
 
 
 
