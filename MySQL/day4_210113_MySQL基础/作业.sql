@@ -144,3 +144,83 @@ WHERE order_date >= '2016-07-05'
 GROUP BY e.employee_id, e.first_name, e.last_name
 ORDER BY '订单总金额' DESC;
 
+SELECT first_name,
+       last_name,
+       hire_date,
+       CASE
+           WHEN hire_date > '2014-01-01' THEN 'junior'
+           WHEN hire_date > '2013-01-01' THEN 'middle'
+           WHEN hire_date <= '2013-01-01' THEN 'senior'
+           END AS `experience`
+FROM employees;
+
+SELECT CASE
+           WHEN birth_date > '1980-01-01' THEN 'Young'
+           ELSE 'Old'
+           END  AS `age_group`,
+       COUNT(*) AS `employee_count`
+FROM employees
+GROUP BY age_group;
+
+
+SELECT COUNT(CASE
+                 WHEN contact_title = 'Owner' THEN customer_id
+    END)        AS `represented_by_owner`,
+       COUNT(CASE
+                 WHEN contact_title != 'Owner' THEN customer_id
+           END) AS `not_represented_by_owner`
+FROM customers;
+
+SELECT c.category_name,
+       COUNT(CASE
+                 WHEN units_in_stock > 30 THEN product_id
+           END) AS `high_availability`,
+       COUNT(CASE
+                 WHEN units_in_stock <= 30 THEN product_id
+           END) AS `low_availability`
+FROM products p
+         JOIN categories c
+              ON p.category_id = c.category_id
+GROUP BY c.category_id, c.category_name;
+
+SELECT SUM(CASE
+               WHEN discount = 0 THEN 1
+    END)        AS `full_price`,
+       SUM(CASE
+               WHEN discount != 0 THEN 1
+           END) AS `discounted_price`
+FROM orders o
+         JOIN order_items oi
+              ON o.order_id = oi.order_id
+WHERE ship_country = 'France';
+
+SELECT s.supplier_id,
+       s.company_name,
+       SUM(units_in_stock)                           AS `all_units`,
+       SUM(IF(unit_price > 40.0, units_in_stock, 0)) AS `expensive_units`
+FROM products p
+         JOIN suppliers s
+              ON p.supplier_id = s.supplier_id
+GROUP BY s.supplier_id, s.company_name;
+
+SELECT product_id,
+       product_name,
+       unit_price,
+       CASE
+           WHEN unit_price > 100 THEN 'expensive'
+           WHEN unit_price > 40 THEN 'average'
+           ELSE 'cheap'
+           END AS price_level
+FROM products;
+
+SELECT COUNT(CASE
+                 WHEN freight >= 80.0 THEN order_id
+    END)        AS `high_freight`,
+       COUNT(CASE
+                 WHEN freight < 40.0 THEN order_id
+           END) AS `low_freight`,
+       COUNT(CASE
+                 WHEN freight >= 40.0 AND freight < 80.0 THEN order_id
+           END) AS `avg_freight`
+FROM orders;
+

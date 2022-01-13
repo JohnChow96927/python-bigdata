@@ -392,9 +392,17 @@ ORDER BY '订单总金额' DESC;
 > *  在2013年1月1日之后至2014年1月1日之前雇用的员工，显示 'middle'
 > *  2013年1月1日或之前雇用的员工，显示 'senior'
 
-```sql
+```mysql
 # 你的答案
-
+SELECT first_name,
+       last_name,
+       hire_date,
+       CASE
+           WHEN hire_date > '2014-01-01' THEN 'junior'
+           WHEN hire_date > '2013-01-01' THEN 'middle'
+           WHEN hire_date <= '2013-01-01' THEN 'senior'
+           END AS `experience`
+FROM employees;
 ```
 
 ![img](images/5.png)
@@ -412,9 +420,18 @@ ORDER BY '订单总金额' DESC;
 > * 商品类别字段的值为 `'Meat/Poultry'` 和 `'Seafood'` 是非素食，显示 'Non-vegetarian'
 > * 其他商品类别是素食，显示 'vegetarian'
 
-```sql
+```mysql
 # 你的答案
-
+SELECT
+  product_name,
+  category_name,
+  CASE
+    WHEN category_name IN ('Meat/Poultry', 'Seafood') THEN 'Non-vegetarian'
+    ELSE 'Vegetarian'
+  END AS `diet_type`
+FROM categories c
+JOIN products p
+ON c.category_id = p.category_id;
 ```
 
 ![img](images/6.png)
@@ -431,9 +448,15 @@ ORDER BY '订单总金额' DESC;
 >
 > * 生日大于1980年1月1日为 'Young'，其余为 'Old'
 
-```sql
+```mysql
 # 你的答案
-
+SELECT CASE
+           WHEN birth_date > '1980-01-01' THEN 'Young'
+           ELSE 'Old'
+           END  AS `age_group`,
+       COUNT(*) AS `employee_count`
+FROM employees
+GROUP BY age_group;
 ```
 
 ![img](images/7.png)
@@ -446,9 +469,15 @@ ORDER BY '订单总金额' DESC;
 >
 > * represented_by_owner(Owner客户数量)、not_represented_by_owner(非Owner客户数量)
 
-```sql
+```mysql
 # 你的答案
-
+SELECT COUNT(CASE
+                 WHEN contact_title = 'Owner' THEN customer_id
+    END)        AS `represented_by_owner`,
+       COUNT(CASE
+                 WHEN contact_title != 'Owner' THEN customer_id
+           END) AS `not_represented_by_owner`
+FROM customers;
 ```
 
 ![img](images/8.png)
@@ -461,9 +490,19 @@ ORDER BY '订单总金额' DESC;
 >
 > * category_name(商品类别名称)、high_availability(库存>30的商品数量)、low_availability(库存量<=30的商品数量) 
 
-```sql
+```mysql
 # 你的答案
-
+SELECT c.category_name,
+       COUNT(CASE
+                 WHEN units_in_stock > 30 THEN product_id
+           END) AS `high_availability`,
+       COUNT(CASE
+                 WHEN units_in_stock <= 30 THEN product_id
+           END) AS `low_availability`
+FROM products p
+         JOIN categories c
+              ON p.category_id = c.category_id
+GROUP BY c.category_id, c.category_name;
 ```
 
 ![img](images/9.png)
@@ -478,9 +517,18 @@ ORDER BY '订单总金额' DESC;
 >
 > 注意：使用 SUM 配置 CASE WHEN 实现
 
-```sql
+```mysql
 # 你的答案
-
+SELECT SUM(CASE
+               WHEN discount = 0 THEN 1
+    END)        AS `full_price`,
+       SUM(CASE
+               WHEN discount != 0 THEN 1
+           END) AS `discounted_price`
+FROM orders o
+         JOIN order_items oi
+              ON o.order_id = oi.order_id
+WHERE ship_country = 'France';
 ```
 
 ![img](images/10.png)
@@ -493,9 +541,16 @@ ORDER BY '订单总金额' DESC;
 >
 > * supplier_id(供应商ID)、company_name(供应商公司名称)、all_units(该供应商供应商品的总库存)、expensive_units(该供应商供应的高价值商品的库存 )
 
-```sql
+```mysql
 # 你的答案
-
+SELECT s.supplier_id,
+       s.company_name,
+       SUM(units_in_stock) AS `all_units`,
+       SUM(IF(unit_price > 40.0, units_in_stock, 0)) AS `expensive_units`
+FROM products p
+         JOIN suppliers s
+              ON p.supplier_id = s.supplier_id
+GROUP BY s.supplier_id, s.company_name;
 ```
 
 ![img](images/11.png)
@@ -514,9 +569,17 @@ ORDER BY '订单总金额' DESC;
 > * 单价高于40但不超过100的商品：'average'
 > * 单价低于40的商品：'cheap'
 
-```sql
+```mysql
 # 你的答案
-
+SELECT product_id,
+       product_name,
+       unit_price,
+       CASE
+           WHEN unit_price > 100 THEN 'expensive'
+           WHEN unit_price > 40 THEN 'average'
+           ELSE 'cheap'
+           END AS price_level
+FROM products;
 ```
 
 ![img](images/12.png)
@@ -529,14 +592,21 @@ ORDER BY '订单总金额' DESC;
 >
 > * low_freight(运费<40的订单数)、avg_freight(40.0<运费<=80.0的订单数)、high_freight(运费>=80.0的订单数)
 
-```sql
+```mysql
 # 你的答案
-
+SELECT COUNT(CASE
+                 WHEN freight >= 80.0 THEN order_id
+    END)        AS `high_freight`,
+       COUNT(CASE
+                 WHEN freight < 40.0 THEN order_id
+           END) AS `low_freight`,
+       COUNT(CASE
+                 WHEN freight >= 40.0 AND freight < 80.0 THEN order_id
+           END) AS `avg_freight`
+FROM orders;
 ```
 
-![img](../../../Python+大数据-32期/MySQL进阶-day04/04-课后作业/day04-作业/images/9.png)
-
-
+![image-20220113222010950](imgs/image-20220113222010950.png)
 
 
 
