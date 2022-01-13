@@ -18,9 +18,25 @@ FROM auction
 WHERE final_price > AVG(final_price) OVER();
 
 # 正确写法(子查询)
+SELECT id,
+       final_price
+FROM auction
+WHERE final_price > (
+    SELECT AVG(final_price)
+    FROM auction
+    );
 
 # CTE表达式
-
+WITH temp_tb AS (
+    SELECT id,
+           final_price,
+           AVG(final_price) OVER () `avg_final_price`
+    FROM auction
+)
+SELECT id,
+       final_price
+FROM temp_tb
+WHERE final_price > avg_final_price;
 
 
 -- 情况2：不能在HAVING子句中使用窗口函数
