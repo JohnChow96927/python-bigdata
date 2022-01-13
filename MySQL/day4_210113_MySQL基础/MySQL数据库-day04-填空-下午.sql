@@ -138,7 +138,7 @@ GROUP BY order_id;
 -- 	order_id(订单ID)、total_price(订单总价-折扣前)
 SELECT SUM(unit_price * quantity) `total_price`
 FROM order_items
-WHERE order_id = 10250
+WHERE order_id = 10250;
 
 
 
@@ -333,7 +333,7 @@ SELECT CASE
        COUNT(p.product_id) `products_count`
 FROM suppliers s
          LEFT JOIN products p on s.supplier_id = p.supplier_id
-GROUP BY `supplier_continent`
+GROUP BY `supplier_continent`;
 
 -- 1.3 在GROUP BY中使用CASE WHEN
 
@@ -451,7 +451,17 @@ FROM employees e
 -- 	order_id(订单ID)、total_price(订单总金额-折扣后)、non_vegetarian_price(订单非素食产品的总金额-折扣后)
 -- 	
 -- 提示：非素食产品的产品ID （ category_id） 是 6 和 8
-
+SELECT o.order_id,
+       SUM(quantity * oi.unit_price * (1 - discount)) `total_price`,
+       SUM(CASE
+               WHEN p.category_id IN (6, 8)
+                   THEN quantity * oi.unit_price * (1 - discount)
+               ELSE 0
+           END)                                       `non_vegetarian_price`
+FROM orders o
+         JOIN order_items oi on o.order_id = oi.order_id
+         JOIN products p on oi.product_id = p.product_id
+GROUP BY o.order_id;
 
 -- 练习9
 -- 需求：制作报表统计所有订单的总价(折扣前)，并将订单按总价分成3类：high、average、low
@@ -463,4 +473,16 @@ FROM employees e
 -- 	总价超过2000美元：'high'
 -- 	总价在600到2000美元之间：'average'
 -- 	总价低于600美元：'low'
+SELECT o.order_id,
+       SUM(unit_price * quantity) `total_price`,
+       CASE
+           WHEN SUM(unit_price * quantity) > 2000 THEN 'high'
+           WHEN SUM(oi.unit_price * oi.quantity) > 600 THEN 'average'
+           ELSE 'low'
+           END                    `price_group`
+FROM orders o
+         JOIN order_items oi on o.order_id = oi.order_id
+GROUP BY o.order_id;
 
+
+UPDATE 
