@@ -349,7 +349,7 @@
     -- 	order_id(订单ID)、total_price(订单总价-折扣前)
     SELECT SUM(unit_price * quantity) `total_price`
     FROM order_items
-    WHERE order_id = 10250
+    WHERE order_id = 10250;
     
     
     
@@ -567,7 +567,7 @@
            COUNT(p.product_id) `products_count`
     FROM suppliers s
              LEFT JOIN products p on s.supplier_id = p.supplier_id
-    GROUP BY `supplier_continent`
+    GROUP BY `supplier_continent`;
     
     -- 练习4
     -- 需求：创建报表统计来自不同大洲的供应商的供应的产品数量(包含未供应产品的供应商)
