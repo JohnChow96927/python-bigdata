@@ -231,7 +231,7 @@ SELECT c.customer_id,
        c.company_name,
        COUNT(o.order_id) `orders_count`
 FROM customers c
-LEFT JOIN orders o on c.customer_id = o.customer_id
+         LEFT JOIN orders o on c.customer_id = o.customer_id
 WHERE c.customer_id IN ('ALFKI', 'FISSA', 'PARIS')
 GROUP BY c.customer_id, c.company_name;
 
@@ -265,7 +265,16 @@ WHERE ship_country = 'Spain';
 --
 -- 查询结果字段：
 -- 	product_id(商品ID)、product_name(商品名称)、units_in_stock(商品库存量)、stock_level(库存级别)
-
+SELECT product_id,
+       product_name,
+       units_in_stock,
+       CASE
+           WHEN units_in_stock > 100 THEN 'HIGH'
+           WHEN units_in_stock > 50 THEN 'MODERATE'
+           WHEN units_in_stock > 0 THEN 'LOW'
+           WHEN units_in_stock = 0 THEN 'NONE'
+           END `stock level`
+FROM products;
 
 -- 1.2 CASE WHEN中ELSE的使用
 
@@ -279,7 +288,15 @@ WHERE ship_country = 'Spain';
 -- 	Germany、Switzerland、and Austria 语言为德语 'German'
 -- 	UK、Canada、the USA、and Ireland 语言为英语 'English'
 -- 	其他所有国家 'Other'
-
+SELECT customer_id,
+       company_name,
+       country,
+       CASE
+           WHEN country IN ('Germany', 'Switzerland', 'Austria') THEN 'German'
+           WHEN country IN ('UK', 'Canada', 'the USA', 'Ireland') THEN 'English'
+           ELSE 'Other'
+           END `language`
+FROM customers;
 
 -- 练习3
 -- 需求：创建报表统计来自不同大洲的供应商
@@ -292,6 +309,31 @@ WHERE ship_country = 'Spain';
 -- 	`Japan`和`Singapore`两个国家的大洲取值为：'Asia'
 -- 	其他国家的大洲取值为 'Other'
 
+-- 标准SQL中, GROUP BY后不能使用别名
+SELECT CASE
+           WHEN s.country IN ('USA', 'Canada') THEN 'North America'
+           WHEN s.country IN ('Japan', 'Singapore') THEN 'Asia'
+           ELSE 'Other'
+           END             `supplier_continent`,
+       COUNT(p.product_id) `products_count`
+FROM suppliers s
+         LEFT JOIN products p on s.supplier_id = p.supplier_id
+GROUP BY CASE
+             WHEN s.country IN ('USA', 'Canada') THEN 'North America'
+             WHEN s.country IN ('Japan', 'Singapore') THEN 'Asia'
+             ELSE 'Other'
+             END;
+
+-- MySQL中, 可以使用别名
+SELECT CASE
+           WHEN s.country IN ('USA', 'Canada') THEN 'North America'
+           WHEN s.country IN ('Japan', 'Singapore') THEN 'Asia'
+           ELSE 'Other'
+           END             `supplier_continent`,
+       COUNT(p.product_id) `products_count`
+FROM suppliers s
+         LEFT JOIN products p on s.supplier_id = p.supplier_id
+GROUP BY `supplier_continent`
 
 -- 1.3 在GROUP BY中使用CASE WHEN
 
@@ -305,6 +347,16 @@ WHERE ship_country = 'Spain';
 -- 	`USA`和`Canada`两个国家的大洲取值为：'North America'
 -- 	`Japan`和`Singapore`两个国家的大洲取值为：'Asia'
 -- 	其他国家的大洲取值为 'Other'
+SELECT CASE
+           WHEN s.country IN ('USA', 'Canada') THEN 'North America'
+           WHEN s.country IN ('Japan', 'Singapore') THEN 'Asia'
+           ELSE 'Other'
+           END             `supplier_continent`,
+       COUNT(p.product_id) `product_count`
+FROM suppliers s
+         LEFT JOIN products p on s.supplier_id = p.supplier_id
+GROUP BY supplier_continent;
+
 
 
 -- 1.4 CASE WHEN 和 COUNT
@@ -316,7 +368,19 @@ WHERE ship_country = 'Spain';
 -- 
 -- 查询结果字段：
 -- 	orders_wa_employees(华盛顿地区员工处理订单数)、orders_not_wa_employees(其他地区员工处理订单数)
-
+SELECT COUNT(
+               CASE
+                   WHEN e.region = 'WA' THEN order_id
+                   END
+           ) `orders_wa_employees`,
+       COUNT(
+               CASE
+                   WHEN region != 'WA' THEN order_id
+                   END
+           ) `orders_not_wa_employees`
+FROM employees e
+         JOIN orders o
+              ON e.employee_id = o.employee_id;
 
 -- 1.5 GROUP BY 和 CASE WHEN组合使用
 -- 将COUNT(CASE WHEN...) 和 GROUP BY 组合使用，可以创建更复杂的报表
@@ -326,6 +390,18 @@ WHERE ship_country = 'Spain';
 -- 
 -- 查询结果字段：
 -- 	ship_country(订单运往国家)、low_freight(低运费订单数量)、moderate_freight(一般运费订单数量)、high_freight(高运费订单数量)
+SELECT ship_country,
+       COUNT(*)                                                         `order_count`,
+       COUNT(CASE
+                 WHEN freight < 40 THEN order_id
+           END)                                                         `low_freight`,
+       COUNT(CASE
+                 WHEN freight >= 40 AND freight < 80 THEN order_id END) `moderate_freight`,
+       COUNT(CASE
+                 WHEN freight >= 80 THEN order_id END)                  `high_freight`
+FROM orders
+GROUP BY ship_country;
+
 
 
 -- 1.6 SUM 中使用 CASE WHEN
