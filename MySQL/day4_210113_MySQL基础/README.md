@@ -1,6 +1,6 @@
 ## I. 窗口函数避坑指南
 
-1. SQL语句的执行顺序
+1. ### SQL语句的执行顺序
 
     > ##### FROM > JOIN > ON > WHERE > GROUP BY > 聚合函数 > HAVING > 窗口函数 > SELECT > DISTINCT > ORDER BY > LIMIT
 
@@ -19,9 +19,9 @@
     LIMIT
     ```
 
-2. 不能使用窗口函数的情况
+2. ### 不能使用窗口函数的情况
 
-    1. 不能在WHERE子句中使用窗口函数
+    1. #### 不能在WHERE子句中使用窗口函数
 
         ```mysql
         -- 情况1：不能在 WHERE 子句中使用窗口函数
@@ -58,7 +58,7 @@
         WHERE final_price > avg_final_price;
         ```
 
-    2. 不能在HAVING子句中使用窗口函数
+    2. #### 不能在HAVING子句中使用窗口函数
 
         ```mysql
         -- 情况2：不能在HAVING子句中使用窗口函数
@@ -88,9 +88,9 @@
         
         ```
 
-    3. 不能在GROUP BY子句中使用窗口函数
+    3. #### 不能在GROUP BY子句中使用窗口函数
 
-        `NTILE(X)`: 将每个分区的数据均匀分成X组, 返回每行对应的组号, 若11行分3组(除不尽)则分成4,4,3, 前面的块会多一条, 块和块之间相差不能超过1.
+        ##### `NTILE(X)`: 将每个分区的数据均匀分成X组, 返回每行对应的组号, 若11行分3组(除不尽)则分成4,4,3, 前面的块会多一条, 块和块之间相差不能超过1.
 
         ```mysql
         -- 需求：将所有的拍卖信息按照浏览次数排序，并均匀分成4组，然后计算每组的最小和最大浏览量
@@ -129,7 +129,7 @@
         GROUP BY `quartile`;
         ```
 
-3. 能够使用窗口函数的情况
+3. #### 能够使用窗口函数的情况
 
     > ##### 可以在SELECT和ORDER BY中使用窗口函数
 
@@ -224,11 +224,10 @@
     FROM temp_tb;
     ```
 
-    
 
 ## II. 报表案例
 
-1. Northwind数据集熟悉实例
+1. ### Northwind数据集熟悉实例
 
     ```mysql
     -- 练习8
@@ -266,9 +265,9 @@
     -- MySQL测试版数据库：不会报错
     ```
 
-2. SQL数据汇总操作
+2. ### SQL数据汇总操作
 
-    2.1. 详细报告
+    #### 详细报告
 
     ```mysql
     -- 1.1 详细报告
@@ -309,4 +308,41 @@
     ORDER BY p.product_name;
     ```
 
+    #### 带时间限制的报表
+
+    ```mysql
+    -- 1.2 带时间限制的报表
     
+    -- 练习3
+    -- 需求：统计2016年7月的订单数量
+    -- 查询结果字段：
+    -- 	order_count(2016年7月的订单数量)
+    SELECT COUNT(*) `order_count`
+    FROM orders
+    WHERE order_date >= '2016-07-01' AND order_date <= '2016-07-31';
+    ```
+
+    #### 计算多个对象
+
+    ```mysql
+    -- 1.3 计算多个对象
+    
+    -- 练习4
+    -- 需求：统计订单号在10200-10260之间的订单中的总商品件数
+    -- 查询结果字段：
+    -- 	order_id(订单ID)、order_items_count(订单中的总商品件数)
+    SELECT order_id,
+           COUNT(*) `order_items_count`
+    FROM order_items
+    WHERE order_id BETWEEN 10200 AND 10260
+    GROUP BY order_id;
+    ```
+
+    
+
+
+
+
+
+
+

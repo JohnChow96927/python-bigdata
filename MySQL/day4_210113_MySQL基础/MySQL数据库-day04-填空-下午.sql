@@ -112,6 +112,9 @@ ORDER BY p.product_name;
 -- 需求：统计2016年7月的订单数量
 -- 查询结果字段：
 -- 	order_count(2016年7月的订单数量)
+SELECT COUNT(*) `order_count`
+FROM orders
+WHERE order_date >= '2016-07-01' AND order_date <= '2016-07-31';
 
 
 
@@ -122,7 +125,11 @@ ORDER BY p.product_name;
 -- 需求：统计订单号在10200-10260之间的订单中的总商品件数
 -- 查询结果字段：
 -- 	order_id(订单ID)、order_items_count(订单中的总商品件数)
-
+SELECT order_id,
+       COUNT(*) `order_items_count`
+FROM order_items
+WHERE order_id BETWEEN 10200 AND 10260
+GROUP BY order_id;
 
 
 -- 1.4 订单金额计算
