@@ -37,8 +37,8 @@ SELECT product_name,
        unit_price,
        units_in_stock
 FROM products
-JOIN categories
-ON products.category_id = categories.category_id
+         JOIN categories
+              ON products.category_id = categories.category_id
 ORDER BY unit_price;
 
 
@@ -51,8 +51,8 @@ SELECT s.supplier_id,
        s.company_name,
        COUNT(*) `products_count`
 FROM suppliers s
-JOIN products p
-ON s.supplier_id = p.supplier_id
+         JOIN products p
+              ON s.supplier_id = p.supplier_id
 GROUP BY s.supplier_id, s.company_name
 HAVING products_count > 3;
 
@@ -61,8 +61,6 @@ HAVING products_count > 3;
 -- 在 MySQL 的分组聚合中，SELECT后面的列值只要在每组内都是唯一的，即使在 GROUP BY 中没有出现，MySQL也不会报错
 
 -- MySQL测试版数据库：不会报错
-
-
 
 
 # ============================================ 报表案例：SQL 数据汇总 ============================================
@@ -75,16 +73,16 @@ HAVING products_count > 3;
 -- 查询结果字段：
 -- customer_company_name(客户公司名称)、employee_first_name和employee_last_name(销售员工姓名)、order_date(下单日期)、shipped_date(发货日期)、ship_country(收货国家)
 SELECT c.company_name `customer_company_name`,
-       e.first_name `employee_first_name`,
-       e.last_name `emloyee_last_name`,
+       e.first_name   `employee_first_name`,
+       e.last_name    `emloyee_last_name`,
        o.order_date,
        o.shipped_date,
        o.ship_country
 FROM orders o
-JOIN employees e
-ON o.employee_id = e.employee_id
-JOIN customers c
-ON o.customer_id = c.customer_id
+         JOIN employees e
+              ON o.employee_id = e.employee_id
+         JOIN customers c
+              ON o.customer_id = c.customer_id
 WHERE o.ship_country = 'France';
 
 
@@ -99,8 +97,8 @@ SELECT p.product_name,
        oi.discount,
        o.order_date
 FROM orders o
-JOIN order_items oi on o.order_id = oi.order_id
-JOIN products p on oi.product_id = p.product_id
+         JOIN order_items oi on o.order_id = oi.order_id
+         JOIN products p on oi.product_id = p.product_id
 WHERE o.order_id = 10250
 ORDER BY p.product_name;
 
@@ -114,8 +112,8 @@ ORDER BY p.product_name;
 -- 	order_count(2016年7月的订单数量)
 SELECT COUNT(*) `order_count`
 FROM orders
-WHERE order_date >= '2016-07-01' AND order_date <= '2016-07-31';
-
+WHERE order_date >= '2016-07-01'
+  AND order_date <= '2016-07-31';
 
 
 
@@ -148,12 +146,12 @@ WHERE order_id = 10250
 -- 需求：统计运输到法国的每个订单的总金额
 -- 查询结果字段：
 -- 	order_id(订单ID)、company_name(客户公司名称)、total_price(每个订单的总金额)
-SELECT o.order_id `订单ID`,
-       c.company_name `客户公司名称`,
+SELECT o.order_id                       `订单ID`,
+       c.company_name                   `客户公司名称`,
        SUM(oi.unit_price * oi.quantity) `total_price`
 FROM orders o
-JOIN order_items oi on o.order_id = oi.order_id
-JOIN customers c on o.customer_id = c.customer_id
+         JOIN order_items oi on o.order_id = oi.order_id
+         JOIN customers c on o.customer_id = c.customer_id
 WHERE o.ship_country = 'France'
 GROUP BY o.order_id, c.company_name;
 
@@ -171,11 +169,10 @@ SELECT e.first_name,
        e.last_name,
        COUNT(*) `orders_count`
 FROM employees e
-JOIN orders o on e.employee_id = o.employee_id
+         JOIN orders o on e.employee_id = o.employee_id
 GROUP BY e.employee_id,
          e.first_name,
          e.last_name;
-
 
 
 
@@ -192,9 +189,10 @@ GROUP BY e.employee_id,
 SELECT c.company_name,
        SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) `total_paid`
 FROM customers c
-JOIN orders o on c.customer_id = o.customer_id
-JOIN order_items oi on o.order_id = oi.order_id
-WHERE YEAR(o.order_date) = 2016 AND MONTH(o.order_date) BETWEEN 6 AND 7
+         JOIN orders o on c.customer_id = o.customer_id
+         JOIN order_items oi on o.order_id = oi.order_id
+WHERE YEAR(o.order_date) = 2016
+  AND MONTH(o.order_date) BETWEEN 6 AND 7
 GROUP BY c.customer_id, c.company_name
 ORDER BY total_paid DESC;
 
@@ -214,9 +212,11 @@ ORDER BY total_paid DESC;
 --
 -- 查询结果字段：
 -- 	ship_country(国家)、all_orders(总订单数)、shipped_orders(已发货订单数)
-
-
-
+SELECT ship_country        '国家',
+       COUNT(*)            `总订单数`,
+       COUNT(shipped_date) `已发货订单数量`
+FROM orders
+GROUP BY ship_country;
 
 
 -- 注意点2：`COUNT()` 和 `LEFT JOIN` 配合使用
@@ -227,7 +227,13 @@ ORDER BY total_paid DESC;
 --
 -- 查询结果字段：
 -- 	customer_id(客户ID)、company_name(客户公司名称)、orders_count(客户订单总数)
-
+SELECT c.customer_id,
+       c.company_name,
+       COUNT(o.order_id) `orders_count`
+FROM customers c
+LEFT JOIN orders o on c.customer_id = o.customer_id
+WHERE c.customer_id IN ('ALFKI', 'FISSA', 'PARIS')
+GROUP BY c.customer_id, c.company_name;
 
 
 
@@ -241,10 +247,9 @@ ORDER BY total_paid DESC;
 --
 -- 查询结果字段：
 -- 	number_of_companies(客户数)
-
-
-
-
+SELECT COUNT(DISTINCT customer_id) `number_of_companies`
+FROM orders
+WHERE ship_country = 'Spain';
 
 # ============================================ 报表案例：CASE WHEN 语法 ============================================
 -- 1.1 CASE WHEN自定义分组
@@ -262,8 +267,6 @@ ORDER BY total_paid DESC;
 -- 	product_id(商品ID)、product_name(商品名称)、units_in_stock(商品库存量)、stock_level(库存级别)
 
 
-
-
 -- 1.2 CASE WHEN中ELSE的使用
 
 -- 练习2
@@ -278,8 +281,6 @@ ORDER BY total_paid DESC;
 -- 	其他所有国家 'Other'
 
 
-
-
 -- 练习3
 -- 需求：创建报表统计来自不同大洲的供应商
 --
@@ -290,7 +291,6 @@ ORDER BY total_paid DESC;
 -- 	`USA`和`Canada`两个国家的大洲取值为：'North America'
 -- 	`Japan`和`Singapore`两个国家的大洲取值为：'Asia'
 -- 	其他国家的大洲取值为 'Other'
-
 
 
 -- 1.3 在GROUP BY中使用CASE WHEN
@@ -307,8 +307,6 @@ ORDER BY total_paid DESC;
 -- 	其他国家的大洲取值为 'Other'
 
 
-
-
 -- 1.4 CASE WHEN 和 COUNT
 -- 可以将 CASE WHEN 和 COUNT 结合使用，自定义分组并统计每组数据数量
 
@@ -318,8 +316,6 @@ ORDER BY total_paid DESC;
 -- 
 -- 查询结果字段：
 -- 	orders_wa_employees(华盛顿地区员工处理订单数)、orders_not_wa_employees(其他地区员工处理订单数)
-
-
 
 
 -- 1.5 GROUP BY 和 CASE WHEN组合使用
@@ -332,8 +328,6 @@ ORDER BY total_paid DESC;
 -- 	ship_country(订单运往国家)、low_freight(低运费订单数量)、moderate_freight(一般运费订单数量)、high_freight(高运费订单数量)
 
 
-
-
 -- 1.6 SUM 中使用 CASE WHEN
 -- 上面通过我们通过 COUNT() 函数 和CASE WHEN子句联合使用来创建的报表，也可以通过 SUM() 来替代 COUNT()
 
@@ -343,8 +337,6 @@ ORDER BY total_paid DESC;
 -- 
 -- 查询结果字段：
 -- 	orders_wa_employees(华盛顿地区员工处理订单数)、orders_not_wa_employees(其他地区员工处理订单数)
-
-
 
 
 -- 使用 SUM 来替代 COUNT
@@ -359,7 +351,6 @@ ORDER BY total_paid DESC;
 -- 	order_id(订单ID)、total_price(订单总金额-折扣后)、non_vegetarian_price(订单非素食产品的总金额-折扣后)
 -- 	
 -- 提示：非素食产品的产品ID （ category_id） 是 6 和 8
-
 
 
 -- 练习9

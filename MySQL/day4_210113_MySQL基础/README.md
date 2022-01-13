@@ -413,7 +413,52 @@
     > #### 注意点1: COUNT(*)进行计数包括NULL, 而COUNT(列名)对指定列非NULL数据进行计数
 
     ```mysql
-    
+    -- 练习9
+    -- 需求：统计要发货到不同国家的订单数量以及已经发货的订单数量
+    --
+    -- 提示：
+    -- 	shipped_date为NULL，表示还未发货
+    --
+    -- 查询结果字段：
+    -- 	ship_country(国家)、all_orders(总订单数)、shipped_orders(已发货订单数)
+    SELECT ship_country        '国家',
+           COUNT(*)            `总订单数`,
+           COUNT(shipped_date) `已发货订单数量`
+    FROM orders
+    GROUP BY ship_country;
+    ```
+
+    > #### 注意点2: COUNT()和LEFT JOIN配合使用要记住某些对象可能不存在
+
+    ```mysql
+    -- 练习10
+    -- 需求：统计客户ID为 ALFKI、FISSA、PARIS 这三客户各自的订单总数，没有订单的客户也计算在内
+    --
+    -- 查询结果字段：
+    -- 	customer_id(客户ID)、company_name(客户公司名称)、orders_count(客户订单总数)
+    SELECT c.customer_id,
+           c.company_name,
+           COUNT(o.order_id) `orders_count`
+    FROM customers c
+    LEFT JOIN orders o on c.customer_id = o.customer_id
+    WHERE c.customer_id IN ('ALFKI', 'FISSA', 'PARIS')
+    GROUP BY c.customer_id, c.company_name;
+    ```
+
+    > #### 注意点3: COUNT()统计时考虑是否需要去重
+
+    ```mysql
+    -- 练习11
+    -- 需求：查询订单运送到西班牙的客户数量
+    --
+    -- 提示：
+    -- 	一个客户可能下了多个订单
+    --
+    -- 查询结果字段：
+    -- 	number_of_companies(客户数)
+    SELECT COUNT(DISTINCT customer_id) `number_of_companies`
+    FROM orders
+    WHERE ship_country = 'Spain';
     ```
 
     
