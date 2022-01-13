@@ -227,6 +227,8 @@
 
 ## II. 报表案例
 
+![01-Northwind数据集](imgs/01-Northwind数据集.png)
+
 1. ### Northwind数据集熟悉实例
 
     ```mysql
