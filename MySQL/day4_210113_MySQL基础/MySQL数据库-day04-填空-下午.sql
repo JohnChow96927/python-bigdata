@@ -138,7 +138,9 @@ GROUP BY order_id;
 -- 需求：统计ID为10250的订单的总价（折扣前）
 -- 查询结果字段：
 -- 	order_id(订单ID)、total_price(订单总价-折扣前)
-
+SELECT SUM(unit_price * quantity) `total_price`
+FROM order_items
+WHERE order_id = 10250
 
 
 
@@ -146,6 +148,14 @@ GROUP BY order_id;
 -- 需求：统计运输到法国的每个订单的总金额
 -- 查询结果字段：
 -- 	order_id(订单ID)、company_name(客户公司名称)、total_price(每个订单的总金额)
+SELECT o.order_id `订单ID`,
+       c.company_name `客户公司名称`,
+       SUM(oi.unit_price * oi.quantity) `total_price`
+FROM orders o
+JOIN order_items oi on o.order_id = oi.order_id
+JOIN customers c on o.customer_id = c.customer_id
+WHERE o.ship_country = 'France'
+GROUP BY o.order_id, c.company_name;
 
 
 
