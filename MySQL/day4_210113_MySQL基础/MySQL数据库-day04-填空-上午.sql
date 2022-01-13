@@ -145,14 +145,35 @@ ORDER BY quartile DESC;
 -- 需求：将拍卖数据按国家分组，返回如下信息
 -- 查询结果字段：
 -- 	country(国家)、min(每组最少参与人数)、avg(所有组最少参与人数的平均值)
+SELECT country,
+       MIN(participants)              `min`,
+       AVG(MIN(participants)) OVER () `avg`
+FROM auction
+GROUP BY country;
 
+WITH temp_tb AS(
+    SELECT country,
+           MIN(participants) `min`
+    FROM auction
+    GROUP BY country
+)
+SELECT country,
+       `min`,
+       AVG(`min`) OVER () `avg`
+FROM temp_tb;
 
 -- 排序函数使用聚合函数的结果
 -- 练习2
 -- 需求：按国家进行分组，计算了每个国家的拍卖次数，再根据拍卖次数对国家进行排名
 -- 查询结果字段：
 -- 	country(国家)、count(该国家的拍卖次数)、rank(按拍卖次数的排名)
-
+SELECT country,
+       COUNT(id) `count`,
+       RANK() OVER (
+           ORDER BY COUNT(id) DESC
+           )     `rank`
+FROM auction
+GROUP BY country;
 
 -- 对GROUP BY分组后的数据使用PARTITION BY
 -- 我们可以对GROUP BY分组后的数据进一步分区（PARTITION BY） ，再次强调，使用GROUP BY 之后使用窗口函数，只能处理分组之后的数据，而不是处理原始数据
@@ -161,6 +182,22 @@ ORDER BY quartile DESC;
 -- 需求：将所有的数据按照国家和拍卖结束时间分组，返回如下信息
 -- 查询结果字段：
 -- 	country(国家)、ended(拍卖结束时间)、views_sum(该分组浏览量总和)、country_views_sum(分组聚合结果中不同国家拍卖的总浏览量)
+SELECT country,
+       ended,
+       SUM(views) `views_sum`,
+       SUM(SUM(views)) OVER (PARTITION BY country) `country_views_sum`
+FROM auction
+GROUP BY country, ended;
 
-
-
+WITH temp_tb AS (
+    SELECT country,
+           ended,
+           SUM(views) `views_sum`
+    From auction
+    GROUP BY country, ended
+)
+SELECT country,
+       ended,
+       views_sum,
+       SUM(views_sum) OVER (PARTITION BY country) `country_views_sum`
+FROM temp_tb;
