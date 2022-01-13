@@ -635,6 +635,46 @@
     GROUP BY ship_country;
     ```
 
+    ##### SUM中使用CASE WHEN
+
+    > 通过COUNT()和CASE WHEN联合出案件的报表也可以使用SUM()函数替代COUNT()
+
+    ```mysql
+    -- 练习7
+    -- 需求：Washington (WA) 是 Northwind 的主要运营地区，统计有多少订单是由华盛顿地区的员工处理的，多少订单是有其他地区的员工处理的
+    -- 
+    -- 查询结果字段：
+    -- 	orders_wa_employees(华盛顿地区员工处理订单数)、orders_not_wa_employees(其他地区员工处理订单数)
+    SELECT COUNT(
+                   CASE
+                       WHEN e.region = 'WA' THEN order_id
+                       END
+               ) `orders_wa_employees`,
+           COUNT(
+                   CASE
+                       WHEN region != 'WA' THEN order_id
+                       END
+               ) `orders_not_wa_employees`
+    FROM employees e
+             JOIN orders o
+                  ON e.employee_id = o.employee_id;
+    
+    -- 使用 SUM 来替代 COUNT
+    SELECT SUM(
+                   CASE
+                       WHEN e.region = 'WA' THEN 1
+                       END
+               ) `orders_wa_employees`,
+           SUM(
+                   CASE
+                       WHEN region != 'WA' THEN 1
+                       END
+               ) `orders_not_wa_employees`
+    FROM employees e
+             JOIN orders o
+                  ON e.employee_id = o.employee_id;
+    ```
+
     
 
 

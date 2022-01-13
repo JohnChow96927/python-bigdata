@@ -413,10 +413,34 @@ GROUP BY ship_country;
 -- 
 -- 查询结果字段：
 -- 	orders_wa_employees(华盛顿地区员工处理订单数)、orders_not_wa_employees(其他地区员工处理订单数)
-
+SELECT COUNT(
+               CASE
+                   WHEN e.region = 'WA' THEN order_id
+                   END
+           ) `orders_wa_employees`,
+       COUNT(
+               CASE
+                   WHEN region != 'WA' THEN order_id
+                   END
+           ) `orders_not_wa_employees`
+FROM employees e
+         JOIN orders o
+              ON e.employee_id = o.employee_id;
 
 -- 使用 SUM 来替代 COUNT
-
+SELECT SUM(
+               CASE
+                   WHEN e.region = 'WA' THEN 1
+                   END
+           ) `orders_wa_employees`,
+       SUM(
+               CASE
+                   WHEN region != 'WA' THEN 1
+                   END
+           ) `orders_not_wa_employees`
+FROM employees e
+         JOIN orders o
+              ON e.employee_id = o.employee_id;
 
 -- 1.7 SUM中使用CASE WHEN进行复杂计算
 
