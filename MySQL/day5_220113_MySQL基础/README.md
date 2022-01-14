@@ -360,11 +360,134 @@
     > pip install pymysql==1.0.2
     > ```
 
+    ##### 操作步骤: 
+
+    > ##### 导入模块 —> 创建连接 —> 创建游标 —> 执行SQL —> 关闭游标 —> 关闭连接
+
+    ![image-20220114142636911](imgs/image-20220114142636911.png)
+
+    创建连接: `conn = pymysql.connect(参数列表)`
+
+    获取cursor: `cursor = conn.cursor()`
+
+    执行SQL: `num = cursor.execute(SQL语句)`, 返回值为受影响的数据行数, 增删改则需要`conn.commit()`
+
+    关闭cursor: `cursor.close()`
+
+    关闭connection: `conn.close()`
+
+    ```python
+    # 导入pymysql拓展包
+    import pymysql
+    
+    
+    def main():
+        # 创建数据库连接对象
+        conn = pymysql.connect(host='localhost',
+                               port=3306,
+                               database='python',
+                               user='root',
+                               password='123456')
+        # 创建cursor游标
+        cursor = conn.cursor()
+        for i in range(100000):
+            # 执行SQL语句
+            cursor.execute("INSERT INTO test_index VALUES('py-%d')" % i)
+        # 增删改则需要从连接提交commit
+        conn.commit()
+        # 关闭cursor游标
+        cursor.close()
+        # 关闭conn连接
+        conn.close()
+    ```
+
 2. ### 查询操作
 
+    #### cursor游标对象中有三个方法，用于获取 SQL 查询的结果：
+
+    - ##### fetchall()：获取查询的所有结果，返回值为tuple元祖类型【嵌套元祖】
+
+    - ##### fetchone()：每次获取查询结果中的一条记录，返回值为tuple元祖类型【简单元祖】
+
+    - ##### fetchmany(num)：每次获取查询结果中的num条记录，返回值为tuple元祖类型【嵌套元祖】
+
+    > ##### 同一个游标, 查到哪就继续往下查, 所以执行完fetchall之后再执行fetchone则获取不到内容, 返回None, fetchmany(2)返回空元组
+
+    ```mysql
+    import pymysql
     
+    conn = pymysql.connect(host='localhost',
+                           port=3306,
+                           user='root',
+                           password='123456',
+                           database='winfunc',
+                           charset='utf8')
+    
+    cursor = conn.cursor()
+    
+    sql = 'SELECT * FROM students'
+    
+    row_count = cursor.execute(sql)
+    print(f'SQL语句执行影响的行数: {row_count}')
+    
+    fetch_all = cursor.fetchall()
+    print(fetch_all)
+    
+    fetch_one = cursor.fetchone()
+    print(fetch_one)
+    
+    fetch_many = cursor.fetchmany(2)
+    print(fetch_many)
+    
+    cursor.close()
+    conn.close()
+    ```
 
 3. ### 增删改操作
+
+    PyMySQL 在对 MySQL 数据库进行操作时，当遇到非查询(即：**增、删、改**)操作时，自动开启一个默认事务，后续的 SQL 操作都在这个事务中，在操作完成之后，如果要结果生效，需要手动进行事务的commit 提交，否则结果被撤销，即自动进行了事务的 rollback 操作
+
+    ```python
+    import pymysql
+    
+    conn = pymysql.connect(host='localhost',
+                           port=3306,
+                           user='root',
+                           password='123456',
+                           database='winfunc',
+                           charset='utf8')
+    
+    cursor = conn.cursor()
+    
+    sql = 'INSERT INTO students VALUES (8, "LILEI", "Female", 100)'
+    # 自动开启事务
+    row_count = cursor.execute(sql)
+    print(f'SQL语句执行影响的行数: {row_count}')
+    
+    sql = 'SELECT * FROM students'
+    row_count = cursor.execute(sql)
+    print(f'SQL语句执行影响的行数: {row_count}')
+    
+    
+    fetch_all = cursor.fetchall()
+    print(fetch_all)
+    
+    # 事务提交
+    conn.commit()
+    cursor.close()
+    conn.close()
+    ```
+
+    ```python
+    # 开启一个事务
+    conn.begin()
+    
+    # 进行事务的提交操作, 事务操作结果永久生效
+    conn.commit()
+    
+    # 进行事务的回滚操作, 事务操作结果被撤销
+    conn.rollback()
+    ```
 
     
 

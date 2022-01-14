@@ -13,6 +13,8 @@ def main():
     for i in range(100000):
         cursor.execute("INSERT INTO test_index VALUES('py-%d')" % i)
     conn.commit()
+    cursor.close()
+    conn.close()
 
 
 if __name__ == '__main__':
