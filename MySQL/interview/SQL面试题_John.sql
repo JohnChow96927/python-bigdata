@@ -30,14 +30,42 @@ WITH dim_orders AS (
          GROUP BY `month`
      )
 SELECT a.month,
-       a.month_revenue `当前月销售额`,
-       b.month_revenue `上个月销售额`,
+       a.month_revenue                                                                    `当前月销售额`,
+       b.month_revenue                                                                    `上个月销售额`,
        CONCAT(ROUND((a.month_revenue - b.month_revenue) * 100 / b.month_revenue, 2), '%') `环比`
 FROM dim_month_revenue a
-LEFT JOIN dim_month_revenue b
-ON a.month = b.month + 1;   # 当前月关联上个月
+         LEFT JOIN dim_month_revenue b
+                   ON a.month = b.month + 1;
+# 当前月关联上个月
 
 -- Q4: 求每个月比较其上月的新增用户量及其留存率（新增用户"定义为上月未产生购买行为且木月产生了购买行为的用户，“留存用户”
--- 定义为上月产生过购买行为且本月也产生了购买行为的人，留存名=本月留存用户数量/上月产生过购买用户数量)
+-- 定义为上月产生过购买行为且本月也产生了购买行为的人，留存率=本月留存用户数量/上月产生过购买用户数量)
 
 -- 如果一个用户一个月下了多次订单, 也只保留一个
+-- 对同一用户,同一个月的订单进行去重
+WITH month_order_user AS (SELECT DISTINCT MONTH(order_datetime) `month`,
+                                          user_id
+                          FROM fact_order_detail
+),
+     tb_temp1 AS (SELECT a.month `current_month`,
+                         a.user_id,
+                         b.month `previous_month`
+                  FROM month_order_user a
+                           LEFT JOIN month_order_user b
+                                     ON a.user_id = b.user_id
+                                         AND a.month = b.month + 1),
+     tb_temp2 AS (SELECT current_month,
+                         -- 计算每个月的新增用户
+                         COUNT(*) - COUNT(previous_month)                             `新增用户`,
+                         -- 计算每个月的留存用户
+                         COUNT(CASE WHEN previous_month IS NOT NULL THEN user_id END) `留存用户`,
+                         COUNT(user_id)                                               `总购买用户数`
+                  FROM tb_temp1
+                  GROUP BY current_month)
+SELECT current_month,
+       新增用户,
+       留存用户,
+       总购买用户数,
+       LAG(总购买用户数) over (ORDER BY current_month)                                     `pre_total`,
+       CONCAT(ROUND(留存用户 * 100 / LAG(总购买用户数) over (ORDER BY current_month), 2), '%') `RATIO`
+FROM tb_temp2;
