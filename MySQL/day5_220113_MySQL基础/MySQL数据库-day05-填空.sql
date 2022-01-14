@@ -78,7 +78,7 @@ SELECT UNIX_TIMESTAMP(NOW());
 select UNIX_TIMESTAMP('2012-12-20');
 
 -- 时间戳转字符串
-select FROM_UNIXTIME(1355932800, '%Y-%d');
+select FROM_UNIXTIME(1355932800, '%Y-%m-%d');
 
 
 # =================================== SQL字符串函数 ===================================
