@@ -110,3 +110,4 @@ FROM Student st
 LEFT JOIN Score sc ON sc.s_id = st.s_id AND sc.c_id = '01'
 LEFT JOIN Score sc2 ON sc2.s_id = st.s_id and sc2.c_id = '02'
 WHERE sc.s_score > sc2.s_score;
+
