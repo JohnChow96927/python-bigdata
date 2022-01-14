@@ -34,7 +34,53 @@ GROUP BY MONTH(order_datetime), province_name;
 1. ##### 
 
 ```mysql
+WITH dim_orders AS (
+    -- 订单表：带月份
+    SELECT MONTH(order_datetime) AS `month`,
+           order_id,
+           product_id,
+           user_id,
+           store_id,
+           quantity,
+           unit_price
+    FROM fact_order_detail
+),
+     month_product_revenue AS (
+         -- 计算每个月每个产品的销售额
+         SELECT month,
+                product_id,
+                SUM(quantity * unit_price) AS `product_revenue`
+         FROM dim_orders
+         GROUP BY month, product_id
+     )
+SELECT month,
+       product_id,
+       product_revenue,
+       SUM(product_revenue) OVER (PARTITION BY month)                                                AS `month_revenue`,
+       -- 计算占比
+       CONCAT(ROUND(product_revenue / SUM(product_revenue) OVER (PARTITION BY month) * 100, 2), '%') AS `ratio`
+FROM month_product_revenue;
 
+
+WITH dim_orders AS (
+    -- 订单表：带月份
+    SELECT MONTH(order_datetime) AS `month`,
+           order_id,
+           product_id,
+           user_id,
+           store_id,
+           quantity,
+           unit_price
+    FROM fact_order_detail
+)
+SELECT month,
+       product_id,
+       SUM(quantity * unit_price)                                AS `product_revenue`,
+       SUM(SUM(quantity * unit_price)) OVER (PARTITION BY month) AS `month_revenue`,
+       CONCAT(ROUND(SUM(quantity * unit_price) / SUM(SUM(quantity * unit_price)) OVER (PARTITION BY month) * 100, 2),
+              '%')                                               AS `ratio`
+FROM dim_orders
+GROUP BY month, product_id;
 ```
 
 
