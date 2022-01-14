@@ -27,7 +27,7 @@ SELECT SYSDATE(), SLEEP(2), SYSDATE();
 -- 2. 计算时间差
 
 -- 计算指定间隔的时间日期
-SELECT DATE_ADD('2007-9-27', INTERVAL 90 DAY );
+SELECT DATE_ADD('2007-9-27', INTERVAL 90 DAY);
 
 -- 示例：获取当前时间3个小时以前的时间
 SELECT DATE_ADD(NOW(), INTERVAL -3 HOUR);
@@ -64,9 +64,9 @@ SELECT WEEKDAY('2021-12-03');
 -- 4. 时间日期转换
 
 -- 时间格式化(时间转字符串)
-SELECT DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s');
-SELECT DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i');
-SELECT DATE_FORMAT(NOW(),'%Y年%m月%d日 %H时%i分%s秒');
+SELECT DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s');
+SELECT DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i');
+SELECT DATE_FORMAT(NOW(), '%Y年%m月%d日 %H时%i分%s秒');
 
 -- 字符串转时间
 SELECT STR_TO_DATE('2021-01-20 16:01:45', '%Y-%m-%d %H:%i:%s');
@@ -120,7 +120,8 @@ SELECT REPLACE('赢赢赢士角炮巡河车赢', '赢', '输');
 -- SUBSTR(str, n, m)：从 str 字符串的第 n 个字符(注意：n不是下标)往后截取 m 个字符，返回子串；m可省略，表示截取到末尾。
 SELECT SUBSTR('五七炮屏风马', 3, 1);
 SELECT SUBSTR('五七炮屏风马', 4);
-SELECT SUBSTRING('五七炮屏风马', 4, 3); -- SUBSTRING与SUBSTR相同
+SELECT SUBSTRING('五七炮屏风马', 4, 3);
+-- SUBSTRING与SUBSTR相同
 
 
 -- 从左或右截取n个字符
@@ -130,8 +131,8 @@ SELECT RIGHT('仙人指路，急进中兵', 4);
 -- 5. 字符串长度和存储大小
 
 SELECT CHAR_LENGTH('仙人指路，急进中兵');
-SELECT LENGTH('仙人指路，急进中兵'); -- utf8编码格式一个中文占3个字节
-
+SELECT LENGTH('仙人指路，急进中兵');
+-- utf8编码格式一个中文占3个字节
 
 
 # =================================== SQL数学相关函数 ===================================
@@ -194,7 +195,6 @@ SHOW CREATE TABLE students;
 -- 4. 事务的演示示例
 
 
-
 # =================================== 索引 ===================================
 
 # 索引在MySQL中也叫做“键”，它是一个特殊的文件，它保存着数据表里所有记录的位置信息，更通俗的来说，数据库索引好比是一本书前面的目录，能加快数据库的查询速度。
@@ -203,17 +203,75 @@ SHOW CREATE TABLE students;
 -- 当数据库中数据量很大时，查找数据会变得很慢，我们就可以通过索引来提高数据库的查询效率。
 
 -- 1. 索引的基本操作
--- cmd命令终端进行 SQL 演示
+SHOW INDEX FROM products;
+ALTER TABLE products
+    ADD INDEX 索引名 (列名, ...);
+ALTER TABLE products
+    DROP INDEX 索引名;
 
 -- 2. 案例-验证索引性能
--- cmd命令终端进行 SQL 演示
+-- 创建测试表
+CREATE DATABASE python CHARSET = utf8;
+USE python;
+CREATE TABLE test_index
+(
+    title VARCHAR(10)
+);
+
+-- 添加测试数据(pycharm)
+
+-- 添加索引前后对比
+# 开启SQL执行时间检测
+SET PROFILING = 1;
+# 查找第10万条数据'py-99999'
+SELECT *
+FROM test_index
+WHERE title = 'py-99999';
+# 查看SQL执行的时间
+SHOW PROFILES;
+
+# 给title字段创建索引
+ALTER TABLE test_index
+    ADD INDEX (title);
+# 再次执行SQL查询语句
+SELECT *
+FROM test_index
+WHERE title = 'py-99999';
+# 再次查看SQL执行的时间
+SHOW PROFILES;
+
 
 -- 3. 联合索引
 
 -- 联合索引又叫复合索引，即一个索引覆盖表中两个或者多个字段，一般用在多个字段一起查询的时候。
 -- 好处：减少磁盘空间开销，因为每创建一个索引，其实就是创建了一个索引文件，那么会增加磁盘空间的开销。
 
+CREATE TABLE teacher
+(
+    id   INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(10),
+    age  INT
+);
+
+# 创建联合索引
+ALTER TABLE teacher
+    ADD INDEX (name, age);
+
 -- 使用的最左原则
 -- 在使用联合索引的查询数据时候一定要保证联合索引的最左侧字段出现在查询条件里面，否则联合索引失效
 
--- cmd命令终端进行 SQL 演示
+# 下面的查询使用到了联合索引
+# 示例1：这里使用了联合索引的name部分
+select *
+from stu
+where name = '张三';
+# 示例2：这里完整的使用联合索引，包括 name 和 age 部分
+select *
+from stu
+where name = '李四'
+  and age = 10;
+# 下面的查询没有使用到联合索引
+# 示例3： 因为联合索引里面没有这个组合，只有【name】和【name age】这两种组合
+select *
+from stu
+where age = 10;

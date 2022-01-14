@@ -2,8 +2,18 @@
 import pymysql
 
 
-# 创建数据库连接对象
-conn = pymysql.connect(host='localhost', port=3306, user='root', password='123456')
+def main():
+    # 创建数据库连接对象
+    conn = pymysql.connect(host='localhost',
+                           port=3306,
+                           database='python',
+                           user='root',
+                           password='123456')
+    cursor = conn.cursor()
+    for i in range(100000):
+        cursor.execute("INSERT INTO test_index VALUES('py-%d')" % i)
+    conn.commit()
 
 
-
+if __name__ == '__main__':
+    main()
