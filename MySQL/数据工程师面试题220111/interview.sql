@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.16, for Win64 (x86_64)
 --
--- Host: localhost    Database: interview
+-- Host: localhost    Database: 数据工程师面试题220111
 -- ------------------------------------------------------
 -- Server version	8.0.16
 
@@ -17,7 +17,7 @@
 
 
 --
--- Create DataBase `interview`
+-- Create DataBase `数据工程师面试题220111`
 --
 CREATE DATABASE `interview` CHARSET=utf8;
 USE interview;
