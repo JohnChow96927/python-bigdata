@@ -122,14 +122,32 @@ WHERE sc.s_score < sc2.s_score
 ;
 
 -- 3、查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩
-WITH temp_tb AS (SELECT DISTINCT s.s_id                                      `学生编号`,
-                                 s.s_name                                    `学生姓名`,
-                                 AVG(sc.s_score) OVER (PARTITION BY sc.s_id) `平均成绩`
+WITH temp_tb AS (SELECT DISTINCT s.s_id                                                `学生编号`,
+                                 s.s_name                                              `学生姓名`,
+                                 ROUND(AVG(sc.s_score) OVER (PARTITION BY sc.s_id), 2) `平均成绩`
                  FROM Student s
                           JOIN Score sc on s.s_id = sc.s_id)
-SELECT * FROM temp_tb WHERE 平均成绩 > 60
+SELECT *
+FROM temp_tb
+WHERE 平均成绩 >= 60
 ;
 
 
 -- 4、查询平均成绩小于60分的同学的学生编号和学生姓名和平均成绩
 -- (包括有成绩的和无成绩的)
+WITH temp_tb AS (SELECT DISTINCT s.s_id                                                    `学生编号`,
+                                 s.s_name                                                  `学生姓名`,
+                                 IF(ROUND(AVG(sc.s_score) OVER (PARTITION BY sc.s_id), 2) IS NULL, 0,
+                                    ROUND(AVG(sc.s_score) OVER (PARTITION BY sc.s_id), 2)) `平均成绩`
+                 FROM Student s
+                          JOIN Score sc on s.s_id = sc.s_id)
+SELECT *
+FROM temp_tb
+WHERE 平均成绩 < 60 OR 平均成绩 = 0
+;
+
+
+
+
+
+
