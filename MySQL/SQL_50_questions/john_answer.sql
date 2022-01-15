@@ -104,10 +104,32 @@ values ('07', '03', 98);
 
 -- 1、查询"01"课程比"02"课程成绩高的学生的信息及课程分数
 SELECT st.*,
-       sc.s_score '语文',
+       sc.s_score  '语文',
        sc2.s_score '数学'
 FROM Student st
-LEFT JOIN Score sc ON sc.s_id = st.s_id AND sc.c_id = '01'
-LEFT JOIN Score sc2 ON sc2.s_id = st.s_id and sc2.c_id = '02'
+         LEFT JOIN Score sc ON sc.s_id = st.s_id AND sc.c_id = '01'
+         LEFT JOIN Score sc2 ON sc2.s_id = st.s_id and sc2.c_id = '02'
 WHERE sc.s_score > sc2.s_score;
 
+-- 2、查询"01"课程比"02"课程成绩低的学生的信息及课程分数
+SELECT st.*,
+       sc.s_score  `01课程成绩`,
+       sc2.s_score `02课程成绩`
+FROM Student st
+         LEFT JOIN Score sc on st.s_id = sc.s_id AND sc.c_id = '01'
+         LEFT JOIN Score sc2 ON sc2.s_id = st.s_id AND sc2.c_id = '02'
+WHERE sc.s_score < sc2.s_score
+;
+
+-- 3、查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩
+WITH temp_tb AS (SELECT DISTINCT s.s_id                                      `学生编号`,
+                                 s.s_name                                    `学生姓名`,
+                                 AVG(sc.s_score) OVER (PARTITION BY sc.s_id) `平均成绩`
+                 FROM Student s
+                          JOIN Score sc on s.s_id = sc.s_id)
+SELECT * FROM temp_tb WHERE 平均成绩 > 60
+;
+
+
+-- 4、查询平均成绩小于60分的同学的学生编号和学生姓名和平均成绩
+-- (包括有成绩的和无成绩的)
