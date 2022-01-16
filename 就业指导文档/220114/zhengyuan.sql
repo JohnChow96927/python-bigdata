@@ -89,12 +89,76 @@ insert into active
 values (2, '2017-01-12');
 -- 连续活跃问题
 -- （1） 某APP用户活跃记录表active，有uid（用户id）、dt（活跃日期）字段，求出连续出勤3天及以上的用户数
-SELECT DISTINCT COUNT(a.uid) `连续活跃3天以上用户数`
+SELECT COUNT(DISTINCT a.uid) `连续活跃3天以上用户数`
 FROM active a
          JOIN active b
               ON a.uid = b.uid AND a.dt = (b.dt + 1)
          JOIN active c
               ON a.uid = c.uid AND a.dt = (c.dt + 2);
+
+
+CREATE TABLE active1 AS
+SELECT 100          uid,
+       '2021-04-01' dt
+UNION ALL
+SELECT 101          uid,
+       '2021-04-01' dt
+UNION ALL
+SELECT 102          uid,
+       '2021-04-01' dt
+UNION ALL
+SELECT 103          uid,
+       '2021-04-01' dt
+UNION ALL
+SELECT 100          uid,
+       '2021-04-02' dt
+UNION ALL
+SELECT 101          uid,
+       '2021-04-02' dt
+UNION ALL
+SELECT 102          uid,
+       '2021-04-02' dt
+UNION ALL
+SELECT 103          uid,
+       '2021-04-02' dt
+UNION ALL
+SELECT 104          uid,
+       '2021-04-02' dt
+UNION ALL
+SELECT 100          uid,
+       '2021-04-03' dt
+UNION ALL
+SELECT 104          uid,
+       '2021-04-03' dt
+UNION ALL
+SELECT 101          uid,
+       '2021-04-04' dt
+UNION ALL
+SELECT 102          uid,
+       '2021-04-04' dt
+UNION ALL
+SELECT 103          uid,
+       '2021-04-04' dt
+UNION ALL
+SELECT 104          uid,
+       '2021-04-04' dt
+UNION ALL
+SELECT 105          uid,
+       '2021-04-04' dt
+UNION ALL
+SELECT 102          uid,
+       '2021-04-03' dt;
+
+SELECT dt,
+  MONTH(STR_TO_DATE(dt, '%Y-%m-%d'))
+FROM active1;
+
+SELECT COUNT(DISTINCT a.uid) `连续活跃3天以上用户数`
+FROM active1 a
+         JOIN active1 b
+              ON a.uid = b.uid AND str_to_date(a.dt,'%Y-%m-%d') = (str_to_date(b.dt,'%Y-%m-%d') + 1)
+         JOIN active1 c
+              ON a.uid = c.uid AND str_to_date(a.dt,'%Y-%m-%d') = (str_to_date(c.dt,'%Y-%m-%d') + 2);
 
 
 -- （2） 某APP用户活跃记录表active，有uid（用户id）、dt（活跃日期）字段，求每个用户的最大连续活跃天数
