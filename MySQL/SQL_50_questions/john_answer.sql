@@ -172,3 +172,37 @@ FROM Student st
 WHERE T.t_name = '张三';
 
 -- 8、查询没学过"张三"老师授课的同学的信息
+-- 问题拆解:
+-- 1. 查询所有张三老师授课课程的课程编号
+SELECT C.c_id
+FROM Course C
+         JOIN Teacher T on C.t_id = T.t_id
+WHERE T.t_name = '张三';
+-- 2. 根据张三老师授课的课程编号查询成绩表中有成绩的学生ID
+SELECT st.s_id
+FROM Student st
+         JOIN john_practice.Score S on st.s_id = S.s_id
+WHERE S.c_id = (SELECT C.c_id
+                FROM Course C
+                         JOIN Teacher T on C.t_id = T.t_id
+                WHERE T.t_name = '张三');
+-- 3. 查询没有在上表中出现的学生ID
+SELECT st.*
+FROM Student st
+WHERE st.s_id NOT IN (SELECT st.s_id
+FROM Student st
+         JOIN john_practice.Score S on st.s_id = S.s_id
+WHERE S.c_id = (SELECT C.c_id
+                FROM Course C
+                         JOIN Teacher T on C.t_id = T.t_id
+                WHERE T.t_name = '张三'))
+;
+
+-- 9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
+
+
+
+
+
+
+
