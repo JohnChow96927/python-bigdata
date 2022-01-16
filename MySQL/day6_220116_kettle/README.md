@@ -25,7 +25,7 @@
 
 2. ### Kettle数据转换
 
-    1. txt转Excel
+    1. #### txt转Excel
 
         - kettle的基本开发步骤:
 
@@ -42,14 +42,14 @@
 
             4. 保存并启动执行
 
-    2. Excel转MySQL
+    2. #### Excel转MySQL
 
         - 复制MySQL jdbc驱动包到lib文件夹
         - 在JNDI文件夹下配置MYSQL_DB连接
         - 配置数据流图各组件
         - 保存并启动执行
 
-    3. MySQL表间转换
+    3. #### MySQL表间转换
 
         共享数据库连接
 
