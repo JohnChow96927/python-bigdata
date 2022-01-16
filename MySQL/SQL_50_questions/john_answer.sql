@@ -173,12 +173,12 @@ WHERE T.t_name = '张三';
 
 -- 8、查询没学过"张三"老师授课的同学的信息
 -- 问题拆解:
--- 1. 查询所有张三老师授课课程的课程编号
+-- 1) 查询所有张三老师授课课程的课程编号
 SELECT C.c_id
 FROM Course C
          JOIN Teacher T on C.t_id = T.t_id
 WHERE T.t_name = '张三';
--- 2. 根据张三老师授课的课程编号查询成绩表中有成绩的学生ID
+-- 2) 根据张三老师授课的课程编号查询成绩表中有成绩的学生ID
 SELECT st.s_id
 FROM Student st
          JOIN john_practice.Score S on st.s_id = S.s_id
@@ -186,7 +186,7 @@ WHERE S.c_id = (SELECT C.c_id
                 FROM Course C
                          JOIN Teacher T on C.t_id = T.t_id
                 WHERE T.t_name = '张三');
--- 3. 查询没有在上表中出现的学生信息
+-- 3) 查询没有在上表中出现的学生信息
 SELECT st.*
 FROM Student st
 WHERE st.s_id NOT IN (SELECT st.s_id
@@ -200,17 +200,17 @@ WHERE st.s_id NOT IN (SELECT st.s_id
 
 -- 9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
 -- 问题拆解
--- 1. 查询学过编号为"01"课程的同学ID
+-- 1) 查询学过编号为"01"课程的同学ID
 SELECT st.s_id
 FROM Student st
          JOIN Score S on st.s_id = S.s_id
 WHERE S.c_id = '01';
--- 2. 查询学过编号为"02"课程的同学ID
+-- 2) 查询学过编号为"02"课程的同学ID
 SELECT st.s_id
 FROM Student st
          JOIN Score S on st.s_id = S.s_id
 WHERE S.c_id = '02';
--- 3. 查询以上两表的交集对应ID的学生信息
+-- 3) 查询以上两表的交集对应ID的学生信息
 SELECT st.*
 FROM Student st
          JOIN (SELECT st.s_id
@@ -222,6 +222,7 @@ FROM Student st
                         JOIN Score S on st.s_id = S.s_id
                WHERE S.c_id = '02') b ON a.s_id = b.s_id
 ;
+
 
 
 
