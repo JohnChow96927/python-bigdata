@@ -186,21 +186,42 @@ WHERE S.c_id = (SELECT C.c_id
                 FROM Course C
                          JOIN Teacher T on C.t_id = T.t_id
                 WHERE T.t_name = '张三');
--- 3. 查询没有在上表中出现的学生ID
+-- 3. 查询没有在上表中出现的学生信息
 SELECT st.*
 FROM Student st
 WHERE st.s_id NOT IN (SELECT st.s_id
-FROM Student st
-         JOIN john_practice.Score S on st.s_id = S.s_id
-WHERE S.c_id = (SELECT C.c_id
-                FROM Course C
-                         JOIN Teacher T on C.t_id = T.t_id
-                WHERE T.t_name = '张三'))
+                      FROM Student st
+                               JOIN john_practice.Score S on st.s_id = S.s_id
+                      WHERE S.c_id = (SELECT C.c_id
+                                      FROM Course C
+                                               JOIN Teacher T on C.t_id = T.t_id
+                                      WHERE T.t_name = '张三'))
 ;
 
 -- 9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
-
-
+-- 问题拆解
+-- 1. 查询学过编号为"01"课程的同学ID
+SELECT st.s_id
+FROM Student st
+         JOIN Score S on st.s_id = S.s_id
+WHERE S.c_id = '01';
+-- 2. 查询学过编号为"02"课程的同学ID
+SELECT st.s_id
+FROM Student st
+         JOIN Score S on st.s_id = S.s_id
+WHERE S.c_id = '02';
+-- 3. 查询以上两表的交集对应ID的学生信息
+SELECT st.*
+FROM Student st
+         JOIN (SELECT st.s_id
+               FROM Student st
+                        JOIN Score S on st.s_id = S.s_id
+               WHERE S.c_id = '01') a ON st.s_id = a.s_id
+         JOIN (SELECT st.s_id
+               FROM Student st
+                        JOIN Score S on st.s_id = S.s_id
+               WHERE S.c_id = '02') b ON a.s_id = b.s_id
+;
 
 
 
