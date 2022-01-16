@@ -143,11 +143,32 @@ WITH temp_tb AS (SELECT DISTINCT s.s_id                                         
                           JOIN Score sc on s.s_id = sc.s_id)
 SELECT *
 FROM temp_tb
-WHERE 平均成绩 < 60 OR 平均成绩 = 0
+WHERE 平均成绩 < 60
+   OR 平均成绩 = 0
 ;
 
 
+-- 5、查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩
+SELECT st.s_id                                  `学生编号`,
+       st.s_name                                `学生姓名`,
+       COUNT(S.c_id)                            `选课总数`,
+       SUM(IF(S.s_score IS NULL, 0, S.s_score)) `课程总成绩`
+FROM Student st
+         LEFT JOIN Score S on st.s_id = S.s_id
+GROUP BY st.s_id, st.s_name;
 
+-- 6、查询"李"姓老师的数量
+SELECT COUNT(*)
+FROM Teacher
+WHERE t_name LIKE '李%'
+;
 
+-- 7、查询学过"张三"老师授课的同学的信息
+SELECT st.*
+FROM Student st
+         LEFT JOIN Score S on st.s_id = S.s_id
+         LEFT JOIN Course C on S.c_id = C.c_id
+         LEFT JOIN Teacher T on C.t_id = T.t_id
+WHERE T.t_name = '张三';
 
-
+-- 8、查询没学过"张三"老师授课的同学的信息
