@@ -1,0 +1,1403 @@
+<!DOCTYPE HTML>
+<html lang="en" >
+    <!-- Start book Django课程讲义 -->
+    <head>
+        <!-- head:start -->
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Series和DataFrame | Django课程讲义</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.6.7">
+        <meta name="author" content="BigCat">
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="../gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-theme-vuejs/vue.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-emphasize/plugin.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-splitter/splitter.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-code/plugin.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-toggle-chapters/toggle.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-chapter-fold/chapter-fold.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-prism/prism.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
+
+        
+    
+    
+    <link rel="next" href="../chapter02/03-DataFrame增删改.html" />
+    
+    
+    <link rel="prev" href="../chapter02/01-pandas快速入门.html" />
+    
+
+        <!-- head:end -->
+    </head>
+    <body>
+        <!-- body:start -->
+        
+    <div class="book"
+        data-level="2.2"
+        data-chapter-title="Series和DataFrame"
+        data-filepath="chapter02/02-Series和DataFrame.md"
+        data-basepath=".."
+        data-revision="Mon Jan 17 2022 16:44:16 GMT+0800 (中国标准时间)"
+        data-innerlanguage="">
+    
+
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
+
+            
+
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="../index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Introduction
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" data-path="chapter01/index.html">
+            
+                
+                    <a href="../chapter01/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                        Python数据开发简介
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1" data-path="chapter01/01-数据开发简介.html">
+            
+                
+                    <a href="../chapter01/01-数据开发简介.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.1.</b>
+                        
+                        Python数据开发简介
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="chapter01/02-开发环境搭建.html">
+            
+                
+                    <a href="../chapter01/02-开发环境搭建.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.2.</b>
+                        
+                        数据开发环境搭建
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2" data-path="chapter02/index.html">
+            
+                
+                    <a href="../chapter02/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.</b>
+                        
+                        pandas快速入门
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1" data-path="chapter02/01-pandas快速入门.html">
+            
+                
+                    <a href="../chapter02/01-pandas快速入门.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                        pandas快速入门
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter active" data-level="2.2" data-path="chapter02/02-Series和DataFrame.html">
+            
+                
+                    <a href="../chapter02/02-Series和DataFrame.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.2.</b>
+                        
+                        Series和DataFrame
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="chapter02/03-DataFrame增删改.html">
+            
+                
+                    <a href="../chapter02/03-DataFrame增删改.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.3.</b>
+                        
+                        DataFrame增删改
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4" data-path="chapter02/04-DataFrame查询.html">
+            
+                
+                    <a href="../chapter02/04-DataFrame查询.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.4.</b>
+                        
+                        DataFrame查询
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="3" data-path="chapter03/index.html">
+            
+                
+                    <a href="../chapter03/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.</b>
+                        
+                        pandas数据类型
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1" data-path="chapter03/01-数据类型简介.html">
+            
+                
+                    <a href="../chapter03/01-数据类型简介.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.1.</b>
+                        
+                        数据类型简介
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" data-path="chapter03/02-数据类型转换.html">
+            
+                
+                    <a href="../chapter03/02-数据类型转换.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                        数据类型转换
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.3" data-path="chapter03/03-分类数据类型.html">
+            
+                
+                    <a href="../chapter03/03-分类数据类型.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.3.</b>
+                        
+                        分类数据类型
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="chapter03/04-日期数据类型.html">
+            
+                
+                    <a href="../chapter03/04-日期数据类型.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.4.</b>
+                        
+                        日期数据类型
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4" data-path="chapter04/index.html">
+            
+                
+                    <a href="../chapter04/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.</b>
+                        
+                        pandas数据清洗
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1" data-path="chapter04/01-缺失值处理.html">
+            
+                
+                    <a href="../chapter04/01-缺失值处理.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.1.</b>
+                        
+                        缺失值处理
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2" data-path="chapter04/02-apply自定义函数.html">
+            
+                
+                    <a href="../chapter04/02-apply自定义函数.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.2.</b>
+                        
+                        apply自定义函数
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="4.3" data-path="chapter04/03-数据去重操作.html">
+            
+                
+                    <a href="../chapter04/03-数据去重操作.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.3.</b>
+                        
+                        数据去重操作
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="5" data-path="chapter05/index.html">
+            
+                
+                    <a href="../chapter05/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.</b>
+                        
+                        pandas数据处理
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="5.1" data-path="chapter05/01-数据组合.html">
+            
+                
+                    <a href="../chapter05/01-数据组合.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.1.</b>
+                        
+                        数据组合
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.2" data-path="chapter05/02-数据分组.html">
+            
+                
+                    <a href="../chapter05/02-数据分组.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.2.</b>
+                        
+                        数据分组
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="chapter05/03-数据整理.html">
+            
+                
+                    <a href="../chapter05/03-数据整理.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.3.</b>
+                        
+                        数据整理
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="chapter05/04-数据透视表.html">
+            
+                
+                    <a href="../chapter05/04-数据透视表.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        数据透视表
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="6" data-path="chapter06/index.html">
+            
+                
+                    <a href="../chapter06/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                        数据导入和导出
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="6.1" data-path="chapter06/01-pandas数据导入和导出.html">
+            
+                
+                    <a href="../chapter06/01-pandas数据导入和导出.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                        pandas数据导入和导出
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="7" data-path="chapter07/index.html">
+            
+                
+                    <a href="../chapter07/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.</b>
+                        
+                        Python数据可视化
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="7.1" data-path="chapter07/01-Matplotlib绘图.html">
+            
+                
+                    <a href="../chapter07/01-Matplotlib绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.1.</b>
+                        
+                        Matplotlib绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.2" data-path="chapter07/02-pandas绘图.html">
+            
+                
+                    <a href="../chapter07/02-pandas绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.2.</b>
+                        
+                        pandas绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.3" data-path="chapter07/03-seaborn绘图.html">
+            
+                
+                    <a href="../chapter07/03-seaborn绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.3.</b>
+                        
+                        seaborn绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.4" data-path="chapter07/04-pyecharts绘图.html">
+            
+                
+                    <a href="../chapter07/04-pyecharts绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.4.</b>
+                        
+                        pyecharts绘图
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="8" data-path="chapter08/index.html">
+            
+                
+                    <a href="../chapter08/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.</b>
+                        
+                        pandas综合案例
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="8.1" data-path="chapter08/03-RFM用户分群分析.html">
+            
+                
+                    <a href="../chapter08/03-RFM用户分群分析.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.1.</b>
+                        
+                        案例1：RFM用户分群分析
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="8.2" data-path="chapter08/04-常见业务指标计算.html">
+            
+                
+                    <a href="../chapter08/04-常见业务指标计算.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.2.</b>
+                        
+                        案例2：常见业务指标计算
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../" >Django课程讲义</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <h1 id="series&#x548C;dataframe">Series&#x548C;DataFrame</h1>
+<h2 id="&#x5B66;&#x4E60;&#x76EE;&#x6807;">&#x5B66;&#x4E60;&#x76EE;&#x6807;</h2>
+<ul>
+<li>&#x638C;&#x63E1;Series&#x7684;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x53CA;&#x65B9;&#x6CD5;</li>
+<li>&#x638C;&#x63E1;DataFrame&#x7684;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x53CA;&#x65B9;&#x6CD5;</li>
+<li>&#x638C;&#x63E1;DataFrame&#x884C;&#x5217;&#x6807;&#x7B7E;&#x7684;&#x8BBE;&#x7F6E;</li>
+</ul>
+<h2 id="1-series-&#x8BE6;&#x89E3;">1. Series &#x8BE6;&#x89E3;</h2>
+<p>Series&#x662F; pandas &#x4E2D;&#x7528;&#x6765;&#x5B58;&#x50A8;&#x4E00;&#x7EF4;&#x6570;&#x636E;&#x7684;&#x5BB9;&#x5668;&#x3002;</p>
+<h3 id="11-&#x521B;&#x5EFA;-series">1.1 &#x521B;&#x5EFA; Series</h3>
+<p>1&#xFF09;&#x521B;&#x5EFA; Series &#x7684;&#x6700;&#x7B80;&#x5355;&#x65B9;&#x6CD5;&#x662F;&#x4F20;&#x5165;&#x4E00;&#x4E2A;Python&#x5217;&#x8868;</p>
+<ul>
+<li>&#x5982;&#x679C;&#x4F20;&#x5165;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x662F;&#x7EDF;&#x4E00;&#x7684;&#x6570;&#x5B57;&#xFF0C;&#x90A3;&#x4E48;&#x6700;&#x7EC8;&#x7684; dtype &#x7C7B;&#x578B;&#x662F;int64</li>
+<li>&#x5982;&#x679C;&#x4F20;&#x5165;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x662F;&#x7EDF;&#x4E00;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#xFF0C;&#x90A3;&#x4E48;&#x6700;&#x7EC8;&#x7684; dtype &#x7C7B;&#x578B;&#x662F;object</li>
+<li>&#x5982;&#x679C;&#x4F20;&#x5165;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x662F;&#x591A;&#x79CD;&#x7C7B;&#x578B;&#xFF0C;&#x90A3;&#x4E48;&#x6700;&#x7EC8;&#x7684; dtype &#x7C7B;&#x578B;&#x4E5F;&#x662F;object</li>
+</ul>
+<pre><code class="lang-python">s <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;banana&apos;</span><span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+s <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;banana&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;apple&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+s <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-30.png" alt="img"></p>
+<blockquote>
+<p>&#x6CE8;&#x610F;&#xFF1A;&#x4E0A;&#x9762;&#x7684;&#x7ED3;&#x679C;&#x4E2D;&#xFF0C;&#x5DE6;&#x8FB9;&#x663E;&#x793A;&#x7684;0&#xFF0C;1&#x662F; Series &#x7684;&#x884C;&#x6807;&#x7B7E;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;0&#xFF0C;1&#xFF0C;2&#xFF0C;3...</p>
+</blockquote>
+<p>2&#xFF09;&#x521B;&#x5EFA; Series &#x65F6;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x901A;&#x8FC7; index &#x53C2;&#x6570;&#x6765;&#x6307;&#x5B9A;&#x884C;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python">s <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;smart&apos;</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">]</span><span class="token punctuation">,</span> index<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;name&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;age&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-31.png" alt="img"></p>
+<h3 id="12-series-&#x5E38;&#x7528;&#x64CD;&#x4F5C;">1.2 Series &#x5E38;&#x7528;&#x64CD;&#x4F5C;</h3>
+<p><strong>&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x548C;&#x65B9;&#x6CD5;</strong>&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5C5E;&#x6027;&#x6216;&#x65B9;&#x6CD5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s.shape</code></td>
+<td>&#x67E5;&#x770B; Series &#x6570;&#x636E;&#x7684;&#x5F62;&#x72B6;</td>
+</tr>
+<tr>
+<td><code>s.size</code></td>
+<td>&#x67E5;&#x770B; Series &#x6570;&#x636E;&#x7684;&#x4E2A;&#x6570;</td>
+</tr>
+<tr>
+<td><code>s.index</code></td>
+<td>&#x83B7;&#x53D6; Series &#x6570;&#x636E;&#x7684;&#x884C;&#x6807;&#x7B7E;</td>
+</tr>
+<tr>
+<td><code>s.values</code></td>
+<td>&#x83B7;&#x53D6; Series &#x6570;&#x636E;&#x7684;&#x5143;&#x7D20;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.keys()</code></td>
+<td>&#x83B7;&#x53D6; Series &#x6570;&#x636E;&#x7684;&#x884C;&#x6807;&#x7B7E;&#xFF0C;&#x548C; <code>s.index</code> &#x6548;&#x679C;&#x76F8;&#x540C;</td>
+</tr>
+<tr>
+<td><code>s.loc[&#x884C;&#x6807;&#x7B7E;]</code></td>
+<td>&#x6839;&#x636E;&#x884C;&#x6807;&#x7B7E;&#x83B7;&#x53D6; Series &#x4E2D;&#x7684;&#x67D0;&#x4E2A;&#x5143;&#x7D20;&#x6570;&#x636E;</td>
+</tr>
+<tr>
+<td><code>s.iloc[&#x884C;&#x4F4D;&#x7F6E;]</code></td>
+<td>&#x6839;&#x636E;&#x884C;&#x4F4D;&#x7F6E;&#x83B7;&#x53D6; Series &#x4E2D;&#x7684;&#x67D0;&#x4E2A;&#x5143;&#x7D20;&#x6570;&#x636E;</td>
+</tr>
+<tr>
+<td><code>s.dtypes</code></td>
+<td>&#x67E5;&#x770B; Series &#x6570;&#x636E;&#x5143;&#x7D20;&#x7684;&#x7C7B;&#x578B;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&#x793A;&#x4F8B;&#x6F14;&#x793A;</strong>&#xFF1A;</p>
+<p>1&#xFF09;&#x52A0;&#x8F7D; <code>scientists.csv</code> &#x6570;&#x636E;&#x96C6;&#xFF0C;&#x5E76;&#x83B7;&#x53D6; <code>Age</code> &#x5217;&#x7684;&#x6570;&#x636E;</p>
+<pre><code class="lang-python">scientists <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">)</span>
+scientists
+</code></pre>
+<p><img src="images/chapter02-32.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x5E76;&#x83B7;&#x53D6; Age &#x5217;&#x7684;&#x6570;&#x636E;</span>
+age_series <span class="token operator">=</span> scientists<span class="token punctuation">[</span><span class="token string">&apos;Age&apos;</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>age_series<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>age_series<span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-33.png" alt="img"></p>
+<p>2&#xFF09;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x548C;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python">age_series<span class="token punctuation">.</span>shape
+age_series<span class="token punctuation">.</span>size
+age_series<span class="token punctuation">.</span>index
+age_series<span class="token punctuation">.</span>values
+age_series<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span>
+age_series<span class="token punctuation">.</span>loc<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+age_series<span class="token punctuation">.</span>iloc<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+age_series<span class="token punctuation">.</span>dtypes
+</code></pre>
+<p><img src="images/chapter02-34.png" alt="img"></p>
+<p><strong>&#x5E38;&#x7528;&#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;</strong>&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x6CD5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s.mean()</code></td>
+<td>&#x8BA1;&#x7B97; Series &#x6570;&#x636E;&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x5E73;&#x5747;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.max()</code></td>
+<td>&#x8BA1;&#x7B97; Series &#x6570;&#x636E;&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x6700;&#x5927;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.min()</code></td>
+<td>&#x8BA1;&#x7B97; Series &#x6570;&#x636E;&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x6700;&#x5C0F;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.std()</code></td>
+<td>&#x8BA1;&#x7B97; Series &#x6570;&#x636E;&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x6807;&#x51C6;&#x5DEE;</td>
+</tr>
+<tr>
+<td><code>s.value_counts()</code></td>
+<td>&#x7EDF;&#x8BA1; Series &#x6570;&#x636E;&#x4E2D;&#x4E0D;&#x540C;&#x5143;&#x7D20;&#x7684;&#x4E2A;&#x6570;</td>
+</tr>
+<tr>
+<td><code>s.count()</code></td>
+<td>&#x7EDF;&#x8BA1; Series &#x6570;&#x636E;&#x4E2D;&#x975E;&#x7A7A;(NaN)&#x5143;&#x7D20;&#x7684;&#x4E2A;&#x6570;</td>
+</tr>
+<tr>
+<td><code>s.describe()</code></td>
+<td>&#x663E;&#x793A; Series &#x6570;&#x636E;&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x5404;&#x79CD;&#x7EDF;&#x8BA1;&#x503C;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&#x793A;&#x4F8B;&#x6F14;&#x793A;</strong>&#xFF1A;</p>
+<p>1&#xFF09;<code>mean</code>&#x3001;<code>max</code>&#x3001;<code>min</code>&#x3001;<code>std</code>&#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x8BA1;&#x7B97;&#x5E74;&#x9F84;&#x7684;&#x5E73;&#x5747;&#x503C;</span>
+age_series<span class="token punctuation">.</span>mean<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-35.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x8BA1;&#x7B97;&#x5E74;&#x9F84;&#x7684;&#x6700;&#x5927;&#x503C;</span>
+age_series<span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-36.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x8BA1;&#x7B97;&#x5E74;&#x9F84;&#x7684;&#x6700;&#x5C0F;&#x503C;</span>
+age_series<span class="token punctuation">.</span><span class="token builtin">min</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-37.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x8BA1;&#x7B97;&#x5E74;&#x9F84;&#x7684;&#x6807;&#x51C6;&#x5DEE;</span>
+age_series<span class="token punctuation">.</span>std<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-38.png" alt="img"></p>
+<p>2&#xFF09;<code>value_counts</code> &#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x83B7;&#x53D6;&#x804C;&#x4E1A;&#x8FD9;&#x4E00;&#x5217;&#x6570;&#x636E;</span>
+occupation_series <span class="token operator">=</span> scientists<span class="token punctuation">[</span><span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>occupation_series<span class="token punctuation">)</span>
+occupation_series<span class="token punctuation">.</span>value_counts<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-39.png" alt="img"></p>
+<p>3&#xFF09;<code>count</code> &#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x7EDF;&#x8BA1; Born &#x8FD9;&#x4E00;&#x5217;&#x975E;&#x7A7A;&#x5143;&#x7D20;&#x7684;&#x4E2A;&#x6570;</span>
+scientists<span class="token punctuation">[</span><span class="token string">&apos;Born&apos;</span><span class="token punctuation">]</span><span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-40.png" alt="img"></p>
+<p>4&#xFF09;<code>describe</code> &#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python"><span class="token comment"># age_series &#x662F;&#x6570;&#x503C;&#x578B;&#x6570;&#x636E;</span>
+age_series<span class="token punctuation">.</span>describe<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># occupation_series &#x662F;&#x975E;&#x6570;&#x503C;&#x578B;&#x6570;&#x636E;</span>
+occupation_series<span class="token punctuation">.</span>describe<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-41.png" alt="img"></p>
+<p><strong>Series&#x65B9;&#x6CD5;(&#x5907;&#x67E5;)</strong>&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x6CD5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>append</td>
+<td>&#x8FDE;&#x63A5;&#x4E24;&#x4E2A;&#x6216;&#x591A;&#x4E2A;Series</td>
+</tr>
+<tr>
+<td>corr</td>
+<td>&#x8BA1;&#x7B97;&#x4E0E;&#x53E6;&#x4E00;&#x4E2A;Series&#x7684;&#x76F8;&#x5173;&#x7CFB;&#x6570;</td>
+</tr>
+<tr>
+<td>cov</td>
+<td>&#x8BA1;&#x7B97;&#x4E0E;&#x53E6;&#x4E00;&#x4E2A;Series&#x7684;&#x534F;&#x65B9;&#x5DEE;</td>
+</tr>
+<tr>
+<td>describe</td>
+<td>&#x8BA1;&#x7B97;&#x5E38;&#x89C1;&#x7EDF;&#x8BA1;&#x91CF;</td>
+</tr>
+<tr>
+<td>drop_duplicates</td>
+<td>&#x8FD4;&#x56DE;&#x53BB;&#x91CD;&#x4E4B;&#x540E;&#x7684;Series</td>
+</tr>
+<tr>
+<td>equals</td>
+<td>&#x5224;&#x65AD;&#x4E24;&#x4E2A;Series&#x662F;&#x5426;&#x76F8;&#x540C;</td>
+</tr>
+<tr>
+<td>get_values</td>
+<td>&#x83B7;&#x53D6;Series&#x7684;&#x503C;&#xFF0C;&#x4F5C;&#x7528;&#x4E0E;values&#x5C5E;&#x6027;&#x76F8;&#x540C;</td>
+</tr>
+<tr>
+<td>hist</td>
+<td>&#x7ED8;&#x5236;&#x76F4;&#x65B9;&#x56FE;</td>
+</tr>
+<tr>
+<td>isin</td>
+<td>Series&#x4E2D;&#x662F;&#x5426;&#x5305;&#x542B;&#x67D0;&#x4E9B;&#x503C;</td>
+</tr>
+<tr>
+<td>min</td>
+<td>&#x8FD4;&#x56DE;&#x6700;&#x5C0F;&#x503C;</td>
+</tr>
+<tr>
+<td>max</td>
+<td>&#x8FD4;&#x56DE;&#x6700;&#x5927;&#x503C;</td>
+</tr>
+<tr>
+<td>mean</td>
+<td>&#x8FD4;&#x56DE;&#x7B97;&#x672F;&#x5E73;&#x5747;&#x503C;</td>
+</tr>
+<tr>
+<td>median</td>
+<td>&#x8FD4;&#x56DE;&#x4E2D;&#x4F4D;&#x6570;</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>&#x8FD4;&#x56DE;&#x4F17;&#x6570;</td>
+</tr>
+<tr>
+<td>quantile</td>
+<td>&#x8FD4;&#x56DE;&#x6307;&#x5B9A;&#x4F4D;&#x7F6E;&#x7684;&#x5206;&#x4F4D;&#x6570;</td>
+</tr>
+<tr>
+<td>replace</td>
+<td>&#x7528;&#x6307;&#x5B9A;&#x503C;&#x4EE3;&#x66FF;Series&#x4E2D;&#x7684;&#x503C;</td>
+</tr>
+<tr>
+<td>sample</td>
+<td>&#x8FD4;&#x56DE;Series&#x7684;&#x968F;&#x673A;&#x91C7;&#x6837;&#x503C;</td>
+</tr>
+<tr>
+<td>sort_values</td>
+<td>&#x5BF9;&#x503C;&#x8FDB;&#x884C;&#x6392;&#x5E8F;</td>
+</tr>
+<tr>
+<td>to_frame</td>
+<td>&#x628A;Series&#x8F6C;&#x6362;&#x4E3A;DataFrame</td>
+</tr>
+<tr>
+<td>unique</td>
+<td>&#x53BB;&#x91CD;&#x8FD4;&#x56DE;&#x6570;&#x7EC4;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-bool-&#x7D22;&#x5F15;">1.3 bool &#x7D22;&#x5F15;</h3>
+<p>Series &#x652F;&#x6301; bool &#x7D22;&#x5F15;&#xFF0C;&#x53EF;&#x4EE5;&#x4ECE; Series &#x83B7;&#x53D6; bool &#x7D22;&#x5F15;&#x4E3A; True &#x7684;&#x4F4D;&#x7F6E;&#x5BF9;&#x5E94;&#x7684;&#x6570;&#x636E;&#x3002;</p>
+<pre><code class="lang-python">bool_values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">]</span>
+age_series<span class="token punctuation">[</span>bool_values<span class="token punctuation">]</span>
+</code></pre>
+<p><img src="images/chapter02-42.png" alt="img"></p>
+<p><strong>&#x5E94;&#x7528;&#xFF1A;&#x4ECE; age_series &#x4E2D;&#x5220;&#x9009;&#x51FA;&#x5E74;&#x9F84;&#x5927;&#x4E8E;&#x5E73;&#x5747;&#x503C;&#x7684;&#x6570;&#x636E;.</strong></p>
+<pre><code class="lang-python"><span class="token comment"># &#x5E94;&#x7528;&#xFF1A;&#x4ECE; age_series &#x4E2D;&#x5220;&#x9009;&#x51FA;&#x5E74;&#x9F84;&#x5927;&#x4E8E;&#x5E73;&#x5747;&#x503C;&#x7684;&#x6570;&#x636E;.</span>
+age_series<span class="token punctuation">[</span>age_series<span class="token operator">&gt;</span>age_series<span class="token punctuation">.</span>mean<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="images/chapter02-43.png" alt="img"></p>
+<h3 id="14-series-&#x8FD0;&#x7B97;">1.4 Series &#x8FD0;&#x7B97;</h3>
+<table>
+<thead>
+<tr>
+<th>&#x60C5;&#x51B5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Series &#x548C; &#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x8FD0;&#x7B97;</code></td>
+<td>Series &#x4E2D;&#x7684;&#x6BCF;&#x4E2A;&#x5143;&#x7D20;&#x548C;&#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x9010;&#x4E00;&#x8FD0;&#x7B97;&#xFF0C;&#x8FD4;&#x56DE;&#x65B0;&#x7684; Series</td>
+</tr>
+<tr>
+<td><code>Series &#x548C; &#x53E6;&#x4E00; Series &#x8FD0;&#x7B97;</code></td>
+<td>&#x4E24;&#x4E2A; Series &#x4E2D;&#x76F8;&#x540C;&#x884C;&#x6807;&#x7B7E;&#x7684;&#x5143;&#x7D20;&#x5206;&#x522B;&#x8FDB;&#x884C;&#x8FD0;&#x7B97;&#xFF0C;&#x82E5;&#x4E0D;&#x5B58;&#x5728;&#x76F8;<br>&#x540C;&#x7684;&#x884C;&#x6807;&#x7B7E;&#xFF0C;&#x8BA1;&#x7B97;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x4E3A; NaN&#xFF0C;&#x6700;&#x7EC8;&#x8FD4;&#x56DE;&#x65B0;&#x7684; Series</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Series &#x548C; &#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x8FD0;&#x7B97;</strong>&#xFF1A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x52A0;&#x6CD5;</span>
+age_series <span class="token operator">+</span> <span class="token number">100</span>
+</code></pre>
+<p><img src="images/chapter02-44.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x4E58;&#x6CD5;</span>
+age_series <span class="token operator">*</span> <span class="token number">2</span>
+</code></pre>
+<p><img src="images/chapter02-45.png" alt="img"></p>
+<p><strong>Series &#x548C; &#x53E6;&#x4E00; Series &#x8FD0;&#x7B97;</strong>&#xFF1A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x52A0;&#x6CD5;</span>
+age_series <span class="token operator">+</span> age_series
+<span class="token comment"># &#x4E58;&#x6CD5;</span>
+age_series <span class="token operator">*</span> age_series
+</code></pre>
+<p><img src="images/chapter02-46.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x521B;&#x5EFA;&#x65B0;&#x7684; Series &#x6570;&#x636E;</span>
+new_series <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-47.png" alt="img"></p>
+<blockquote>
+<p>&#x6CE8;&#x610F;&#xFF1A;age_series &#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x5143;&#x7D20;&#x5728; new_series &#x4E2D;&#x4E0D;&#x5B58;&#x5728;&#x76F8;&#x540C;&#x884C;&#x6807;&#x7B7E;&#x7684;&#x6570;&#x636E;</p>
+</blockquote>
+<pre><code class="lang-python"><span class="token comment"># &#x4E24;&#x4E2A; Series &#x76F8;&#x52A0;</span>
+age_series <span class="token operator">+</span> new_series
+</code></pre>
+<p><img src="images/chapter02-48.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x4E24;&#x4E2A; Series &#x76F8;&#x4E58;</span>
+age_series <span class="token operator">*</span> new_series
+</code></pre>
+<p><img src="images/chapter02-49.png" alt="img"></p>
+<h2 id="2-dataframe-&#x8BE6;&#x89E3;">2. DataFrame &#x8BE6;&#x89E3;</h2>
+<h3 id="21-&#x521B;&#x5EFA;-dataframe">2.1 &#x521B;&#x5EFA; DataFrame</h3>
+<p>1&#xFF09;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5B57;&#x5178;&#x6765;&#x521B;&#x5EFA;DataFrame</p>
+<pre><code class="lang-python">peoples <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string">&apos;Name&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&apos;Smart&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;David&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&apos;Teacher&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;IT Engineer&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">&apos;Age&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+peoples
+</code></pre>
+<p><img src="images/chapter02-50.png" alt="img"></p>
+<p>2&#xFF09;&#x521B;&#x5EFA; DataFrame &#x7684;&#x65F6;&#x5019;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;colums&#x53C2;&#x6570;&#x6307;&#x5B9A;&#x5217;&#x7684;&#x987A;&#x5E8F;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; index &#x53C2;&#x6570;&#x6765;&#x6307;&#x5B9A;&#x884C;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python">peoples <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&apos;Teacher&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;IT Engineer&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string">&apos;Age&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;Age&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> index<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;Smart&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;David&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+peoples
+</code></pre>
+<p><img src="images/chapter02-51.png" alt="img"></p>
+<p>3&#xFF09;&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5D4C;&#x5957;&#x5217;&#x8868;&#x521B;&#x5EFA; DataFrame&#xFF0C;&#x5E76;&#x4F7F;&#x7528; columns &#x53C2;&#x6570;&#x6307;&#x5B9A;&#x5217;&#x6807;&#x7B7E;&#xFF0C;&#x4F7F;&#x7528; index &#x53C2;&#x6570;&#x6765;&#x6307;&#x5B9A;&#x884C;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python">peoples <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token punctuation">[</span><span class="token string">&apos;Teacher&apos;</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token string">&apos;IT Engineer&apos;</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">]</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span> columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Age&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> index<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;Smart&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;David&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+peoples
+</code></pre>
+<p><img src="images/chapter02-52.png" alt="img"></p>
+<h3 id="22-dataframe-&#x5E38;&#x7528;&#x64CD;&#x4F5C;">2.2 DataFrame &#x5E38;&#x7528;&#x64CD;&#x4F5C;</h3>
+<p><strong>&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x548C;&#x65B9;&#x6CD5;</strong>&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5C5E;&#x6027;&#x6216;&#x65B9;&#x6CD5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df.shape</code></td>
+<td>&#x67E5;&#x770B; DataFrame &#x6570;&#x636E;&#x7684;&#x5F62;&#x72B6;</td>
+</tr>
+<tr>
+<td><code>df.size</code></td>
+<td>&#x67E5;&#x770B; DataFrame &#x6570;&#x636E;&#x5143;&#x7D20;&#x7684;&#x603B;&#x4E2A;&#x6570;</td>
+</tr>
+<tr>
+<td><code>df.ndim</code></td>
+<td>&#x67E5;&#x770B; DataFrame &#x6570;&#x636E;&#x7684;&#x7EF4;&#x5EA6;</td>
+</tr>
+<tr>
+<td><code>len(df)</code></td>
+<td>&#x83B7;&#x53D6; DataFrame &#x6570;&#x636E;&#x7684;&#x884C;&#x6570;</td>
+</tr>
+<tr>
+<td><code>df.index</code></td>
+<td>&#x83B7;&#x53D6; DataFrame &#x6570;&#x636E;&#x7684;&#x884C;&#x6807;&#x7B7E;</td>
+</tr>
+<tr>
+<td><code>df.columns</code></td>
+<td>&#x83B7;&#x53D6; DataFrame &#x6570;&#x636E;&#x7684;&#x5217;&#x6807;&#x7B7E;</td>
+</tr>
+<tr>
+<td><code>df.dtypes</code></td>
+<td>&#x67E5;&#x770B; DataFrame &#x6BCF;&#x5217;&#x6570;&#x636E;&#x5143;&#x7D20;&#x7684;&#x7C7B;&#x578B;</td>
+</tr>
+<tr>
+<td><code>df.info()</code></td>
+<td>&#x67E5;&#x770B; DataFrame &#x6BCF;&#x5217;&#x7684;&#x7ED3;&#x6784;</td>
+</tr>
+<tr>
+<td><code>df.head(n)</code></td>
+<td>&#x83B7;&#x53D6; DataFrame &#x7684;&#x524D; n &#x884C;&#x6570;&#x636E;&#xFF0C;n &#x9ED8;&#x8BA4;&#x4E3A; 5</td>
+</tr>
+<tr>
+<td><code>df.tail(n)</code></td>
+<td>&#x83B7;&#x53D6; DataFrame &#x7684;&#x540E; n &#x884C;&#x6570;&#x636E;&#xFF0C;n &#x9ED8;&#x8BA4;&#x4E3A; 5</td>
+</tr>
+</tbody>
+</table>
+<p>1&#xFF09;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x548C;&#x65B9;&#x6CD5;&#x6F14;&#x793A;</p>
+<pre><code class="lang-python">scientists<span class="token punctuation">.</span>shape
+scientists<span class="token punctuation">.</span>size
+scientists<span class="token punctuation">.</span>ndim
+<span class="token builtin">len</span><span class="token punctuation">(</span>scientists<span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-53.png" alt="img"></p>
+<pre><code class="lang-python">scientists<span class="token punctuation">.</span>index
+scientists<span class="token punctuation">.</span>columns
+</code></pre>
+<p><img src="images/chapter02-54.png" alt="img"></p>
+<pre><code class="lang-python">scientists<span class="token punctuation">.</span>dtypes
+scientists<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-55.png" alt="img"></p>
+<blockquote>
+<p>Pandas&#x4E0E;Python&#x5E38;&#x7528;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x5BF9;&#x7167;&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>Pandas&#x7C7B;&#x578B;</th>
+<th>Python&#x7C7B;&#x578B;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>object</td>
+<td>string</td>
+<td>&#x5B57;&#x7B26;&#x4E32;&#x7C7B;&#x578B;</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>int</td>
+<td>&#x6574;&#x5F62;</td>
+</tr>
+<tr>
+<td>float64</td>
+<td>float</td>
+<td>&#x6D6E;&#x70B9;&#x578B;</td>
+</tr>
+<tr>
+<td>datetime64</td>
+<td>datetime</td>
+<td>&#x65E5;&#x671F;&#x65F6;&#x95F4;&#x7C7B;&#x578B;&#xFF0C;python&#x4E2D;&#x9700;&#x8981;&#x52A0;&#x8F7D;</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<pre><code>scientists.head()
+scientists.tail()
+</code></pre><p><img src="images/chapter02-56.png" alt="img"></p>
+<p><strong>&#x5E38;&#x7528;&#x7EDF;&#x8BA1;&#x65B9;&#x6CD5;</strong>&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x6CD5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s.max()</code></td>
+<td>&#x8BA1;&#x7B97; DataFrame &#x6570;&#x636E;&#x4E2D;&#x6BCF;&#x5217;&#x5143;&#x7D20;&#x7684;&#x6700;&#x5927;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.min()</code></td>
+<td>&#x8BA1;&#x7B97; DataFrame &#x6570;&#x636E;&#x4E2D;&#x6BCF;&#x5217;&#x5143;&#x7D20;&#x7684;&#x6700;&#x5C0F;&#x503C;</td>
+</tr>
+<tr>
+<td><code>s.count()</code></td>
+<td>&#x7EDF;&#x8BA1; DataFrame &#x6570;&#x636E;&#x4E2D;&#x6BCF;&#x5217;&#x975E;&#x7A7A;(NaN)&#x5143;&#x7D20;&#x7684;&#x4E2A;&#x6570;</td>
+</tr>
+<tr>
+<td><code>s.describe()</code></td>
+<td>&#x663E;&#x793A; DataFrame &#x6570;&#x636E;&#x4E2D;&#x6BCF;&#x5217;&#x5143;&#x7D20;&#x7684;&#x5404;&#x79CD;&#x7EDF;&#x8BA1;&#x503C;</td>
+</tr>
+</tbody>
+</table>
+<p>1&#xFF09;<code>max</code>&#x3001;<code>min</code>&#x3001;<code>count</code> &#x6F14;&#x793A;</p>
+<pre><code>scientists.max()
+scientists.min()
+scientists.count()
+scientists.size
+</code></pre><p><img src="images/chapter02-57.png" alt="img"></p>
+<p>2&#xFF09;<code>describe</code> &#x6F14;&#x793A;</p>
+<pre><code>scientists.describe()
+</code></pre><p><img src="images/chapter02-58.png" alt="img"></p>
+<blockquote>
+<p>&#x6CE8;&#x610F;&#xFF1A;describe &#x65B9;&#x6CD5;&#x9ED8;&#x8BA4;&#x53EA;&#x663E;&#x793A;&#x6570;&#x503C;&#x578B;&#x5217;&#x7684;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7; include &#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x663E;&#x793A;&#x975E;&#x6570;&#x503C;&#x578B;&#x5217;&#x7684;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;</p>
+</blockquote>
+<pre><code class="lang-python"><span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+scientists<span class="token punctuation">.</span>describe<span class="token punctuation">(</span>include<span class="token operator">=</span><span class="token punctuation">[</span>np<span class="token punctuation">.</span>object_<span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-59.png" alt="img"></p>
+<h3 id="23-bool-&#x7D22;&#x5F15;">2.3 bool &#x7D22;&#x5F15;</h3>
+<p>DataFrame &#x652F;&#x6301; bool &#x7D22;&#x5F15;&#xFF0C;&#x53EF;&#x4EE5;&#x4ECE; DataFrame &#x83B7;&#x53D6; bool &#x7D22;&#x5F15;&#x4E3A; True &#x7684;&#x5BF9;&#x5E94;&#x884C;&#x7684;&#x6570;&#x636E;&#x3002;</p>
+<pre><code class="lang-python">bool_values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">]</span>
+scientists<span class="token punctuation">[</span>bool_values<span class="token punctuation">]</span>
+</code></pre>
+<p><img src="images/chapter02-60.png" alt="img"></p>
+<p><strong>&#x5E94;&#x7528;&#xFF1A;&#x83B7;&#x53D6; scientists &#x4E2D; Age &#x5927;&#x4E8E;&#x5E73;&#x5747;&#x503C;&#x7684;&#x79D1;&#x5B66;&#x5BB6;&#x4FE1;&#x606F;</strong></p>
+<pre><code class="lang-python"><span class="token comment"># &#x5E94;&#x7528;&#xFF1A;&#x83B7;&#x53D6; scientists &#x4E2D; Age &#x5927;&#x4E8E;&#x5E73;&#x5747;&#x503C;&#x7684;&#x79D1;&#x5B66;&#x5BB6;&#x4FE1;&#x606F;</span>
+scientists<span class="token punctuation">[</span>scientists<span class="token punctuation">[</span><span class="token string">&apos;Age&apos;</span><span class="token punctuation">]</span> <span class="token operator">&gt;</span> scientists<span class="token punctuation">[</span><span class="token string">&apos;Age&apos;</span><span class="token punctuation">]</span><span class="token punctuation">.</span>mean<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="images/chapter02-61.png" alt="img"></p>
+<h3 id="24-dataframe-&#x8FD0;&#x7B97;">2.4 DataFrame &#x8FD0;&#x7B97;</h3>
+<table>
+<thead>
+<tr>
+<th>&#x60C5;&#x51B5;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DataFrame &#x548C; &#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x8FD0;&#x7B97;</code></td>
+<td>DataFrame &#x4E2D;&#x7684;&#x6BCF;&#x4E2A;&#x5143;&#x7D20;&#x548C;&#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x9010;&#x4E00;&#x8FD0;&#x7B97;&#xFF0C;<br>&#x8FD4;&#x56DE;&#x65B0;&#x7684; DataFrame</td>
+</tr>
+<tr>
+<td><code>DataFrame &#x548C; &#x53E6;&#x4E00; DataFrame &#x8FD0;&#x7B97;</code></td>
+<td>&#x4E24;&#x4E2A; DataFrame &#x4E2D;&#x76F8;&#x540C;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;&#x7684;&#x5143;&#x7D20;&#x5206;<br>&#x522B;&#x8FDB;&#x884C;&#x8FD0;&#x7B97;&#xFF0C;&#x82E5;&#x4E0D;&#x5B58;&#x5728;&#x76F8;&#x540C;&#x7684;&#x884C;&#x6807;&#x7B7E;&#x6216;&#x5217;&#x6807;&#x7B7E;&#xFF0C;<br>&#x8BA1;&#x7B97;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x4E3A; NaN&#xFF0C;&#x6700;&#x7EC8;&#x8FD4;&#x56DE;&#x65B0;&#x7684; DataFrame</td>
+</tr>
+</tbody>
+</table>
+<p><strong>DataFrame &#x548C; &#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x8FD0;&#x7B97;</strong>&#xFF1A;</p>
+<pre><code class="lang-python"><span class="token comment"># DataFrame &#x548C; &#x6570;&#x503C;&#x578B;&#x6570;&#x636E;&#x8FD0;&#x7B97;</span>
+scientists <span class="token operator">*</span> <span class="token number">2</span>
+</code></pre>
+<p><img src="images/chapter02-62.png" alt="img"></p>
+<p><strong>DataFrame &#x548C; &#x53E6;&#x4E00; DataFrame &#x8FD0;&#x7B97;</strong>&#xFF1A;</p>
+<pre><code class="lang-python"><span class="token comment"># DataFrame &#x548C; &#x53E6;&#x4E00; DataFrame &#x8FD0;&#x7B97;</span>
+scientists <span class="token operator">+</span> scientists
+</code></pre>
+<p><img src="images/chapter02-63.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># DataFrame &#x548C; &#x53E6;&#x4E00; DataFrame &#x8FD0;&#x7B97;</span>
+scientists <span class="token operator">+</span> scientists<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="images/chapter02-64.png" alt="img"></p>
+<h3 id="25-&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x8868;&#x7B7E;&#x64CD;&#x4F5C;">2.5 &#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x8868;&#x7B7E;&#x64CD;&#x4F5C;</h3>
+<h4 id="251-&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x6307;&#x5B9A;&#x67D0;&#x5217;&#x6570;&#x636E;&#x4F5C;&#x4E3A;-dataframe-&#x884C;&#x6807;&#x7B7E;">2.5.1 &#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x6307;&#x5B9A;&#x67D0;&#x5217;&#x6570;&#x636E;&#x4F5C;&#x4E3A; DataFrame &#x884C;&#x6807;&#x7B7E;</h4>
+<blockquote>
+<p>&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x6587;&#x4EF6;&#x65F6;&#xFF0C;&#x5982;&#x679C;&#x4E0D;&#x6307;&#x5B9A;&#x884C;&#x6807;&#x7B7E;&#xFF0C;Pandas&#x4F1A;&#x81EA;&#x52A8;&#x52A0;&#x4E0A;&#x4ECE;0&#x5F00;&#x59CB;&#x7684;&#x884C;&#x6807;&#x7B7E;&#xFF1B;</p>
+<p>&#x53EF;&#x4EE5;&#x901A;&#x8FC7;df.set_index(&apos;&#x5217;&#x540D;&apos;)&#x7684;&#x65B9;&#x6CD5;&#x91CD;&#x65B0;&#x5C06;&#x6307;&#x5B9A;&#x7684;&#x5217;&#x6570;&#x636E;&#x8BBE;&#x7F6E;&#x4E3A;&#x884C;&#x6807;&#x7B7E;</p>
+</blockquote>
+<pre><code class="lang-python">scientists <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">)</span>
+scientists
+</code></pre>
+<p><img src="images/chapter02-65.png" alt="img"></p>
+<pre><code class="lang-python"><span class="token comment"># &#x8BBE;&#x7F6E; Name &#x5217;&#x7684;&#x503C;&#x4F5C;&#x4E3A;&#x884C;&#x6807;&#x7B7E;</span>
+scientists_df <span class="token operator">=</span> scientists<span class="token punctuation">.</span>set_index<span class="token punctuation">(</span><span class="token string">&apos;Name&apos;</span><span class="token punctuation">)</span>
+scientists_df
+</code></pre>
+<p><img src="images/chapter02-66.png" alt="img"></p>
+<p>&#x8BBE;&#x7F6E;&#x884C;&#x6807;&#x7B7E;&#x4E4B;&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7; <code>reset_index</code> &#x65B9;&#x6CD5;&#x91CD;&#x7F6E;&#x884C;&#x6807;&#x7B7E;&#xFF1A;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x6CE8;&#x610F;&#xFF1A;reset_index&#x8FD4;&#x56DE;&#x7684;&#x662F;&#x4E00;&#x4E2A;&#x65B0;&#x7684; DataFrame</span>
+scientists_df<span class="token punctuation">.</span>reset_index<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-67.png" alt="img"></p>
+<h4 id="252-&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x6307;&#x5B9A;&#x67D0;&#x5217;&#x6570;&#x636E;&#x4F5C;&#x4E3A;-dataframe-&#x884C;&#x6807;&#x7B7E;">2.5.2 &#x52A0;&#x8F7D;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x6307;&#x5B9A;&#x67D0;&#x5217;&#x6570;&#x636E;&#x4F5C;&#x4E3A; DataFrame &#x884C;&#x6807;&#x7B7E;</h4>
+<blockquote>
+<p>&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x6587;&#x4EF6;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7; index_col &#x53C2;&#x6570;&#xFF0C;&#x6307;&#x5B9A;&#x4F7F;&#x7528;&#x67D0;&#x4E00;&#x5217;&#x6570;&#x636E;&#x4F5C;&#x4E3A;&#x884C;&#x6807;&#x7B7E;&#xFF0C;index_col &#x53C2;&#x6570;&#x53EF;&#x4EE5;&#x6307;&#x5B9A;&#x5217;&#x540D;&#x6216;&#x5217;&#x4F4D;&#x7F6E;&#x7F16;&#x53F7;</p>
+</blockquote>
+<p>1&#xFF09;&#x52A0;&#x8F7D; <code>scientists.csv</code>&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x5C06; Name &#x5217;&#x8BBE;&#x7F6E;&#x4E3A;&#x884C;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python">pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">,</span> index_col<span class="token operator">=</span><span class="token string">&apos;Name&apos;</span><span class="token punctuation">)</span>
+&#x6216;
+pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">,</span> index_col<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-68.png" alt="img"></p>
+<h4 id="253-&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x4FEE;&#x6539;-dataframe-&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;">2.5.3 &#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x4FEE;&#x6539; DataFrame &#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;</h4>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x5F0F;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df.rename(index={&apos;&#x539F;&#x884C;&#x6807;&#x7B7E;&#x540D;&apos;: &apos;&#x65B0;&#x884C;&#x6807;&#x7B7E;&#x540D;&apos;, ...}, columns={&apos;&#x539F;&#x5217;&#x6807;&#x7B7E;&#x540D;&apos;: &apos;&#x65B0;&#x5217;&#x6807;&#x7B7E;&#x540D;&apos;, ...}, inplace=False)</code></td>
+<td>&#x4FEE;&#x6539;&#x6307;&#x5B9A;&#x7684;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;&#xFF0C;rename&#x4FEE;&#x6539;&#x540E;&#x9ED8;&#x8BA4;&#x8FD4;&#x56DE;&#x65B0;&#x7684; DataFrame&#xFF1B;&#x5982;&#x679C;&#x5C06;inplace&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x4E3A;True&#xFF0C;&#x5219;&#x76F4;&#x63A5;&#x5BF9;&#x539F; DataFrame &#x8FDB;&#x884C;&#x4FEE;&#x6539;</td>
+</tr>
+<tr>
+<td><code>df.index = [&apos;&#x65B0;&#x884C;&#x6807;&#x7B7E;&#x540D;1&apos;, &apos;&#x65B0;&#x884C;&#x6807;&#x7B7E;&#x540D;2&apos;, ...]</code><br><code>df.columns = [&apos;&#x65B0;&#x5217;&#x6807;&#x7B7E;&#x540D;1&apos;, &apos;&#x65B0;&#x5217;&#x6807;&#x7B7E;&#x540D;2&apos;, ...]</code></td>
+<td>&#x4FEE;&#x6539;DataFrame&#x7684;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;&#xFF0C;&#x76F4;&#x63A5;&#x5BF9;&#x539F; DataFrame &#x8FDB;&#x884C;&#x4FEE;&#x6539;</td>
+</tr>
+</tbody>
+</table>
+<p>1&#xFF09;&#x52A0;&#x8F7D; <code>scientists.csv</code>&#x6570;&#x636E;&#x96C6;</p>
+<pre><code class="lang-python">scientists <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">,</span> index_col<span class="token operator">=</span><span class="token string">&apos;Name&apos;</span><span class="token punctuation">)</span>
+scientists
+</code></pre>
+<p><img src="images/chapter02-69.png" alt="img"></p>
+<p>2&#xFF09;&#x4F7F;&#x7528; <code>rename</code> &#x4FEE;&#x6539;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python">index_name <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">&apos;Rosaline Franklin&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;rosaline franklin&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;John Snow&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;john snow&apos;</span><span class="token punctuation">}</span>
+columns_name <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">&apos;Born&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;born&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Age&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;age&apos;</span><span class="token punctuation">}</span>
+<span class="token comment"># &#x6CE8;&#x610F;&#xFF1A;rename &#x4FEE;&#x6539;&#x4E4B;&#x540E;&#xFF0C;&#x8FD4;&#x56DE;&#x7684;&#x662F;&#x4E00;&#x4E2A;&#x65B0;&#x7684; DataFrame</span>
+scientists<span class="token punctuation">.</span>rename<span class="token punctuation">(</span>index<span class="token operator">=</span>index_name<span class="token punctuation">,</span> columns<span class="token operator">=</span>columns_name<span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-70.png" alt="img"></p>
+<p>3&#xFF09;&#x4F7F;&#x7528; <code>df.index</code> &#x548C; <code>df.columns</code> &#x5206;&#x522B;&#x4FEE;&#x6539;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x4FEE;&#x6539;&#x884C;&#x6807;&#x7B7E;</span>
+scientists<span class="token punctuation">.</span>index <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;rosaline franklin&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;William Gosset&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Florence Nightingale&apos;</span><span class="token punctuation">,</span>
+       <span class="token string">&apos;Marie Curie&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Rachel Carson&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;john snow&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Alan Turing&apos;</span><span class="token punctuation">,</span>
+       <span class="token string">&apos;Johann Gauss&apos;</span><span class="token punctuation">]</span>
+<span class="token comment"># &#x4FEE;&#x6539;&#x5217;&#x6807;&#x7B7E;</span>
+scientists<span class="token punctuation">.</span>columns <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;born&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Died&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;age&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">]</span>
+scientists
+</code></pre>
+<p><img src="images/chapter02-71.png" alt="img"></p>
+<h4 id="254-&#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x91CD;&#x65B0;&#x7D22;&#x5F15;-dataframe-&#x6570;&#x636E;">2.5.4 &#x52A0;&#x8F7D;&#x6570;&#x636E;&#x540E;&#xFF0C;&#x91CD;&#x65B0;&#x7D22;&#x5F15; DataFrame &#x6570;&#x636E;</h4>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x5F0F;</th>
+<th>&#x8BF4;&#x660E;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df.reindex(index=[&apos;&#x884C;&#x6807;&#x7B7E;1&apos;, &apos;&#x884C;&#x6807;&#x7B7E;2&apos;, ...], columns=[&apos;&#x5217;&#x6807;&#x7B7E;1&apos;, &apos;&#x5217;&#x6807;&#x7B7E;2&apos;, ...])</code></td>
+<td>&#x91CD;&#x65B0;&#x7D22;&#x5F15;&#x7684;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x6807;&#x7B7E;&#xFF0C;&#x53EA;&#x63D0;&#x53D6;&#x539F; DataFrame &#x4E2D;&#x6307;&#x5B9A;&#x7684;&#x884C;&#x548C;&#x5217;&#xFF0C;&#x5E76;&#x4E14;&#x539F; DataFrame &#x4E2D;&#x4E0D;&#x5B58;&#x5728;&#x7684;&#x884C;&#x6807;&#x7B7E;&#x548C;&#x5217;&#x8868;&#x7B7E;&#x4F1A;&#x81EA;&#x52A8;&#x6DFB;&#x52A0;&#x65B0;&#x884C;&#x6216;&#x65B0;&#x5217;&#xFF0C;&#x9ED8;&#x8BA4;&#x586B;&#x5145;&#x4E3A;NULL&#xFF0C;&#x8FD4;&#x56DE;&#x65B0;&#x7684; DataFrame</td>
+</tr>
+</tbody>
+</table>
+<p>1&#xFF09;&#x52A0;&#x8F7D; <code>scientists.csv</code>&#x6570;&#x636E;&#x96C6;</p>
+<pre><code class="lang-python">scientists <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">&apos;./data/scientists.csv&apos;</span><span class="token punctuation">,</span> index_col<span class="token operator">=</span><span class="token string">&apos;Name&apos;</span><span class="token punctuation">)</span>
+scientists
+</code></pre>
+<p><img src="images/chapter02-119.png" alt="img"></p>
+<p>2&#xFF09;&#x91CD;&#x65B0;&#x7D22;&#x5F15; DataFrame &#x6570;&#x636E;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x91CD;&#x65B0;&#x7D22;&#x5F15; DataFrame &#x6570;&#x636E;</span>
+scientists<span class="token punctuation">.</span>reindex<span class="token punctuation">(</span>index<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;William Gosset&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Florence Nightingale&apos;</span><span class="token punctuation">,</span> 
+                          <span class="token string">&apos;Marie Curie&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Rachel Carson&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Hua Luogeng&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> 
+                   columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;Born&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Age&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Occupation&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Country&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter02-120.png" alt="img"></p>
+<h2 id="&#x603B;&#x7ED3;">&#x603B;&#x7ED3;</h2>
+<ul>
+<li>&#x638C;&#x63E1;Series&#x7684;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x53CA;&#x65B9;&#x6CD5;</li>
+<li>&#x638C;&#x63E1;DataFrame&#x7684;&#x5E38;&#x7528;&#x5C5E;&#x6027;&#x53CA;&#x65B9;&#x6CD5;</li>
+<li>&#x638C;&#x63E1;DataFrame&#x884C;&#x5217;&#x6807;&#x7B7E;&#x7684;&#x8BBE;&#x7F6E;<ul>
+<li>df.set_index&#x3001;df.reset_index</li>
+<li>df.rename</li>
+<li>df.index&#x3001;df.columns</li>
+<li>df.reindex</li>
+</ul>
+</li>
+</ul>
+
+                    
+                    </section>
+                
+                
+                </div>
+            </div>
+        </div>
+
+        
+        <a href="../chapter02/01-pandas快速入门.html" class="navigation navigation-prev " aria-label="Previous page: pandas快速入门"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="../chapter02/03-DataFrame增删改.html" class="navigation navigation-next " aria-label="Next page: DataFrame增删改"><i class="fa fa-angle-right"></i></a>
+        
+    </div>
+</div>
+
+        
+<script src="../gitbook/app.js"></script>
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-splitter/splitter.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-code/plugin.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-toggle-chapters/toggle.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-livereload/plugin.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"disqus":{"shortName":"gitbookuse"},"github":{"url":"https://github.com/dododream"},"search-pro":{"cutWordLib":"nodejieba","defineWord":["gitbook-use"]},"sharing":{"weibo":true,"facebook":true,"twitter":true,"google":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"tbfed-pagefooter":{"copyright":"Copyright © ITCast","modify_label":"「Revision Time:","modify_format":"YYYY-MM-DD HH:mm:ss」"},"baidu":{"token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sitemap":{"hostname":"http://www.treenewbee.top"},"donate":{"wechat":"http://weixin.png","alipay":"http://alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"edit-link":{"base":"https://github.com/dododream/edit","label":"Edit This Page"},"code":{"copyButtons":true},"prism":{"css":["prismjs/themes/prism.css"]},"theme-vuejs":{},"search":{"maxIndexSize":1000000},"emphasize":{},"splitter":{},"toggle-chapters":{},"chapter-fold":{},"expandable-chapters-small":{},"fontsettings":{"theme":"white","family":"sans","size":2},"livereload":{}};
+    gitbook.start(config);
+});
+</script>
+
+        <!-- body:end -->
+    </body>
+    <!-- End of book Django课程讲义 -->
+</html>

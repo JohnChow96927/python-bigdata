@@ -1,0 +1,807 @@
+<!DOCTYPE HTML>
+<html lang="en" >
+    <!-- Start book Django课程讲义 -->
+    <head>
+        <!-- head:start -->
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>分类数据类型 | Django课程讲义</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.6.7">
+        <meta name="author" content="BigCat">
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="../gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-theme-vuejs/vue.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-emphasize/plugin.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-splitter/splitter.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-code/plugin.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-toggle-chapters/toggle.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-chapter-fold/chapter-fold.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-prism/prism.css">
+        
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
+
+        
+    
+    
+    <link rel="next" href="../chapter03/04-日期数据类型.html" />
+    
+    
+    <link rel="prev" href="../chapter03/02-数据类型转换.html" />
+    
+
+        <!-- head:end -->
+    </head>
+    <body>
+        <!-- body:start -->
+        
+    <div class="book"
+        data-level="3.3"
+        data-chapter-title="分类数据类型"
+        data-filepath="chapter03/03-分类数据类型.md"
+        data-basepath=".."
+        data-revision="Mon Jan 17 2022 16:44:16 GMT+0800 (中国标准时间)"
+        data-innerlanguage="">
+    
+
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
+
+            
+
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="../index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Introduction
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" data-path="chapter01/index.html">
+            
+                
+                    <a href="../chapter01/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                        Python数据开发简介
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1" data-path="chapter01/01-数据开发简介.html">
+            
+                
+                    <a href="../chapter01/01-数据开发简介.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.1.</b>
+                        
+                        Python数据开发简介
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="chapter01/02-开发环境搭建.html">
+            
+                
+                    <a href="../chapter01/02-开发环境搭建.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.2.</b>
+                        
+                        数据开发环境搭建
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2" data-path="chapter02/index.html">
+            
+                
+                    <a href="../chapter02/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.</b>
+                        
+                        pandas快速入门
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1" data-path="chapter02/01-pandas快速入门.html">
+            
+                
+                    <a href="../chapter02/01-pandas快速入门.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                        pandas快速入门
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="chapter02/02-Series和DataFrame.html">
+            
+                
+                    <a href="../chapter02/02-Series和DataFrame.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.2.</b>
+                        
+                        Series和DataFrame
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="chapter02/03-DataFrame增删改.html">
+            
+                
+                    <a href="../chapter02/03-DataFrame增删改.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.3.</b>
+                        
+                        DataFrame增删改
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4" data-path="chapter02/04-DataFrame查询.html">
+            
+                
+                    <a href="../chapter02/04-DataFrame查询.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.4.</b>
+                        
+                        DataFrame查询
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="3" data-path="chapter03/index.html">
+            
+                
+                    <a href="../chapter03/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.</b>
+                        
+                        pandas数据类型
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1" data-path="chapter03/01-数据类型简介.html">
+            
+                
+                    <a href="../chapter03/01-数据类型简介.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.1.</b>
+                        
+                        数据类型简介
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" data-path="chapter03/02-数据类型转换.html">
+            
+                
+                    <a href="../chapter03/02-数据类型转换.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                        数据类型转换
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter active" data-level="3.3" data-path="chapter03/03-分类数据类型.html">
+            
+                
+                    <a href="../chapter03/03-分类数据类型.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.3.</b>
+                        
+                        分类数据类型
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="chapter03/04-日期数据类型.html">
+            
+                
+                    <a href="../chapter03/04-日期数据类型.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.4.</b>
+                        
+                        日期数据类型
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4" data-path="chapter04/index.html">
+            
+                
+                    <a href="../chapter04/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.</b>
+                        
+                        pandas数据清洗
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1" data-path="chapter04/01-缺失值处理.html">
+            
+                
+                    <a href="../chapter04/01-缺失值处理.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.1.</b>
+                        
+                        缺失值处理
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2" data-path="chapter04/02-apply自定义函数.html">
+            
+                
+                    <a href="../chapter04/02-apply自定义函数.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.2.</b>
+                        
+                        apply自定义函数
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="4.3" data-path="chapter04/03-数据去重操作.html">
+            
+                
+                    <a href="../chapter04/03-数据去重操作.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.3.</b>
+                        
+                        数据去重操作
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="5" data-path="chapter05/index.html">
+            
+                
+                    <a href="../chapter05/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.</b>
+                        
+                        pandas数据处理
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="5.1" data-path="chapter05/01-数据组合.html">
+            
+                
+                    <a href="../chapter05/01-数据组合.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.1.</b>
+                        
+                        数据组合
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.2" data-path="chapter05/02-数据分组.html">
+            
+                
+                    <a href="../chapter05/02-数据分组.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.2.</b>
+                        
+                        数据分组
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="chapter05/03-数据整理.html">
+            
+                
+                    <a href="../chapter05/03-数据整理.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.3.</b>
+                        
+                        数据整理
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="chapter05/04-数据透视表.html">
+            
+                
+                    <a href="../chapter05/04-数据透视表.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        数据透视表
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="6" data-path="chapter06/index.html">
+            
+                
+                    <a href="../chapter06/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                        数据导入和导出
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="6.1" data-path="chapter06/01-pandas数据导入和导出.html">
+            
+                
+                    <a href="../chapter06/01-pandas数据导入和导出.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                        pandas数据导入和导出
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="7" data-path="chapter07/index.html">
+            
+                
+                    <a href="../chapter07/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.</b>
+                        
+                        Python数据可视化
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="7.1" data-path="chapter07/01-Matplotlib绘图.html">
+            
+                
+                    <a href="../chapter07/01-Matplotlib绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.1.</b>
+                        
+                        Matplotlib绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.2" data-path="chapter07/02-pandas绘图.html">
+            
+                
+                    <a href="../chapter07/02-pandas绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.2.</b>
+                        
+                        pandas绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.3" data-path="chapter07/03-seaborn绘图.html">
+            
+                
+                    <a href="../chapter07/03-seaborn绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.3.</b>
+                        
+                        seaborn绘图
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7.4" data-path="chapter07/04-pyecharts绘图.html">
+            
+                
+                    <a href="../chapter07/04-pyecharts绘图.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.4.</b>
+                        
+                        pyecharts绘图
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="8" data-path="chapter08/index.html">
+            
+                
+                    <a href="../chapter08/index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.</b>
+                        
+                        pandas综合案例
+                    </a>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="8.1" data-path="chapter08/03-RFM用户分群分析.html">
+            
+                
+                    <a href="../chapter08/03-RFM用户分群分析.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.1.</b>
+                        
+                        案例1：RFM用户分群分析
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="8.2" data-path="chapter08/04-常见业务指标计算.html">
+            
+                
+                    <a href="../chapter08/04-常见业务指标计算.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.2.</b>
+                        
+                        案例2：常见业务指标计算
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../" >Django课程讲义</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <h1 id="&#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B;">&#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B;</h1>
+<h2 id="&#x5B66;&#x4E60;&#x76EE;&#x6807;">&#x5B66;&#x4E60;&#x76EE;&#x6807;</h2>
+<ul>
+<li>&#x638C;&#x63E1; pandas &#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;</li>
+</ul>
+<h2 id="1-&#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B;-category">1. &#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B; category</h2>
+<blockquote>
+<p>&#x5728;&#x672C;&#x7AE0;&#x7684;3.1&#x5C0F;&#x8282;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#xFF0C;pandas &#x6709;&#x4E00;&#x79CD;&#x6570;&#x636E;&#x7C7B;&#x578B;<code>category</code>&#xFF0C;&#x7528;&#x4E8E;&#x5BF9;&#x5206;&#x7C7B;&#x503C;&#x8FDB;&#x884C;&#x7F16;&#x7801;</p>
+</blockquote>
+<h3 id="11-category-&#x7C7B;&#x578B;&#x8F6C;&#x6362;">1.1 category &#x7C7B;&#x578B;&#x8F6C;&#x6362;</h3>
+<p>1&#xFF09;<code>category</code> &#x8F6C;&#x6362;&#x4E3A; <code>object/str</code></p>
+<pre><code class="lang-python">tips<span class="token punctuation">[</span><span class="token string">&apos;sex&apos;</span><span class="token punctuation">]</span> <span class="token operator">=</span> tips<span class="token punctuation">[</span><span class="token string">&apos;sex&apos;</span><span class="token punctuation">]</span><span class="token punctuation">.</span>astype<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">)</span>
+tips<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter03-21.png" alt="img"></p>
+<p>2&#xFF09;<code>object/str</code>&#x8F6C;&#x6362;&#x4E3A; <code>category</code></p>
+<p><img src="images/chapter03-22.png" alt="img"></p>
+<h3 id="12-&#x6DF1;&#x5165;-category-&#x6570;&#x636E;&#x7C7B;&#x578B;">1.2 &#x6DF1;&#x5165; category &#x6570;&#x636E;&#x7C7B;&#x578B;</h3>
+<blockquote>
+<p>category &#x7C7B;&#x578B;&#x6570;&#x636E;&#x662F;&#x7531;&#x56FA;&#x5B9A;&#x7684;&#x4E14;&#x6709;&#x9650;&#x6570;&#x91CF;&#x7684;&#x53D8;&#x91CF;&#x7EC4;&#x6210;&#x7684;&#xFF0C;&#x6BD4;&#x5982;&#xFF1A;&#x6027;&#x522B;</p>
+</blockquote>
+<p>1&#xFF09;&#x901A;&#x8FC7; <code>pd.Categorical</code> &#x521B;&#x5EFA; <code>category</code> &#x7C7B;&#x578B;&#x6570;&#x636E;&#xFF0C;&#x540C;&#x65F6;&#x6307;&#x5B9A;&#x53EF;&#x9009;&#x9879;</p>
+<pre><code class="lang-python">s <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span>    
+    pd<span class="token punctuation">.</span>Categorical<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;a&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;b&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;c&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;d&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>                  
+                   categories<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;c&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;b&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;a&apos;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+s
+</code></pre>
+<p><img src="images/chapter03-23.png" alt="img"></p>
+<blockquote>
+<p>&#x6CE8;&#x610F;&#xFF1A;&#x4E0D;&#x5728; category &#x9650;&#x5B9A;&#x8303;&#x56F4;&#x5185;&#x7684;&#x6570;&#x636E;&#x4F1A;&#x88AB;&#x7F6E;&#x4E3A; NaN</p>
+</blockquote>
+<p>2&#xFF09;&#x901A;&#x8FC7; <code>dtype</code> &#x53C2;&#x6570;&#x521B;&#x5EFA; <code>category</code> &#x7C7B;&#x578B;&#x6570;&#x636E;</p>
+<pre><code class="lang-python">cat_series <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;B&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;D&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;C&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;A&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> dtype<span class="token operator">=</span><span class="token string">&apos;category&apos;</span><span class="token punctuation">)</span>
+cat_series
+</code></pre>
+<p><img src="images/chapter03-24.png" alt="img"></p>
+<p>3&#xFF09;&#x6B64;&#x65F6;&#x5BF9;&#x6570;&#x636E;&#x8FDB;&#x884C;&#x6392;&#x5E8F;</p>
+<pre><code class="lang-python"><span class="token comment"># &#x6392;&#x5E8F;</span>
+cat_series<span class="token punctuation">.</span>sort_values<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter03-25.png" alt="img"></p>
+<p>4&#xFF09;&#x901A;&#x8FC7; <code>CategoricalDtype</code> &#x6307;&#x5B9A; <code>category</code> &#x6570;&#x636E;&#x7684;&#x7C7B;&#x578B;&#x987A;&#x5E8F;</p>
+<pre><code class="lang-python"><span class="token keyword">from</span> pandas<span class="token punctuation">.</span>api<span class="token punctuation">.</span>types <span class="token keyword">import</span> CategoricalDtype
+<span class="token comment"># &#x81EA;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x6709;&#x5E8F;&#x7684; category &#x7C7B;&#x578B;</span>
+cat <span class="token operator">=</span> CategoricalDtype<span class="token punctuation">(</span>categories<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">&apos;B&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;D&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;A&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;C&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> ordered<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>cat_series<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">&apos;=&apos;</span> <span class="token operator">*</span> <span class="token number">20</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>cat_series<span class="token punctuation">.</span>sort_values<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">&apos;=&apos;</span> <span class="token operator">*</span> <span class="token number">20</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>cat_series<span class="token punctuation">.</span>astype<span class="token punctuation">(</span>cat<span class="token punctuation">)</span><span class="token punctuation">.</span>sort_values<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter03-26.png" alt="img"></p>
+<p>5&#xFF09;&#x82E5;&#x8981;&#x4FEE;&#x6539;&#x6392;&#x5E8F;&#x89C4;&#x5219;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>categories&#x7C7B;&#x578B;&#x7684;series&#x5BF9;&#x8C61;.cat.reorder_categories()</code>&#x65B9;&#x6CD5;</p>
+<pre><code class="lang-python"><span class="token keyword">print</span><span class="token punctuation">(</span>cat_series<span class="token punctuation">)</span>
+<span class="token comment"># &#x6CE8;&#x610F;&#xFF1A;cat&#x662F;categories&#x7C7B;&#x578B;&#x7684;Series&#x5BF9;&#x8C61;&#x7684;&#x4E00;&#x4E2A;&#x5C5E;&#x6027;&#xFF0C;&#x7528;&#x4E8E;&#x5BF9;Series&#x4E2D;&#x7684;&#x5206;&#x7C7B;&#x6570;&#x636E;&#x8FDB;&#x884C;&#x64CD;&#x4F5C;</span>
+cat_series<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>reorder_categories<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&apos;D&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;B&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;C&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;A&apos;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> ordered<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> inplace<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>cat_series<span class="token punctuation">)</span>
+</code></pre>
+<p><img src="images/chapter03-27.png" alt="img"></p>
+<h2 id="&#x603B;&#x7ED3;">&#x603B;&#x7ED3;</h2>
+<p>pandas &#x5206;&#x7C7B;&#x6570;&#x636E;&#x7C7B;&#x578B;</p>
+<ul>
+<li>category &#x7C7B;&#x578B;&#xFF0C;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#xFF0C;&#x5E76;&#x4E14;&#x53EF;&#x4EE5;&#x81EA;&#x5B9A;&#x4E49;&#x6392;&#x5E8F;&#x987A;&#x5E8F;</li>
+<li>CategoricalDtype &#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5B9A;&#x4E49;&#x987A;&#x5E8F;</li>
+</ul>
+
+                    
+                    </section>
+                
+                
+                </div>
+            </div>
+        </div>
+
+        
+        <a href="../chapter03/02-数据类型转换.html" class="navigation navigation-prev " aria-label="Previous page: 数据类型转换"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="../chapter03/04-日期数据类型.html" class="navigation navigation-next " aria-label="Next page: 日期数据类型"><i class="fa fa-angle-right"></i></a>
+        
+    </div>
+</div>
+
+        
+<script src="../gitbook/app.js"></script>
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-splitter/splitter.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-code/plugin.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-toggle-chapters/toggle.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-livereload/plugin.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"disqus":{"shortName":"gitbookuse"},"github":{"url":"https://github.com/dododream"},"search-pro":{"cutWordLib":"nodejieba","defineWord":["gitbook-use"]},"sharing":{"weibo":true,"facebook":true,"twitter":true,"google":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"tbfed-pagefooter":{"copyright":"Copyright © ITCast","modify_label":"「Revision Time:","modify_format":"YYYY-MM-DD HH:mm:ss」"},"baidu":{"token":"ff100361cdce95dd4c8fb96b4009f7bc"},"sitemap":{"hostname":"http://www.treenewbee.top"},"donate":{"wechat":"http://weixin.png","alipay":"http://alipay.png","title":"","button":"赏","alipayText":"支付宝打赏","wechatText":"微信打赏"},"edit-link":{"base":"https://github.com/dododream/edit","label":"Edit This Page"},"code":{"copyButtons":true},"prism":{"css":["prismjs/themes/prism.css"]},"theme-vuejs":{},"search":{"maxIndexSize":1000000},"emphasize":{},"splitter":{},"toggle-chapters":{},"chapter-fold":{},"expandable-chapters-small":{},"fontsettings":{"theme":"white","family":"sans","size":2},"livereload":{}};
+    gitbook.start(config);
+});
+</script>
+
+        <!-- body:end -->
+    </body>
+    <!-- End of book Django课程讲义 -->
+</html>
