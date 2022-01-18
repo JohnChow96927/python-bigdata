@@ -393,6 +393,14 @@
 
         ##### Series和数值型数据运算
 
+        ![image-20220118153945198](imgs/image-20220118153945198.png)
+
+        ##### Series和另一Series运算
+
+        ![image-20220118154217356](imgs/image-20220118154217356.png)
+
+        ![image-20220118154355721](imgs/image-20220118154355721.png)
+
 2. ### DataFrame详解
 
     1. #### 创建DataFrame
