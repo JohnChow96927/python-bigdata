@@ -275,6 +275,8 @@
 
 1. ### Series详解
 
+    #### Series是Pandas中用来存储一维数据的容器
+
     1. #### 创建Series
 
     2. #### Series常用操作
