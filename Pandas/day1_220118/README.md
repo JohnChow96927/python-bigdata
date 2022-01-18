@@ -209,7 +209,23 @@
 
         ![image-20220118111211735](imgs/image-20220118111211735.png)
 
-        
+        获取DataFrame的行标签:
+
+        ```python
+        china.index
+        ```
+
+        获取DataFrame的列标签:
+
+        ```python
+        china.columns
+        ```
+
+        设置DataFarme的行标签:
+
+        ```python
+        china_df = china.set_index('year')
+        ```
 
     2. #### DataFrame的行位置编号和列位置编号
 
@@ -218,6 +234,8 @@
 4. ### DataFrame获取指定行列的数据
 
     1. #### loc函数获取指定行列的数据
+
+        ![image-20220118115906327](imgs/image-20220118115906327.png)
 
         ![image-20220118111952092](imgs/image-20220118111952092.png)
 
@@ -229,11 +247,29 @@
 
     2. #### iloc函数获取指定行列的数据
 
-        
+        ![image-20220118115951796](imgs/image-20220118115951796.png)
+
+        ![image-20220118120217850](imgs/image-20220118120217850.png)
+
+        ![image-20220118120234704](imgs/image-20220118120234704.png)
+
+        ![image-20220118120245928](imgs/image-20220118120245928.png)
 
     3. #### loc和iloc的切片操作
 
+        ![image-20220118120343514](imgs/image-20220118120343514.png)
+
+        ![image-20220118120451761](imgs/image-20220118120451761.png)
+
     4. #### []语法获取指定行列的数据
+
+        ![image-20220118120516780](imgs/image-20220118120516780.png)
+
+        ![image-20220118120533627](imgs/image-20220118120533627.png)
+
+        ![image-20220118120547551](imgs/image-20220118120547551.png)
+
+        ![image-20220118120600775](imgs/image-20220118120600775.png)
 
 ## IV. Series和DataFrame
 
