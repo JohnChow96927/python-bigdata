@@ -405,11 +405,138 @@
 
     1. #### 创建DataFrame
 
+        - 利用字典创建DataFrame
+
+        ![image-20220118154912470](imgs/image-20220118154912470.png)
+
+        - 利用嵌套列表创建DataFrame
+
+        ![image-20220118155054186](imgs/image-20220118155054186.png)
+
     2. #### DataFrame常用操作
+
+        **常用属性和方法**：
+
+        | 属性或方法   | 说明                                     |
+        | ------------ | ---------------------------------------- |
+        | `df.shape`   | 查看 DataFrame 数据的形状                |
+        | `df.size`    | 查看 DataFrame 数据元素的总个数          |
+        | `df.ndim`    | 查看 DataFrame 数据的维度                |
+        | `len(df)`    | 获取 DataFrame 数据的行数                |
+        | `df.index`   | 获取 DataFrame 数据的行标签              |
+        | `df.columns` | 获取 DataFrame 数据的列标签              |
+        | `df.dtypes`  | 查看 DataFrame 每列数据元素的类型        |
+        | `df.info()`  | 查看 DataFrame 每列的结构                |
+        | `df.head(n)` | 获取 DataFrame 的前 n 行数据，n 默认为 5 |
+        | `df.tail(n)` | 获取 DataFrame 的后 n 行数据，n 默认为 5 |
+
+        ![image-20220118155417175](imgs/image-20220118155417175.png)
+
+        ![image-20220118155432520](imgs/image-20220118155432520.png)
+
+        ![image-20220118155747370](imgs/image-20220118155747370.png)
+
+        ![image-20220118155919051](imgs/image-20220118155919051.png)
+
+        ##### Pandas与Python常用数据类型对照：
+
+        | Pandas类型 | Python类型 | 说明                           |
+        | ---------- | ---------- | ------------------------------ |
+        | object     | string     | 字符串类型                     |
+        | int64      | int        | 整形                           |
+        | float64    | float      | 浮点型                         |
+        | datetime64 | datetime   | 日期时间类型，python中需要加载 |
+
+        ![image-20220118160339831](imgs/image-20220118160339831.png)
+
+        ##### 常用统计方法:
+
+        | 方法           | 说明                                         |
+        | -------------- | -------------------------------------------- |
+        | `s.max()`      | 计算 DataFrame 数据中每列元素的最大值        |
+        | `s.min()`      | 计算 DataFrame 数据中每列元素的最小值        |
+        | `s.count()`    | 统计 DataFrame 数据中每列非空(NaN)元素的个数 |
+        | `s.describe()` | 显示 DataFrame 数据中每列元素的各种统计值    |
+
+        ![image-20220118160826145](imgs/image-20220118160826145.png)
+
+        ![image-20220118160859493](imgs/image-20220118160859493.png)
+
+        ##### DESCRIBE:
+
+        ![image-20220118160948962](imgs/image-20220118160948962.png)
+
+        > ##### 注意：describe 方法默认只显示数值型列的统计信息，可以通过 include 参数设置显示非数值型列的统计信息
+
+        ![image-20220118161059842](imgs/image-20220118161059842.png)
 
     3. #### bool索引
 
+        
+
     4. #### DataFrame运算
 
+        | 情况                               | 说明                                                         |
+        | ---------------------------------- | ------------------------------------------------------------ |
+        | `DataFrame 和 数值型数据运算`      | DataFrame 中的每个元素和数值型数据逐一运算， 返回新的 DataFrame |
+        | `DataFrame 和 另一 DataFrame 运算` | 两个 DataFrame 中相同行标签和列标签的元素分 别进行运算，若不存在相同的行标签或列标签， 计算后的结果为 NaN，最终返回新的 DataFrame |
+
+        **DataFrame 和 数值型数据运算**：
+
+        ```python
+        # DataFrame 和 数值型数据运算
+        scientists * 2
+        ```
+
+        ![image-20220118161353697](imgs/image-20220118161353697.png)
+
+        **DataFrame 和 另一 DataFrame 运算**：
+
+        ```python
+        # DataFrame 和 另一 DataFrame 运算
+        scientists + scientists
+        ```
+
+        ![image-20220118161415836](imgs/image-20220118161415836.png)
+
+        ```python
+        # DataFrame 和 另一 DataFrame 运算
+        scientists + scientists[:4]
+        ```
+
+        ![image-20220118161433079](imgs/image-20220118161433079.png)
+
     5. #### 行标签和列标签操作
+
+        - ##### 加载数据后，指定某列数据作为 DataFrame 行标签
+
+            > ##### 加载数据文件时，如果不指定行标签，Pandas会自动加上从0开始的行标签；
+            >
+            > ##### 可以通过df.set_index('列名')的方法重新将指定的列数据设置为行标签
+
+            ![image-20220118161924992](imgs/image-20220118161924992.png)
+
+            ![image-20220118161936490](imgs/image-20220118161936490.png)
+
+            ![image-20220118161947709](imgs/image-20220118161947709.png)
+
+        - ##### 加载数据时，指定某列数据作为 DataFrame 行标签
+
+            > ##### 加载数据文件的时候，可以通过 index_col 参数，指定使用某一列数据作为行标签，index_col 参数可以指定列名或列位置编号
+
+            
+
+        - ##### 加载数据后，修改 DataFrame 行标签和列标签
+
+        - ##### 加载数据后，重新索引 DataFrame 数据
+
+
+
+
+
+
+
+
+
+
 
