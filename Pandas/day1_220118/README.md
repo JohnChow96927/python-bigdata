@@ -472,7 +472,23 @@
 
     3. #### bool索引
 
-        
+        DataFrame 支持 bool 索引，可以从 DataFrame 获取 bool 索引为 True 的对应行的数据。
+
+        ```python
+        bool_values = [False, True, True, True, False, False, False, True]
+        scientists[bool_values]
+        ```
+
+        ![image-20220118164630234](imgs/image-20220118164630234.png)
+
+        **应用：获取 scientists 中 Age 大于平均值的科学家信息**
+
+        ```python
+        # 应用：获取 scientists 中 Age 大于平均值的科学家信息
+        scientists[scientists['Age'] > scientists['Age'].mean()]
+        ```
+
+        ![image-20220118164716114](imgs/image-20220118164716114.png)
 
     4. #### DataFrame运算
 
@@ -524,11 +540,54 @@
 
             > ##### 加载数据文件的时候，可以通过 index_col 参数，指定使用某一列数据作为行标签，index_col 参数可以指定列名或列位置编号
 
-            
+            ![image-20220118163442733](imgs/image-20220118163442733.png)
+
+            ![image-20220118163457116](imgs/image-20220118163457116.png)
 
         - ##### 加载数据后，修改 DataFrame 行标签和列标签
 
+            | 方式                                                         | 说明                                                         |
+            | ------------------------------------------------------------ | ------------------------------------------------------------ |
+            | `df.rename(index={'原行标签名': '新行标签名', ...}, columns={'原列标签名': '新列标签名', ...}, inplace=False)` | 修改指定的行标签和列标签，rename修改后默认返回新的 DataFrame；如果将inplace参数设置为True，则直接对原 DataFrame 进行修改 |
+            | `df.index = ['新行标签名1', '新行标签名2', ...]` `df.columns = ['新列标签名1', '新列标签名2', ...]` | 修改DataFrame的行标签和列标签，直接对原 DataFrame 进行修改   |
+
+            ![image-20220118163705598](imgs/image-20220118163705598.png)
+
+            ```python
+            index_name = {'Rosaline Franklin': 'rosaline franklin', 'John Snow': 'john snow'}
+            columns_name = {'Born': 'born', 'Age': 'age'}
+            # 注意：rename 修改之后，返回的是一个新的 DataFrame
+            scientists.rename(index=index_name, columns=columns_name)
+            ```
+
+            ![image-20220118163721501](imgs/image-20220118163721501.png)
+
+            ```python
+            # 修改行标签
+            scientists.index = ['rosaline franklin', 'William Gosset', 'Florence Nightingale',
+                   'Marie Curie', 'Rachel Carson', 'john snow', 'Alan Turing',
+                   'Johann Gauss']
+            # 修改列标签
+            scientists.columns = ['born', 'Died', 'age', 'Occupation']
+            scientists
+            ```
+
+            ![image-20220118164212370](imgs/image-20220118164212370.png)
+
         - ##### 加载数据后，重新索引 DataFrame 数据
+
+            | 方式                                                         | 说明                                                         |
+            | ------------------------------------------------------------ | ------------------------------------------------------------ |
+            | `df.reindex(index=['行标签1', '行标签2', ...], columns=['列标签1', '列标签2', ...])` | 重新索引的行标签和列标签，只提取原 DataFrame 中指定的行和列，并且原 DataFrame 中不存在的行标签和列表签会自动添加新行或新列，默认填充为NULL，返回新的 DataFrame |
+
+            ```python
+            # 重新索引 DataFrame 数据
+            scientists.reindex(index=['William Gosset', 'Florence Nightingale', 
+                                      'Marie Curie', 'Rachel Carson', 'Hua Luogeng'], 
+                               columns=['Born', 'Age', 'Occupation', 'Country'])
+            ```
+
+            ![image-20220118164331937](imgs/image-20220118164331937.png)
 
 
 
