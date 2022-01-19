@@ -1,0 +1,4 @@
+fastapi==0.72.0
+pyecharts==1.9.1
+requests==2.26.0
+uvicorn==0.16.0
