@@ -18,16 +18,37 @@
 
 # III. Pandas数据类型
 
-1. Pandas数据类型简介
-2. 数据类型转换
-3. 分类数据类型Category
-4. 日期数据类型
-    1. Python的datetime对象
-    2. pandas中的数据转换成datetime
-    3. 提取datetime的各个部分
-    4. 日期运算和Timedelta
-    5. 日期范围
-    6. 日期序列数据操作
-    7. 
+1. ## Pandas数据类型简介
+
+2. ## 数据类型转换
+
+3. ## 分类数据类型Category
+
+4. ## 日期数据类型
+
+    1. ### Python的datetime对象
+
+    2. ### pandas中的数据转换成datetime
+
+    3. ### 提取datetime的各个部分
+
+    4. ### 日期运算和Timedelta
+
+    5. ### 日期范围
+
+    6. ### 日期序列数据操作
 
 # IV. 缺失值处理
+
+1. ## pandas缺失值NaN简介
+
+2. ## 加载包含缺失值的数据
+
+3. ## 缺失值处理
+
+
+
+
+
+
+
