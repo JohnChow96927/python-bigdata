@@ -12,7 +12,23 @@
         | ------------------ | -------------------------------------------------------- |
         | `df.append(other)` | 向 DataFrame 末尾添加 other 新行数据，返回新的 DataFrame |
 
-        
+        1）加载 `scientists.csv` 数据集
+
+        ```python
+        scientists = pd.read_csv('./data/scientists.csv')
+        scientists
+        ```
+
+        2）示例：在 `scientists` 数据末尾添加一行新数据
+
+        ```python
+        # 准备新行数据
+        new_series = pd.Series(['LuoGeng Hua', '1910-11-12', '1985-06-12', 75, 'Mathematician'], 
+                               index=['Name', 'Born', 'Died', 'Age', 'Occupation'])
+        scientists.append(new_series, ignore_index=True)
+        ```
+
+        ![image-20220120094013657](imgs/image-20220120094013657.png)
 
     2. ### 修改行
 
@@ -25,7 +41,32 @@
         | `df.loc[['行标签', ...],['列标签', ...]]`  | 修改行标签对应行的对应列的数据 |
         | `df.iloc[['行位置', ...],['列位置', ...]]` | 修改行位置对应行的对应列的数据 |
 
-         
+         1）示例：修改行标签为 4 的行的所有数据
+
+        ```python
+        scientists.loc[4] = ['Rachel Carson', '1907-5-27', '1964-4-14', 56, 'Biologist']
+        scientists
+        ```
+
+        ![image-20220120094152840](imgs/image-20220120094152840.png)
+
+        2）示例：修改行标签为 4 的行的 Born 和 Age 列的数据
+
+        ```python
+        scientists.loc[4, ['Born', 'Age']] = ['1906-5-27', 58]
+        scientists
+        ```
+
+        ![image-20220120094216103](imgs/image-20220120094216103.png)
+
+        3）示例：修改行标签为 6 的行的 Born 列的数据为 `1912-06-23`
+
+        ```python
+        scientists.loc[6, 'Born'] = '1912-06-23'
+        scientists
+        ```
+
+        ![image-20220120094314734](imgs/image-20220120094314734.png)
 
     3. ### 删除行
 
@@ -37,11 +78,19 @@
         | -------------------------- | ------------------------------------------ |
         | `df.drop(['行标签', ...])` | 删除行标签对应行的数据，返回新的 DataFrame |
 
+        1）示例：删除行标签为 1 和 3 的行
+
+        ```python
+        scientists.drop([1, 3])
+        ```
+
+        ![image-20220120094353116](imgs/image-20220120094353116.png)
+
 2. ## DataFrame列操作
 
     1. ### 新增列/修改列
 
-        > 注意：添加列/修改列时，是直接对原始 DataFrame 进行修改。
+        > ##### 注意：添加列/修改列时，是直接对原始 DataFrame 进行修改。
 
         **基本格式**：
 
@@ -50,11 +99,50 @@
         | `df['列标签']=新列`      | 1）如果 DataFrame 中不存在对应的列，则在 DataFrame 最右侧增加新列 2）如果 DataFrame 中存在对应的列，则修改 DataFrame 中该列的数据 |
         | `df.loc[:, 列标签]=新列` | 1）如果 DataFrame 中不存在对应的列，则在 DataFrame 最右侧增加新列 2）如果 DataFrame 中存在对应的列，则修改 DataFrame 中该列的数据 |
 
-          
+        1）示例：给 `scientists` 数据增加一个 `Country` 列
+
+        ```python
+        scientists['Country'] = ['England', 'England', 'England', 'French', 
+                                 'America', 'England', 'England', 'Germany']
+        或
+        scientists.loc[:, 'Country'] = ['England', 'England', 'England', 'French', 
+                                        'America', 'England', 'England', 'Germany']
+        scientists
+        ```
+
+        ![image-20220120093712193](imgs/image-20220120093712193.png)
+
+        2）示例：修改 `scientists` 数据中 `Country` 列的数据
+
+        ```python
+        scientists['Country'] = ['england', 'england', 'england', 'french', 
+                                 'america', 'england', 'england', 'germany']
+        
+        或
+        scientists.loc[:, 'Country'] = ['england', 'england', 'england', 'french', 
+                                        'america', 'england', 'england', 'germany']
+        scientists
+        ```
+
+        ![image-20220120093816671](imgs/image-20220120093816671.png)
 
     2. ### 删除列
 
-          
+        > ##### 注意：删除列时，会返回新的 DataFrame。
+
+        **基本格式**：
+
+        | 方式                               | 说明                                       |
+        | ---------------------------------- | ------------------------------------------ |
+        | `df.drop(['列标签', ...], axis=1)` | 删除列标签对应的列数据，返回新的 DataFrame |
+
+        1）示例：删除 `scientists` 数据中 `Country` 列的数据
+
+        ```python
+        scientists.drop(['Country'], axis=1)
+        ```
+
+        ![image-20220120093900999](imgs/image-20220120093900999.png)
 
 # II. DataFrame查询
 
