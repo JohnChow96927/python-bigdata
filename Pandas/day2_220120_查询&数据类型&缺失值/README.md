@@ -591,39 +591,507 @@
         tips.info()
         ```
 
-        
-
         ![image-20220120143829490](imgs/image-20220120143829490.png)
 
     2. ### 深入category数据类型
 
-        
+        > ##### category类型数据是由固定的且有限数量的变量组成的, 比如: 性别
+
+        1）通过 `pd.Categorical` 创建 `category` 类型数据，同时指定可选项
+
+        ```python
+        s = pd.Series(    
+            pd.Categorical(['a', 'b', 'c', 'd'],                  
+                           categories=['c', 'b', 'a'])
+        )
+        s
+        ```
+
+        ![image-20220120144331222](imgs/image-20220120144331222.png)
+
+        > ##### 注意：不在 category 限定范围内的数据会被置为 NaN
+
+        2）通过 `dtype` 参数创建 `category` 类型数据
+
+        ```python
+        cat_series = pd.Series(['B', 'D', 'C', 'A'], dtype='category')
+        cat_series
+        ```
+
+        ![image-20220120144407508](imgs/image-20220120144407508.png)
+
+        3）此时对数据进行排序
+
+        ```python
+        # 排序
+        cat_series.sort_values()
+        ```
+
+        ![image-20220120144433374](imgs/image-20220120144433374.png)
+
+        4）通过 `CategoricalDtype` 指定 `category` 数据的类型顺序
+
+        ```python
+        from pandas.api.types import CategoricalDtype
+        # 自定义一个有序的 category 类型
+        cat = CategoricalDtype(categories=['B', 'D', 'A', 'C'], ordered=True)
+        print(cat_series)
+        print('=' * 20)
+        print(cat_series.sort_values())
+        print('=' * 20)
+        print(cat_series.astype(cat).sort_values())
+        ```
+
+        ![image-20220120144549991](imgs/image-20220120144549991.png)
+
+        5）若要修改排序规则，也可以使用`categories类型的series对象.cat.reorder_categories()`方法
+
+        ```python
+        print(cat_series)
+        # 注意：cat是categories类型的Series对象的一个属性，用于对Series中的分类数据进行操作
+        cat_series.cat.reorder_categories(['D', 'B', 'C', 'A'], ordered=True, inplace=True)
+        print(cat_series)
+        ```
+
+        ![image-20220120144709961](imgs/image-20220120144709961.png)
 
 4. ## 日期数据类型
 
     1. ### Python的datetime对象
 
-      
+        Python内置了datetime对象, 可以在datetime库中找到
+
+        ```python
+        from datetime import datetime
+        # 获取当前时间
+        t1 = datetime.now()
+        t1
+        ```
+
+        还可以手动创建 datetime：
+
+        ```python
+        t2 = datetime(2020, 1, 1)
+        t2
+        ```
+
+        ![image-20220120145502258](imgs/image-20220120145502258.png)
+
+        两个 datetime 数据可以相减：
+
+        ```python
+        diff = t1 - t2
+        print(diff)
+        ```
+
+        ![image-20220120145534383](imgs/image-20220120145534383.png)
+
+        ```python
+        # 查看两个日期相间的结果类型
+        print(type(diff))
+        ```
+
+        ![image-20220120145622628](imgs/image-20220120145622628.png)
 
     2. ### pandas中的数据转换成datetime
 
-      
+        pandas 可以使用 `to_datetime` 函数把数据转换成 `datetime` 类型
+
+        1）加载 `country_timeseries.csv` 数据，并查看前5行的前5列数据
+
+        ```python
+        ebola = pd.read_csv('./data/country_timeseries.csv')
+        ebola.iloc[:5, :5]
+        ```
+
+        ![image-20220120145756796](imgs/image-20220120145756796.png)
+
+        > 注：从数据中看出 Date 列是日期，但通过info查看加载后数据为object类型
+
+        ```python
+        ebola.info()
+        ```
+
+        ![image-20220120145837013](imgs/image-20220120145837013.png)
+
+        3）可以通过 pandas 的 `to_datetime`方法把 `Date` 列转换为datetime，然后创建新列
+
+        ```python
+        ebola['Date_Dt'] = pd.to_datetime(ebola['Date'])
+        ebola.info()
+        ```
+
+        ![image-20220120150318378](imgs/image-20220120150318378.png)
+
+        4）如果数据中包含日期时间数据，可以在加载的时候，通过`parse_dates`参数指定自动转换为 datetime
+
+        ```python
+        # parse_dates 参数可以是列标签或列的位置编号，表示加载数据时，将指定列转换为 datetime 类型
+        ebola = pd.read_csv('./data/country_timeseries.csv', parse_dates=[0])
+        ebola.info()
+        ```
+
+        ![image-20220120150416420](imgs/image-20220120150416420.png)
 
     3. ### 提取datetime的各个部分
 
-      
+        1）获取了一个 datetime 对象，就可以提取日期的各个部分了
 
-    4. ### 日期运算和Timedelta
+        ```python
+        dt = pd.to_datetime('2021-06-01')
+        dt
+        ```
 
-      
+        ![image-20220120150634139](../../../../%E5%B0%B1%E4%B8%9A%E7%8F%AD%E7%AC%94%E8%AE%B0%E5%8F%8A%E4%BB%A3%E7%A0%81/ITheima_python_bigdata/Pandas/day2_220120_%E6%9F%A5%E8%AF%A2&%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B&%E7%BC%BA%E5%A4%B1%E5%80%BC/imgs/image-20220120150634139.png)
+
+        > 可以看到得到的数据是Timestamp类型，通过Timestamp可以获取年、月、日等部分
+
+        ```python
+        dt.year
+        dt.month
+        dt.day
+        ```
+
+        ![image-20220120150755025](../../../../%E5%B0%B1%E4%B8%9A%E7%8F%AD%E7%AC%94%E8%AE%B0%E5%8F%8A%E4%BB%A3%E7%A0%81/ITheima_python_bigdata/Pandas/day2_220120_%E6%9F%A5%E8%AF%A2&%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B&%E7%BC%BA%E5%A4%B1%E5%80%BC/imgs/image-20220120150755025.png)
+
+        除了获取 Timestamp 类型的年、月、日部分，还可以获取其他部分，具体参考文档：<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#time-date-components>
+
+        2）通过 `ebola` 数据集的 `Date` 列，创建新列 `year`、`month`、`day`
+
+        ```python
+        # 注意：dt是日期类型的Series对象的属性，用于对Series中的日期数据操作，比如提取日期各个部分
+        ebola['year'] = ebola['Date'].dt.year
+        ebola['year']
+        ```
+
+        ![image-20220120150958524](imgs/image-20220120150958524.png)
+
+        ```python
+        ebola['month'] = ebola['Date'].dt.month
+        ebola['day'] = ebola['Date'].dt.day
+        ebola[['Date','year','month','day']].head()
+        ```
+
+        ![image-20220120151037834](imgs/image-20220120151037834.png)
+
+        ```python
+        ebola.info()
+        ```
+
+        ![image-20220120151112575](imgs/image-20220120151112575.png)
+
+    4. ### 日期运算和TimeDelta
+
+        > Ebola 数据集中的 Day 列表示一个国家爆发 Ebola 疫情的天数。这一列数据可以通过日期运算重建该列
+
+        1）获取疫情爆发的第一天
+
+        ```python
+        # 获取疫情爆发的第一天
+        ebola['Date'].min()
+        ```
+
+        ![image-20220120152633677](imgs/image-20220120152633677.png)
+
+        结果说明：疫情爆发的第一天（数据集中最早的一天）是2014-03-22
+
+        2）计算疫情爆发的天数时，只需要用每个日期减去这个日期即可
+
+        ```python
+        ebola['outbreak_day'] = ebola['Date'] - ebola['Date'].min()
+        ebola[['Date', 'Day', 'outbreak_day']]
+        ```
+
+        ![image-20220120152803280](imgs/image-20220120152803280.png)
+
+        ```python
+        ebola[['Date', 'Day', 'outbreak_day']].tail()
+        ```
+
+        ![image-20220120152845157](imgs/image-20220120152845157.png)
+
+        3）执行这种日期运算，会得到一个`timedelta`对象
+
+        ```python
+        ebola.info()
+        ```
+
+        ![image-20220120152935209](imgs/image-20220120152935209.png)
 
     5. ### 日期范围
 
-      
+        > 包含日期的数据集中，并非每一个都包含固定频率。比如在ebola数据集中，日期并没有规律
+
+        ```python
+        ebola_head = ebola.iloc[:5, :5]
+        ebola_head
+        ```
+
+        ![image-20220120153054804](imgs/image-20220120153054804.png)
+
+        > 从上面的数据中可以看到，缺少2015年1月1日，如果想让日期连续，可以创建一个日期范围来为数据集重建索引。
+
+        1）可以使用 `date_range` 函数来创建连续的日期范围
+
+        ```python
+        head_range = pd.date_range(start='2014-12-31', end='2015-01-05')
+        head_range
+        ```
+
+        ![image-20220120153135056](imgs/image-20220120153135056.png)
+
+        2）对于 `ebola_head` 数据首先设置日期索引，然后为数据重建连续索引
+
+        ```python
+        ebola_head.index = ebola_head['Date']
+        ebola_head
+        ```
+
+        ![image-20220120153220424](imgs/image-20220120153220424.png)
+
+        ```python
+        ebola_head.reindex(head_range)
+        ```
+
+        ![image-20220120153246192](imgs/image-20220120153246192.png)
+
+        > 使用date_range函数创建日期序列时，可以传入一个参数freq，默认情况下freq取值为D，表示日期范围内的值是逐日递增的
+
+        ```python
+        # 产生 2020-01-01 到 2020-01-07 的工作日
+        pd.date_range('2020-01-01', '2020-01-07', freq='B')	# business day
+        ```
+
+        ![image-20220120153345242](imgs/image-20220120153345242.png)
+
+        结果说明：从结果中看到生成的日期中缺少1月4日，1月5日，为休息日
+
+        **freq 参数的可能取值**：
+
+        | Alias    | Description                     |
+        | :------- | :------------------------------ |
+        | B        | 工作日                          |
+        | C        | 自定义工作日                    |
+        | D        | 日历日                          |
+        | W        | 每周                            |
+        | M        | 月末                            |
+        | SM       | 月中和月末（每月第15天和月末）  |
+        | BM       | 月末工作日                      |
+        | CBM      | 自定义月末工作日                |
+        | MS       | 月初                            |
+        | SMS      | 月初和月中（每月第1天和第15天） |
+        | BMS      | 月初工作日                      |
+        | CBMS     | 自定义月初工作日                |
+        | Q        | 季度末                          |
+        | BQ       | 季度末工作日                    |
+        | QS       | 季度初                          |
+        | BQS      | 季度初工作日                    |
+        | A, Y     | 年末                            |
+        | BA, BY   | 年末工作日                      |
+        | AS, YS   | 年初                            |
+        | BAS, BYS | 年初工作日                      |
+        | BH       | 工作时间                        |
+        | H        | 小时                            |
+        | T, min   | 分钟                            |
+        | S        | 秒                              |
+        | L, ms    | 毫秒                            |
+        | U, us    | microseconds                    |
+        | N        | 纳秒                            |
+
+        3）在 freq 传入参数的基础上，可以做一些调整
+
+        ```python
+        # 隔一个工作日取一个工作日
+        pd.date_range('2020-01-01', '2020-01-07', freq='2B')
+        ```
+
+        ![image-20220120153536638](imgs/image-20220120153536638.png)
+
+        4）freq 传入的参数可以传入多个
+
+        ```python
+        # 示例：2020年每个月的第一个星期四
+        pd.date_range('2020-01-01','2020-12-31',freq='WOM-1THU')
+        ```
+
+        ![image-20220120153603789](imgs/image-20220120153603789.png)
+
+        ```python
+        # 示例：2020年每个月的第三个星期五
+        pd.date_range('2020-01-01','2020-12-31',freq='WOM-3FRI')
+        ```
+
+        ![image-20220120153728582](imgs/image-20220120153728582.png)
 
     6. ### 日期序列数据操作
 
-      
+        1. #### DateTimeIndex设置
+
+            1）加载丹佛市报警记录数据集 `crime.csv`
+
+            ```python
+            crime = pd.read_csv('./data/crime.csv', parse_dates=['REPORTED_DATE'])
+            crime
+            ```
+
+            ![image-20220120154913810](imgs/image-20220120154913810.png)
+
+            ```python
+            crime.info()
+            ```
+
+            ![image-20220120155001140](imgs/image-20220120155001140.png)
+
+            2）设置报警时间为行标签索引
+
+            ```python
+            crime = crime.set_index('REPORTED_DATE')
+            crime
+            ```
+
+            ![image-20220120155117075](imgs/image-20220120155117075.png)
+
+            ```python
+            # 查看数据信息
+            crime.info()
+            ```
+
+            ![image-20220120155232082](imgs/image-20220120155232082.png)
+
+        2. #### 日期数据的筛选
+
+            > 注：把行标签索引设置为日期对象后，可以直接使用日期来获取某些数据
+
+            **根据日期各部分进行数据筛选：**
+
+            1）示例：获取 `2016-05-02` 的报警记录数据
+
+            ```python
+            crime.loc['2016-05-02']
+            ```
+
+            ![image-20220120155703418](imgs/image-20220120155703418.png)
+
+            2）示例：获取 `2015-03-01` 到 `2015-06-01` 之间的报警记录数据
+
+            ```python
+            crime.loc['2015-03-01': '2015-06-01'].sort_index()
+            ```
+
+            ![image-20220120155736384](imgs/image-20220120155736384.png)
+
+            3）时间段可以包括小时分钟
+
+            ```python
+            crime.loc['2015-03-01 22': '2015-06-01 20:35:00'].sort_index()
+            ```
+
+            ![image-20220120155801443](imgs/image-20220120155801443.png)
+
+            4）示例：查询凌晨两点到五点的报警记录
+
+            ```python
+            crime.between_time('2:00', '5:00')
+            ```
+
+            ![image-20220120155827521](imgs/image-20220120155827521.png)
+
+            5）示例：查询在 `5:47` 分的报警记录
+
+            ```python
+            crime.at_time('5:47')
+            ```
+
+            ![image-20220120155855045](imgs/image-20220120155855045.png)
+
+            **DateTimeIndex 行标签排序**：
+
+            > 在按日期各部分筛选数据时，可以将数据先按日期行标签排序，排序之后根据日期筛选数据效率更高。
+            >
+            > 坑点：
+            >
+            > - 数据按照 DateTimeIndex 行标签排序之前，只能使用 df.loc[...] 的形式根据日期筛选数据，但排序之后，可以同时使用 df.loc[...] 或 df[...] 的形式根据日期筛选数据
+
+            1）示例：获取 `2015-03-04` 到 `2015-06-01` 之间的报警记录数据
+
+            ```python
+            # 数据按照 DateTimeIndex 行标签排序之前
+            %timeit crime.loc['2015-03-04': '2016-06-01']
+            ```
+
+            ![image-20220120160223799](imgs/image-20220120160223799.png)
+
+            ```python
+            # 数据按照 DateTimeIndex 行标签排序之后
+            crime_sort = crime.sort_index()
+            %timeit crime_sort.loc['2015-03-04': '2016-06-01']
+            ```
+
+            ![image-20220120160310750](imgs/image-20220120160310750.png)
+
+            > 结论：数据按照 DateTimeIndex 行标签排序之后，根据日期筛选数据效率更高
+
+            **日期序列数据的重采样**：
+
+            > 对于设置了日期类型行标签之后的数据，可以使用 resample 方法重采样，按照指定时间周期分组
+
+            1）示例：计算每周的报警数量
+
+            ```python
+            # W：即Week，表示按周进行数据重采样
+            weekly_crimes = crime_sort.resample('W').size()
+            weekly_crimes
+            ```
+
+            ![image-20220120160537293](imgs/image-20220120160537293.png)
+
+            ```python
+            # 也可以把周四作为每周的结束
+            crime_sort.resample('W-THU').size()
+            ```
+
+            ![image-20220120160615535](imgs/image-20220120160615535.png)
+
+            ```python
+            # pandas 绘图
+            %matplotlib inline
+            import matplotlib.pyplot as plt
+            # Windows 操作系统设置显示中文
+            plt.rcParams['font.sans-serif'] = 'SimHei'
+            # Mac 操作系统设置显示中文
+            # plt.rcParams['font.sans-serif'] = 'Arial Unicode MS'
+            
+            weekly_crimes.plot(figsize=(16, 8), title='丹佛报警记录情况')
+            ```
+
+            ![image-20220120160918653](imgs/image-20220120160918653.png)
+
+            2）示例：分析每季度的犯罪和交通事故数据
+
+            ```python
+            # Q：Quarter，表示按季度进行数据重采样
+            crime_quarterly = crime_sort.resample('Q')['IS_CRIME', 'IS_TRAFFIC'].sum()
+            crime_quarterly
+            ```
+
+            ![image-20220120161110856](imgs/image-20220120161110856.png)
+
+            所有日期都是该季度的最后一天，使用`QS`生成每季度的第一天
+
+            ```python
+            crime_quarterly = crime_sort.resample('QS')['IS_CRIME', 'IS_TRAFFIC'].sum()
+            crime_quarterly
+            ```
+
+            ![image-20220120161220542](imgs/image-20220120161220542.png)
+
+            ```python
+            # pandas 绘图
+            crime_quarterly.plot(figsize=(16, 8))
+            plt.title('丹佛犯罪和交通事故数据')
+            ```
+
+            ![image-20220120161333597](imgs/image-20220120161333597.png)
 
 # IV. 缺失值处理
 
