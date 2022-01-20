@@ -12,6 +12,8 @@
 
     形象地理解就是打牌理牌的过程.
 
+    ![img](imgs/insertionSort.gif)
+
 2. ### 代码实现:
 
     ```python
@@ -75,16 +77,41 @@
 
 # III. 简单选择排序
 
-> ##### 简单选择排序是
+> ##### 简单选择排序是一种简单直接的排序算法, 无论什么数据进去都是O(n^2)的时间复杂度. 使用它的时候数据规模越小越好, 唯一的好处是不占用额外的内存空间
 
 1. 算法步骤
 
-    
+    首先在未排序的序列中找到最小(大)元素, 存放到排序序列的起始位置.
+
+    再从剩余未排序元素中继续寻找最小(大)元素, 然后放到已排序序列的末尾.
+
+    重复第二步, 直到所有元素均排序完毕
+
+    ![img](imgs/selectionSort.gif)
 
 2. 代码实现
 
     ```python
+    def selectionSort(arr):
+        # 从头遍历待排序序列
+        for i in range(len(arr) - 1):
+            # 设当前i为最小值索引
+            min_index = i
+            # 从i后一位开始遍历
+            for j in range(i + 1, len(arr)):
+                # 若遍历到的数比最小值索引位置值小则设遍历到的索引为最小值索引
+                if arr[j] < arr[min_index]:
+                    min_index = j
+            # 循环结束若最小值索引发生改变
+            if min_index != i:
+                # 交换arr[min_index]和arr[i]
+                arr[min_index], arr[i] = arr[i], arr[min_index]
+        # 返回排序后序列
+        return arr
     
+    
+    if __name__ == '__main__':
+        print(selectionSort([1, 3, 5, 2, 4, 6]))
     ```
 
     
