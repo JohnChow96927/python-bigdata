@@ -148,23 +148,109 @@
 
 1. ## DataFrame条件查询操作
 
+      **基本格式**：
+
+    | 方式                                 | 说明                            |
+    | ------------------------------------ | ------------------------------- |
+    | `df.loc[条件...]` `或` `df[条件...]` | 获取 DataFrame 中满足条件的数据 |
+    | `df.query('条件...')`                | 获取 DataFrame 中满足条件的数据 |
+
+    > ##### 注意：loc 和 query 中可以跟多个条件，可以使用 &(与)、|(或) 表示条件之间的关系。
+
+    1）加载 `scientists.csv` 数据集
+
+    ```python
+    scientists = pd.read_csv('./data/scientists.csv')
+    scientists
+    ```
+
+    2）示例：获取 Age 大于 60 且 Age < 80 的科学家信息
+
+    ```python
+    # scientists[(scientists['Age'] > 60) & (scientists['Age'] < 80)] 和下面效果等价
+    scientists.loc[(scientists['Age'] > 60) & (scientists['Age'] < 80)]
     
+    # scientists[(scientists.Age > 60) & (scientists.Age < 80)] 和下面效果等价
+    scientists.loc[(scientists.Age > 60) & (scientists.Age < 80)]
+    ```
+
+    ![image-20220120095135556](imgs/image-20220120095135556.png)
+
+    ![image-20220120095157634](imgs/image-20220120095157634.png)
+
+    ```python
+    scientists.query('Age > 60 & Age < 80')
+    ```
+
+    ![image-20220120095209954](imgs/image-20220120095209954.png)
+
+    3）示例：筛选出职业是 Chemist 和 Nurse 的科学家数据
+
+    ```python
+    # 判断每一行的 Occupation 值是否是 'Chemist' 或 'Nurse'，结果是 bool 序列
+    scientists.Occupation.isin(['Chemist', 'Nurse'])
+    ```
+
+    ![image-20220120100651722](imgs/image-20220120100651722.png)
+
+    ```python
+    scientists[scientists.Occupation.isin(['Chemist', 'Nurse'])]
+    ```
+
+    ![image-20220120100703032](imgs/image-20220120100703032.png)
 
 2. ## DataFrame分组聚合操作
 
-    
+    **基本格式**：
+
+    | 方式                                                         | 说明                                                   |
+    | ------------------------------------------------------------ | ------------------------------------------------------ |
+    | `df.groupby(列标签, ...).列标签.聚合函数()` 或 `df.groupby(列标签, ...)[列标签].聚合函数()` | 按指定列分组，并对分组 数据的相应列进行相应的 聚合操作 |
+    | `df.groupby(列标签, ...).agg({'列标签': '聚合', ...})` 或 `df.groupby(列标签, ...).aggregate({'列标签': '聚合', ...})` | 按指定列分组，并对分组 数据的相应列进行相应的 聚合操作 |
+
+    常见聚合函数：
+
+    | 方式    | 说明               |
+    | ------- | ------------------ |
+    | `mean`  | 计算平均值         |
+    | `max`   | 计算最大值         |
+    | `min`   | 计算最小值         |
+    | `sum`   | 求和               |
+    | `count` | 计数(非空数据数目) |
+
+    1）示例：按照 Occupation 职业分组，并计算每组年龄的平均值
+
+    ```python
+    scientists.groupby('Occupation')['Age'].mean()
+    或
+    scientists.groupby('Occupation').Age.mean()
+    ```
+
+    ![image-20220120100932986](imgs/image-20220120100932986.png)
+
+    2）示例：按照 Occupation 职业分组，并计算每组的人数和年龄的平均值
+
+    ```python
+    scientists.groupby('Occupation').agg({'Name': 'count', 'Age': 'mean'})
+    或
+    scientists.groupby('Occupation').aggregate({'Name': 'count', 'Age': 'mean'})
+    ```
+
+      ![image-20220120101007404](imgs/image-20220120101007404.png)
+
+    ![image-20220120101021700](imgs/image-20220120101021700.png)
 
 3. ## DataFrame排序操作
 
-    
+      
 
 4. ## nlargest和nsmallest函数
 
-    
+      
 
 5. ## 基本绘图
 
-    
+      
 
 # III. Pandas数据类型
 
