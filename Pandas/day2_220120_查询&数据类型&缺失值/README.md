@@ -242,15 +242,109 @@
 
 3. ## DataFrame排序操作
 
-      
+      **基本格式**：
+
+    | 方法                                            | 说明                                                         |
+    | ----------------------------------------------- | ------------------------------------------------------------ |
+    | `df.sort_values(by=['列标签'], ascending=True)` | 将 DataFrame 按照指定列的数据进行排序： ascending 参数默认为True，表示升序； 将 ascending 设置为 False，表示降序 |
+    | `df.sort_index(ascending=True)`                 | 将 DataFrame 按照行标签进行排序： ascending 参数默认为True，表示升序； 将 ascending 设置为 False，表示降序 |
+
+    1）示例：按照 Age 从小到大进行排序
+
+    ```python
+    # 示例：按照 Age 从小到大进行排序
+    scientists.sort_values('Age')
+    ```
+
+    ![image-20220120103505089](imgs/image-20220120103505089.png)
+
+    2）示例：按照 Age 从大到小进行排序
+
+    ```python
+    # 示例：按照 Age 从大到小进行排序
+    scientists.sort_values('Age', ascending=False)
+    ```
+
+    ![image-20220120103520185](imgs/image-20220120103520185.png)
+
+    3）示例：按照行标签从大到小进行排序
+
+    ```python
+    # 示例：按照行标签从大到小进行排序
+    scientists.sort_index(ascending=False)
+    ```
+
+    ![image-20220120103553058](imgs/image-20220120103553058.png)
+
+    > ##### 补充：Series 也可以使用 sort_values 和 sort_index 函数进行排序，只不过 Series 的 sort_values 方法没有 by 参数
+
+    ```python
+    # 按照 Series 数据的值进行排序
+    scientists['Age'].sort_values()
+    ```
+
+    ```python
+    # 按照 Series 数据的标签进行排序，此处为降序
+    scientists['Age'].sort_index(ascending=False)
+    ```
+
+    ![image-20220120103634871](imgs/image-20220120103634871.png)
 
 4. ## nlargest和nsmallest函数
 
-      
+      **基本格式**：
+
+    | 方法                       | 说明                                               |
+    | -------------------------- | -------------------------------------------------- |
+    | `df.nlargest(n, columns)`  | 按照 columns 指定的列进行降序排序，并取前 n 行数据 |
+    | `df.nsmallest(n, columns)` | 按照 columns 指定的列进行升序排序，并取前 n 行数据 |
+
+    1）示例：获取 Age 最大的前 3 行数据
+
+    ```python
+    # 示例：获取 Age 最大的前 3 行数据
+    scientists.nlargest(3, columns='Age')
+    ```
+
+    ![image-20220120103711324](imgs/image-20220120103711324.png)
+
+    2）示例：获取 Age 最小的前 3 行数据
+
+    ```python
+    # 示例：获取 Age 最小的前 3 行数据
+    scientists.nsmallest(3, columns='Age')
+    ```
+
+    ![image-20220120103727139](imgs/image-20220120103727139.png)
 
 5. ## 基本绘图
 
-      
+      安装 matplotlib 扩展包：
+
+    ```python
+    # 注意先进入自己的虚拟环境，然后再安装 matplotlib 扩展包
+    pip install matplotlib -i https://pypi.tuna.tsinghua.edu.cn/simple/
+    ```
+
+    可视化在数据分析的每个步骤中都非常重要，在理解或清理数据时，可视化有助于识别数据中的趋势，比如我们计算不同职业的科学家的平均寿命：
+
+    ```python
+    scientists_avg_age_by_occupation = scientists.groupby('Occupation').Age.mean()
+    scientists_avg_age_by_occupation
+    ```
+
+    ![image-20220120102633566](imgs/image-20220120102633566.png)
+
+    可以通过plot函数画图，通过图片更直观的得出结论：
+
+    ```python
+    # 设置 jupyter 内嵌 matplotlib 绘图
+    %matplotlib inline
+    # 绘图
+    scientists_avg_age_by_occupation.plot(figsize=(20, 8))
+    ```
+
+    ![image-20220120102653737](imgs/image-20220120102653737.png)
 
 # III. Pandas数据类型
 
