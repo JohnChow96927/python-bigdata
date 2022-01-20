@@ -573,11 +573,31 @@
 
     1. ### category类型转换
 
-      
+        > Pandas有一种数据类型`category`, 用于对分类值进行编码. 
+
+        1）`category` 转换为 `object/str`
+
+        ```python
+        tips['sex'] = tips['sex'].astype(str)
+        tips.info()
+        ```
+
+        ![image-20220120143718061](imgs/image-20220120143718061.png)
+
+        2）`object/str`转换为 `category`
+
+        ```python
+        tips['sex'] = tips['sex'].astype('category')
+        tips.info()
+        ```
+
+        
+
+        ![image-20220120143829490](imgs/image-20220120143829490.png)
 
     2. ### 深入category数据类型
 
-      
+        
 
 4. ## 日期数据类型
 
