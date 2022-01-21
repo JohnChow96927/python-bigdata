@@ -1110,7 +1110,7 @@
         gapminder.groupby('year').lifeExp.transform(lifeExp_diff)
         ```
 
-        ![img](../../../../../../../images/chapter04-29.png)
+        ![image-20220121160948014](imgs/image-20220121160948014.png)
 
     2. ### transform分组填充缺失值
 
@@ -1123,7 +1123,7 @@
         tips_10
         ```
 
-        ![img](../../../../../../../images/chapter04-30.png)
+        ![image-20220121161007712](imgs/image-20220121161007712.png)
 
         2）构建缺失值
 
@@ -1133,7 +1133,7 @@
         tips_10
         ```
 
-        ![img](../../../../../../../images/chapter04-31.png)
+        ![image-20220121161031732](imgs/image-20220121161031732.png)
 
         3）分组查看缺失情况
 
@@ -1141,7 +1141,7 @@
         tips_10.groupby('sex').count()
         ```
 
-        ![img](../../../../../../../images/chapter04-43.png)
+        ![image-20220121161049553](imgs/image-20220121161049553.png)
 
         结果说明：
 
@@ -1160,7 +1160,7 @@
         total_bill_group_mean
         ```
 
-        ![img](../../../../../../../images/chapter04-32.png)
+        ![image-20220121161122580](imgs/image-20220121161122580.png)
 
         5）将计算的结果赋值新列
 
@@ -1169,7 +1169,7 @@
         tips_10
         ```
 
-        ![img](../../../../../../../images/chapter04-33.png)
+        ![image-20220121161153995](imgs/image-20220121161153995.png)
 
 4. ## 分组过滤
 
