@@ -875,11 +875,50 @@
 
     1. ### 方法简介
 
-        
+        > join 方法类是 merge 方法的一个特殊情况，被调用的数据集按照行标签列或列标签列和另一个数据集的行标签列进行关联，默认是left，可以设置为：right，inner、outer
+
+        **基本格式**：
+
+        | 方法                  | 说明                                                         |
+        | --------------------- | ------------------------------------------------------------ |
+        | `df.join(other, ...)` | 左侧数据集的行标签列或列标签列和右侧数据集的行标签列进行关联操作 |
+
+        join函数的参数：
+
+        - other：右侧数据集
+        - how：关联方式，默认为 left，可以设置为：right、inner、outer
+        - on='左侧列标签'： 左侧数据集的列标签名称，on省略时，默认为左侧数据行标签列
+        - lsuffix：关联后的数据中出现相同列名时，lsuffix指定左侧数据集出现相同列名的后缀
+        - rsuffix：关联后的数据中出现相同列名时，rsuffix指定右侧数据集出现相同列名的后缀
 
     2. ### join示例
 
-        
+        1）加载股票数据集
+
+        ```python
+        stock_2016 = pd.read_csv('./data/stocks_2016.csv')
+        stock_2017 = pd.read_csv('./data/stocks_2017.csv')
+        stock_2018 = pd.read_csv('./data/stocks_2018.csv')
+        ```
+
+        ![image-20220121145452701](imgs/image-20220121145452701.png)
+
+        2) 示例：stock_2016 和 stock_2017 按照行标签进行关联，设置为 outer 连接
+
+        ```python
+        # 示例：stock_2016 和 stock_2017 按照行标签进行管理，设置为 outer 连接
+        stock_2016.join(stock_2017, lsuffix='2016', rsuffix='2017', how='outer')
+        ```
+
+        ![image-20220121145551304](imgs/image-20220121145551304.png)
+
+        3）示例：stock_2016 和 stock_2018 按照 Symbol 进行关联
+
+        ```python
+        stock_2016.join(stock_2018.set_index('Symbol'), lsuffix='2016', rsuffix='2018', on='Symbol')
+        ```
+
+        ![image-20220121145615953](imgs/image-20220121145615953.png)
 
 # V. 数据分组
 
