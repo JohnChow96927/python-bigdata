@@ -1182,14 +1182,14 @@
     tips
     ```
 
-    ![img](../../../../../../../images/chapter04-42.png)
+    ![image-20220121161809689](imgs/image-20220121161809689.png)
 
     ```python
     # 统计不同用餐人数的数量
     tips['size'].value_counts()
     ```
 
-    ![img](../../../../../../../images/chapter04-44.png)
+    ![image-20220121161839313](imgs/image-20220121161839313.png)
 
     > 结果显示：人数为1、5和6人的数据比较少，考虑将这部分数据过滤掉
 
@@ -1198,7 +1198,7 @@
     tips_filtered
     ```
 
-    ![img](../../../../../../../images/chapter04-45.png)
+    ![image-20220121161957286](imgs/image-20220121161957286.png)
 
     2）查看结果
 
@@ -1206,7 +1206,7 @@
     tips_filtered['size'].value_counts()
     ```
 
-    ![img](../../../../../../../images/chapter04-46.png)
+    ![image-20220121162019473](imgs/image-20220121162019473.png)
 
 5. ## DataFrameGroupBy对象
 
@@ -1219,7 +1219,7 @@
         tips_10
         ```
 
-        ![img](../../../../../../../images/chapter04-47.png)
+        ![image-20220121164614196](imgs/image-20220121164614196.png)
 
         2）调用 `groupby` 方法，创建分组对象
 
@@ -1228,7 +1228,7 @@
         sex_groups
         ```
 
-        ![img](../../../../../../../images/chapter04-48.png)
+        ![image-20220121164643649](imgs/image-20220121164643649.png)
 
         > 注意：sex_groups 是一个DataFrameGroupBy对象，如果想查看计算过的分组，可以借助groups属性实现
 
@@ -1236,7 +1236,7 @@
         sex_groups.groups
         ```
 
-        ![img](../../../../../../../images/chapter04-49.png)
+        ![image-20220121164709093](imgs/image-20220121164709093.png)
 
         结果说明：上面返回的结果是 DataFrame 的索引，实际上就是原始数据的行标签
 
@@ -1244,7 +1244,7 @@
         sex_groups.size()
         ```
 
-        ![img](../../../../../../../images/chapter04-227.png)
+        ![image-20220121164836664](imgs/image-20220121164836664.png)
 
         结果说明：上面返回的结果是统计分组之后，每组的数据的数目
 
@@ -1254,7 +1254,7 @@
         sex_groups.mean()
         ```
 
-        ![img](../../../../../../../images/chapter04-50.png)
+        ![image-20220121164927817](imgs/image-20220121164927817.png)
 
         结果说明：上面结果直接计算了按 sex 分组后，所有列的平均值，但只返回了数值列的结果，非数值列不会计算平均值
 
@@ -1264,13 +1264,13 @@
         sex_groups.get_group('Female')
         ```
 
-        ![img](../../../../../../../images/chapter04-51.png)
+        ![image-20220121165002346](imgs/image-20220121165002346.png)
 
         ```python
         sex_groups.get_group('Male')
         ```
 
-        ![img](../../../../../../../images/chapter04-52.png)
+        ![image-20220121165022731](imgs/image-20220121165022731.png)
 
     2. ### 遍历分组
 
@@ -1282,7 +1282,7 @@
             print(sex_group)
         ```
 
-        ![img](../../../../../../../images/chapter04-53.png)
+        ![image-20220121165048637](imgs/image-20220121165048637.png)
 
         > 注意：DataFrameGroupBy对象不支持下标取值，会报错
 
@@ -1291,7 +1291,7 @@
         sex_groups[0]
         ```
 
-        ![img](../../../../../../../images/chapter04-59.png)
+        ![image-20220121165110207](imgs/image-20220121165110207.png)
 
         ```python
         for sex_group in sex_groups:
@@ -1301,7 +1301,7 @@
             print(type(sex_group[1]))
         ```
 
-        ![img](../../../../../../../images/chapter04-54.png)
+        ![image-20220121165216974](imgs/image-20220121165216974.png)
 
     3. ### 多个分组
 
@@ -1314,7 +1314,7 @@
         group_avg
         ```
 
-        ![img](../../../../../../../images/chapter04-55.png)
+        ![image-20220121165244545](imgs/image-20220121165244545.png)
 
         分别查看分组之后结果的列标签和行标签：
 
@@ -1323,14 +1323,14 @@
         group_avg.columns
         ```
 
-        ![img](../../../../../../../images/chapter04-56.png)
+        ![image-20220121165303484](imgs/image-20220121165303484.png)
 
         ```python
         # 查看行标签
         group_avg.index
         ```
 
-        ![img](../../../../../../../images/chapter04-58.png)
+        ![image-20220121165323794](imgs/image-20220121165323794.png)
 
         > 可以看到，多个分组之后返回的是MultiIndex，如果想得到一个普通的DataFrame，可以在结果上调用reset_index 方法
 
@@ -1338,7 +1338,7 @@
         group_avg.reset_index()
         ```
 
-        ![img](../../../../../../../images/chapter04-57.png)
+        ![image-20220121165347462](imgs/image-20220121165347462.png)
 
         也可以在分组的时候通过`as_index=False`参数（默认是True），效果与调用reset_index()一样
 
@@ -1347,7 +1347,7 @@
         tips.groupby(['sex', 'time'], as_index=False).mean()
         ```
 
-        ![img](../../../../../../../images/chapter04-60.png)
+        ![image-20220121165407405](imgs/image-20220121165407405.png)
 
 6. ## 数据划分区间(cut函数)
 
