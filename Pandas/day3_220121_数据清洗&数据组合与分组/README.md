@@ -486,6 +486,14 @@
 
 5. ## 数据向量化
 
+    ```python
+    # 标量: 一个单独的数值, 如1,2,3...
+    # 向量: 一个一维数组, 如[1,2,3]
+    # 矩阵, 一个二维数组, 如[[1,2,3],[4,5,6]]
+    # 张量: 更高维度的数组
+    # 默认向量和标量不能比较
+    ```
+
     1）创建一个 DataFrame
 
     ```python
@@ -770,14 +778,14 @@
 
         修改之前：
 
-        ![img](../../../../../../../images/chapter03-10.png)
+        ![image-20220121143807153](imgs/image-20220121143807153.png)
 
         ```python
         df1.columns = ['A', 'B', 'C', 'D']
         df3.columns = ['A', 'C', 'F', 'H']
         ```
 
-        ![img](../../../../../../../images/chapter03-11.png)
+        ![image-20220121144043813](imgs/image-20220121144043813.png)
 
         2）将 `df1` 和 `df3` 按列标签对齐，进行行拼接，默认 outer
 
@@ -785,7 +793,7 @@
         pd.concat([df1, df3])
         ```
 
-        ![img](../../../../../../../images/chapter03-12.png)
+        ![image-20220121144120908](imgs/image-20220121144120908.png)
 
         3）将 `df1` 和 `df3` 按列标签对齐，进行行拼接，设置 `join='inner'`
 
@@ -793,17 +801,75 @@
         pd.concat([df1, df3], join='inner')
         ```
 
-        ![img](../../../../../../../images/chapter03-13.png)
+        ![image-20220121144146033](imgs/image-20220121144146033.png)
 
 3. ## merge关联数据
 
     1. ### 方法简介
 
-        
+        > merge 方法类似于 sql 中的 join 语句，用于两个数据集之间按照行标签列或列标签列进行连接，默认是inner，可以设置为：left、right、outer
+
+        **基本格式**：
+
+        | 方法                                                     | 说明                       |
+        | -------------------------------------------------------- | -------------------------- |
+        | `pd.merge(left, right, ...)` 或 `left.merge(right, ...)` | 两个数据集直接进行关联操作 |
+
+        merge函数的参数：
+
+        - left：左侧数据集
+        - right：右侧数据集
+        - how：关联方式，默认为 inner，可以设置为：left、right、outer
+        - on='列名'： 左侧和右则数据以哪一列进行关联操作，左右两侧列名相同时才指定 on 参数
+        - left_on='左侧列名' 和 right_on='右侧列名'：左右两侧关联时，列名不同时使用
+        - left_index=False：默认为 False，设置为 True，表示左侧的行标签列和右侧的数据进行关联
+        - right_index=False：默认为 False，设置为 True，表示左侧的数据和右侧的行标签列进行关联
 
     2. ### merge示例
 
-        
+        1）分别加载 departments.csv 和 employees.csv 数据
+
+        ```python
+        # 加载部门数据
+        departments = pd.read_csv('./data/departments.csv')
+        departments
+        ```
+
+        ![image-20220121144539404](imgs/image-20220121144539404.png)
+
+        ```python
+        # 查看数据列的结构
+        departments.info()
+        ```
+
+        ![image-20220121144558184](imgs/image-20220121144558184.png)
+
+        ```python
+        # 加载员工数据
+        employees = pd.read_csv('./data/employees.csv')
+        employees.head()
+        ```
+
+        ![image-20220121144617840](imgs/image-20220121144617840.png)
+
+        ```python
+        # 查看数据列的结构
+        employees.info()
+        ```
+
+        ![image-20220121144639383](imgs/image-20220121144639383.png)
+
+        2）将部门数据和员工数据按照部门 ID 进行关联
+
+        ```python
+        # 部门和员工数据进行关联
+        merge_data = pd.merge(departments, employees, left_on='id', right_on='department_id')
+        # 或者
+        merge_data = departments.merge(employees, left_on='id', right_on='department_id')
+        merge_data.head()
+        ```
+
+        ![image-20220121144711068](imgs/image-20220121144711068.png)
 
 4. ## join关联数据
 
@@ -816,26 +882,6 @@
         
 
 # V. 数据分组
-
-```python
-# 标量: 一个单独的数值, 如1,2,3...
-# 向量: 一个一维数组, 如[1,2,3]
-# 矩阵, 一个二维数组, 如[[1,2,3],[4,5,6]]
-# 张量: 更高维度的数组
-# 默认向量和标量不能比较
-```
-
-```python
-import numpy as np
-
-# 函数向量化
-@np.vectorize	# 向量化装饰器
-def add_vec_2(x, y):
-    if x != 0:
-        return x + y
-```
-
-
 
 
 
