@@ -390,7 +390,7 @@
     titanic.info()
     ```
 
-    ![img](../../../../../../../images/chapter04-08.png)
+    ![image-20220121113941416](imgs/image-20220121113941416.png)
 
     ### 4.2 完成自定义函数
 
@@ -483,6 +483,81 @@
     ```
 
     ![image-20220121103731940](imgs/image-20220121103731940.png)
+
+5. ## 数据向量化
+
+    1）创建一个 DataFrame
+
+    ```python
+    df = pd.DataFrame({
+        'a': [10, 20, 30],
+        'b': [20, 30, 40]
+    })
+    df
+    ```
+
+    ![image-20220121114311682](imgs/image-20220121114311682.png)
+
+    2）此时我们创建一个函数，两个 series 计算求和
+
+    ```python
+    def add_vec(x, y):
+        return x + y
+    
+    add_vec(df['a'], df['b'])
+    ```
+
+    ![image-20220121114400658](imgs/image-20220121114400658.png)
+
+    3）稍微修改一下函数，只加一个判断条件
+
+    ```python
+    def add_vec_2(x, y):
+        if x != 0:
+            return x + y
+    
+    add_vec_2(df['a'], df['b'])
+    ```
+
+    ![image-20220121114552141](imgs/image-20220121114552141.png)
+
+    > 上面函数中，判断条件`if x != 0` ，x是series对象，是一个向量， 但20是具体的数值，int类型的变量，是一个标量。向量和标量不能直接计算，所以出错，这个时候可以使用numpy.vectorize()将函数向量化
+
+    4）在声明函数时，使用装饰器`@np.vectorize`，将函数向量化
+
+    ```python
+    import numpy as np
+    
+    # 函数向量化
+    @np.vectorize
+    def add_vec_2(x, y):
+        if x != 0:
+            return x + y
+        else:
+            return x
+    
+    add_vec_2(df['a'], df['b'])
+    ```
+
+    ![image-20220121114617404](imgs/image-20220121114617404.png)
+
+6. ## lambda函数
+
+    > 使用 `apply` 和 `applymap` 对数据进行处理时，当处理函数比较简单的时候，没有必要创建一个函数， 可以使用lambda 表达式创建匿名函数
+
+    lambda匿名函数的优点如下：
+
+    - 使用 Python 写一些执行脚本时，使用 lambda 可以省去定义函数的过程，让代码更加精简
+    - 对于一些抽象的，不会别的地方再复用的函数，有时候给函数起个名字也是个难题，使用 lambda 不需要考虑命名的问题
+    - 使用 lambda 在某些时候让代码更容易理解
+
+    1）示例：`df` 中的数据加1
+
+    ```python
+    df.apply(lambda x: x+1)
+    ```
+
+    ![image-20220121114648254](imgs/image-20220121114648254.png)
 
 # III. 数据去重操作
 
