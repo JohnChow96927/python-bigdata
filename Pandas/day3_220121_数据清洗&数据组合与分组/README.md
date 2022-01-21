@@ -673,9 +673,7 @@
         df3 = pd.read_csv('./data/concat_3.csv')
         ```
 
-        ![img](../../../../../../../images/chapter03-01.png)
-
-        ### 
+        ![image-20220121115022035](imgs/image-20220121115022035.png)
 
         2）将 `df1`、`df2`和 `df3` 按照列标签对齐，进行行拼接
 
@@ -684,21 +682,21 @@
         row_concat
         ```
 
-        ![img](../../../../../../../images/chapter03-02.png)
+        ![image-20220121115135276](imgs/image-20220121115135276.png)
 
         ```python
         # 按照行位置获取数据
         row_concat.iloc[3]
         ```
 
-        ![img](../../../../../../../images/chapter03-03.png)
+        ![image-20220121115202841](imgs/image-20220121115202841.png)
 
         ```python
         # 按照行标签获取数据
         row_concat.loc[3]
         ```
 
-        ![img](../../../../../../../images/chapter03-04.png)
+        ![image-20220121115222164](imgs/image-20220121115222164.png)
 
         3）`concat` 拼接数据时忽略原有数据的行标签
 
@@ -707,7 +705,7 @@
         pd.concat([df1, df2, df3], ignore_index=True)
         ```
 
-        ![img](../../../../../../../images/chapter03-05.png)
+        ![image-20220121115317506](imgs/image-20220121115317506.png)
 
         **DataFrame 和 Series 进行拼接**：
 
@@ -718,7 +716,7 @@
         print(new_series)
         ```
 
-        ![img](../../../../../../../images/chapter03-07.png)
+        ![image-20220121115348866](imgs/image-20220121115348866.png)
 
         2）将 `df1` 和 `new_series` 按照列标签对齐，进行行拼接
 
@@ -726,7 +724,7 @@
         pd.concat([df1, new_series])
         ```
 
-        ![img](../../../../../../../images/chapter03-08.png)
+        ![image-20220121115410300](imgs/image-20220121115410300.png)
 
     3. ### 列拼接: 按照行标签索引对齐
 
@@ -740,7 +738,7 @@
         pd.concat([df1, df2, df3], axis=1)
         ```
 
-        ![img](../../../../../../../images/chapter03-06.png)
+        ![image-20220121115555674](imgs/image-20220121115555674.png)
 
         **DataFrame 和 Series 进行拼接**：
 
@@ -751,7 +749,7 @@
         print(new_series)
         ```
 
-        ![img](../../../../../../../images/chapter03-07.png)
+        ![image-20220121115613802](imgs/image-20220121115613802.png)
 
         2）`df1` 和 `new_series` 按照行标签对齐，进行列拼接
 
@@ -759,7 +757,7 @@
         pd.concat([df1, new_series], axis=1)
         ```
 
-        ![img](../../../../../../../images/chapter03-09.png)
+        ![image-20220121115638774](imgs/image-20220121115638774.png)
 
     4. ### join参数的设置
 
