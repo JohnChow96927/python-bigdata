@@ -241,7 +241,7 @@
 
          ​	**如果select count(t2.birth)，对t2.birth计数，返回2行(因NULL不计）**
 
-     > #### 陷阱在于count(t1.birth)
+     > #### 陷阱在于count(t1.birth), 请读清楚题目!
 
 
 
