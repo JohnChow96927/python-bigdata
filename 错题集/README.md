@@ -243,6 +243,22 @@
 
      > #### 陷阱在于count(t1.birth), 请读清楚题目!
 
+24. ![image-20220123170418688](imgs/image-20220123170418688.png)
+
+     错误解析: find()找不到返回-1, index()找不到报错
+
+25. ![image-20220123170615375](imgs/image-20220123170615375.png)
+
+     错误解析: 
+
+     1. @property表示可以使用@property装饰器来创建只读属性, 故只需要通过rectangle.area来访问area属性, 不需要加括号
+
+     2. python中没有严格的私有属性, 可以通过`rectangle_Rectangle__width`访问width属性, 可以通过`rectangle_Rectangle__height`访问height属性
+
+         或者定义`get()`或`set()`方法访问私有属性
+
+     
+
 
 
 
