@@ -923,7 +923,7 @@
             axes = fig.subplots(1, 1)
             
             # 散点图
-            # c：设置根据哪列数据将散点图分类，使用不同的颜色表示
+            # c：color, 设置根据哪列数据将散点图分类，使用不同的颜色表示
             scatter = axes.scatter(tips['total_bill'], tips['tip'], 
                                    c=tips['sex_color'], s=tips['size'] * 10, alpha=0.5)
             
