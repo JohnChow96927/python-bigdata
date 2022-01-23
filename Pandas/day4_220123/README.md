@@ -88,7 +88,7 @@
         pew.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-55.png)
+        ![image-20220123103508905](imgs/image-20220123103508905.png)
 
         2）先执行下面的代码，将输出的结果和上面的输出结果进行对比
 
@@ -97,7 +97,7 @@
         pew_long
         ```
 
-        ![img](../../../../../../../images/chapter03-56.png)
+        ![image-20220123103559350](imgs/image-20220123103559350.png)
 
         结果说明：
 
@@ -107,7 +107,7 @@
         - 从数据分析的角度，有时候我们需要把数据由"宽"数据，转换成"长"数据，就如同下图中`pew_long`返回的数据
         - 在pandas中我们就可以使用`df.melt()`函数，通过各种参数，来达成宽数据集转换为长数据集的效果
 
-        ![img](../../../../../../../images/chapter03-57.png)
+        ![img](imgs/chapter03-57.png)
 
     2. ### melt函数的参数
 
@@ -128,7 +128,7 @@
         pew_long.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-58.png)
+        ![image-20220123104013109](imgs/image-20220123104013109.png)
 
     3. ### pivot函数功能演示
 
@@ -146,14 +146,14 @@
         pew_wide
         ```
 
-        ![img](../../../../../../../images/chapter04-200.png)
+        ![image-20220123104044595](imgs/image-20220123104044595.png)
 
         ```python
         # 重置行标签
         pew_wide.reset_index()
         ```
 
-        ![img](../../../../../../../images/chapter04-201.png)
+        ![image-20220123104109137](imgs/image-20220123104109137.png)
 
 2. ## stack/unstack整理数据
 
@@ -163,7 +163,7 @@
 
         常见的数据的层次化结构有两种，一种是表格，一种是"花括号"，即下面这样的两种形式：
 
-        ![img](../../../../../../../images/chapter03-69.png)
+        ![img](imgs/chapter03-69.png)
 
         stack函数会将数据从`表格结构` 变成 `花括号结构`（返回的是series类型），即将其列索引变成行索引，反之，unstack函数将数据从 `花括号结构`变成 `表格结构`，即要将其中一层的行索引变成列索引。
 
@@ -176,7 +176,7 @@
         state_fruit
         ```
 
-        ![img](../../../../../../../images/chapter03-70.png)
+        ![image-20220123104256248](imgs/image-20220123104256248.png)
 
         2）使用 `stack` 函数整理数据，查看效果：
 
@@ -185,7 +185,7 @@
         state_fruit_series
         ```
 
-        ![img](../../../../../../../images/chapter03-71.png)
+        ![image-20220123104350377](imgs/image-20220123104350377.png)
 
         3）此时可以使用 `reset_index()`，将结果变为 DataFrame
 
@@ -194,7 +194,7 @@
         state_fruit_tidy
         ```
 
-        ![img](../../../../../../../images/chapter03-72.png)
+        ![image-20220123104411226](imgs/image-20220123104411226.png)
 
         4）给 columns 重新命名
 
@@ -203,7 +203,7 @@
         state_fruit_tidy
         ```
 
-        ![img](../../../../../../../images/chapter03-73.png)
+        ![image-20220123104436568](imgs/image-20220123104436568.png)
 
     3. ### unstack功能演示
 
@@ -213,7 +213,7 @@
         state_fruit_series.unstack()
         ```
 
-        ![img](../../../../../../../images/chapter03-76.png)
+        ![image-20220123104457901](imgs/image-20220123104457901.png)
 
 3. ## wide_to_long整理数据
 
