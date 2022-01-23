@@ -553,6 +553,8 @@
     scientists_df
     ```
 
+    ![image-20220123150204368](imgs/image-20220123150204368.png)
+
 5. ## feather格式文件(了解)
 
     - feather是一种文件格式，用于存储二进制对象
@@ -654,7 +656,7 @@
 
         **基本概念**：
 
-        ![img](../../../../../../../images/chapter05-86.png)
+        ![img](imgs/chapter05-86.png)
 
         - Figure：图或画布，画图之前首先要创建一个画布
         - Axes：坐标系，一个图上可以添加多个坐标系，在每个坐标系上都可以绘图
@@ -696,7 +698,7 @@
         plt.show()
         ```
 
-        ![img](../../../../../../../images/chapter05-01.png)
+        ![img](imgs/chapter05-01.png)
 
         2）面向对象
 
@@ -729,7 +731,7 @@
         plt.show()
         ```
 
-        ![img](../../../../../../../images/chapter05-02.png)
+        ![img](imgs/chapter05-02.png)
 
     2. ### 使用Matplotlib绘制统计图
 
@@ -738,11 +740,12 @@
         1）加载 `tips` 数据集类
 
         ```python
+        import seaborn as sns
         tips = sns.load_dataset('tips')
         tips.head()
         ```
 
-        ![img](../../../../../../../)
+        ![image-20220123151111445](imgs/image-20220123151111445.png)
 
         1. #### 单变量绘图
 
@@ -763,7 +766,7 @@
 
             > 注意：直方图的柱子宽度表示该组数据的区间。
 
-            ![img](../../../../../../../images/chapter05-87.png)
+            ![image-20220123151343298](imgs/image-20220123151343298.png)
 
             **箱线图**：
 
@@ -777,11 +780,11 @@
             plt.show()
             ```
 
-            ![img](../../../../../../../images/chapter05-88.png)
+            ![image-20220123151425605](imgs/image-20220123151425605.png)
 
             箱线图补充：
 
-            ![img](../../../../../../../images/chapter05-89.png)
+            ![img](imgs/chapter05-89.png)
 
             - 箱子的中间有一条线，代表了数据的中位数
             - 箱子的上下底，分别是数据的上四分位数（Q3）和下四分位数（Q1）
@@ -804,7 +807,7 @@
             axes.bar(result.index, result.values)
             ```
 
-            ![img](../../../../../../../images/chapter05-90.png)
+            ![image-20220123151613355](imgs/image-20220123151613355.png)
 
             **饼图**：
 
@@ -815,7 +818,7 @@
             axes.pie(day_counts.values, labels=day_counts.index, autopct='%.1f%%')
             ```
 
-            ![img](../../../../../../../images/chapter05-91.png)
+            ![image-20220123153129046](imgs/image-20220123153129046.png)
 
         2. #### 双变量绘图
 
@@ -830,11 +833,15 @@
             axes.scatter(tips['total_bill'], tips['tip'])
             ```
 
-            ![img](../../../../../../../images/chapter05-92.png)
+            ![image-20220123153328272](imgs/image-20220123153328272.png)
 
             **蜂巢图**：
 
             ```python
+            # 数据量很大
+            # 1. 先随机采样，然后用采样数据绘制散点图
+            # 2. 使用全数据绘制蜂巢图
+            
             fig = plt.figure()
             axes = fig.subplots(1, 1)
             
@@ -846,7 +853,7 @@
             fig.colorbar(hb, ax=axes)
             ```
 
-            ![img](../../../../../../../images/chapter05-95.png)
+            ![image-20220123153549848](imgs/image-20220123153549848.png)
 
             **条形图**：
 
@@ -862,7 +869,7 @@
             axes.bar(result.index, result.values)
             ```
 
-            ![img](../../../../../../../images/chapter05-93.png)
+            ![image-20220123153713176](imgs/image-20220123153713176.png)
 
             **折线图**：
 
@@ -883,7 +890,7 @@
             axes.plot(result.index, result.values)
             ```
 
-            ![img](../../../../../../../images/chapter05-94.png)
+            ![image-20220123153912831](imgs/image-20220123153912831.png)
 
         3. #### 多变量绘图
 
@@ -902,7 +909,13 @@
             tips
             ```
 
-            ![img](../../../../../../../images/chapter05-14.png)
+            ![image-20220123154131227](imgs/image-20220123154131227.png)
+
+            ```python
+            tips.info()
+            ```
+
+            ![image-20220123154308030](imgs/image-20220123154308030.png)
 
             ```python
             # 创建图和坐标系
@@ -922,4 +935,4 @@
             plt.show()
             ```
 
-            ![img](../../../../../../../images/chapter05-96.png)
+            ![image-20220123154221366](imgs/image-20220123154221366.png)
