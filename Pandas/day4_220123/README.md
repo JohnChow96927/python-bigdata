@@ -15,21 +15,21 @@
     tips
     ```
 
-    ![img](../../../../../../../images/chapter04-219.png)
+    ![image-20220123093711911](imgs/image-20220123093711911.png)
 
     ```python
     # 查看数据列的信息
     tips.info()
     ```
 
-    ![img](../../../../../../../images/chapter04-220.png)
+    ![image-20220123093820267](imgs/image-20220123093820267.png)
 
     ```python
     # 查看数据中 total_bill 列的统计值
     tips['total_bill'].describe()
     ```
 
-    ![img](../../../../../../../images/chapter04-221.png)
+    ![image-20220123093837306](imgs/image-20220123093837306.png)
 
     2）将 tips 数据按照 total_bill 列的值划分为 3 个区间：`0-10、10-30、30-60`
 
@@ -39,14 +39,14 @@
     pd.cut(tips['total_bill'], bins)
     ```
 
-    ![img](../../../../../../../images/chapter04-222.png)
+    ![image-20220123093855064](imgs/image-20220123093855064.png)
 
     ```python
     # right=False：设置划分区间时左闭右开
     pd.cut(tips['total_bill'], bins, right=False)
     ```
 
-    ![img](../../../../../../../images/chapter04-223.png)
+    ![image-20220123093917574](imgs/image-20220123093917574.png)
 
     ```python
     # 设置划分区间的 labels
@@ -54,7 +54,7 @@
     pd.cut(tips['total_bill'], bins, right=False, labels=labels)
     ```
 
-    ![img](../../../../../../../images/chapter04-224.png)
+    ![image-20220123093938855](imgs/image-20220123093938855.png)
 
     ```python
     # 在 tips 数据中增加消费金额区间这一列
@@ -62,7 +62,7 @@
     tips
     ```
 
-    ![img](../../../../../../../images/chapter04-225.png)
+    ![image-20220123093956282](imgs/image-20220123093956282.png)
 
     3）按照消费区间列统计每组消费数据的数目
 
@@ -71,13 +71,23 @@
     tips.groupby('bill_group').size()
     ```
 
-    ![img](../../../../../../../images/chapter04-226.png)
+    ![image-20220123094011485](imgs/image-20220123094011485.png)
 
 # II. 数据整理
 
 1. ## melt/pivot整理数据
 
-    
+    1. ### melt函数功能演示
+
+        
+
+    2. ### melt函数的参数
+
+        
+
+    3. ### pivot函数功能演示
+
+        
 
 2. ## stack/unstack整理数据
 
