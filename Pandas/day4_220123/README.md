@@ -233,7 +233,7 @@
         movies.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-77.png)
+        ![image-20220123104657653](imgs/image-20220123104657653.png)
 
         2）去除无关字段
 
@@ -243,7 +243,7 @@
         movie_actors.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-78.png)
+        ![image-20220123104734752](imgs/image-20220123104734752.png)
 
         3）整理 columns 列名
 
@@ -253,7 +253,7 @@
         movie_actors.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-79.png)
+        ![image-20220123104754931](imgs/image-20220123104754931.png)
 
     2. ### wide_to_long函数的具体使用
 
@@ -268,13 +268,13 @@
         movie_actors_tidy.head()
         ```
 
-        ![img](../../../../../../../images/chapter03-80.png)
+        ![image-20220123104814066](imgs/image-20220123104814066.png)
 
         ```python
         movie_actors_tidy[movie_actors_tidy.movie_title=='Avatar']
         ```
 
-        ![img](../../../../../../../images/chapter03-81.png)
+        ![image-20220123104841566](imgs/image-20220123104841566.png)
 
 # III. 数据透视表
 
