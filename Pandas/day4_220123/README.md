@@ -307,14 +307,14 @@
     uniqlo.head()
     ```
 
-    ![img](../../../../../../../images/chapter04-207.png)
+    ![image-20220123110849510](imgs/image-20220123110849510.png)
 
     ```python
     # 查看加载数据列的结束
     uniqlo.info()
     ```
 
-    ![img](../../../../../../../images/chapter04-208.png)
+    ![image-20220123110924697](imgs/image-20220123110924697.png)
 
     2）示例1：统计不同种类产品在不同城市的销量
 
@@ -326,7 +326,7 @@
     result
     ```
 
-    ![img](../../../../../../../images/chapter04-209.png)
+    ![image-20220123111222508](imgs/image-20220123111222508.png)
 
     ```python
     # unstack 操作
@@ -334,7 +334,7 @@
     result
     ```
 
-    ![img](../../../../../../../images/chapter04-210.png)
+    ![image-20220123111257634](imgs/image-20220123111257634.png)
 
     **pivot_table 透视表操作**：
 
@@ -346,7 +346,7 @@
                        aggfunc='sum')
     ```
 
-    ![img](../../../../../../../images/chapter04-211.png)
+    ![image-20220123111319560](imgs/image-20220123111319560.png)
 
     2）示例2：统计不同城市、不同渠道，不同种类产品的销售额
 
@@ -357,7 +357,7 @@
     result
     ```
 
-    ![img](../../../../../../../images/chapter04-212.png)
+    ![image-20220123111446921](imgs/image-20220123111446921.png)
 
     ```python
     # unstack 操作
@@ -365,7 +365,7 @@
     result
     ```
 
-    ![img](../../../../../../../images/chapter04-213.png)
+    ![image-20220123111513649](imgs/image-20220123111513649.png)
 
     **pivot_table 透视表操作**：
 
@@ -377,7 +377,7 @@
                        aggfunc='sum')
     ```
 
-    ![img](../../../../../../../images/chapter04-214.png)
+    ![image-20220123111641157](imgs/image-20220123111641157.png)
 
     3）示例3：统计不同种类产品的销售额
 
@@ -388,7 +388,7 @@
     uniqlo.groupby('product')[['revenue']].sum()
     ```
 
-    ![img](../../../../../../../images/chapter04-215.png)
+    ![image-20220123112259241](imgs/image-20220123112259241.png)
 
     **pivot_table 透视表操作**：
 
@@ -397,7 +397,7 @@
     uniqlo.pivot_table(index='product', values='revenue', aggfunc='sum')
     ```
 
-    ![img](../../../../../../../images/chapter04-216.png)
+    ![image-20220123112409466](imgs/image-20220123112409466.png)
 
     4）示例4：统计不同城市销售的产品种类数和产品的总销售额
 
@@ -408,7 +408,7 @@
     uniqlo.groupby('city').agg({'product': 'nunique', 'revenue': 'sum'})
     ```
 
-    ![img](../../../../../../../images/chapter04-217.png)
+    ![image-20220123114208796](imgs/image-20220123114208796.png)
 
     **pivot_table 透视表操作**：
 
@@ -417,7 +417,7 @@
                        aggfunc={'product': 'nunique', 'revenue': 'sum'})
     ```
 
-    ![img](../../../../../../../images/chapter04-218.png)
+    ![image-20220123114226408](imgs/image-20220123114226408.png)
 
 # IV. 数据导入和导出
 
