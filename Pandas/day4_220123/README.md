@@ -483,7 +483,7 @@
     scientists
     ```
 
-    ![img](../../../../../../../images/chapter06-01.png)
+    ![image-20220123145048364](imgs/image-20220123145048364.png)
 
     2）将 DataFrame 数据导出到数据库
 
@@ -508,7 +508,7 @@
     # if_exists='append'：表示如果表存在就追加数据，表不存在就创建表并写入
     ```
 
-    ![img](../../../../../../../images/chapter06-02.png)
+    ![image-20220123145520452](imgs/image-20220123145520452.png)
 
     **将 SQL 表数据加载成 DataFrame 数据**：
 
@@ -519,7 +519,7 @@
     pd.read_sql('tb_scientists', engine)
     ```
 
-    ![img](../../../../../../../images/chapter06-03.png)
+    ![image-20220123145612279](imgs/image-20220123145612279.png)
 
     2）加载表数据时指定 SQL 语句
 
@@ -528,7 +528,7 @@
     pd.read_sql('select Name, Age from tb_scientists', engine)
     ```
 
-    ![img](../../../../../../../images/chapter06-04.png)
+    ![image-20220123145721063](imgs/image-20220123145721063.png)
 
 4. ## Pickle文件
 
