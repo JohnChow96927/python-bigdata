@@ -4,7 +4,7 @@
 
     > pandas库是Python数据分析的核心库
 
-    1）它不仅可以加载和转换数据，还可以做更多的事情：它还可以可视化
+    1）它不仅可以加载和转换数据，还可以可视化
 
     2）DataFrame 对象或 Series 对象直接调用`plot()`函数即可绘图
 
@@ -33,6 +33,8 @@
 
     Pandas 处理的结果可视化，建议直接用 Seaborn 绘图，具体 Pandas 的可视化可以参考如下文档
 
+    <https://www.gairuo.com/p/pandas-plot>
+
 # II. seaborn绘图
 
 1. ## seaborn简介
@@ -52,7 +54,7 @@
     tips
     ```
 
-    ![img](../../../../../../../images/chapter05-97.png)
+    ![image-20220124092832434](imgs/image-20220124092832434.png)
 
     ### 2.1 单变量绘图
 
@@ -65,21 +67,21 @@
     sns.histplot(tips, x='total_bill')
     ```
 
-    ![img](../../../../../../../images/chapter05-98.png)
+    ![image-20220124092928339](imgs/image-20220124092928339.png)
 
     ```python
     # 绘制密度图
     sns.kdeplot(tips['total_bill'])
     ```
 
-    ![img](../../../../../../../images/chapter05-99.png)
+    ![image-20220124093059417](imgs/image-20220124093059417.png)
 
     ```python
     # 绘制直方图+密度曲线
-    sns.histplot(tips, x='total_bill', bins=10, kde=True)
+    sns.histplot(tips, x='total_bill', bins=10, kde=True)	# bins: 分多少个区间
     ```
 
-    ![img](../../../../../../../images/chapter05-100.png)
+    ![image-20220124093216916](imgs/image-20220124093216916.png)
 
     **箱线图**：
 
@@ -88,7 +90,7 @@
     sns.boxplot(y='total_bill', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-101.png)
+    ![image-20220124093412068](imgs/image-20220124093412068.png)
 
     **小提琴图**：
 
@@ -97,7 +99,7 @@
     sns.violinplot(y='total_bill', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-102.png)
+    ![image-20220124093619125](imgs/image-20220124093619125.png)
 
     **条形图**：
 
@@ -111,14 +113,14 @@
     sns.barplot(x=result.index, y=result.values)
     ```
 
-    ![img](../../../../../../../images/chapter05-103.png)
+    ![image-20220124093833917](imgs/image-20220124093833917.png)
 
     ```python
     # 绘制条形图(计数图)
     sns.countplot(x='day', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-104.png)
+    ![image-20220124093910065](imgs/image-20220124093910065.png)
 
     **饼图**：
 
@@ -135,7 +137,7 @@
     sns.scatterplot(x='total_bill', y='tip', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-105.png)
+    ![image-20220124095709714](imgs/image-20220124095709714.png)
 
     **蜂巢图**：
 
@@ -144,7 +146,7 @@
     sns.jointplot(x='total_bill', y='tip', data=tips, kind='hex')
     ```
 
-    ![img](../../../../../../../images/chapter05-106.png)
+    ![image-20220124095734216](imgs/image-20220124095734216.png)
 
     **条形图**：
 
@@ -157,14 +159,14 @@
     sns.barplot(x=result.index, y=result.values)
     ```
 
-    ![img](../../../../../../../images/chapter05-107.png)
+    ![image-20220124100125339](imgs/image-20220124100125339.png)
 
     ```python
     # 绘制条形图
     sns.barplot(x='day', y='total_bill', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-108.png)
+    ![image-20220124100235606](imgs/image-20220124100235606.png)
 
     **折线图**：
 
@@ -175,14 +177,14 @@
     sns.lineplot(x=result.index, y=result.values)
     ```
 
-    ![img](../../../../../../../images/chapter05-109.png)
+    ![image-20220124100554748](imgs/image-20220124100554748.png)
 
     ```python
     # 绘制折线图
     sns.lineplot(x='day', y='total_bill', data=tips)
     ```
 
-    ![img](../../../../../../../images/chapter05-110.png)
+    ![image-20220124100640575](imgs/image-20220124100640575.png)
 
     ### 2.3.3 多变量绘图
 
@@ -195,7 +197,7 @@
     sns.scatterplot(x='total_bill', y='tip', data=tips, hue='sex')
     ```
 
-    ![img](../../../../../../../images/chapter05-111.png)
+    ![image-20220124100729462](imgs/image-20220124100729462.png)
 
     2）查看不同性别的消费客户中，消费金额 total_bill 随着 day 的变化情况
 
@@ -207,7 +209,7 @@
     sns.lineplot(x='day', y='total_bill', data=tips, hue='sex', ax=axes)
     ```
 
-    ![img](../../../../../../../images/chapter05-112.png)
+    ![image-20220124101019595](imgs/image-20220124101019595.png)
 
 # III. pyecharts绘图
 
@@ -257,7 +259,7 @@
     c.render_notebook()
     ```
 
-    ![img](../../../../../../../images/chapter05-113.png)
+    ![image-20220124101221190](imgs/image-20220124101221190.png)
 
 # IV. RFM用户分群分析
 
@@ -338,33 +340,33 @@
 
     > 获取当前时间=TODAY()
 
-    ![img](../../../../../../../images/chapter06-48.png)
+    ![img](imgs/chapter06-48-2991266.png)
 
     2）计算最近一次交易时间距当前时间的间隔
 
-    ![img](../../../../../../../images/chapter06-49.png)
+    ![img](imgs/chapter06-49-2991273.png)
 
     3）根据间隔天数长短赋予对应的 R 值
 
     > =IF(D2>60,1,IF(D2>30,2,IF(D2>14,3,IF(D2>7,4,5))))
 
-    ![img](../../../../../../../images/chapter06-50.png)
+    ![img](imgs/chapter06-50.png)
 
     4）从历史数据中取出所有用户的购买次数，根据次数多少赋予对应的 F 值
 
     > =IF(E2>10,5,IF(E2>3,4,IF(E2>2,3,IF(E2>1,2,1))))
 
-    ![img](../../../../../../../images/chapter06-51.png)
+    ![img](imgs/chapter06-51.png)
 
     5）从历史数据中汇总，求得该用户的交易总额，根据金额大小赋予对应的 M 值
 
     > =IF(F2>1000,5,IF(F2>500,4,IF(F2>300,3,IF(F2>230,2,1))))
 
-    ![img](../../../../../../../images/chapter06-52.png)
+    ![img](imgs/chapter06-52.png)
 
     6）求出 RFM的 中值，例如中位数，用中值和用户的实际值进行比较，高于中值的为高，否则为低
 
-    ![img](../../../../../../../images/chapter06-53.png)
+    ![img](imgs/chapter06-53.png)
 
     7）在得到不同会员的RFM之后，根据步骤 5 产生的两种结果有两种应用思路：
 
@@ -448,6 +450,174 @@
 
         1. #### 加载数据
 
+            1）导入模块
+
+            ```python
+            import pandas as pd
+            import numpy as np
+            import time
+            import pymysql
+            
+            from pyecharts.charts import Bar3D
+            ```
+
+            用到了5个库：time、numpy、pandas、pymysql和pyecharts
+
+            - time：用来记录插入数据库时的当前日期
+            - numpy：用来做基本数据处理等
+            - pandas：有关日期转换、数据格式化处理、主要RFM计算过程等
+            - pymysql：数据库连接工具，读写 MySQL 数据库。
+            - pyecharts：展示 3D 柱形图
+
+            2）读取数据
+
+            ```python
+            sheet_names = ['2015', '2016', '2017', '2018', '会员等级']
+            sheet_datas = [pd.read_excel('./data/sales.xlsx', sheet_name=i) for i in sheet_names]
+            ```
+
+            3）查看数据基本情况
+
+            ```python
+            for each_name, each_data in zip(sheet_names, sheet_datas):
+                print('[data summary for ============={}===============]'.format(each_name))
+                print('Overview:', '\n', each_data.head(4))# 展示数据前4条
+                print('DESC:', '\n', each_data.describe())# 数据描述性信息
+                print('NA records', each_data.isnull().any(axis=1).sum()) # 缺失值记录数    
+                print('Dtypes', each_data.dtypes) # 数据类型
+            ```
+
+            **输出结果**：
+
+            ```python
+            [data summary for =============2015===============]
+            Overview: 
+                       会员ID         订单号       提交日期    订单金额
+            0  15278002468  3000304681 2015-01-01   499.0
+            1  39236378972  3000305791 2015-01-01  2588.0
+            2  38722039578  3000641787 2015-01-01   498.0
+            3  11049640063  3000798913 2015-01-01  1572.0
+            DESC: 
+                            会员ID           订单号           订单金额
+            count  3.077400e+04  3.077400e+04   30774.000000
+            mean   2.918779e+10  4.020414e+09     960.991161
+            std    1.385333e+10  2.630510e+08    2068.107231
+            min    2.670000e+02  3.000305e+09       0.500000
+            25%    1.944122e+10  3.885510e+09      59.000000
+            50%    3.746545e+10  4.117491e+09     139.000000
+            75%    3.923593e+10  4.234882e+09     899.000000
+            max    3.954613e+10  4.282025e+09  111750.000000
+            NA records 0
+            Dtypes 会员ID             int64
+            订单号              int64
+            提交日期    datetime64[ns]
+            订单金额           float64
+            dtype: object
+            [data summary for =============2016===============]
+            Overview: 
+                       会员ID         订单号       提交日期    订单金额
+            0  39288120141  4282025766 2016-01-01    76.0
+            1  39293812118  4282037929 2016-01-01  7599.0
+            2  27596340905  4282038740 2016-01-01   802.0
+            3  15111475509  4282043819 2016-01-01    65.0
+            DESC: 
+                            会员ID           订单号           订单金额
+            count  4.127800e+04  4.127800e+04   41277.000000
+            mean   2.908415e+10  4.313583e+09     957.106694
+            std    1.389468e+10  1.094572e+07    2478.560036
+            min    8.100000e+01  4.282026e+09       0.100000
+            25%    1.934990e+10  4.309457e+09      59.000000
+            50%    3.730339e+10  4.317545e+09     147.000000
+            75%    3.923182e+10  4.321132e+09     888.000000
+            max    3.954554e+10  4.324911e+09  174900.000000
+            NA records 1
+            Dtypes 会员ID             int64
+            订单号              int64
+            提交日期    datetime64[ns]
+            订单金额           float64
+            dtype: object
+            [data summary for =============2017===============]
+            Overview: 
+                       会员ID         订单号       提交日期    订单金额
+            0  38765290840  4324911135 2017-01-01  1799.0
+            1  39305832102  4324911213 2017-01-01   369.0
+            2  34190994969  4324911251 2017-01-01   189.0
+            3  38986333210  4324911283 2017-01-01   169.0
+            DESC: 
+                            会员ID           订单号           订单金额
+            count  5.083900e+04  5.083900e+04   50839.000000
+            mean   2.882368e+10  4.332466e+09     963.587872
+            std    1.409416e+10  4.404350e+06    2178.727261
+            min    2.780000e+02  4.324911e+09       0.300000
+            25%    1.869274e+10  4.328415e+09      59.000000
+            50%    3.688044e+10  4.331989e+09     149.000000
+            75%    3.923020e+10  4.337515e+09     898.000000
+            max    3.954554e+10  4.338764e+09  123609.000000
+            NA records 0
+            Dtypes 会员ID             int64
+            订单号              int64
+            提交日期    datetime64[ns]
+            订单金额           float64
+            dtype: object
+            [data summary for =============2018===============]
+            Overview: 
+                       会员ID         订单号       提交日期    订单金额
+            0  39229691808  4338764262 2018-01-01  3646.0
+            1  39293668916  4338764363 2018-01-01  3999.0
+            2  35059646224  4338764376 2018-01-01    10.1
+            3      1084397  4338770013 2018-01-01   828.0
+            DESC: 
+                            会员ID           订单号           订单金额
+            count  8.134900e+04  8.134900e+04   81348.000000
+            mean   2.902317e+10  4.348372e+09     966.582792
+            std    1.404116e+10  4.183774e+06    2204.969534
+            min    2.780000e+02  4.338764e+09       0.000000
+            25%    1.902755e+10  4.345654e+09      60.000000
+            50%    3.740121e+10  4.349448e+09     149.000000
+            75%    3.923380e+10  4.351639e+09     899.000000
+            max    3.954614e+10  4.354235e+09  174900.000000
+            NA records 1
+            Dtypes 会员ID             int64
+            订单号              int64
+            提交日期    datetime64[ns]
+            订单金额           float64
+            dtype: object
+            [data summary for =============会员等级===============]
+            Overview: 
+                       会员ID  会员等级
+            0       100090     3
+            1  10012905801     1
+            2  10012935109     1
+            3  10013498043     1
+            DESC: 
+                            会员ID           会员等级
+            count  1.543850e+05  154385.000000
+            mean   2.980055e+10       2.259701
+            std    1.365654e+10       1.346408
+            min    8.100000e+01       1.000000
+            25%    2.213894e+10       1.000000
+            50%    3.833022e+10       2.000000
+            75%    3.927932e+10       3.000000
+            max    3.954614e+10       5.000000
+            NA records 0
+            Dtypes 会员ID    int64
+            会员等级    int64
+            dtype: object
+            ```
+
+            **结果说明**：
+
+            - 每个 sheet 中的数据都能正常读取，无任何错误
+            - 日期列(提交日期)已经被自动识别为日期格式，后期不必转换
+            - 订单金额的分布是不均匀的，里面有明显的极大值
+                - 例如2016年的数据中，最大值为174900，最小值仅为0.1
+                - 极大极小值相差过大，数据会受极值影响
+            - 订单金额中的最小值包括0、0.1这样的金额，可能为非正常订单，与业务方沟通后确认
+                - 最大值的订单金额有效，通常是客户一次性购买多个大家电商品
+                - 而订单金额为 0.1 元这类使用优惠券支付的订单，没有实际意义
+                - 除此之外，所有低于 1 元的订单均有这个问题，因此需要在后续处理中去掉
+            - 有的表中存在缺失值记录，但数量不多，选择丢弃或填充均可
+
         2. #### 数据预处理
 
             1）缺失值、异常值处理
@@ -476,7 +646,7 @@
             data_merge
             ```
 
-            ![img](../../../../../../../images/chapter06-54.png)
+            ![image-20220124112119228](imgs/image-20220124112119228.png)
 
             **代码说明**：
 
@@ -493,7 +663,7 @@
             data_merge
             ```
 
-            ![img](../../../../../../../images/chapter06-55.png)
+            ![image-20220124112203441](imgs/image-20220124112203441.png)
 
             **代码说明**：
 
@@ -521,7 +691,7 @@
             rfm_gb.head()
             ```
 
-            ![img](../../../../../../../images/chapter06-56.png)
+            ![image-20220124112606999](imgs/image-20220124112606999.png)
 
             **代码说明**：
 
@@ -541,7 +711,7 @@
             rfm_gb.iloc[:, 2:].describe().T
             ```
 
-            ![img](../../../../../../../images/chapter06-57.png)
+            ![image-20220124112730284](imgs/image-20220124112730284.png)
 
             ```python
             # 定义区间边界
@@ -609,7 +779,7 @@
             rfm_gb
             ```
 
-            ![img](../../../../../../../images/chapter06-59.png)
+            ![image-20220124112900512](imgs/image-20220124112900512.png)
 
             **代码说明**：
 
@@ -694,7 +864,7 @@
             display_data.head()
             ```
 
-            ![img](../../../../../../../images/chapter06-60.png)
+            ![image-20220124113543355](imgs/image-20220124113543355.png)
 
             **代码说明**：
 
@@ -727,7 +897,7 @@
             bar.render_notebook()
             ```
 
-            ![img](../../../../../../../images/chapter06-61.png)
+            ![image-20220124113658172](imgs/image-20220124113658172.png)
 
             输出3D图像中:
 
