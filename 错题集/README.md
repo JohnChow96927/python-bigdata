@@ -247,7 +247,7 @@
 
      错误解析: find()找不到返回-1, index()找不到报错
 
-25. ![image-20220123170615375](imgs/image-20220123170615375.png)
+25. ![image-20220123170615375](../../../%E5%B0%B1%E4%B8%9A%E7%8F%AD%E7%AC%94%E8%AE%B0%E5%8F%8A%E4%BB%A3%E7%A0%81/ITheima_python_bigdata/%E9%94%99%E9%A2%98%E9%9B%86/imgs/image-20220123170615375.png)
 
      错误解析: 
 
@@ -256,6 +256,20 @@
      2. python中没有严格的私有属性, 可以通过`rectangle_Rectangle__width`访问width属性, 可以通过`rectangle_Rectangle__height`访问height属性
 
          或者定义`get()`或`set()`方法访问私有属性
+
+26. ![image-20220123170615375](imgs/image-20220123170615375.png)
+
+27. ![image-20220124145727224](imgs/image-20220124145727224.png)
+
+     错误解析: ANY代表有一个成立即成立, ALL代表全部成立才成立.
+
+28. ![image-20220124150133476](imgs/image-20220124150133476.png)
+
+     错误解析: *SQL合法标识符* 第一个字必须是 字母 、下划线 、@和#开头，而选项A为数字开头，错误
+
+29. 
+
+     
 
      
 
