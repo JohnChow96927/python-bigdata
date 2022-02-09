@@ -371,5 +371,28 @@
 
 4. ## 打包解包、压缩解压缩
 
+   - 打包、解包
+
+     ```shell
+     tar cvf 打包名.tar  文件或者目录
+     tar xvf 打包名.tar
+     tar xvf 打包名.tar -C指定解包目录
+     ```
+
+   - 压缩、解压缩
+
+     ```shell
+     #z  gzip
+     使用 gzip 压缩和解压缩
+     #j bzip2
+     使用 bzip2 压缩和解压缩
+     
+     
+     tar zcvf itheima.tar.gz a.txt b.txt 
+     tar zcvf itheima.tgz a.txt b.txt 
+     
+     tar zxvf lrzsz-0.12.20.tar.gz -C aaa/
+     ```
+
 # V. vi/vim文本编辑器
 
