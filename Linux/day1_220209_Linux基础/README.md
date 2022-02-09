@@ -114,7 +114,7 @@
      - 注意网卡初始化开关on
      - 注意网络配置
 
-3. ## SSH协议原理与CRT软件的使用
+3. ## SSH协议原理
 
    - SSH安全外壳协议
 
@@ -128,11 +128,198 @@
      用途2:机器间的免密登录
      ```
 
-   - CRT远程软件的使用
-
-     > 详见课程附件资料
-
 # IV. Linux常用基础命令
+
+1. ## 文件系统概述
+
+   - 文件系统概述
+
+     ```properties
+     文件系统: 操作系统用于明确存储设备（常见的是磁盘，也有基于NAND Flash的固态硬盘）上的文件的方法和数据结构; 在存储设备上组织文件的方法。
+     操作系统中负责管理和存储文件信息的软件机构称为文件管理系统，简称文件系统。
+     ```
+
+     功能：==存储文件==，存储数据，管理文件。
+
+   - 文件系统常见形式：==目录树==结构。
+
+     ```properties
+     1、都是从/根目录开始的
+     2、分为两个种类：目录、文件
+     3、路径的唯一性
+     4、只有在目录下才可以继续创建下一级目录
+     ```
+
+   - Linux号称万物皆文件，组成一个目录树结构。所有的文件都是从/根目录开始的。
+
+   - 回顾重要概念
+
+     ```shell
+     #1、当前目录
+       你目前所在的目录 可以使用pwd来查看。 有的场合叫做当前工作目录。
+     
+     #2、相对路径
+       相对你当前的工作目录  路径没有/
+     
+     #3、绝对路径
+       从根目录开始,/开始的 跟你在哪里没有关系
+     
+     ```
+
+   - 特殊符号
+
+     ```properties
+      .
+     	如果是文件名字以.开始  .1.txt   表示文件是隐藏文件
+     	如果是路径中有. 表示的是当前路径  ./
+     	
+      ..
+     	当前路径的上一级   cd ../../   
+     
+      ~  
+     	表示的是用户的家目录
+     	root用户的家目录  /root
+     	普通用户的家目录   /home/用户名
+     
+       /
+        根目录
+     ```
+
+2. ## 常用操作命令
+
+   - 基础操作
+
+     ```shell
+     #1、history命令 
+        查看历史执行命令
+     #2、查看指定目录下内容
+        ls
+        ls -a      查看所有文件 包括隐藏文件
+        ls -l =ll  查看文件详细信息 包括权限 类型 时间 大小等
+        ll -h      表示以人性化的显示内容
+        ll  *      *通配符表示任意字符  ?表示有且只有一个字符
+     #3、切换工作目录
+        #如何查看自己当前的所在目录 pwd
+        cd 路径     注意自己写的是相对还是绝对的  还可以结合特殊符合使用
+        cd ./
+        cd /
+        cd ../
+        cd ~
+     #4、文件的创建与删除
+        touch 创建一个空文件  没有内容的文件
+        mkdir 创建文件夹
+        	 	 -p  父目录不存在的情况下 帮助创建
+        rm    删除文件
+        		 -f 强制删除  不给与提示
+        		 -r 递归删除 针对文件夹
+        		 -rf 杀伤力极大 问问自己在干什么
+        		 坐牢眼：rm -rf /*
+     #5、移动与复制
+     	tree  以树状图的形式显示文件夹下内容
+     		[root@node1 tmp]# tree /usr/tmp/
+     		-bash: tree: command not found
+     		#如果在linux中出现命令找不到错误，一般来说两种原因：命令写错 命令不存在
+     		在确定没有写错的情况下  可以使用yum在线快速安装
+     		yum install -y tree
+     	cp	复制文件或者文件夹
+     		-r 递归 针对文件夹
+     		/a/b  表示复制的是文件夹b
+     		/a/b/* 表示复制的是文件夹b下的所有内容
+     	mv  移动文件或者文件夹
+         mv  旧文件名 新文件名
+     ```
+
+   - 文件内容查看命令
+
+     ```shell
+     #1、cat
+     	一次查看所有的内容  适合小文件
+     #2、less
+     	按space键翻下一页，按enter键翻下一行 
+     	按b向上翻一页
+     	按q退出
+     #3、head	
+     	查看文档的前几行内容
+     	-n 指定行数
+     #4、tail
+     	- 数字  查看最后几行内容
+     	-f -F 文件  实时查看文件的变化内容
+     	（当追踪的文件丢失再出现的时候 能否继续追踪 F可以继续）
+     ```
+
+   - 管道命令 |
+
+     ```shell
+     # 命令 1 | 命令 2 
+       可以将命令 1 的结果 通过命令 2 作进一步的处理
+       
+     [root@node1 ~]# ls 
+     1.txt  anaconda-ks.cfg  hello  lrzsz-0.12.20.tar.gz  test  test.file
+     [root@node1 ~]# ls | grep ^t
+     test
+     test.file  
+     ```
+
+   - echo 输出命令
+
+     ```shell
+     #相当于print 将内容输出console控制台
+     [root@node1 test]# echo 111
+     111
+     [root@node1 test]# echo "hello "
+     hello 
+     ```
+
+   - 重定向
+
+     ```shell
+     #  >  覆盖
+     
+     #  >> 追加
+     	将前面命令成功的结果追加指定的文件中
+     
+     #  &>>
+         将前面命令失败的结果追加指定的文件中
+     
+     
+     输出的内容分为标准输出stdout  错误输出stderr
+     [root@node1 test]# echo 111
+     111
+     [root@node1 test]# echo "hello "
+     hello 
+     [root@node1 test]# echo 111 > 4.txt
+     [root@node1 test]# cat 4.txt 
+     111
+     [root@node1 test]# echo 222 > 4.txt   
+     [root@node1 test]# cat 4.txt       
+     222
+     [root@node1 test]# echo 222 >> 4.txt
+     [root@node1 test]# cat 4.txt        
+     222
+     222
+     
+     [root@node1 test]# mkdir a/b/c  >> 5.txt   
+     mkdir: cannot create directory ‘a/b/c’: No such file or directory  
+     #错误的输出无法通过>>进行追加
+     
+     [root@node1 test]# mkdir a/b/c &>> 5.txt
+     [root@node1 test]# cat 5.txt 
+     mkdir: cannot create directory ‘a/b/c’: No such file or directory
+     
+     
+     #  && 和 ||
+     	命令1 &&命令2  1执行成功才执行2
+     	命令1 ||命令2  1执行失败才执行2
+     
+     [root@node1 test]# mkdir a/b/c && echo "创建目录成功了"
+     mkdir: cannot create directory ‘a/b/c’: No such file or directory
+     [root@node1 test]# mkdir -p a/b/c && echo "创建目录成功了"
+     创建目录成功了
+     ```
+
+3. ## 搜索操作、软链接
+
+4. ## 打包解包、压缩解压缩
 
 # V. vi/vim文本编辑器
 
