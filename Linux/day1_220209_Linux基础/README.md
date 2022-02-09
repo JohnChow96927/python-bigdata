@@ -319,6 +319,56 @@
 
 3. ## 搜索操作、软链接
 
+   - 软链接
+
+     - 可以对比理解windows快捷方式。
+
+       ```shell
+       有没有硬链接呢？  有
+       ln -s 目标文件的绝对路径 软链接名（快捷方式）
+       ln    目标文件的绝对路径 硬链接名
+       ```
+
+   - Linux搜索文件
+
+     - find
+
+       ```shell
+       find <指定目录> <指定条件> <指定动作>
+       	默认是搜索当前目录下，所有文件 显示在屏幕上
+       	
+       find . -name "*.log" -ls 在当前目录查找以.log 结尾的文件， 并显示详细信息。
+       find /root/ -perm 777 查找/root/目录下权限为 777 的文件
+       find . -type f -name "*.log" 查找当目录，以.log 结尾的普通文件
+       find . -type d | sort 查找当前所有目录并排序
+       find . -size +100M 查找当前目录大于 100M 的文件	
+       ```
+
+     - grep
+
+       ```shell
+       ps -ef | grep sshd 查找指定 ssh 服务进程
+       ps -ef | grep sshd | grep -v grep 查找指定服务进程，排除 gerp 本身
+       ps -ef | grep sshd -c 查找指定进程个数
+       ```
+
+     - locate
+
+       ```shell
+       #相当于find -name 但是效率比find更高 因为底层维护了一个索引的数据库 默认一天更新一次
+       #通常的使用习惯是 先更新在查找
+       updatedb
+       locate /etc/sh 搜索 etc 目录下所有以 sh 开头的文件
+       locate pwd 查找和 pwd 相关的所有文件
+       ```
+
+     - ==which==
+
+       ```shell
+       #查找环境变量中的内容 
+       通常用于判断软件是否配置环境变量。
+       ```
+
 4. ## 打包解包、压缩解压缩
 
 # V. vi/vim文本编辑器
