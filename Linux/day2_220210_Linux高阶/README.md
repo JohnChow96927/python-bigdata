@@ -282,9 +282,9 @@
 
 - ## 完整命令参考链接
 
-  https://www.runoob.com/linux/linux-command-manual.html
+  > https://www.runoob.com/linux/linux-command-manual.html
 
-  https://man.linuxde.net/
+  > https://man.linuxde.net/
 
 # III. 大数据集群环境搭建
 
