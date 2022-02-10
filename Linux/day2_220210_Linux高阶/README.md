@@ -613,10 +613,273 @@
 
 # IV. Linux软件安装
 
-- rpm包管理器与常用命令
-- rpm安装MySQL详解
-- yum包管理器
-- JDK的安装与环境变量配置
+- ## rpm包管理器与常用命令
+
+  - ### rpm包管理器
+
+    - 指的是==RH系列的包管理器==（Red-Hat Package Manager），也是RH安装的软件包后缀名。当下已经扩大了行业标准。
+    - RPM指的是使用rpm命令进行软件的查看、安装、卸载。
+    - 弊端
+      - 提前下载rpm包，==手动安装==
+      - 自己==解决包之间的依赖==
+
+  - ### rpm常用命令
+
+    ```shell
+    #查询
+    [root@node1 ~]# rpm -qa  | grep ssh
+    libssh2-1.8.0-3.el7.x86_64
+    openssh-clients-7.4p1-21.el7.x86_64
+    openssh-7.4p1-21.el7.x86_64
+    openssh-server-7.4p1-21.el7.x86_64
+    
+    [root@node1 ~]# rpm -qi openssh-clients-7.4p1-21.el7.x86_64
+    Name        : openssh-clients
+    Version     : 7.4p1
+    Release     : 21.el7
+    Architecture: x86_64
+    Install Date: Mon 17 May 2021 11:37:29 AM CST
+    Group       : Applications/Internet
+    Size        : 2643176
+    License     : BSD
+    Signature   : RSA/SHA256, Fri 23 Aug 2019 05:37:26 AM CST, Key ID 24c6a8a7f4a80eb5
+    Source RPM  : openssh-7.4p1-21.el7.src.rpm
+    Build Date  : Fri 09 Aug 2019 09:40:49 AM CST
+    Build Host  : x86-01.bsys.centos.org
+    Relocations : (not relocatable)
+    Packager    : CentOS BuildSystem <http://bugs.centos.org>
+    Vendor      : CentOS
+    URL         : http://www.openssh.com/portable.html
+    Summary     : An open source SSH client applications
+    Description :
+    OpenSSH is a free version of SSH (Secure SHell), a program for logging
+    into and executing commands on a remote machine. This package includes
+    the clients necessary to make encrypted connections to SSH servers.
+    
+    
+    #rpm安装软件
+    rpm -ivh rpm 包的全路径
+    
+    
+    #rpm卸载软件  注意 通常采用忽略依赖的方式进行卸载
+    rpm -e --nodeps 软件包名称
+    
+    因为在卸载的时候 默认会将软件连同其依赖一起卸载 为了避免影响其他软件的正常使用 通常建议使用--nodeps参数忽略依赖的存在 只卸载程序自己
+    ```
+
+- ## rpm安装MySQL详解
+
+  - ==**本课程中软件安装目录规范**==
+
+    ```shell
+    /export/server      #软件安装目录
+    /export/software    #安装包的目录
+    /export/data        #软件运行数据保存的目录
+    /export/logs        #软件运行日志
+    
+    mkdir -p /export/server
+    mkdir -p /export/software 
+    mkdir -p /export/data
+    mkdir -p /export/logs
+    ```
+
+  > 友情提示：==MySQL只需要安装在node1服务器即可==。
+
+  - 卸载Centos7自带的mariadb
+
+    ```shell
+    [root@node3 ~]# rpm -qa|grep mariadb
+    mariadb-libs-5.5.64-1.el7.x86_64
+    
+    [root@node3 ~]# rpm -e mariadb-libs-5.5.64-1.el7.x86_64 --nodeps
+    [root@node3 ~]# rpm -qa|grep mariadb                            
+    [root@node3 ~]# 
+    ```
+
+  - 安装mysql
+
+    ```shell
+    mkdir /export/software/mysql
+    
+    #上传mysql-5.7.29-1.el7.x86_64.rpm-bundle.tar 到上述文件夹下  解压
+    tar xvf mysql-5.7.29-1.el7.x86_64.rpm-bundle.tar
+    
+    #执行安装依赖
+    yum -y install libaio
+    
+    [root@node3 mysql]# rpm -ivh mysql-community-common-5.7.29-1.el7.x86_64.rpm mysql-community-libs-5.7.29-1.el7.x86_64.rpm mysql-community-client-5.7.29-1.el7.x86_64.rpm mysql-community-server-5.7.29-1.el7.x86_64.rpm 
+    
+    warning: mysql-community-common-5.7.29-1.el7.x86_64.rpm: Header V3 DSA/SHA1 Signature, key ID 5072e1f5: NOKEY
+    Preparing...                          ################################# [100%]
+    Updating / installing...
+       1:mysql-community-common-5.7.29-1.e################################# [ 25%]
+       2:mysql-community-libs-5.7.29-1.el7################################# [ 50%]
+       3:mysql-community-client-5.7.29-1.e################################# [ 75%]
+       4:mysql-community-server-5.7.29-1.e################                  ( 49%)
+    ```
+
+  - mysql初始化设置
+
+    ```shell
+    #初始化
+    mysqld --initialize
+    
+    #更改所属组
+    chown mysql:mysql /var/lib/mysql -R
+    
+    #启动mysql
+    systemctl start mysqld.service
+    
+    #查看生成的临时root密码 
+    cat  /var/log/mysqld.log
+    
+    [Note] A temporary password is generated for root@localhost: o+TU+KDOm004
+    ```
+
+  - 修改root密码 授权远程访问 设置开机自启动
+
+    ```shell
+    [root@node2 ~]# mysql -u root -p
+    Enter password:     #这里输入在日志中生成的临时密码
+    Welcome to the MySQL monitor.  Commands end with ; or \g.
+    Your MySQL connection id is 3
+    Server version: 5.7.29
+    
+    Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+    
+    Oracle is a registered trademark of Oracle Corporation and/or its
+    affiliates. Other names may be trademarks of their respective
+    owners.
+    
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+    
+    mysql> 
+    
+    
+    #更新root密码  设置为hadoop
+    mysql> alter user user() identified by "hadoop";
+    Query OK, 0 rows affected (0.00 sec)
+    
+    
+    #授权
+    mysql> use mysql;
+    
+    mysql> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'hadoop' WITH GRANT OPTION;
+    
+    mysql> FLUSH PRIVILEGES; 
+    
+    #mysql的启动和关闭 状态查看 （这几个命令必须记住）
+    systemctl stop mysqld
+    systemctl status mysqld
+    systemctl start mysqld
+    
+    #建议设置为开机自启动服务
+    [root@node2 ~]# systemctl enable  mysqld                             
+    Created symlink from /etc/systemd/system/multi-user.target.wants/mysqld.service to /usr/lib/systemd/system/mysqld.service.
+    
+    #查看是否已经设置自启动成功
+    [root@node2 ~]# systemctl list-unit-files | grep mysqld
+    mysqld.service                                enabled 
+    ```
+
+  - Centos7 ==干净==卸载mysql 5.7
+
+    ```shell
+    #关闭mysql服务
+    systemctl stop mysqld.service
+    
+    #查找安装mysql的rpm包
+    [root@node3 ~]# rpm -qa | grep -i mysql      
+    mysql-community-libs-5.7.29-1.el7.x86_64
+    mysql-community-common-5.7.29-1.el7.x86_64
+    mysql-community-client-5.7.29-1.el7.x86_64
+    mysql-community-server-5.7.29-1.el7.x86_64
+    
+    #卸载
+    [root@node3 ~]# yum remove mysql-community-libs-5.7.29-1.el7.x86_64 mysql-community-common-5.7.29-1.el7.x86_64 mysql-community-client-5.7.29-1.el7.x86_64 mysql-community-server-5.7.29-1.el7.x86_64
+    
+    #查看是否卸载干净
+    rpm -qa | grep -i mysql
+    
+    #查找mysql相关目录 删除
+    [root@node1 ~]# find / -name mysql
+    /var/lib/mysql
+    /var/lib/mysql/mysql
+    /usr/share/mysql
+    
+    [root@node1 ~]# rm -rf /var/lib/mysql
+    [root@node1 ~]# rm -rf /var/lib/mysql/mysql
+    [root@node1 ~]# rm -rf /usr/share/mysql
+    
+    #删除默认配置 日志
+    rm -rf /etc/my.cnf 
+    rm -rf /var/log/mysqld.log
+    ```
+
+- ## yum包管理器
+
+  - 介绍
+
+    ```shell
+    Yum（全称为 Yellow dog Updater, Modified）是一个在Fedora和RedHat以及CentOS中的Shell前端软件包管理器。基于RPM包管理，能够从指定的服务器自动下载RPM包并且安装，可以自动处理依赖性关系，并且一次安装所有依赖的软件包，无须繁琐地一次次下载、安装。
+    ```
+
+  - 特点
+
+    - ==自动下载rpm包 进行安装==  前提是联网  不联网就凉凉
+    - ==解决包之间的依赖关系==
+
+  - 原理
+
+    ```shell
+    #yum之所以强大原因在于有yum源。里面有很多rpm包和包之间的依赖。
+    yum源分为网络yum源和本地yum源。
+    
+    #其中网络yum源在centos默认集成了镜像地址 只要联网就可以自动寻找到可用的yum源。 前提联网
+    #也可以自己搭建本地yum源。实现从本地下载安装。
+    ```
+
+  - 命令
+
+    ```shell
+    #列出当前机器可用的yum源信息
+    yum repolist all
+     
+    #清楚yum源缓存信息
+    yum clean all
+    
+    #查找软件
+    rpm list | grep 软件包名称
+    
+    #yum安装软件   -y表示自动确认 否则在安装的时候需要手动输入y确认下载安装
+    yum install -y xx软件名
+    yum install -y mysql-*
+    
+    #yum卸载软件
+    yum -y remove 要卸载的软件包名
+    ```
+
+  - 扩展：Linux上面 ==command  not found== 错误的解决方案。
+
+    ```shell
+    #错误信息
+    -bash: xxxx: command not found
+    
+    #原因
+    	1、命令写错了
+    	2、命令或者对应的软件没有安装
+    
+    #通用解决方案
+    	如果是软件没有安装 
+    	yum install -y  xxxx
+    	
+    	如果上述安装依然无法解决，需要确认命令所属于什么软件
+    	比如jps命令属于jdk软件。
+    ```
+
+- ## JDK的安装与环境变量配置
+
+  
 
 # V. 了解shell编程
 
