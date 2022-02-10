@@ -589,10 +589,39 @@
 
 - scp远程拷贝
 
+  - 背景：linux上copy文件 cp
+
+  - 命令：==scp==  基于ssh协议跨网络cp动作
+
+  - 注意事项，没有配置ssh免密登录也可以进行scp远程复制 只不过在复制的时候需要输入密码。
+
+  - 栗子
+
+    ```shell
+    #本地copy其他机器
+    scp itcast.txt root@node2:/root/
+    
+    scp -r linux02/ root@node2:$PWD   #copy文件夹 -r参数   $PWD copy至和本机相同当前路径
+    
+    #为什么不需要输入密码 
+    因为配置了机器之间的免密登录  如果没有配置 scp的时候就需要输入密码
+    
+    
+    #copy其他机器文件到本地
+    scp root@node2:/root/itcast.txt  ./  
+    ```
+
 # IV. Linux软件安装
 
-# V. 软件安装
+- rpm包管理器与常用命令
+- rpm安装MySQL详解
+- yum包管理器
+- JDK的安装与环境变量配置
 
-# VI. 了解shell编程
+# V. 了解shell编程
 
- 
+- 简介
+- 入门案例
+- 变量
+- 字符串
+- 反引号
