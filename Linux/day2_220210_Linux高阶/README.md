@@ -288,17 +288,205 @@
 
 # III. 大数据集群环境搭建
 
-分布式（Distributed）、集群（Cluster）
+- ## 分布式, 集群:
 
-分布式：多台机器每台机器上部署不同组件
+  > 分布式：多台不同的服务器中部署==不同的服务模块==，通过远程调用协同工作，对外提供服务。
 
-集群：多台机器每台机器上部署相同组件
+  > 集群：多台不同的服务器中部署==相同应用或服务模块==，构成一个集群，通过负载均衡设备对外提供服务。
 
-负载均衡
+  - ### 共同点: 都使用多台机器, 与此相对的概念叫做单机系统
 
-## 环境搭建：
+  - ### 注意：在口语中经常混淆分布式和集群的概念的。都是汲取两者的共同点。
 
+    ```
+    比如：搭建一个分布式hadoop集群。
+    
+    背后意思：不要搭建单机版本的 搭建多台机器版本的。 
+    ```
 
+  - ### 集群架构
+
+    - #### 主从架构
+
+      ```properties
+      主角色:master leader   大哥
+      从角色:slave  follower 小弟
+      
+      主从角色各司其职，需要共同配合对外提供服务。
+      常见的是一主多从 也就是一个大哥带着一群小弟共同干活。
+      ```
+
+    - #### 主备架构
+
+      ```properties
+      主角色:active
+      备角色:standby
+      
+      主备架构主要是解决单点故障问题的 保证业务的持续可用。
+      常见的是一主一备 也可以一主多备。
+      ```
+
+- ## 虚拟机克隆
+
+  - ### 前提：是虚拟机处于关闭状态。
+
+  - ### 分类：链接克隆 、==完整克隆==
+
+    ```
+    链接克隆：表层是互相独立 底层存储是交织在一起；
+    完整克隆：完全互相独立的两台虚拟机
+    ```
+
+  - ### 修改克隆机器属性。
+
+    ```
+    完整克隆意味着两台机器一模一样。在局域网网络中，有些属性是决定不能一样的。
+    比如：IP、MAC、主机名hostname
+    ```
+
+  - ### 3台虚拟机硬件分配   16G
+
+    ```
+    node1  2*2cpu  4G内存
+    node2  1*1cpu  2G内存
+    node3  1*1cpu  2G内存
+    ```
+
+- ## 修改IP与主机名
+
+  - ### 命令修改  临时生效 重启无效
+
+  - ### ==修改底层配置文件==  永久生效  重启才能生效。
+
+  ```
+  vim /etc/hostname
+  
+  node2.itcast.cn
+  ```
+
+  ```shell
+  #修改IP
+  vim /etc/sysconfig/network-scripts/ifcfg-ens33
+  
+  TYPE="Ethernet"     #网卡类型 以太网
+  PROXY_METHOD="none"
+  BROWSER_ONLY="no"
+  BOOTPROTO="none"   #ip等信息是如何决定的？  dhcp动态分配、 static|node 手动静态分配
+  DEFROUTE="yes"
+  IPV4_FAILURE_FATAL="no"
+  IPV6INIT="yes"
+  IPV6_AUTOCONF="yes"
+  IPV6_DEFROUTE="yes"
+  IPV6_FAILURE_FATAL="no"
+  IPV6_ADDR_GEN_MODE="stable-privacy"
+  NAME="ens33"        #网卡名称
+  UUID="74c3b442-480d-4885-9ffd-e9f0087c9cf7"
+  DEVICE="ens33"
+  ONBOOT="yes"       #是否开机启动网卡服务
+  IPADDR="192.168.88.151"  #IP地址
+  PREFIX="24"   #子网掩码   等效: NETMASK=255.255.255.0
+  GATEWAY="192.168.88.2"  #网关服务
+  DNS1="192.168.88.2"     #网关DNS解析
+  DOMAIN="114.114.114.114" 
+  IPV6_PRIVACY="no
+  
+  #修改主机名hostname
+  node2.itcast.cn
+  
+  ```
+
+- ## 使用__reboot__命令重启Linux
+
+- ## 修改hosts映射
+
+  - ### 背景
+
+    ```
+    在网络中，很少直接通过IP访问机器，原因难记。
+    通常使用主机名或者域名访问。
+    此时就会涉及到主机名域名和IP之间的解析
+    ```
+
+  - ### 实现
+
+    - ==本地hosts文件==   进行本地查找解析
+
+      ```
+      localhost 127.0.0.1 
+      ```
+
+    - 寻找DNS服务器  域名解析服务
+
+  - ### 配置本地hosts文件实现
+
+    - #### linux上
+
+      ```shell
+      vim /etc/hosts
+      
+      127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+      ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+      
+      192.168.88.151 node1.itcast.cn node1
+      192.168.88.152 node2.itcast.cn node2
+      192.168.88.153 node3.itcast.cn node3
+      ```
+
+    - #### windows上
+
+      ```shell
+      C:\Windows\System32\drivers\etc\hosts
+      
+      192.168.88.151 node1.itcast.cn node1
+      192.168.88.152 node2.itcast.cn node2
+      192.168.88.153 node3.itcast.cn node3
+      ```
+
+- ## 关闭防火墙
+
+  - ### firewalld
+
+    ```shell
+    #查看防火墙状态
+    systemctl status firewalld
+    
+    #关闭防火墙
+    systemctl stop firewalld
+    
+    #关闭防火墙开机自启动
+    systemctl disable firewalld
+    
+    
+    #centos服务开启关闭命令
+    centos6:(某些可以在centos7下使用)
+    	service 服务名 start|stop|status|restart
+    	chkconfig on|off 服务名
+    	
+    centos7:	
+    	systemctl start|stop|status|restart 服务名
+    	systemctl disable|enable 服务名  #开机自启动  关闭自启
+    ```
+
+  - ### selinux
+
+    ```shell
+    vim /etc/selinux/config
+    
+    # This file controls the state of SELinux on the system.
+    # SELINUX= can take one of these three values:
+    #     enforcing - SELinux security policy is enforced.
+    #     permissive - SELinux prints warnings instead of enforcing.
+    #     disabled - No SELinux policy is loaded.
+    SELINUX=disabled
+    ```
+
+    - #### 需要重启生效
+
+- ## 集群时间同步
+
+- ## ssh免密登录
+
+- scp远程拷贝
 
 # IV. Linux软件安装
 
