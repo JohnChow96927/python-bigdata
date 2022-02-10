@@ -484,7 +484,108 @@
 
 - ## 集群时间同步
 
+  - 背景：分布式软件==主从角色之间通常基于心跳时间差来判断角色工作是否正常==。
+
+  - 国家授时中心  北京时间  
+
+    - 授时服务器  国家级 企业级 院校级
+
+  - linux上如何同步时间
+
+    - ntp 网络时间协议 实现基于网络授时同步时间。
+
+    - date
+
+      ```shell
+      查看当前的系统时间 也可以手动指定设置时间 不精准
+      
+      [root@node1 ~]# date
+      Thu May 20 14:50:30 CST 2021
+      ```
+
+    - ntpdate
+
+      ```shell
+      #ntpdate  授时服务器
+      
+      ntpdate ntp5.aliyun.com
+      
+      [root@node1 ~]# ntpdate ntp5.aliyun.com
+      20 May 14:53:07 ntpdate[2187]: step time server 203.107.6.88 offset -1.354309 sec
+      
+      #企业中运维往往不喜欢ntpdate 原因是这个命令同步时间是立即的。不是平滑过渡的。
+      ```
+
+    - ntpd软件
+
+      ```
+      通过配置 平滑的和授时服务器进行时间的同步
+      ```
+
+    - VMware软件可以提高让虚拟机的时间和windows笔记本保持一致。
+
 - ## ssh免密登录
+
+  - 背景
+
+    ```shell
+    #在进行集群操作的时候  需要从一台机器ssh登录到其他机器进行操作 默认情况下需要密码
+    
+    [root@node1 ~]# ssh node2
+    The authenticity of host 'node2 (192.168.227.152)' can't be established.
+    ECDSA key fingerprint is SHA256:5d9A04L+QfYuW7X1J44cKNbyUtuwPkhg+//0OfEczHI.
+    ECDSA key fingerprint is MD5:74:f0:65:22:af:fd:65:af:ff:91:37:83:3f:ef:ac:81.
+    Are you sure you want to continue connecting (yes/no)? yes
+    Warning: Permanently added 'node2,192.168.227.152' (ECDSA) to the list of known hosts.
+    root@node2's password: 
+    Last login: Thu May 20 11:48:37 2021 from 192.168.227.1
+    
+    [root@node2 ~]# exit
+    logout
+    Connection to node2 closed.
+    ```
+
+  - 需求：能否实现免密ssh登录。
+
+    - 技术：SSH方式2：免密登录功能。  原理见课堂画图
+
+  - 实现
+
+    ```shell
+    #实现node1----->node2
+    
+    #step1
+    在node1生成公钥私钥
+    ssh-keygen  一顿回车 在当前用户的home下生成公钥私钥 隐藏文件
+    
+    [root@node1 .ssh]# pwd
+    /root/.ssh
+    [root@node1 .ssh]# ll
+    total 12
+    -rw------- 1 root root 1675 May 20 11:59 id_rsa
+    -rw-r--r-- 1 root root  402 May 20 11:59 id_rsa.pub
+    -rw-r--r-- 1 root root  183 May 20 11:50 known_hosts
+    
+    #step2
+    copy公钥给node2
+    ssh-copy-id node2  
+    注意第一次需要密码
+    
+    #step3  
+    [root@node1 .ssh]# ssh node2
+    Last login: Thu May 20 12:03:30 2021 from node1.itcast.cn
+    [root@node2 ~]# exit
+    logout
+    Connection to node2 closed.
+    ```
+
+  - 课程要求
+
+    ```shell
+    #至少打通node1---->node1  node2  node3 这三个免密登录 
+    
+    #至于所有机器之间要不要互相免密登录 看你心情
+    ```
 
 - scp远程拷贝
 
