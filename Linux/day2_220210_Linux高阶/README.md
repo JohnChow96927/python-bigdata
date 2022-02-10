@@ -221,10 +221,70 @@
 
 # II. Linux常用系统信息查看
 
-- 查看时间, 日期
-- 查看磁盘, 内存信息
-- 查看进程信息
-- 完整命令参考链接
+- ## 查看时间, 日期
+
+  ```shell
+  [root@node1 linux02]# date
+  Tue May 18 14:44:13 CST 2021
+  [root@node1 linux02]# date +"%Y-%m-%d %H:%M:%S"
+  2021-05-18 14:44:53
+  [root@node1 linux02]# cal
+        May 2021      
+  Su Mo Tu We Th Fr Sa
+                     1
+   2  3  4  5  6  7  8
+   9 10 11 12 13 14 15
+  16 17 18 19 20 21 22
+  23 24 25 26 27 28 29
+  30 31
+  
+  #关于时间日期的同步  同步网络授时
+  #大数据都是集群环境  基本要求：集群的时间同步问题
+  ```
+
+- ## 查看磁盘, 内存信息
+
+  ```shell
+  df -h    #disk free 显示磁盘剩余空间
+  [root@node1 linux02]# df -h
+  Filesystem               Size  Used Avail Use% Mounted on
+  devtmpfs                 1.9G     0  1.9G   0% /dev
+  tmpfs                    1.9G     0  1.9G   0% /dev/shm
+  tmpfs                    1.9G   12M  1.9G   1% /run
+  tmpfs                    1.9G     0  1.9G   0% /sys/fs/cgroup
+  /dev/mapper/centos-root   38G  1.5G   36G   5% /  #重点关注这一行
+  /dev/sda1               1014M  152M  863M  15% /boot
+  /dev/mapper/centos-home   19G   33M   19G   1% /home
+  tmpfs                    378M     0  378M   0% /run/user/0
+  tmpfs                    378M     0  378M   0% /run/user/1000
+  
+  #内存使用情况
+  [root@node1 linux02]# free -h
+                total        used        free      shared  buff/cache   available
+  Mem:           3.7G        257M        3.0G         11M        467M        3.2G
+  Swap:          3.9G          0B        3.9G
+  ```
+
+- ## 查看进程信息
+
+  ```shell
+  #在安装了jdk的情况下 有一个命令专门用于查看本机运行的java进程。
+  jps
+  
+  [root@node1 ~]# jps  #必须在安装好jdk之后可以使用  
+  -bash: jps: command not found
+  
+  #查看本机运行的所有进程
+  ps -ef | grep 进程名
+  
+  #通常根据查询的进程号 结合kill -9 进程号  杀死进程
+  ```
+
+- ## 完整命令参考链接
+
+  https://www.runoob.com/linux/linux-command-manual.html
+
+  https://man.linuxde.net/
 
 # III. 大数据集群环境搭建
 
