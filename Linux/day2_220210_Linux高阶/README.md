@@ -1048,6 +1048,94 @@
 
 - 变量
 
+  - 语法格式
+
+    ```shell
+    变量＝值  #注意等号两边不能有空格
+    
+    [root@node1 linux02]# name = allen
+    -bash: name: command not found
+    [root@node1 linux02]# name=allen 
+    ```
+
+    变量的使用
+
+    ```shell
+    [root@node1 linux02]# name=allen  
+    [root@node1 linux02]# echo name
+    name
+    [root@node1 linux02]# echo $name
+    allen
+    [root@node1 linux02]# echo ${name}
+    allen
+    [root@node1 linux02]# echo $namewoon
+    
+    [root@node1 linux02]# echo ${name}woon
+    allenwoon
+    
+    #建议提取变量的时候 使用{}标识变量的边界范围
+    
+    #unset 删除变量
+    #readonly 只读变量  不能修改 相当于java中final修饰的
+    
+    [root@node1 linux02]# name=allen
+    [root@node1 linux02]# echo ${name}
+    allen
+    [root@node1 linux02]# name=james
+    [root@node1 linux02]# echo ${name}
+    james
+    [root@node1 linux02]# readonly name=allen
+    [root@node1 linux02]# echo ${name}       
+    allen
+    [root@node1 linux02]# name=james         
+    -bash: name: readonly variable
+    [root@node1 linux02]# unset name
+    -bash: unset: name: cannot unset: readonly variable
+    
+    #只读变量不能够进行删除 只会随着生命周期结束而结束
+    #对应shell命令来说 生命周期就是窗口关闭
+    #对应shell脚本来说 生命周期就是shell执行结束
+    ```
+
 - 字符串
 
+  - 定义字符串
+    - 可以使用单引号 可以使用双引号 可以不使用引号
+    - ==推荐使用双引号 实现变量的提取==
+
+  ```shell
+  [root@node1 linux02]# name=allen
+  [root@node1 linux02]# echo $name
+  allen
+  [root@node1 linux02]# name1='allen1'
+  [root@node1 linux02]# echo $name1   
+  allen1
+  [root@node1 linux02]# name2="allen2" 
+  [root@node1 linux02]# echo $name2
+  allen2
+  
+  [root@node1 linux02]# echo my name is ${name}
+  my name is allen
+  [root@node1 linux02]# echo 'my name is ${name}'
+  my name is ${name}
+  [root@node1 linux02]# echo "my name is ${name}" 
+  my name is allen
+  ```
+
 - 反引号
+
+  - - __`__
+    - 英文状态下输入ESC下面
+    - 功能：表示执行反引号的命令
+
+    ```shell
+    #需求：把date命令执行的结果赋值给nowtime变量 
+    [root@node1 linux02]# date
+    Tue May 18 17:01:55 CST 2021
+    [root@node1 linux02]# nowtime=date   #如果没有反引号 理解为字符串
+    [root@node1 linux02]# echo $nowtime
+    date
+    [root@node1 linux02]# nowtime=`date`  #使用反引号 理解为执行命令 把命令的结果进行赋值
+    [root@node1 linux02]# echo $nowtime 
+    Tue May 18 17:02:41 CST 2021
+    ```
