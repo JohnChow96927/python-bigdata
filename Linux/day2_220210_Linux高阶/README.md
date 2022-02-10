@@ -879,12 +879,175 @@
 
 - ## JDK的安装与环境变量配置
 
-  
+  - 简单：解压即可使用 但是通常配置环境变量，以便于在各个路径下之间使用java。
+
+  - 要求：==**JDK1.8版本**==。
+
+  - 步骤
+
+    ```shell
+    #上传安装包到/export/server下
+    jdk-8u241-linux-x64.tar.gz
+    
+    #解压到当前目录
+    tar zxvf jdk-8u241-linux-x64.tar.gz
+    
+    #删除红色安装包（可选）
+    rm -rf jdk-8u241-linux-x64.tar.gz
+    
+    #配置环境变量
+    vim /etc/profile            #G + o  
+    
+    export JAVA_HOME=/export/server/jdk1.8.0_241
+    export PATH=$PATH:$JAVA_HOME/bin
+    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+    
+    
+    #重新价值环境变量文件 让配置生效
+    source /etc/profile
+    
+    [root@node1 ~]# java -version      
+    java version "1.8.0_241"
+    ```
+
+  - 将node1的JDK安装包scp给其他机器
+
+    ```shell
+     #scp安装包
+     cd /export/server/
+     scp -r jdk1.8.0_241/ root@node2:$PWD
+     
+     #scp环境变量文件
+     scp /etc/profile node2:/etc/
+     
+     #别忘了 其他机器source哦
+     source /etc/profile
+    ```
 
 # V. 了解shell编程
 
-- 简介
+- shell介绍
+
+  - 指的是一种==程序==，往往是使用C语言开发，功能是访问操作系统内核获取操作系统信息。
+  - 指的是==shell脚本语言==，使用什么样的命令语法格式去控制shell程序访问内核。
+  - 通常情况下，所说shell编程指的shell脚本编程，==学习shell语法规则==。
+
+- shell编程开发规范
+
+  - 在哪里编写？
+
+  ```
+  只要能进行文本编辑的地方都可以写  linux上常使用vim编辑器开发
+  ```
+
+  - 需要编译？
+
+  ```
+  不需要编译
+  ```
+
+  - 如何执行？
+
+  ```shell
+  需要语法解释器 不需要安装 
+  Linux系统中集成了很多个同种类的shell解释器
+  
+  [root@node1 linux02]# cat /etc/shells 
+  /bin/sh
+  /bin/bash
+  /usr/bin/sh
+  /usr/bin/bash
+  /bin/tcsh
+  /bin/csh
+  ```
+
+- 默认shell解释器 ==bash  shell = shell==
+
+  ```
+  因为很多linux发行版都以bash作为默认的解释器 所以说市面上大多数shell编程都是基于bash开展的
+  
+  bash shell免费的。
+  ```
+
 - 入门案例
+
+  - - shell脚本文件 后缀名没有要求 ==通常以.sh结尾  见名知意==
+
+    - 格式
+
+      ```shell
+      #!/bin/bash   
+      echo 'hello shell'
+      
+      #第一行 指定解释器的路径
+      ```
+
+    - 给脚本授予执行权限
+
+      ```
+      chmod a+x hello.sh 
+      ```
+
+    - 执行shell脚本
+
+      - 绝对路径指定shell脚本
+
+        ```shell
+        [root@node1 linux02]# /root/linux02/hello.sh 
+        hello shell
+        ```
+
+      - 相对路径
+
+        ```shell
+        [root@node1 linux02]# hello.sh   #默认去系统环境变量中寻找  错误
+        -bash: hello.sh: command not found
+        [root@node1 linux02]# ./hello.sh  #从当前目录下找
+        hello shell
+        ```
+
+      - 把shell脚本交给其他shell程序执行  比如sh
+
+        ```shell
+        [root@node1 linux02]# sh hello.sh 
+        hello shell
+        ```
+
+    - 探讨：后缀名 解释器 执行权限是必须的吗？   不是必须的
+
+      ```shell
+      [root@node1 linux02]# vim bye.hs
+      echo "bye bye"
+      
+      [root@node1 linux02]# sh bye.hs 
+      bye bye
+      
+      #文件不是sh结尾 没有授权 没有指定bash解释器路径 但是却可以执行
+      #此时这个文件是作为参数传递给sh来执行的  此时解释器是sh 只要保证文件中语法正确就可以执行
+      ```
+
+  - 扩展：shell 命令、shell 脚本
+
+    - 都是属于shell的东西 
+    - shell命令倾向于交互式使用，适合逻辑简单场景
+    - shell脚本适合复杂逻辑 理解结合函数、条件判断、流程控制 写出更加丰富的程序。
+    - shell命令和shell脚本之间可以互相换行。
+
+    ```shell
+    #编写shell脚本 执行脚本
+    [root@node1 linux02]# cat hello.sh 
+    #!/bin/bash
+    echo 'hello shell'
+    [root@node1 linux02]# sh hello.sh       
+    hello shell
+    
+    #以shell命令执行
+    [root@node1 linux02]# echo 'hello shell'
+    hello shell
+    ```
+
 - 变量
+
 - 字符串
+
 - 反引号
