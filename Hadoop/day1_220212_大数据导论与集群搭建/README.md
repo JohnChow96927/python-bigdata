@@ -194,21 +194,220 @@
 
 1. ### 概念介绍
 
-2. ### 分布式小文件存储系统
+   - zookeeper是一个分布式的==协调服务==软件（distributed ==**coordination**==）。
 
-3. ### 全局数据一致性
+     ```
+     分布式：多台机器的环境。
+     
+     协调服务：在分布式环境下，如何控制大家有序的去做某件事。
+     	顺序
+     	一致
+     	共同
+     	共享
+     ```
 
-4. ### zk角色 主从架构
+   - zookeeper的本质：==分布式的小文件存储系统==
 
-5. ### zk集群的搭建
+     - 存储系统：存储数据、存储文件   目录树结构
+     - 小文件：上面存储的数据有大小限制  
+     - 分布式：可以部署在多台机器上运行，对比单机来理解。
+     - 问题：zk这个存储系统和我们常见的存储系统不一样。基于这些不一样产生了很多应用。
 
-6. ### zk的数据模型
+   - zookeeper是一个标准的==主从架构==集群。
 
-7. ### zk操作
+     - 主角色  ==leader==
 
-8. ### zk监听机制
+       ```
+       事务性请求的唯一调度和处理者
+       ```
 
-9. ### zk典型应用场景
+     - 从角色 ==follower==
+
+       ```
+       处理非事务性操作  转发事务性操作给leader
+       参与zk内部选举机制
+       ```
+
+     - 观察者角色 ==Observer==
+
+       ```
+       处理非事务性操作  转发事务性操作给leader
+       不参与zk内部选举机制
+       
+       通俗话：是一群被剥夺政治权利终身的follower。
+       ```
+
+2. ### 全局数据一致性
+
+   ![image-20210921153429099](image-20210921153429099.png)
+
+   ```
+   zk集群中每个服务器保存一份相同的数据副本，客户端无论连接到哪个服务器，展示的数据都是一致的，这是最重要的特征。
+   ```
+
+3. ### zk集群的搭建
+
+   - #### zk集群在搭建部署的时候，通常选择==**2n+1**==奇数台。底层 Paxos 算法支持（过半成功）。
+
+   - #### zk部署之前，保证服务器基础环境正常、==JDK成功安装==。
+
+     - 服务器基础环境
+
+       ```
+       IP
+       主机名
+       hosts映射
+       防火墙关闭
+       时间同步
+       ssh免密登录
+       ```
+
+     - JDK环境
+
+       ```
+       jdk1.8
+       配置好环境变量
+       ```
+
+   - #### zk具体安装部署（选择node1安装 scp给其他节点）
+
+     - ##### 安装包
+
+       http://archive.apache.org/dist/
+
+       ```
+       zookeeper-3.4.6.tar.gz
+       ```
+
+     - ##### 上传解压重命名
+
+       ```shell
+       cd /export/server
+       
+       tar zxvf zookeeper-3.4.6.tar.gz
+       mv zookeeper-3.4.6/ zookeeper
+       
+       ```
+
+     - ##### 修改配置文件
+
+       - ==**zoo.cfg**==
+
+         ```shell
+         #zk默认加载的配置文件是zoo.cfg 因此需要针对模板进行修改。保证名字正确。
+         cd zookeeper/conf
+         mv zoo_sample.cfg zoo.cfg
+         
+         vi zoo.cfg
+         
+         #修改
+         dataDir=/export/data/zkdata
+         #文件最后添加 2888心跳端口 3888选举端口
+         server.1=node1:2888:3888
+         server.2=node2:2888:3888
+         server.3=node3:2888:3888
+         ```
+
+       - 扩展：心跳机制  
+
+         - 分布式软件中从角色向主角色进行心跳 heartbeat
+         - 目的：==报活==
+
+       - ==myid==
+
+         ```shell
+         #在每台机器的dataDir指定的目录下创建一个文件 名字叫做myid
+         #myid里面的数字就是该台机器上server编号。server.N  N的数字就是编号
+         [root@node1 conf]# mkdir -p /export/data/zkdata
+         [root@node1 conf]# echo 1 >/export/data/zkdata/myid
+         ```
+
+     - ##### 把安装包同步到其他节点上
+
+     ```shell
+       cd /export/server
+     scp -r zookeeper/ node2:$PWD
+       scp -r zookeeper/ node3:$PWD
+     ```
+
+     - ##### 创建其他机器上myid和datadir目录
+
+       ```shell
+       [root@node2 ~]# mkdir -p /export/data/zkdata
+       [root@node2 ~]# echo 2 > /export/data/zkdata/myid 
+       
+       [root@node3 ~]# mkdir -p /export/data/zkdata
+       [root@node3 ~]# echo 3 > /export/data/zkdata/myid
+       ```
+
+4. ### zk集群的启停、进程查看与日志查看
+
+   zk集群的启动
+
+   - 每台机器上单独启动服务
+
+     ```shell
+     #在哪个目录执行启动命令 默认启动日志就生成当前路径下 叫做zookeeper.out
+     
+     /export/server/zookeeper/bin/zkServer.sh  start|stop|status
+     
+     #3台机器启动完毕之后 可以使用status查看角色是否正常。
+     #还可以使用jps命令查看zk进程是否启动。
+     [root@node3 ~]# jps
+     2034 Jps
+     1980 QuorumPeerMain  #看我，我就是zk的java进程
+     ```
+
+   - 扩展：编写shell脚本 一键脚本启动。
+
+     - 本质：在node1机器上执行shell脚本，由==shell程序通过ssh免密登录==到各个机器上帮助执行命令。
+
+     - 一键关闭脚本
+
+       ```shell
+       [root@node1 ~]# vim stopZk.sh
+         
+       #!/bin/bash
+       hosts=(node1 node2 node3)
+       for host in ${hosts[*]}
+       do
+        ssh $host "/export/server/zookeeper/bin/zkServer.sh stop"
+       done
+       ```
+
+     - 一键启动脚本
+
+       ```shell
+       [root@node1 ~]# vim startZk.sh
+         
+       #!/bin/bash
+       hosts=(node1 node2 node3)
+       for host in ${hosts[*]}
+       do
+        ssh $host "source /etc/profile;/export/server/zookeeper/bin/zkServer.sh start"
+       done
+       ```
+
+     - 注意：关闭java进程时候 根据进程号 直接杀死即可就可以关闭。启动java进程的时候 需要JDK。
+
+     - shell程序ssh登录的时候不会自动加载/etc/profile 需要shell程序中自己加载。
+
+5. ### zk的数据模型
+
+   ![image-20210921154019474](image-20210921154019474.png)
+
+   ```properties
+   永久节点（PERSISTENCE）
+   临时节点（EPHEMERAL）
+   永久节点序列化（PERSISTENCE_SEQUENTIAL）
+   临时节点序列化（EPHEMERAL_SEQUENTIAL）
+   ```
+
+6. ### zk操作（shell命令行）
+
+7. ### zk监听机制
+
+8. ### zk典型应用场景
 
 大数据导论
 
