@@ -405,9 +405,181 @@
 
 6. ### zk操作（shell命令行）
 
-7. ### zk监听机制
+   - zk的操作:自带shell客户端
+
+     ```shell
+     /export/server/zookeeper/bin/zkCli.sh -server ip
+     
+     #如果不加-server 参数 默认去连接本机的zk服务 localhost:2181
+     #如果指定-server 参数 就去连接指定机器上的zk服务
+     
+     #退出客户端端 ctrl+c
+     ```
+
+   - 基本操作
+
+     - 创建
+
+       创建节点
+
+       create [-s] [-e] path data acl
+
+       其中，-s或-e分别指定节点特性，顺序或临时节点，若不指定，则表示持久节点；acl用来进行权限控制。
+
+       创建顺序节点：
+
+       ![1644669559228](1644669559228.png)
+
+       创建临时节点：
+
+       ![1644669568462](1644669568462.png)
+
+       创建永久节点：
+
+       ![1644669574020](1644669574020.png)
+
+     - 查看
+
+       ```shell
+       [zk: node2(CONNECTED) 28] ls /itcast   #查看指定路径下有哪些节点
+       [aaa0000000000, bbbb0000000002, aaa0000000001]
+       [zk: node2(CONNECTED) 29] get /
+       
+       zookeeper   itcast
+       [zk: node2(CONNECTED) 29] get /itcast  #获取znode的数据和stat属性信息
+       1111
+       cZxid = 0x200000003   #创建事务ID
+       ctime = Fri May 21 16:20:37 CST 2021 #创建的时间
+       mZxid = 0x200000003   #上次修改时事务ID
+       mtime = Fri May 21 16:20:37 CST 2021  #上次修改的时间
+       pZxid = 0x200000009
+       cversion = 3
+       dataVersion = 0  #数据版本号  只要有变化 就自动+1
+       aclVersion = 0
+       ephemeralOwner = 0x0   #如果为0 表示永久节点 如果是sessionID数字 表示临时节点
+       dataLength = 4   #数据长度
+       numChildren = 3  #子节点个数
+       ```
+
+       与读取相关的命令有ls 命令和get 命令，ls命令可以列出Zookeeper指定节点下的所有子节点，只能查看指定节点下的第一级的所有子节点；get命令可以获取Zookeeper指定节点的数据内容和属性信息。
+
+       　　ls path [watch]
+
+       　　get path [watch]
+
+       　　ls2 path [watch]
+
+       ![1644669837817](1644669837817.png)
+
+     - 更新节点数据
+
+       ```
+       set path data
+       ```
+
+       data就是要更新的新内容，version表示数据版本。
+
+       ![1644669865835](1644669865835.png)
+
+       现在dataVersion已经变为1了，表示进行了更新。
+
+     - 删除节点
+
+       ```shell
+         [zk: node2(CONNECTED) 43] ls /itcast
+         [aaa0000000000, bbbb0000000002, aaa0000000001]
+         [zk: node2(CONNECTED) 44] delete /itcast/bbbb0000000002
+         [zk: node2(CONNECTED) 45] delete /itcast               
+       Node not empty: /itcast
+         [zk: node2(CONNECTED) 46] rmr /itcast  #递归删除
+       ```
+
+       若删除节点存在子节点，那么无法删除该节点，必须先删除子节点，再删除父节点。
+
+       Rmr path
+
+       可以递归删除节点。
+
+7. ### zk监听机制-watcher
+
+   - 监听机制
+
+     - 监听实现需要几步？
+
+     ```shell
+     #1、设置监听 
+     
+     #2、执行监听
+     
+     #3、事件发生，触发监听 通知给设置监听的   回调callback
+     ```
+
+     - zk中的监听是什么？
+
+       - 谁监听谁？
+
+         ```
+         客户端监听zk服务
+         ```
+
+       - 监听什么事？
+
+         ```
+         监听zk上目录树znode的变化情况。 znode增加了 删除了 增加子节点了 不见了
+         ```
+
+     - zk中监听实现步骤
+
+       ```shell
+       #1、设置监听 然后zk服务执行监听
+       ls path [watch]
+       	没有watch 没有监听 就是查看目录下子节点个数
+       	有watch  有监听  设置监听子节点是否有变化
+       get path [watch]
+       	监听节点数据是否变化
+       	
+       e.g: get /itheima  watch	
+       #2、触发监听 
+       set /itheima 2222  #修改了被监听的节点数据 触发监听
+       
+       #3、回调通知客户端
+       WATCHER::
+       
+       WatchedEvent state:SyncConnected type:NodeDataChanged path:/itheima
+       ```
+
+     - zk的监听特性
+
+       - ==先注册 再触发==
+
+       - ==一次性的监听==
+
+       - ==异步通知==
+
+       - ==通知是使用event事件来封装的==
+
+         ```
+         state:SyncConnected type:NodeDataChanged path:/itheima
+         
+         type：发生了什么
+         path:哪里发生的
+         ```
+
+     - zk中监听类型
+
+       - 连接状态事件监听  系统自动触发 用户如果不关心可以忽略不计
+       - 上述所讲的是用户自定义监听 主要监听zk目录树的变化  这类监听必须先注册 再监听。
+
+   - ==总结：zk的很多功能都是基于这个特殊文件系统而来的。==
+
+     - ==特殊1：znode有临时的特性。==
+     - ==特殊2：znode有序列化的特性。顺序==
+     - ==特殊3：zk有监听机制 可以满足客户端去监听zk的变化。==
+     - ==特殊4：在非序列化节点下，路径是唯一的。不能重名。==
 
 8. ### zk典型应用场景
+
+   
 
 大数据导论
 
