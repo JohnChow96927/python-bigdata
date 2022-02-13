@@ -508,29 +508,73 @@
 
    1. #### HDFS使用
 
-      
+      shell命令操作
+
+      ```shell
+      hadoop fs -mkdir /itcast
+      hadoop fs -put zookeeper.out /itcast
+      hadoop fs -ls /
+      ```
+
+      web-ui页面操作
+
+      ![1644736633388](assets/1644736633388.png)
 
    2. #### 运行MapReduce程序
 
-      
+      执行Hadoop官方自带的MapReduce案例，评估圆周率π的值
+
+      ```shell
+      cd /export/server/hadoop-3.3.0/share/hadoop/mapreduce/
+      hadoop jar hadoop-mapreduce-examples-3.3.0.jar pi 2 4
+      ```
+
+      ![1644737057353](assets/1644737057353.png)
+
+      ![1644736990996](assets/1644736990996.png)
+
+      ![1644737133123](assets/1644737133123.png)
 
 ## IV. MapReduce jobHistory
 
 1. ### 修改mapred-site.xml
 
-   
+   ```shell
+   cd /export/servers/hadoop-3.3.0/etc/hadoop
+   vim mapred-site.xml
+   ```
+
+   ```xml
+   	<property>
+   		<name>mapreduce.jobhistory.address</name>
+   		<value>node1:10020</value>
+   	</property>
+   	<property>
+   		<name>mapreduce.jobhistory.webapp.address</name>
+   		<value>node1:19888</value>
+   	</property>
+   ```
 
 2. ### 分发配置到其他机器
 
-   
+   ```shell
+   cd /export/servers/hadoop-3.3.0/etc/hadoop
+   scp -r mapred-site.xml node2:$PWD
+   scp –r mapred-site.xml node3:$PWD
+   ```
 
 3. ### 启动jobHistoryServer服务进程
 
-   
+   ```shell
+   # 启动
+   mapred --daemon start historyserver
+   # 停止
+   mapred --daemon stop historyserver
+   ```
 
 4. ### 页面访问jobhistoryserver
 
-   
+   > <http://node1:19888/jobhistory>
 
 ## V. HDFS的垃圾桶机制
 
