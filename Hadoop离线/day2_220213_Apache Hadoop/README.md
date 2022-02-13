@@ -607,12 +607,12 @@
 
 3. ### 垃圾桶机制验证
 
-   ​	如果启用垃圾箱配置，dfs命令删除的文件不会立即从HDFS中删除。相反，HDFS将其移动到垃圾目录（每个用户在/user/<username>/.Trash下都有自己的垃圾目录）。只要文件保留在垃圾箱中，文件可以快速恢复。
+   ​	如果启用垃圾箱配置，dfs命令删除的文件不会立即从HDFS中删除。相反，HDFS将其移动到垃圾目录（每个用户在`/user/<username>/.Trash`下都有自己的垃圾目录）。只要文件保留在垃圾箱中，文件可以快速恢复。
 
    ​	使用skipTrash选项删除文件，该选项不会将文件发送到垃圾箱。它将从HDFS中完全删除。
 
    ```shell
-   hdfs://node1:8020/user/用户名/.Trash/Current
+   hdfs://node1:8020/user/<username>/.Trash/Current
    hadoop fs -cp /user/root/.Trash/Current/itcast.txt /
    hadoop fs -rm -skipTrash /itcast.txt
    [root@node1 ~]#  hadoop fs -rm -skipTrash /itcast.txt
@@ -620,3 +620,4 @@
    ```
 
    
+
