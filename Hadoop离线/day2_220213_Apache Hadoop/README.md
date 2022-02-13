@@ -413,6 +413,13 @@
 
 8. ### scp同步安装包
 
+   ```shell
+   cd /export/server
+   
+   scp -r hadoop-3.3.0 root@node2:$PWD
+   scp -r hadoop-3.3.0 root@node3:$PWD
+   ```
+
 9. ### Hadoop环境变量
 
 ## III. Hadoop集群启动、初体验
