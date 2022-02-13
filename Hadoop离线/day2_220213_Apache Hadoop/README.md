@@ -129,33 +129,287 @@
 
    我们以3节点为例进行搭建，角色分配如下：
 
-   node1	NameNode	DataNode	ResourceManager
+   node1	NameNode（NN)	DataNode(DN)	ResourceManager(RM)
 
-   node2	DataNode	NodeManager	SecondaryNameNode
+   node2	DataNode	NodeManager(NM)	SecondaryNameNode(SN)
 
    node3	DataNode	NodeManager
 
 3. ### 服务器基础环境准备
 
+   1. #### 配置好各虚拟机的网络（采用NAT联网模式）
+
+   2. #### 修改各个虚拟机主机名
+
+   > `vi /etc/hostname
+
+   
+
+   > node1.itcast.cn    
+
+   3. #### 修改主机名和IP的映射关系
+
+   > vi /etc/hosts
+
+   
+
+   > 192.168.227.251     node1.itcast.cn node1
+   >
+   > 192.168.227.252     node2.itcast.cn node2
+   >
+   > 192.168.227.253     node3.itcast.cn node3
+
+   4. #### 关闭防火墙
+
+      > \#查看防火墙状态
+      >
+      > systemctl status firewalld.service
+      >
+      > \#关闭防火墙
+      >
+      > systemctl stop firewalld.service
+      >
+      > \#关闭防火墙开机启动
+      >
+      > systemctl disable firewalld.service
+
+   5. #### 配置ssh免登陆(配置node1-->node1,node2,node3)
+
+      > \#node1生成ssh免登陆密钥
+      >
+      > ssh-keygen -t rsa （一直回车）
+      >
+      > #执行完这个命令后，会生成两个文件id_rsa（私钥）、id_rsa.pub（公钥）
+      >
+      > #将公钥拷贝到要免密登陆的目标机器上
+      >
+      > ssh-copy-id node1
+      >
+      > ssh-copy-id node2
+      >
+      > ssh-copy-id node3
+
+   6. #### 同步集群时间
+
+      > yum install ntpdate
+
+      
+
+      > ntpdate cn.pool.ntp.org
+
 4. ### JDK环境安装
+
+   1. 上传jdk
+
+      > jdk-8u65-linux-x64.tar.gz
+
+   2. 解压jdk
+
+      > tar -zxvf jdk-8u65-linux-x64.tar.gz -C /export/server
+
+   3. 将java添加到环境变量中
+
+      > vim /etc/profile
+      >
+      > \#在文件最后添加
+      >
+      > export JAVA_HOME=/export/server/jdk1.8.0_65
+      >
+      > export PATH=$PATH:$JAVA_HOME/bin
+      >
+      > export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+      >
+      > 
+      >
+      > \#刷新配置
+      >
+      > source /etc/profile
 
 5. ### Hadoop重新编译
 
+   ​	Hadoop官方一般都给出了对应版本安装包，一般情况下是不需要自己进行编译的，但是由于官方编译好的hadoop的安装包没有提供带C程序访问的接口，所以在使用本地库（**本地库可以用来做压缩，以及支持C程序等等**）的时候就会出问题，因此生产环境中，一般会重新编译。
+
+   ​	此外，作为开源软件，针对源码进行修改某些属性，之后也需要重编译。
+
+   ​	可以使用课程提供编译好的安装包。
+
 6. ### Hadoop安装包目录结构
+
+   解压hadoop-3.3.0-Centos7-64-with-snappy.tar.gz，目录结构如下：
+
+   **bin**：Hadoop最基本的管理脚本和使用脚本的目录，这些脚本是sbin目录下管理脚本的基础实现，用户可以直接使用这些脚本管理和使用Hadoop。
+
+   **etc**：Hadoop配置文件所在的目录，包括core-site,xml、hdfs-site.xml、mapred-site.xml等从Hadoop1.0继承而来的配置文件和yarn-site.xml等Hadoop2.0新增的配置文件。
+
+   **include**：对外提供的编程库头文件（具体动态库和静态库在lib目录中），这些头文件均是用C++定义的，通常用于C++程序访问HDFS或者编写MapReduce程序。
+
+   **lib**：该目录包含了Hadoop对外提供的编程动态库和静态库，与include目录中的头文件结合使用。
+
+   **libexec**：各个服务对用的shell配置文件所在的目录，可用于配置日志输出、启动参数（比如JVM参数）等基本信息。
+
+   **sbin**：Hadoop管理脚本所在的目录，主要包含HDFS和YARN中各类服务的启动/关闭脚本。
+
+   **share**：Hadoop各个模块编译后的jar包所在的目录，官方自带示例。
 
 7. ### Hadoop配置文件修改
 
    1. #### hadoop-env.sh
 
+      ```shell
+      export JAVA_HOME=/export/server/jdk1.8.0_241
+      
+      export HDFS_NAMENODE_USER=root
+      export HDFS_DATANODE_USER=root
+      export HDFS_SECONDARYNAMENODE_USER=root
+      export YARN_RESOURCEMANAGER_USER=root
+      export YARN_NODEMANAGER_USER=root 
+      ```
+
    2. #### core-site.xml
+
+      ```xml
+      <configuration>
+      	<!-- 设置默认使用的文件系统 Hadoop支持file、HDFS、GFS、ali|Amazon云等文件系统 -->
+      	<property>
+      		<name>fs.defaultFS</name>
+      		<value>hdfs://node1:8020</value>
+      	</property>
+      
+      	<!-- 设置Hadoop本地保存数据路径 -->
+      	<property>
+      		<name>hadoop.tmp.dir</name>
+      		<value>/export/data/hadoop-3.3.0</value>
+      	</property>
+      
+      	<!-- 设置HDFS web UI用户身份 -->
+      	<property>
+      		<name>hadoop.http.staticuser.user</name>
+      		<value>root</value>
+      	</property>
+      
+      	<!-- 整合hive 用户代理设置 -->
+      	<property>
+      		<name>hadoop.proxyuser.root.hosts</name>
+      		<value>*</value>
+      	</property>
+      
+      	<property>
+      		<name>hadoop.proxyuser.root.groups</name>
+      		<value>*</value>
+      	</property>
+      
+      	<property>
+      		<name>fs.trash.interval</name>
+      		<value>1440</value>
+      	</property>
+      </configuration>
+      ```
 
    3. #### hdfs-site.xml
 
+      ```xml
+      <configuration>
+      	<!-- 设置SNN进程运行机器位置信息 -->
+      	<property>
+      		<name>dfs.namenode.secondary.http-address</name>
+      		<value>node2:9868</value>
+      	</property>
+      </configuration>
+      ```
+
    4. #### mapred-site.xml
+
+      ```xml
+      <configuration>
+      	<!-- 设置MR程序默认运行模式： yarn集群模式 local本地模式 -->
+      	<property>
+      	  <name>mapreduce.framework.name</name>
+      	  <value>yarn</value>
+      	</property>
+      
+      	<!-- MR程序历史服务器端地址 -->
+      	<property>
+      	  <name>mapreduce.jobhistory.address</name>
+      	  <value>node1:10020</value>
+      	</property>
+      	 
+      	<!-- 历史服务器web端地址 -->
+      	<property>
+      	  <name>mapreduce.jobhistory.webapp.address</name>
+      	  <value>node1:19888</value>
+      	</property>
+      
+      	<property>
+      	  <name>yarn.app.mapreduce.am.env</name>
+      	  <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+      	</property>
+      
+      	<property>
+      	  <name>mapreduce.map.env</name>
+      	  <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+      	</property>
+      
+      	<property>
+      	  <name>mapreduce.reduce.env</name>
+      	  <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+      	</property>
+      </configuration>
+      ```
 
    5. #### yarn-site.xml
 
+      ```xml
+      <configuration>
+      	<!-- 设置YARN集群主角色运行机器位置 -->
+      	<property>
+      		<name>yarn.resourcemanager.hostname</name>
+      		<value>node1</value>
+      	</property>
+      
+      	<property>
+      		<name>yarn.nodemanager.aux-services</name>
+      		<value>mapreduce_shuffle</value>
+      	</property>
+      
+      	<!-- 是否将对容器实施物理内存限制 -->
+      	<property>
+      		<name>yarn.nodemanager.pmem-check-enabled</name>
+      		<value>false</value>
+      	</property>
+      
+      	<!-- 是否将对容器实施虚拟内存限制。 -->
+      	<property>
+      		<name>yarn.nodemanager.vmem-check-enabled</name>
+      		<value>false</value>
+      	</property>
+      
+      	<!-- 开启日志聚集 -->
+      	<property>
+      	  <name>yarn.log-aggregation-enable</name>
+      	  <value>true</value>
+      	</property>
+      
+      	<!-- 设置yarn历史服务器地址 -->
+      	<property>
+      		<name>yarn.log.server.url</name>
+      		<value>http://node1:19888/jobhistory/logs</value>
+      	</property>
+      
+      	<!-- 保存的时间7天 -->
+      	<property>
+      	  <name>yarn.log-aggregation.retain-seconds</name>
+      	  <value>604800</value>
+      	</property>
+      </configuration>
+      ```
+
    6. #### workers
+
+      ```shell
+      node1
+      node2
+      node3
+      ```
 
 8. ### scp同步安装包
 
