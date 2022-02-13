@@ -435,36 +435,113 @@
    source /etc/profile
    ```
 
-   
-
 ## III. Hadoop集群启动、初体验
 
 1. ### 启动方式
 
-   1. 单节点逐个启动
-   2. 脚本一键启动
+   要启动Hadoop集群，需要启动HDFS和YARN两个集群
+
+   **首次启动HDFS时，要对其进行格式化操作**，本质上是一些清理和准备工作，因为此时的HDFS在物理上还是不存在的。
+
+   ```shell
+   hadoop namenode -format
+   ```
+
+   1. #### 单节点逐个启动
+
+      在主节点上使用以下命令启动HDFS NameNode：
+
+      ```shell
+      $HADOOP_HOME/bin/hdfs --daemon start namenode
+      ```
+
+      在每个从节点上使用以下命令启动HDFS DataNode：
+
+      ```shell
+      $HADOOP_HOME/bin/hdfs --daemon start datanode
+      ```
+
+      在node2上使用以下命令启动HDFS SecondaryNameNode：
+
+      ```shell
+      $HADOOP_HOME/bin/hdfs --daemon start secondarynamenode
+      ```
+
+      在主节点上使用以下命令启动YARN ResourceManager：
+
+      ```shell
+      $HADOOP_HOME/bin/yarn --daemon start resourcemanager
+      ```
+
+      在每个从节点上使用以下命令启动YARN nodemanager：
+
+      ```shell
+      $HADOOP_HOME/bin/yarn --daemon start nodemanager
+      ```
+
+      如果想要停止某个节点上某个角色，只需要把命令中的**start**改为**stop**即可。
+
+   2. #### 脚本一键启动
+
+      ​	如果配置了etc/hadoop/workers和ssh免密登录，则可以使用程序脚本启动所有Hadoop两个集群的相关进程，在主节点所设定的机器上执行。
+
+      ```shell
+      $HADOOP_HOME/sbin/start-dfs.sh
+      $HADOOP_HOME/sbin/start-yarn.sh
+      
+      $HADOOP_HOME/sbin/stop-dfs.sh
+      $HADOOP_HOME/sbin/stop-yarn.sh
+      ```
 
 2. ### 集群web-ui
 
+   一旦Hadoop集群启动并运行，可以通过web-ui进行集群查看，如下所述：
+
+   - HDFS集群：http://node1:9870/
+   - YARN集群：http://node1:8088/
+
+   ![1644724067185](assets/1644724067185.png)
+
+   ![1644724106727](assets/1644724106727.png)
+
 3. ### Hadoop初体验
 
-   1. HDFS使用
-   2. 运行MapReduce程序
+   1. #### HDFS使用
+
+      
+
+   2. #### 运行MapReduce程序
+
+      
 
 ## IV. MapReduce jobHistory
 
 1. ### 修改mapred-site.xml
 
+   
+
 2. ### 分发配置到其他机器
+
+   
 
 3. ### 启动jobHistoryServer服务进程
 
+   
+
 4. ### 页面访问jobhistoryserver
+
+   
 
 ## V. HDFS的垃圾桶机制
 
 1. ### 垃圾桶机制解析
 
+   
+
 2. ### 垃圾桶机制配置
 
+   
+
 3. ### 垃圾桶机制验证
+
+   
