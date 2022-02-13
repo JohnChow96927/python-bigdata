@@ -422,6 +422,21 @@
 
 9. ### Hadoop环境变量
 
+   ```shell
+   vim /etc/proflie
+   
+   export HADOOP_HOME=/export/server/hadoop-3.3.0
+   export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+   :wq
+   
+   scp profile root@node2:$PWD
+   scp profile root@node3:$PWD
+   
+   source /etc/profile
+   ```
+
+   
+
 ## III. Hadoop集群启动、初体验
 
 1. ### 启动方式
