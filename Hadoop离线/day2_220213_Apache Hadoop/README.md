@@ -76,6 +76,33 @@
 
 1. ### 发行版本
 
+   Hadoop发行版本分为开源**社区版**和**商业版**。
+
+   社区版是指由Apache软件基金会维护的版本，是官方维护的版本体系。
+
+   <https://hadoop.apache.org/>
+
+   ![1644717876627](assets/1644717876627.png)
+
+   商业版Hadoop是指由第三方商业公司在社区版Hadoop基础上进行了一些修改、整合以及各个服务组件兼容性测试而发行的版本，比较著名的有**cloudera的CDH**、mapR、hortonWorks等。
+
+   <https://www.cloudera.com/products/open-source/apache-hadoop/key-cdh-components.html>
+
+   ![1644717889683](assets/1644717889683.png)
+
+   Hadoop的版本很特殊，是由多条分支并行的发展着。大的来看分为3个大的系列版本：1.x、2.x、3.x。
+
+   Hadoop1.0由一个分布式文件系统HDFS和一个离线计算框架MapReduce组成。架构落后，已经淘汰。
+
+   Hadoop 2.0则包含一个分布式文件系统HDFS，一个资源管理系统YARN和一个离线计算框架MapReduce。相比于Hadoop1.0，Hadoop 2.0功能更加强大，且具有更好的扩展性、性能，并支持多种计算框架。
+
+   ![1644717907800](assets/1644717907800.png)
+        Hadoop 3.0相比之前的Hadoop 2.0有一系列的功能增强。目前已经趋于稳定，可能生态圈的某些组件还没有升级、整合完善。
+
+   ![1644717918203](assets/1644717918203.png)
+
+   我们课程中使用的是：Apache Hadoop 3.3.0。
+
 2. ### 集群简介
 
 3. ### 服务器基础环境准备
