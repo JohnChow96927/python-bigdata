@@ -580,12 +580,43 @@
 
 1. ### 垃圾桶机制解析
 
-   
+   ​	每一个文件系统都会有垃圾桶机制，便于将删除的数据回收到垃圾桶里面去，避免某些误操作删除一些重要文件。回收到垃圾桶里里面的资料数据，都可以进行恢复。
+
+   ​	垃圾桶的**本质就是在HDFS上创建一个隐藏的文件夹，将删除的文件移动到隐藏文件夹中，逻辑删除之**
 
 2. ### 垃圾桶机制配置
 
-   
+   ​	HDFS的垃圾回收的默认配置属性为 0，也就是说，如果你不小心误删除了某样东西，那么这个操作是不可恢复的。
+
+   修改core-site.xml：
+
+   ```shell
+   cd /export/server/hadoop-3.3.0/etc/hadoop/
+   ```
+
+   那么可以按照生产上的需求设置回收站的保存时间，这个时间以分钟为单位，例如1440=24h=1天。
+
+   ```xml
+     <property>
+           <name>fs.trash.interval</name>
+           <value>1440</value>
+      </property>
+   ```
+
+   集群中每台机器都需要修改，之后重启HDFS集群生效。
 
 3. ### 垃圾桶机制验证
+
+   ​	如果启用垃圾箱配置，dfs命令删除的文件不会立即从HDFS中删除。相反，HDFS将其移动到垃圾目录（每个用户在/user/<username>/.Trash下都有自己的垃圾目录）。只要文件保留在垃圾箱中，文件可以快速恢复。
+
+   ​	使用skipTrash选项删除文件，该选项不会将文件发送到垃圾箱。它将从HDFS中完全删除。
+
+   ```shell
+   hdfs://node1:8020/user/用户名/.Trash/Current
+   hadoop fs -cp /user/root/.Trash/Current/itcast.txt /
+   hadoop fs -rm -skipTrash /itcast.txt
+   [root@node1 ~]#  hadoop fs -rm -skipTrash /itcast.txt
+   Deleted /itcast.txt
+   ```
 
    
