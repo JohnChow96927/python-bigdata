@@ -101,9 +101,39 @@
 
    ![1644717918203](assets/1644717918203.png)
 
-   我们课程中使用的是：Apache Hadoop 3.3.0。
+   课程中使用的是：Apache Hadoop 3.3.0。
 
 2. ### 集群简介
+
+   HADOOP集群具体来说包含两个集群：HDFS集群和YARN集群，两者逻辑上分离，但物理上常在一起。
+
+   HDFS集群负责海量数据的存储，集群中的角色主要有：
+
+   NameNode、DataNode、SecondaryNameNode
+
+   YARN集群负责海量数据运算时的资源调度，集群中的角色主要有：
+
+   ResourceManager、NodeManager
+
+   ![1644718157441](assets/1644718157441.png)
+
+   那mapreduce是什么呢？它其实是一个分布式运算编程框架，是应用程序开发包，由用户按照编程规范进行程序开发，后打包运行在HDFS集群上，并且受到YARN集群的资源调度管理。
+
+   Hadoop部署方式分三种，Standalone mode（独立模式）、Pseudo-Distributed mode（伪分布式模式）、Cluster mode（群集模式），其中前两种都是在单机部署。
+
+   独立模式又称为单机模式，仅1个机器运行1个java进程，主要用于调试。
+
+   伪分布模式也是在1个机器上运行HDFS的NameNode和DataNode、YARN的 ResourceManger和NodeManager，但分别启动单独的java进程，主要用于调试。
+
+   集群模式主要用于生产环境部署。会使用N台主机组成一个Hadoop集群。这种部署模式下，主节点和从节点会分开部署在不同的机器上。
+
+   我们以3节点为例进行搭建，角色分配如下：
+
+   node1	NameNode	DataNode	ResourceManager
+
+   node2	DataNode	NodeManager	SecondaryNameNode
+
+   node3	DataNode	NodeManager
 
 3. ### 服务器基础环境准备
 
