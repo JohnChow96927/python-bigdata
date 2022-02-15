@@ -157,22 +157,43 @@
 
       **-ls**
 
-      使用方法：hadoop fs -ls [-h] [-R] <args>
+      使用方法：
+
+      ```shell
+      hadoop fs -ls [-h] [-R] <args>
+      ```
 
       功能：显示文件、目录信息。
 
-      示例：hadoop fs -ls /user/hadoop/file1
+      示例：
+
+      ```shell
+      hadoop fs -ls /user/hadoop/file1
+      ```
 
       **-mkdir**
 
-      使用方法：hadoop fs -mkdir [-p] <paths>
+      使用方法：
+
+      ```shell
+      hadoop fs -mkdir [-p] <paths>
+      ```
 
       功能：在hdfs上创建目录，-p表示会创建路径中的各级父目录。
 
-      示例：hadoop fs -mkdir –p /user/hadoop/dir1
+      示例：
+
+      ```shell
+      hadoop fs -mkdir –p /user/hadoop/dir1
+      ```
 
       **-put**
-       使用方法：hadoop fs -put [-f] [-p] [ -|<localsrc1> .. ]. <dst> 
+
+      使用方法：
+
+      ```shell
+      hadoop fs -put [-f] [-p] [ -|<localsrc1> .. ]. <dst> 
+      ```
 
       功能：将单个src或多个srcs从本地文件系统复制到目标文件系统。
 
@@ -180,11 +201,19 @@
 
       -f：覆盖目的地（如果已经存在）
 
-      示例：hadoop fs -put -f localfile1 localfile2 /user/hadoop/hadoopdir
+      示例：
+
+      ```shell
+      hadoop fs -put -f localfile1 localfile2 /user/hadoop/hadoopdir
+      ```
 
       **-get**
 
-      使用方法：hadoop fs -get [-ignorecrc] [-crc] [-p] [-f] <src> <localdst>
+      使用方法：
+
+      ```shell
+      hadoop fs -get [-ignorecrc] [-crc] [-p] [-f] <src> <localdst>
+      ```
 
       -ignorecrc：跳过对下载文件的CRC检查。
 
@@ -192,42 +221,69 @@
 
       功能：将文件复制到本地文件系统。
 
-      示例：hadoop fs -get hdfs://host:port/user/hadoop/file localfile
+      示例：
 
-      **-appendToFile** 
+      ```shell
+      hadoop fs -get hdfs://host:port/user/hadoop/file localfile
+      ```
 
-      使用方法：hadoop fs -appendToFile <localsrc> ... <dst>
+      **-appendToFile**：小文件合并的方式之一
+
+      使用方法：
+
+      ```shell
+      hadoop fs -appendToFile <localsrc> ... <dst>
+      ```
 
       功能：追加一个文件到已经存在的文件末尾
 
-      示例：hadoop fs -appendToFile localfile  /hadoop/hadoopfile
+      示例：
 
-      
-       
-
-       
+      ```shell
+      hadoop fs -appendToFile localfile  /hadoop/hadoopfile
+      ```
 
       **-cat**  
 
-      使用方法：hadoop fs -cat [-ignoreCrc] URI [URI ...]
+      使用方法：
+
+      ```shell
+      hadoop fs -cat [-ignoreCrc] URI [URI ...]
+      ```
 
       功能：显示文件内容到stdout
 
-      示例：hadoop fs -cat  /hadoop/hadoopfile
+      示例：
 
-      **-tail**
+      ```shell
+      hadoop fs -cat  /hadoop/hadoopfile
+      ```
 
-      使用方法：hadoop fs -tail [-f] URI 
+      **-tail**: 可以做数据的实时采集
+
+      使用方法：
+
+      ```shell
+      hadoop fs -tail [-f] URI 
+      ```
 
       功能：将文件的最后一千字节内容显示到stdout。
 
       -f选项将在文件增长时输出附加数据。
 
-      示例：hadoop  fs  -tail  /hadoop/hadoopfile
+      示例：
+
+      ```shell
+      hadoop  fs  -tail  /hadoop/hadoopfile
+      ```
 
       **-chgrp** 
 
-      使用方法：hadoop fs -chgrp [-R] GROUP URI [URI ...]
+      使用方法：
+
+      ```shell
+      hadoop fs -chgrp [-R] GROUP URI [URI ...]
+      ```
 
       功能：更改文件组的关联。用户必须是文件的所有者，否则是超级用户。
 
@@ -239,25 +295,41 @@
 
       功能：改变文件的权限。使用-R将使改变在目录结构下递归进行。
 
-      示例：hadoop  fs  -chmod  666  /hadoop/hadoopfile
+      示例：
+
+      ```shell
+      hadoop  fs  -chmod  666  /hadoop/hadoopfile
+      ```
 
       **-chown**
 
       功能：改变文件的拥有者。使用-R将使改变在目录结构下递归进行。
 
-      示例：hadoop  fs  -chown  someuser:somegrp   /hadoop/hadoopfile
+      示例：
+
+      ```shell
+      hadoop  fs  -chown  someuser:somegrp   /hadoop/hadoopfile
+      ```
 
       **-cp**              
 
       功能：从hdfs的一个路径拷贝hdfs的另一个路径
 
-      示例： hadoop  fs  -cp  /aaa/jdk.tar.gz  /bbb/jdk.tar.gz.2
+      示例： 
+
+      ```shell
+      hadoop  fs  -cp  /aaa/jdk.tar.gz  /bbb/jdk.tar.gz.2
+      ```
 
       **-mv**                     
 
       功能：在hdfs目录中移动文件
 
-      示例： hadoop  fs  -mv  /aaa/jdk.tar.gz  /
+      示例： 
+
+      ```shell
+      hadoop  fs  -mv  /aaa/jdk.tar.gz  /
+      ```
 
       **-getmerge**    
 
@@ -265,31 +337,49 @@
 
       示例：比如hdfs的目录 /aaa/下有多个文件:log.1, log.2,log.3,...
 
+      ```shell
       hadoop fs -getmerge /aaa/log.*  ./log.sum
+      ```
 
       **-rm**                
 
       功能：删除指定的文件。只删除非空目录和文件。-r 递归删除。
 
-      示例：hadoop fs -rm -r /aaa/bbb/
+      示例：
+
+      ```shell
+      hadoop fs -rm -r /aaa/bbb/
+      ```
 
       **-df**               
 
       功能：统计文件系统的可用空间信息
 
-      示例：hadoop  fs  -df  -h  /
+      示例：
+
+      ```shell
+      hadoop  fs  -df  -h  /
+      ```
 
       **-du** 
 
       功能：显示目录中所有文件大小，当只指定一个文件时，显示此文件的大小。
 
-      示例：hadoop fs -du /user/hadoop/dir1
+      示例：
+
+      ```shell
+      hadoop fs -du /user/hadoop/dir1
+      ```
 
       **-setrep**                
 
-      功能：改变一个文件的副本系数。-R选项用于递归改变目录下所有文件的副本系数。
+      功能：改变一个文件的副本系数。-R选项用于递归改变目录下所有文件的副本系数，-w选项用于等待。
 
-      示例：hadoop fs -setrep -w 3 -R /user/hadoop/dir1
+      示例：
+
+      ```shell
+      hadoop fs -setrep -w 3 -R /user/hadoop/dir1
+      ```
 
 ## II. HDFS基本原理
 
@@ -297,15 +387,69 @@
 
    1. NameNode是HDFS的核心
    2. NameNode也称为Master
-   3. 
+   3. NameNode进存储HDFS的**元数据**：文件系统中的所有文件的目录树，并跟踪整个集群中的文件
+   4. NameNode不存储实际数据或数据集，数据本身存储在DataNode中
+   5. NameNode知道HDFS中任何给定文件的块列表及其位置，使用此信息NameNode知道如何从块中构建文件
+   6. NameNode并不持久化存储每个文件中各个块所在的DataNode的位置信息，这些信息会在系统启动时从数据节点重建
+   7. NameNode对于HDFS至关重要，当NameNode关闭时，HDFS / Hadoop集群无法访问
+   8. NameNode是Hadoop集群中的单点故障
+   9. NameNode所在机器通常会配置有大量内存（RAM）
+
+   ![1644912005713](assets/1644912005713.png)
 
 2. ### DataNode概述
 
+   1. ##### DataNode负责将实际数据存储在HDFS中
+
+   2. ##### DataNode也称为Slave
+
+   3. ##### NameNode和DataNode会保持不断通信
+
+   4. ##### DataNode启动时，它将自己发布到NameNode并汇报自己负责持有的块列表
+
+   5. ##### 当某个DataNode关闭时，它不会影响数据或群集的可用性。NameNode将安排由其他DataNode管理的块进行副本复制
+
+   6. ##### DataNode所在机器通常配置有大量的硬盘空间。因为实际数据存储在DataNode中
+
+   7. ##### DataNode会定期（dfs.heartbeat.interval配置项配置，默认是3秒）向NameNode发送心跳，如果NameNode长时间没有接受到DataNode发送的心跳， NameNode就会认为该DataNode失效
+
+   8. ##### block汇报时间间隔取参数dfs.blockreport.intervalMsec,参数未配置的话默认为6小时
+
+   ![1644912143146](assets/1644912143146.png)
+
 3. ### HDFS的工作机制
 
-   1. #### HDFS写数据流程
+   ​	NameNode负责管理整个文件系统元数据；DataNode负责管理具体文件数据块存储；Secondary NameNode协助NameNode进行元数据的备份。
 
-   2. #### HDFS读数据流程
+   ​	HDFS的内部工作机制对客户端保持透明，客户端请求访问HDFS都是通过向NameNode申请来进行。
+
+   1. #### HDFS写数据流程（上传）
+
+      ![1644912729874](assets/1644912729874.png)
+
+      #### 核心概念：Pipeline管道
+
+      - ##### Pipeline，中文翻译为管道。这是HDFS在上传文件写数据过程中采用的一种数据传输方式
+
+      - ##### 客户端将数据块写入第一个数据节点，第一个数据节点保存数据之后再将块复制到第二个数据节点，后者保存后将其复制到第三个数据节点
+
+      - ##### 数据以管道的方式，顺序的沿着一个方向传输，这样能够充分利用每个机器的带宽，避免网络瓶颈和高延迟时的连接，最小化推送所有数据的延时
+
+      - ##### 在线性推送模式下，每台机器所有的出口宽带都用于以最快的速度传输数据，而不是在多个接受者之间分配宽带
+
+      #### 核心概念：ACK应答响应
+
+      
+
+      #### 核心概念：默认3副本存储策略
+
+      ##### 第一块副本：优先客户端本地，否则随机
+
+      ##### 第二块副本：不同于第一块副本的不同机架
+
+      ##### 第三块副本：第二块副本相同机架不同机器
+
+   2. #### HDFS读数据流程（下载）
 
       
 
