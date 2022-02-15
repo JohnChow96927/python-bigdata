@@ -495,6 +495,18 @@
 
       最终读取来所有的block会合并成一个完整的最终文件。
 
+      ##### CRC校验
+
+4. ### NameNode与DataNode之间的通信
+
+   - #### 启动时，DataNode需要向NameNode注册自己并汇报自己持有的数据块信息；
+
+   - #### 工作时，主从之间有心跳机制，数据块汇报机制；
+
+   - #### DataNode会定期（dfs.heartbeat.interval配置项配置，默认是3秒）向NameNode发送心跳，如果NameNode长时间没有接受到DataNode发送的心跳， NameNode就会认为该DataNode失效。
+
+   - #### DataNode会定期向NameNode进行自己持有的数据块信息汇报，汇报时间间隔取参数dfs.blockreport.intervalMsec,参数未配置的话默认为6小时。
+
 ## III. HDFS其他功能
 
 1. ### 不同集群之间的数据复制
