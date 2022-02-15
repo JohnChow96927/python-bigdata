@@ -58,7 +58,7 @@
 
       ##### 	HDFS中的文件在物理上是分块存储（block）的，块的大小可以通过配置参数来规定，默认大小在hadoop2.x版本中是128M。
 
-   3. #### NameSpace命名空间
+   3. #### NameSpace命名空间：抽象统一的目录树结构
 
       ##### 	HDFS支持传统的层次型文件组织结构。用户或者应用程序可以创建目录，然后将文件保存在这些目录里。文件系统名字空间的层次结构和大多数现有的文件系统类似：用户可以创建、删除、移动或重命名文件。
 
@@ -90,13 +90,214 @@
 
    1. #### Shell命令行客户端
 
+      Hadoop提供了文件系统的shell命令行客户端，使用方法如下：
+
+      ```shell
+      hadoop  fs  <args>
+      ```
+
+      文件系统shell包括与Hadoop分布式文件系统（HDFS）以及Hadoop支持的其他文件系统（如本地FS，HFTP FS，S3 FS等）直接交互的各种类似shell的命令。所有FS shell命令都将路径URI作为参数。
+
+      URI格式为scheme://authority/path。对于HDFS，该scheme是hdfs，对于本地FS，该scheme是file。scheme和authority是可选的。如果未指定，则使用配置中指定的默认方案。
+
+      对于HDFS,命令示例如下：
+
+      ```shell
+      hadoop fs -ls file:///   #操作本地文件系统
+      hadoop fs -ls hdfs://node1:8020/ #操作HDFS分布式文件系统
+      hadoop fs -ls /   #直接根目录，没有指定协议 将加载读取fs.defaultFS值
+      ```
+
+      对于本地文件系统，命令示例如下：
+
+      ```shell
+      hadoop fs -ls file:///root/ 
+      ```
+
+      如果使用的文件系统是HDFS，则使用hdfs dfs也是可以的，此时
+
+      ```shell
+      hadoop fs <args> = hdfs dfs <args>
+      ```
+
    2. #### Shell命令选项
 
+      ### 1.1． Shell 命令选项
+
+      | 选项名称       | 使用格式                                                     | 含义                       |
+      | -------------- | ------------------------------------------------------------ | -------------------------- |
+      | -ls            | -ls <路径>                                                   | 查看指定路径的当前目录结构 |
+      | -lsr           | -lsr <路径>                                                  | 递归查看指定路径的目录结构 |
+      | -du            | -du <路径>                                                   | 统计目录下个文件大小       |
+      | -dus           | -dus <路径>                                                  | 汇总统计目录下文件(夹)大小 |
+      | -count         | -count [-q] <路径>                                           | 统计文件(夹)数量           |
+      | -mv            | -mv <源路径> <目的路径>                                      | 移动                       |
+      | -cp            | -cp <源路径> <目的路径>                                      | 复制                       |
+      | -rm            | -rm [-skipTrash] <路径>                                      | 删除文件/空白文件夹        |
+      | -rmr           | -rmr [-skipTrash] <路径>                                     | 递归删除                   |
+      | -put           | -put <多个linux上的文件> <hdfs路径>                          | 上传文件                   |
+      | -copyFromLocal | -copyFromLocal <多个linux上的文件> <hdfs路径>                | 从本地复制                 |
+      | -moveFromLocal | -moveFromLocal <多个linux上的文件> <hdfs路径>                | 从本地移动                 |
+      | -getmerge      | -getmerge <源路径> <linux路径>                               | 合并到本地                 |
+      | -cat           | -cat <hdfs路径>                                              | 查看文件内容               |
+      | -text          | -text <hdfs路径>                                             | 查看文件内容               |
+      | -copyToLocal   | -copyToLocal [-ignoreCrc] [-crc] [hdfs源路径] [linux目的路径] | 从本地复制                 |
+      | -moveToLocal   | -moveToLocal [-crc] <hdfs源路径> <linux目的路径>             | 从本地移动                 |
+      | -mkdir         | -mkdir <hdfs路径>                                            | 创建空白文件夹             |
+      | -setrep        | -setrep [-R] [-w] <副本数> <路径>                            | 修改副本数量               |
+      | -touchz        | -touchz <文件路径>                                           | 创建空白文件               |
+      | -stat          | -stat [format] <路径>                                        | 显示文件统计信息           |
+      | -tail          | -tail [-f] <文件>                                            | 查看文件尾部信息           |
+      | -chmod         | -chmod [-R] <权限模式> [路径]                                | 修改权限                   |
+      | -chown         | -chown [-R] [属主][:[属组]] 路径                             | 修改属主                   |
+      | -chgrp         | -chgrp [-R] 属组名称 路径                                    | 修改属组                   |
+      | -help          | -help [命令选项]                                             | 帮助                       |
+
    3. #### Shell常用命令介绍
+
+      **-ls**
+
+      使用方法：hadoop fs -ls [-h] [-R] <args>
+
+      功能：显示文件、目录信息。
+
+      示例：hadoop fs -ls /user/hadoop/file1
+
+      **-mkdir**
+
+      使用方法：hadoop fs -mkdir [-p] <paths>
+
+      功能：在hdfs上创建目录，-p表示会创建路径中的各级父目录。
+
+      示例：hadoop fs -mkdir –p /user/hadoop/dir1
+
+      **-put**
+       使用方法：hadoop fs -put [-f] [-p] [ -|<localsrc1> .. ]. <dst> 
+
+      功能：将单个src或多个srcs从本地文件系统复制到目标文件系统。
+
+      -p：保留访问和修改时间，所有权和权限。
+
+      -f：覆盖目的地（如果已经存在）
+
+      示例：hadoop fs -put -f localfile1 localfile2 /user/hadoop/hadoopdir
+
+      **-get**
+
+      使用方法：hadoop fs -get [-ignorecrc] [-crc] [-p] [-f] <src> <localdst>
+
+      -ignorecrc：跳过对下载文件的CRC检查。
+
+      -crc：为下载的文件写CRC校验和。
+
+      功能：将文件复制到本地文件系统。
+
+      示例：hadoop fs -get hdfs://host:port/user/hadoop/file localfile
+
+      **-appendToFile** 
+
+      使用方法：hadoop fs -appendToFile <localsrc> ... <dst>
+
+      功能：追加一个文件到已经存在的文件末尾
+
+      示例：hadoop fs -appendToFile localfile  /hadoop/hadoopfile
+
+      
+       
+
+       
+
+      **-cat**  
+
+      使用方法：hadoop fs -cat [-ignoreCrc] URI [URI ...]
+
+      功能：显示文件内容到stdout
+
+      示例：hadoop fs -cat  /hadoop/hadoopfile
+
+      **-tail**
+
+      使用方法：hadoop fs -tail [-f] URI 
+
+      功能：将文件的最后一千字节内容显示到stdout。
+
+      -f选项将在文件增长时输出附加数据。
+
+      示例：hadoop  fs  -tail  /hadoop/hadoopfile
+
+      **-chgrp** 
+
+      使用方法：hadoop fs -chgrp [-R] GROUP URI [URI ...]
+
+      功能：更改文件组的关联。用户必须是文件的所有者，否则是超级用户。
+
+      -R将使改变在目录结构下递归进行。
+
+      示例：hadoop fs -chgrp othergroup /hadoop/hadoopfile
+
+      **-chmod**
+
+      功能：改变文件的权限。使用-R将使改变在目录结构下递归进行。
+
+      示例：hadoop  fs  -chmod  666  /hadoop/hadoopfile
+
+      **-chown**
+
+      功能：改变文件的拥有者。使用-R将使改变在目录结构下递归进行。
+
+      示例：hadoop  fs  -chown  someuser:somegrp   /hadoop/hadoopfile
+
+      **-cp**              
+
+      功能：从hdfs的一个路径拷贝hdfs的另一个路径
+
+      示例： hadoop  fs  -cp  /aaa/jdk.tar.gz  /bbb/jdk.tar.gz.2
+
+      **-mv**                     
+
+      功能：在hdfs目录中移动文件
+
+      示例： hadoop  fs  -mv  /aaa/jdk.tar.gz  /
+
+      **-getmerge**    
+
+      功能：合并下载多个文件
+
+      示例：比如hdfs的目录 /aaa/下有多个文件:log.1, log.2,log.3,...
+
+      hadoop fs -getmerge /aaa/log.*  ./log.sum
+
+      **-rm**                
+
+      功能：删除指定的文件。只删除非空目录和文件。-r 递归删除。
+
+      示例：hadoop fs -rm -r /aaa/bbb/
+
+      **-df**               
+
+      功能：统计文件系统的可用空间信息
+
+      示例：hadoop  fs  -df  -h  /
+
+      **-du** 
+
+      功能：显示目录中所有文件大小，当只指定一个文件时，显示此文件的大小。
+
+      示例：hadoop fs -du /user/hadoop/dir1
+
+      **-setrep**                
+
+      功能：改变一个文件的副本系数。-R选项用于递归改变目录下所有文件的副本系数。
+
+      示例：hadoop fs -setrep -w 3 -R /user/hadoop/dir1
 
 ## II. HDFS基本原理
 
 1. ### NameNode概述
+
+   1. NameNode是HDFS的核心
+   2. NameNode也称为Master
+   3. 
 
 2. ### DataNode概述
 
