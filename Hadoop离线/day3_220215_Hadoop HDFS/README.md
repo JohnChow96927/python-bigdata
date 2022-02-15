@@ -461,12 +461,6 @@
 
       *注：默认存储策略由BlockPlacementPolicyDefault类支持。也就是日常生活中提到最经典的**3副本策略。***
 
-      **1st replica** *如果写请求方所在机器是其中一个datanode,则直接存放在本地,否则随机在集群中选择一个datanode.*
-
-      **2nd replica** *第二个副本存放于不同第一个副本的所在的机架.*
-
-      **3rd replica** *第三个副本存放于第二个副本所在的机架,但是属于不同的节点*
-
       ![1644914781387](assets/1644914781387.png)
 
       4、 client请求3台DataNode中的一台A上传数据（本质上是一个RPC调用，建立pipeline），A收到请求会继续调用B，然后B调用C，将整个pipeline建立完成，后逐级返回client；
@@ -479,7 +473,27 @@
 
    2. #### HDFS读数据流程（下载）
 
-      
+      ![1644916409665](assets/1644916409665.png)
+
+      **详细步骤解析：**
+
+      1、 Client向NameNode发起RPC请求，来确定请求文件block所在的位置；
+
+      2、 NameNode会视情况返回文件的部分或者全部block列表，对于每个block，NameNode都会返回含有该block副本的DataNode地址；
+
+      3、 这些返回的DN地址，会按照集群拓扑结构得出DataNode与客户端的距离，然后进行排序，排序两个规则：网络拓扑结构中距离Client近的排靠前；心跳机制中超时汇报的DN状态为STALE，这样的排靠后；
+
+      4、 Client选取排序靠前的DataNode来读取block，如果客户端本身就是DataNode,那么将从本地直接获取数据；
+
+      5、 底层上本质是建立FSDataInputStream，重复的调用父类DataInputStream的read方法，直到这个块上的数据读取完毕；一旦到达块的末尾，DFSInputStream 关闭连接并继续定位下一个块的下一个 DataNode；
+
+      6、 当读完列表的block后，若文件读取还没有结束，客户端会继续向NameNode获取下一批的block列表；一旦客户端完成读取，它就会调用 close() 方法。
+
+      7、 读取完一个block都会进行checksum验证，如果读取DataNode时出现错误，客户端会通知NameNode，然后再从下一个拥有该block副本的DataNode继续读。
+
+      8、 NameNode只是返回Client请求包含块的DataNode地址，并不是返回请求块的数据；
+
+      最终读取来所有的block会合并成一个完整的最终文件。
 
 ## III. HDFS其他功能
 
