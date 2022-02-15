@@ -439,7 +439,9 @@
 
       #### 核心概念：ACK应答响应
 
-      
+      - ##### ACK(Acknowledge character)确认字符，在数据通信中，接收方发给发送方的一种传输类控制字符。表示发来的数据已确认接受无误
+
+      - ##### 在HDFS pipeline管道传输数据的过程中，传输的反方向会进行ACK校验，确保数据传输安全
 
       #### 核心概念：默认3副本存储策略
 
@@ -465,13 +467,15 @@
 
       4、 client请求3台DataNode中的一台A上传数据（本质上是一个RPC调用，建立pipeline），A收到请求会继续调用B，然后B调用C，将整个pipeline建立完成，后逐级返回client；
 
-      5、 client开始往A上传第一个block（先从磁盘读取数据放到一个本地内存缓存），以packet为单位（默认64K），A收到一个packet就会传给B，B传给C；A每传一个packet会放入一个应答队列等待应答。
+      5、 client开始往A上传第一个block（先从磁盘读取数据放到一个本地内存缓存），以**packet为单位（默认64K）**，A收到一个packet就会传给B，B传给C；A每传一个packet会放入一个应答队列等待应答。
 
       6、 数据被分割成一个个packet数据包在pipeline上依次传输，在pipeline反方向上，逐个发送ack（命令正确应答），最终由pipeline中第一个DataNode节点A将pipeline ack发送给client;
 
       当一个block传输完成之后，client再次请求NameNode上传第二个block到服务器。
 
    2. #### HDFS读数据流程（下载）
+
+      ![1644927580979](assets/1644927580979.png)
 
       ![1644916409665](assets/1644916409665.png)
 
