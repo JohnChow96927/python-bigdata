@@ -385,15 +385,15 @@
 
 1. ### NameNode概述
 
-   1. NameNode是HDFS的核心
-   2. NameNode也称为Master
-   3. NameNode仅存储HDFS的**元数据**：文件系统中的所有文件的目录树，并跟踪整个集群中的文件
-   4. NameNode不存储实际数据或数据集，数据本身存储在DataNode中
-   5. NameNode知道HDFS中任何给定文件的块列表及其位置，使用此信息NameNode知道如何从块中构建文件
-   6. NameNode并不持久化存储每个文件中各个块所在的DataNode的位置信息，这些信息会在系统启动时从数据节点重建
-   7. NameNode对于HDFS至关重要，当NameNode关闭时，HDFS / Hadoop集群无法访问
-   8. NameNode是Hadoop集群中的单点故障
-   9. NameNode所在机器通常会配置有大量内存（RAM）
+   1. ##### NameNode是HDFS的核心
+   2. ##### NameNode也称为Master
+   3. ##### NameNode仅存储HDFS的**元数据**：文件系统中的所有文件的目录树，并跟踪整个集群中的文件
+   4. ##### NameNode不存储实际数据或数据集，数据本身存储在DataNode中
+   5. ##### NameNode知道HDFS中任何给定文件的块列表及其位置，使用此信息NameNode知道如何从块中构建文件
+   6. ##### NameNode并不持久化存储每个文件中各个块所在的DataNode的位置信息，这些信息会在系统启动时从数据节点重建
+   7. ##### NameNode对于HDFS至关重要，当NameNode关闭时，HDFS / Hadoop集群无法访问
+   8. ##### NameNode是Hadoop集群中的单点故障
+   9. ##### NameNode所在机器通常会配置有大量内存（RAM）
 
    ![1644912005713](assets/1644912005713.png)
 
@@ -419,9 +419,9 @@
 
 3. ### HDFS的工作机制
 
-   ​	NameNode负责管理整个文件系统元数据；DataNode负责管理具体文件数据块存储；Secondary NameNode协助NameNode进行元数据的备份。
+   #### 	NameNode负责管理整个文件系统元数据；DataNode负责管理具体文件数据块存储；Secondary NameNode协助NameNode进行元数据的备份。
 
-   ​	HDFS的内部工作机制对客户端保持透明，客户端请求访问HDFS都是通过向NameNode申请来进行。
+   #### 	HDFS的内部工作机制对客户端保持透明，客户端请求访问HDFS都是通过向NameNode申请来进行。
 
    1. #### HDFS写数据流程（上传）
 
