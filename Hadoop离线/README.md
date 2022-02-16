@@ -245,7 +245,29 @@
 
 ## III. Secondary NameNode
 
+![1644982670663](assets/1644982670663.png)
+
+NameNode职责是管理元数据信息，DataNode的职责是负责数据具体存储，那么SecondaryNameNode的作用是什么？对很多初学者来说是非常迷惑的。它为什么会出现在HDFS中。从它的名字上看，它给人的感觉就像是NameNode的备份。但它实际上却不是。
+
+当HDFS集群运行一段时间后，就会出现下面一些问题：
+
+l  edit logs文件会变的很大，怎么去管理这个文件是一个挑战。
+
+l  NameNode重启会花费很长时间，因为有很多改动要合并到fsimage文件上。
+
+l  如果NameNode挂掉了，那就丢失了一些改动。因为此时的fsimage文件非常旧。
+
+因此为了克服这个问题，我们需要一个易于管理的机制来帮助我们**减小edit logs文件的大小和得到一个最新的fsimage文件**，这样也会减小在NameNode上的压力。这跟Windows的恢复点是非常像的，Windows的恢复点机制允许我们对OS进行快照，这样当系统发生问题时，我们能够回滚到最新的一次恢复点上。
+
+SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并NameNode的edit logs到fsimage文件中。
+
+![1644982716609](assets/1644982716609.png)
+
 1. ### Checkpoint
+
+   每达到触发条件，会由secondary namenode将namenode上积累的所有edits和一个最新的fsimage下载到本地，并加载到内存进行merge（这个过程称为checkpoint），如下图所示：
+
+   ![1644982803672](assets/1644982803672.png)
 
    1. #### Checkpoint详细步骤
 
@@ -272,15 +294,15 @@
         <name> dfs.namenode.checkpoint.period</name>
          <value>3600</value>
        	<description>
-      两次连续的checkpoint之间的时间间隔。默认1小时
-      </description>
+      		两次连续的checkpoint之间的时间间隔。默认1小时
+      	</description>
       </property>
       <property>
         <name>dfs.namenode.checkpoint.txns</name>
         <value>1000000</value>
         <description>
-      最大的没有执行checkpoint事务的数量，满足将强制执行紧急checkpoint，即使尚未达到检查点周期。默认设置为100万。  
-      </description>
+      		最大的没有执行checkpoint事务的数量，满足将强制执行紧急checkpoint，即使尚未达到检查点	周期。默认设置为100万。  
+      	</description>
       </property>
       ```
 
@@ -333,4 +355,6 @@
    如果你想获取到集群是否处于安全模式，可以用下面的命令获取：
 
       hdfs dfsadmin -safemode get
+
+## V. 
 
