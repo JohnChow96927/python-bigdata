@@ -356,17 +356,48 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
       hdfs dfsadmin -safemode get
 
-## V. Hadoop MapReduce
+## V. 初识Hadoop MapReduce
 
 ### 核心思想：“分而治之”
 
-
+1. mapReduce计算模型介绍
+   1. 理解MapReduce思想
+   2. MapReduce设计构思
+2. 官方MapReduce示例
+   1. 评估圆周率π(PI)
+   2. 单词词频统计WordCount
+3. MapReduce Python接口接入
+   1. 前言
+   2. 代码实现
+   3. 程序执行
 
 ## VI. Hadoop MapReduce基本原理
 
+1. 整体执行流程图
+2. Map阶段执行流程
+3. Reduce阶段执行流程
+4. Shuffle机制
+
 ## VII. Hadoop YARN
+
+1. YARN通俗介绍
+2. YARN基本架构
+3. YARN三大组件
+   1. ResourceManager
+   2. NodeManager
+   3. ApplicationMaster
+4. YARN运行流程
+5. YARN调度器Scheduler
+   1. FIFO Scheduler
+   2. Capacity Scheduler
+   3. Fair Scheduler
+   4. 示例: Capacity调度器配置使用
 
 ## VIII. Hadoop High Availability（HA）
 
-
+1. NameNode HA
+   1. NameNode HA
+   2. Failover Controller
+2. YARN HA
+3. Hadoop HA集群的搭建
 
