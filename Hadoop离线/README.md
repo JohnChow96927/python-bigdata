@@ -310,7 +310,7 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
 ## IV. HDFS安全模式
 
-1. ### 安全模式概述
+1. ### 安全模式概述（可读不可写）
 
    安全模式是HDFS所处的一种特殊状态，在这种状态下，文件系统只接受读数据请求，而不接受删除、修改等变更请求，是一种保护机制，用于保证集群中的数据块的安全性。
 
@@ -356,5 +356,17 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
       hdfs dfsadmin -safemode get
 
-## V. 
+## V. Hadoop MapReduce
+
+### 核心思想：“分而治之”
+
+
+
+## VI. Hadoop MapReduce基本原理
+
+## VII. Hadoop YARN
+
+## VIII. Hadoop High Availability（HA）
+
+
 
