@@ -358,46 +358,95 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
 ## V. 初识Hadoop MapReduce
 
-### 核心思想：“分而治之”
+1. ### mapReduce计算模型介绍
 
-1. mapReduce计算模型介绍
-   1. 理解MapReduce思想
-   2. MapReduce设计构思
-2. 官方MapReduce示例
-   1. 评估圆周率π(PI)
-   2. 单词词频统计WordCount
-3. MapReduce Python接口接入
-   1. 前言
-   2. 代码实现
-   3. 程序执行
+   1. #### 理解MapReduce思想
+
+      MapReduce的思想核心是“**分而治之**”。
+
+      所谓“分而治之”就是把一个复杂的问题按一定的“分解”方法分为规模较小的若干部分，然后逐个解决，分别找出各部分的解，再把把各部分的解组成整个问题的解。
+
+      这种朴素的思想来源于人们生活与工作的经验，也完全适合于技术领域。诸如软件的体系结构设计、模块化设计都是分而治之的具体表现。即使是发布过论文实现分布式计算的谷歌也只是实现了这种思想，而不是自己原创。
+
+      概况起来，MapReduce所包含的思想分为两步：
+
+      Map负责“分”，即把复杂的任务分解为若干个“简单的任务”来并行处理。可以进行拆分的前提是这些小任务可以并行计算，彼此间几乎没有依赖关系。
+
+      Reduce负责“合”，即对map阶段的结果进行全局汇总。
+
+      这两个阶段合起来正是MapReduce思想的体现。
+
+      ![1644995888894](assets/1644995888894.png)
+
+      还有一个比较形象的语言解释MapReduce：要数停车场中的所有停放车的总数量。
+
+      你数第一列，我数第二列…这就是Map阶段，人越多，能够同时数车的人就越多，速度就越快。
+
+      数完之后，聚到一起把所有人的统计数加在一起。这就是Reduce合并汇总阶段。
+
+      ![1644995909764](assets/1644995909764.png)
+
+   2. #### MapReduce设计构思
+
+2. ### 官方MapReduce示例
+
+   1. #### 评估圆周率π(PI)
+
+   2. #### 单词词频统计WordCount
+
+3. ### MapReduce Python接口接入
+
+   1. #### 前言
+
+   2. #### 代码实现
+
+   3. #### 程序执行
 
 ## VI. Hadoop MapReduce基本原理
 
-1. 整体执行流程图
-2. Map阶段执行流程
-3. Reduce阶段执行流程
-4. Shuffle机制
+1. ### 整体执行流程图
+
+2. ### Map阶段执行流程
+
+3. ### Reduce阶段执行流程
+
+4. ### Shuffle机制
 
 ## VII. Hadoop YARN
 
-1. YARN通俗介绍
-2. YARN基本架构
-3. YARN三大组件
-   1. ResourceManager
-   2. NodeManager
-   3. ApplicationMaster
-4. YARN运行流程
-5. YARN调度器Scheduler
-   1. FIFO Scheduler
-   2. Capacity Scheduler
-   3. Fair Scheduler
-   4. 示例: Capacity调度器配置使用
+1. ### YARN通俗介绍
+
+2. ### YARN基本架构
+
+3. ### YARN三大组件
+
+   1. #### ResourceManager
+
+   2. #### NodeManager
+
+   3. #### ApplicationMaster
+
+4. ### YARN运行流程
+
+5. ### YARN调度器Scheduler
+
+   1. #### FIFO Scheduler
+
+   2. #### Capacity Scheduler
+
+   3. #### Fair Scheduler
+
+   4. #### 示例: Capacity调度器配置使用
 
 ## VIII. Hadoop High Availability（HA）
 
-1. NameNode HA
-   1. NameNode HA
-   2. Failover Controller
-2. YARN HA
-3. Hadoop HA集群的搭建
+1. ### NameNode HA
+
+   1. #### NameNode HA
+
+   2. #### Failover Controller
+
+2. ### YARN HA
+
+3. ### Hadoop HA集群的搭建
 
