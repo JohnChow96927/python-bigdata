@@ -388,65 +388,271 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
    2. #### MapReduce设计构思
 
+      MapReduce是一个分布式运算程序的编程框架，核心功能是将用户编写的业务逻辑代码和自带默认组件整合成一个完整的分布式运算程序，并发运行在Hadoop集群上。
+
+      既然是做计算的框架，那么表现形式就是有个输入（input），MapReduce操作这个输入（input），通过本身定义好的计算模型，得到一个输出（output）。
+
+      对许多开发者来说，自己完完全全实现一个并行计算程序难度太大，而MapReduce就是一种简化并行计算的编程模型，降低了开发并行应用的入门门槛。
+
+      Hadoop MapReduce构思体现在如下的三个方面：
+
+      l  如何对付大数据处理：分而治之
+
+      对相互间不具有计算依赖关系的大数据，实现并行最自然的办法就是采取分而治之的策略。并行计算的第一个重要问题是如何划分计算任务或者计算数据以便对划分的子任务或数据块同时进行计算。不可分拆的计算任务或相互间有依赖关系的数据无法进行并行计算！
+
+      l  构建抽象模型：Map和Reduce
+
+      MapReduce借鉴了函数式语言中的思想，用Map和Reduce两个函数提供了高层的并行编程抽象模型。
+
+      Map: 对一组数据元素进行某种重复式的处理；
+
+      Reduce: 对Map的中间结果进行某种进一步的结果整理。
+
+      MapReduce中定义了如下的Map和Reduce两个抽象的编程接口，由用户去编程实现:
+
+      map: (k1; v1) → [(k2; v2)]
+
+      reduce: (k2; [v2]) → [(k3; v3)]
+
+      Map和Reduce为程序员提供了一个清晰的操作接口抽象描述。通过以上两个编程接口，大家可以看出MapReduce处理的数据类型是<key,value>键值对。
+
+      l  统一构架，隐藏系统层细节
+
+      如何提供统一的计算框架，如果没有统一封装底层细节，那么程序员则需要考虑诸如数据存储、划分、分发、结果收集、错误恢复等诸多细节；为此，MapReduce设计并提供了统一的计算框架，为程序员隐藏了绝大多数系统层面的处理细节。
+
+      MapReduce最大的亮点在于通过抽象模型和计算框架把需要做什么(what need to do)与具体怎么做(how to do)分开了，为程序员提供一个抽象和高层的编程接口和框架。程序员仅需要关心其应用层的具体计算问题，仅需编写少量的处理应用本身计算问题的程序代码。
+
+      如何具体完成这个并行计算任务所相关的诸多系统层细节被隐藏起来, 交给计算框架去处理：从分布代码的执行，到大到数千小到单个节点集群的自动调度使用。
+
 2. ### 官方MapReduce示例
+
+   在Hadoop的安装包中，官方提供了MapReduce程序的示例examples，以便快速上手体验MapReduce。
+
+   该示例是使用java语言编写的，被打包成为了一个jar文件。
+
+   /export/server/hadoop-3.3.0/share/hadoop/mapreduce
+
+   ![1644996143002](../../../GitHub%20Desktop/ITheima_python_bigdata/Hadoop%E7%A6%BB%E7%BA%BF/assets/1644996143002.png)
+
+   运行该jar包程序，可以传入不同的参数实现不同的处理功能。
+
+   hadoop jar hadoop-mapreduce-examples-3.3.0.jar args…
 
    1. #### 评估圆周率π(PI)
 
+      圆周率π大家都不陌生，如何去估算π的值呢？
+
+      Monte Carlo方法的基本思想：
+
+      当所求解问题是某种随机事件出现的概率，或者是某个随机变量的期望值时，通过某种“实验”的方法，以这种事件出现的频率估计这一随机事件的概率，或者得到这个随机变量的某些数字特征，并将其作为问题的解。
+
+      ​                                                  ![1644996193401](assets/1644996193401.png)
+
+      假设正方形边长为1，圆半径也为1，那么1/4圆的面积为：
+
+      ![1644996213608](assets/1644996213608.png)
+
+      在正方形内随机撒点，分布于1/4圆内的数量假设为a ，分布于圆外的数量为b，N则是所产生的总数：N=a+b。
+
+      那么数量a与N的比值应与1/4圆面积及正方形面积成正比，于是：
+
+      ![1644996220705](assets/1644996220705.png)
+
+      下面来运行MapReduce程序评估一下圆周率的值，执行中可以去YARN页面上观察程序的执行的情况。
+
+      ```shell
+      [root@node1 mapreduce]# pwd
+      /export/server/hadoop-3.3.0/share/hadoop/mapreduce
+      [root@node1 mapreduce]# hadoop jar hadoop-mapreduce-examples-3.3.0.jar pi 10 50
+      ```
+
+         [root@node1 mapreduce]# pwd   /export/server/hadoop-3.3.0/share/hadoop/mapreduce   [root@node1 mapreduce]# hadoop jar   hadoop-mapreduce-examples-3.3.0.jar pi 10 50   
+
+      第一个参数pi：表示MapReduce程序执行圆周率计算；
+
+      第二个参数：用于指定map阶段运行的任务次数，并发度，这是是10；
+
+      第三个参数：用于指定每个map任务取样的个数，这里是50。
+
+      ![1644996276753](assets/1644996276753.png)
+
+      ![1644996283506](assets/1644996283506.png)
+
+      ![1644996288660](assets/1644996288660.png)
+
+      ![1644996294947](assets/1644996294947.png)
+
    2. #### 单词词频统计WordCount
+
+      WordCount算是大数据统计分析领域的经典需求了，相当于编程语言的HelloWorld。其背后的应用场景十分丰富，比如统计页面点击数，搜索词排行榜等跟count相关的需求。
+
+      其最基本的应用雏形就是统计文本数据中，相同单词出现的总次数。用SQL的角度来理解的话，相当于根据单词进行group by分组，相同的单词分为一组，然后每个组内进行count聚合统计。
+
+      对于MapReduce乃至于大数据计算引擎来说，业务需求本身是简单的，重点是当数据量大了之后，如何使用分而治之的思想来处理海量数据进行单词统计。
+
+      ![1644997123681](assets/1644997123681.png)
+
+      上传课程资料中的文本文件到HDFS文件系统的/input目录下，如果没有这个目录，使用shell创建：
+
+      ```shell
+      hadoop fs -mkdir /input
+      
+      hadoop fs -put 1.txt /input
+      ```
+
+      准备好之后，执行官方MapReduce实例，对上述文件进行单词次数统计:
+
+      ```shell
+      [root@node1 mapreduce]# pwd
+      /export/server/hadoop-3.3.0/share/hadoop/mapreduce
+      [root@node1 mapreduce]# hadoop jar hadoop-mapreduce-examples-3.3.0.jar wordcount /input /output
+      ```
+
+      第一个参数：wordcount表示执行单词统计
+
+      第二个参数：指定输入文件的路径
+
+      第三个参数：指定输出结果的路径（该路径不能已存在）
+
+      ![1644997208394](assets/1644997208394.png)
+
+      ![1644997212780](assets/1644997212780.png)
 
 3. ### MapReduce Python接口接入
 
    1. #### 前言
 
+      虽然Hadoop是用Java编写的一个框架, 但是并不意味着他只能使用Java语言来操作, 在Hadoop-0.14.1版本后, Hadoop支持了Python和C++语言, 在Hadoop的文档中也表示可以使用Python进行开发。
+
+      <https://hadoop.apache.org/docs/r3.3.0/hadoop-streaming/HadoopStreaming.html>
+
+      在Hadoop的文档中提到了Hadoop Streaming, 我们可以使用流的方式来操作它.
+
+      ```shell
+      [root@node1 lib]# pwd
+      /export/server/hadoop-3.3.0/share/hadoop/tools/lib
+      [root@node1 lib]# hadoop jar hadoop-streaming-3.3.0.jar
+        -input InputDirs \
+        -output OutputDir \
+        -mapper xxx \
+        -reducer xxx
+      ```
+
+      在python中的sys包中存在stdin和stdout输入输出流, 可以利用这个方式来进行MapReduce的编写.
+
    2. #### 代码实现
 
+      mapper.py
+
+      ```python
+      # -*- coding:utf-8 -*-
+      # @Time : 2021/6/21 16:04
+      # @Author: itcast
+      # @File : mapper.py
+      import sys
+      
+      for line in sys.stdin:
+          # 捕获输入流
+          line = line.strip()
+          # 根据分隔符切割单词
+          words = line.split()
+          # 遍历单词列表 每个标记1
+          for word in words:
+              print("%s\t%s" % (word, 1))
+      ```
+
+      reducer.py
+
+      ```python
+      # -*- coding:utf-8 -*-
+      # @Time : 2021/6/21 16:04
+      # @Author: itcast
+      # @File : reducer.py
+      import sys
+      # 保存单词次数的字典 key:单词 value：总次数
+      word_dict = {}
+      
+      for line in sys.stdin:
+      
+          line = line.strip()
+          word, count = line.split('\t')
+      
+          # count类型转换
+          try:
+              count = int(count)
+          except ValueError:
+              continue
+          # 如果单词位于字典中 +1，如果不存在 保存并设初始值1
+          if word in word_dict:
+              word_dict[word] += 1
+          else:
+              word_dict.setdefault(word, 1)
+      # 结果遍历输出
+      for k, v in word_dict.items():
+          print('%s\t%s' % (k, v))
+      ```
+
    3. #### 程序执行
+
+      方式1：本地测试Python脚本逻辑是否正确。
+
+      方式2：使用hadoop streaming提交Python脚本集群运行。
+
+      注意：不管哪种方式执行，都需要提前在Centos系统上安装好Python3.
+
+      本地测试:
+
+      ```shell
+      #上传待处理文件 和Python脚本到Linux上
+      [root@node2 ~]# pwd
+      /root
+      [root@node2 ~]# ll
+      -rw-r--r--  1 root  root        105 May 18 15:12 1.txt
+      -rwxr--r--  1 root  root        340 Jul 21 16:16 mapper.py
+      -rwxr--r--  1 root  root        647 Jul 21 16:18 reducer.py
+      
+      #使用shell管道符运行脚本测试
+      [root@node2 ~]# cat 1.txt | python mapper.py |sort|python reducer.py 
+      allen   4
+      apple   3
+      hadoop  1
+      hello   5
+      mac     1
+      spark   2
+      tom     2
+      ```
+
+      Hadoop streaming提交
+
+      ```shell
+      #上传处理的文件到hdfs、上传Python脚本到linux
+      
+      #提交程序执行
+      hadoop jar /export/server/hadoop-3.3.0/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar \
+      -D mapred.reduce.tasks=1 \
+      -mapper "python mapper.py" \
+      -reducer "python reducer.py" \
+      -file mapper.py -file reducer.py \
+      -input /input/* \
+      -output /outpy
+      ```
+
+      执行结果:
+
+      ![1644998523271](assets/1644998523271.png)
+
+      ![1644998532575](assets/1644998532575.png)
 
 ## VI. Hadoop MapReduce基本原理
 
 1. ### 整体执行流程图
+
+   ![1645001636692](assets/1645001636692.png)
+
+   ![1645001675999](assets/1645001675999.png)
 
 2. ### Map阶段执行流程
 
 3. ### Reduce阶段执行流程
 
 4. ### Shuffle机制
-
-## VII. Hadoop YARN
-
-1. ### YARN通俗介绍
-
-2. ### YARN基本架构
-
-3. ### YARN三大组件
-
-   1. #### ResourceManager
-
-   2. #### NodeManager
-
-   3. #### ApplicationMaster
-
-4. ### YARN运行流程
-
-5. ### YARN调度器Scheduler
-
-   1. #### FIFO Scheduler
-
-   2. #### Capacity Scheduler
-
-   3. #### Fair Scheduler
-
-   4. #### 示例: Capacity调度器配置使用
-
-## VIII. Hadoop High Availability（HA）
-
-1. ### NameNode HA
-
-   1. #### NameNode HA
-
-   2. #### Failover Controller
-
-2. ### YARN HA
-
-3. ### Hadoop HA集群的搭建
-
