@@ -121,13 +121,159 @@
 
 1. ### 元数据管理概述
 
+   HDFS元数据，按类型分，主要包括以下几个部分： 
+
+   1、文件、目录自身的属性信息，例如文件名，目录名，修改信息等。 
+
+   2、文件记录的信息的存储相关的信息，例如存储块信息，分块情况，副本个数等。 
+
+   3、记录HDFS的Datanode的信息，用于DataNode的管理。
+
+   按形式分为内存元数据和元数据文件两种，分别存在**内存**和**磁盘**上。
+
+   HDFS磁盘上元数据文件分为两类，用于持久化存储：
+
+   **fsimage 镜像文件**：是元数据的一个持久化的检查点，包含Hadoop文件系统中的所有目录和文件元数据信息，但不包含文件块位置的信息。文件块位置信息只存储在内存中，是在 datanode加入集群的时候，namenode询问datanode得到的，并且间断的更新。
+
+   **Edits 编辑日志**：存放的是Hadoop文件系统的所有更改操作（文件创建，删除或修改）的日志，文件系统客户端执行的更改操作首先会被记录到edits文件中。
+
+   fsimage和edits文件都是经过序列化的，在NameNode启动的时候，它会将fsimage文件中的内容加载到内存中，之后再执行edits文件中的各项操作，使得内存中的元数据和实际的同步，存在内存中的元数据支持客户端的读操作，也是最完整的元数据。
+
+   当客户端对HDFS中的文件进行新增或者修改操作，操作记录首先被记入edits日志文件中，当客户端操作成功后，相应的元数据会更新到内存元数据中。因为fsimage文件一般都很大（GB级别的很常见），如果所有的更新操作都往fsimage文件中添加，这样会导致系统运行的十分缓慢。
+
+   HDFS这种设计实现着手于：一是内存中数据更新、查询快，极大缩短了操作响应时间；二是内存中元数据丢失风险颇高（断电等），因此辅佐元数据镜像文件（fsimage）+编辑日志文件（edits）的备份机制进行确保元数据的安全。
+
+   **NameNode维护整个文件系统元数据**。因此，元数据的准确管理，影响着HDFS提供文件存储服务的能力。
+
 2. ### 元数据目录相关文件
+
+   在Hadoop的HDFS首次部署好配置文件之后，并不能马上启动使用，而是先要对文件系统进行格式化。需要在NameNode（NN）节点上进行如下的操作：
+
+   $HADOOP_HOME/bin/hdfs namenode –format
+
+   在这里要注意两个概念，一个是文件系统，此时的文件系统在物理上还不存在；二就是此处的格式化并不是指传统意义上的本地磁盘格式化，而是一些清除与准备工作。
+
+   格式化完成之后，将会在$dfs.namenode.name.dir/current目录下创建如下的文件结构，这个目录也正是namenode元数据相关的文件目录：
+
+   ![1644981944378](assets/1644981944378.png)
+
+   其中的dfs.namenode.name.dir是在hdfs-site.xml文件中配置的，默认值如下：
+
+   ![1644981961440](assets/1644981961440.png)
+
+   dfs.namenode.name.dir属性可以配置多个目录，各个目录存储的文件结构和内容都完全一样，相当于备份，这样做的好处是当其中一个目录损坏了，也不会影响到Hadoop的元数据，特别是当其中一个目录是NFS（网络文件系统Network File System，NFS）之上，即使你这台机器损坏了，元数据也得到保存。
+
+   下面对$dfs.namenode.name.dir/current/目录下的文件进行解释。
+
+   **VERSION** 
+
+   namespaceID=934548976
+
+   clusterID=CID-cdff7d73-93cd-4783-9399-0a22e6dce196
+
+   cTime=0
+
+   storageType=NAME_NODE
+
+   blockpoolID=BP-893790215-192.168.24.72-1383809616115
+
+   layoutVersion=-47
+
+   namespaceID/clusterID/blockpoolID 这些都是HDFS集群的唯一标识符。标识符被用来防止DataNodes意外注册到另一个集群中的namenode上。这些标识在联邦（federation）部署中特别重要。联邦模式下，会有多个NameNode独立工作。每个的NameNode提供唯一的命名空间（namespaceID），并管理一组唯一的文件块池（blockpoolID）。clusterID将整个集群结合在一起作为单个逻辑单元，在集群中的所有节点上都是一样的。
+
+   storageType说明这个文件存储的是什么进程的数据结构信息（如果是DataNode，storageType=DATA_NODE）；
+
+   cTime NameNode存储系统创建时间，首次格式化文件系统这个属性是0，当文件系统升级之后，该值会更新到升级之后的时间戳；
+
+   layoutVersion表示HDFS永久性数据结构的版本信息，是一个负整数。
+
+   补充说明：
+
+   *格式化集群的时候，可以指定集群的cluster_id，但是不能与环境中其他集群有冲突。如果没有提供cluster_id，则会自动生成一个唯一的ClusterID。*
+
+   *$HADOOP_HOME/bin/hdfs namenode -format -clusterId <cluster_id>*
+
+   **seen_txid**
+
+   $dfs.namenode.name.dir/current/seen_txid非常重要，是存放transactionId的文件，format之后是0，它代表的是namenode里面的edits_*文件的尾数，namenode重启的时候，会按照seen_txid的数字，循序从头跑edits_0000001~到seen_txid的数字。所以当你的hdfs发生异常重启的时候，一定要比对seen_txid内的数字是不是你edits最后的尾数。
+
+   **Fsimage & edits**
+
+   $dfs.namenode.name.dir/current
+
+   目录下在format的同时也会生成fsimage和edits文件，及其对应的md5校验文件。
 
 3. ### Fsimage、Edits
 
    1. #### 概述
 
+      **fsimage**文件其实是Hadoop文件系统元数据的一个永久性的检查点，其中包含Hadoop文件系统中的所有目录和文件idnode的序列化信息；
+
+      fsimage包含Hadoop文件系统中的所有目录和文件idnode的序列化信息；对于文件来说，包含的信息有修改时间、访问时间、块大小和组成一个文件块信息等；而对于目录来说，包含的信息主要有修改时间、访问控制权限等信息。
+
+       
+
+      **edits**文件存放的是Hadoop文件系统的所有更新操作的路径，文件系统客户端执行的所以写操作首先会被记录到edits文件中。
+
+      NameNode
+
+      起来之后，
+
+      HDFS
+
+      中的更新操作会重新写到
+
+      edits
+
+      文件中
+
+      ，因为
+
+      fsimage
+
+      文件一般都很大（
+
+      GB
+
+      级别的很常见），如果所有的更新操作都往
+
+      fsimage
+
+      文件中添加，这样会导致系统运行的十分缓慢，但是如果往
+
+      edits
+
+      文件里面写就不会这样，每次执行写操作之后，且在向客户端发送成功代码之前，
+
+      edits
+
+      文件都需要同步更新。如果一个文件比较大，使得写操作需要向多台机器进行操作，只有当所有的写操作都执行完成之后，写操作才会返回成功，这样的好处是任何的操作都不会因为机器的故障而导致元数据的不同步。
+
    2. #### 内容查看
+
+      fsimage、edits两个文件中的内容使用普通文本编辑器是无法直接查看的，幸运的是hadoop为此准备了专门的工具用于查看文件的内容，这些工具分别为**oev**和**oiv**，可以使用hdfs调用执行。
+
+      oev是offline edits viewer（离线edits查看器）的缩写，该工具只操作文件因而并不需要hadoop集群处于运行状态。
+
+         hdfs oev   -i edits_0000000000000000081-0000000000000000089 -o edits.xml   
+
+      -i,--inputFile <arg>   
+
+      -o,--outputFile <arg>  Name of output file.
+
+      在输出文件中，每个
+
+      RECORD
+
+      记录了一次操作, 示例如下：
+
+      ![1644982058984](assets/1644982058984.png)
+
+      oiv是offline image viewer的缩写，用于将fsimage文件的内容转储到指定文件中以便于阅读，该工具还提供了只读的WebHDFS API以允许离线分析和检查hadoop集群的命名空间。oiv在处理非常大的fsimage文件时是相当快的，如果该工具不能够处理fsimage，它会直接退出。该工具不具备向后兼容性，比如使用hadoop-2.4版本的oiv不能处理hadoop-2.3版本的fsimage，只能使用hadoop-2.3版本的oiv。同oev一样，就像它的名称所提示的（offline），oiv也不需要hadoop集群处于运行状态。
+
+      ​	hdfs oiv   -i fsimage_0000000000000000115 -p XML -o fsimage.xml
+
+      ![1644982140761](assets/1644982140761.png)
 
 ## III. Secondary NameNode
 
