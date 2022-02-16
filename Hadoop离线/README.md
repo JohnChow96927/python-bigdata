@@ -215,39 +215,7 @@
 
       **edits**文件存放的是Hadoop文件系统的所有更新操作的路径，文件系统客户端执行的所以写操作首先会被记录到edits文件中。
 
-      NameNode
-
-      起来之后，
-
-      HDFS
-
-      中的更新操作会重新写到
-
-      edits
-
-      文件中
-
-      ，因为
-
-      fsimage
-
-      文件一般都很大（
-
-      GB
-
-      级别的很常见），如果所有的更新操作都往
-
-      fsimage
-
-      文件中添加，这样会导致系统运行的十分缓慢，但是如果往
-
-      edits
-
-      文件里面写就不会这样，每次执行写操作之后，且在向客户端发送成功代码之前，
-
-      edits
-
-      文件都需要同步更新。如果一个文件比较大，使得写操作需要向多台机器进行操作，只有当所有的写操作都执行完成之后，写操作才会返回成功，这样的好处是任何的操作都不会因为机器的故障而导致元数据的不同步。
+      NameNode起来之后，HDFS中的更新操作会重新写到edits文件中，因为fsimage文件一般都很大（GB级别的很常见），如果所有的更新操作都往fsimage文件中添加，这样会导致系统运行的十分缓慢，但是如果往edits文件里面写就不会这样，每次执行写操作之后，且在向客户端发送成功代码之前，edits文件都需要同步更新。如果一个文件比较大，使得写操作需要向多台机器进行操作，只有当所有的写操作都执行完成之后，写操作才会返回成功，这样的好处是任何的操作都不会因为机器的故障而导致元数据的不同步。
 
    2. #### 内容查看
 
@@ -281,7 +249,42 @@
 
    1. #### Checkpoint详细步骤
 
+      l  NameNode管理着元数据信息，其中有两类持久化元数据文件：edits操作日志文件和fsimage元数据镜像文件。新的操作日志不会立即与fsimage进行合并，也不会刷到NameNode的内存中，而是会先写到edits中(因为合并需要消耗大量的资源)，操作成功之后更新至内存。
+
+      l  有dfs.namenode.checkpoint.period和dfs.namenode.checkpoint.txns 两个配置，只要达到这两个条件任何一个，secondarynamenode就会执行checkpoint的操作。
+
+      l  当触发checkpoint操作时，NameNode会生成一个新的edits即上图中的edits.new文件，同时SecondaryNameNode会将edits文件和fsimage复制到本地（HTTP GET方式）。
+
+      l  secondarynamenode将下载下来的fsimage载入到内存，然后一条一条地执行edits文件中的各项更新操作，使得内存中的fsimage保存最新，这个过程就是edits和fsimage文件合并，生成一个新的fsimage文件即上图中的Fsimage.ckpt文件。
+
+      l  secondarynamenode将新生成的Fsimage.ckpt文件复制到NameNode节点。
+
+      l  在NameNode节点的edits.new文件和Fsimage.ckpt文件会替换掉原来的edits文件和fsimage文件，至此刚好是一个轮回，即在NameNode中又是edits和fsimage文件。
+
+      等待下一次checkpoint触发SecondaryNameNode进行工作，一直这样循环操作。
+
    2. #### Checkpoint触发条件
+
+      Checkpoint操作受两个参数控制，可以通过core-site.xml进行配置：
+
+      ```xml
+      <property>
+        <name> dfs.namenode.checkpoint.period</name>
+         <value>3600</value>
+       	<description>
+      两次连续的checkpoint之间的时间间隔。默认1小时
+      </description>
+      </property>
+      <property>
+        <name>dfs.namenode.checkpoint.txns</name>
+        <value>1000000</value>
+        <description>
+      最大的没有执行checkpoint事务的数量，满足将强制执行紧急checkpoint，即使尚未达到检查点周期。默认设置为100万。  
+      </description>
+      </property>
+      ```
+
+      从上面的描述我们可以看出，SecondaryNamenode根本就不是Namenode的一个热备，其只是将fsimage和edits合并。其拥有的fsimage不是最新的，因为在他从NameNode下载fsimage和edits文件时候，新的更新操作已经写到edit.new文件中去了。而这些更新在SecondaryNamenode是没有同步到的！当然，**如果NameNode中的fsimage真的出问题了，还是可以用SecondaryNamenode中的fsimage替换一下NameNode上的fsimage，虽然已经不是最新的fsimage，但是我们可以将损失减小到最少！**
 
 ## IV. HDFS安全模式
 
