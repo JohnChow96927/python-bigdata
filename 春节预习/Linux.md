@@ -28,3 +28,22 @@ mkdir
 
 touch
 
+cvf
+
+tar
+
+date
+
+free -h(人性化)
+
+ps
+
+jps
+
+echo
+
+vim
+
+shift + zz
+
+ 
