@@ -164,13 +164,13 @@ Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率，原则�
 
       root
 
-      ├── prod
+      ├── prod	# 生产上需要的队列
 
-      └── dev
+      └── dev	# 开发上需要的队列
 
-      ​    ├── mapreduce
+      ​    ├── mapreduce	# 开发中的mapreduce队列
 
-      ​    └── spark
+      ​    └── spark	# 开发中的spark队列
 
       下面是一个简单的Capacity调度器的配置文件，文件名为capacity-scheduler.xml。在这个配置中，在root队列下面定义了两个子队列prod和dev，分别占40%和60%的容量。需要注意，一个队列的配置是通过属性`yarn.sheduler.capacity.<queue-path>.<sub-property>`指定的，`<queue-path>`代表的是队列的继承树，如`root.prod`队列，`<sub-property>`一般指capacity和maximum-capacity。
 
@@ -227,15 +227,71 @@ Hadoop1.X版本，NN是HDFS集群的单点故障点，每一个集群只有一�
 
    1. #### NameNode HA详解
 
-      
+      hadoop2.x之后，Clouera提出了QJM/Qurom Journal Manager，这是一个基于Paxos算法（分布式一致性算法）实现的HDFS HA方案，它给出了一种较好的解决思路和方案,QJM主要优势如下：
+
+      不需要配置额外的高共享存储，降低了复杂度和维护成本。
+
+      消除spof(单点故障)。
+
+      系统鲁棒性(Robust)的程度可配置、可扩展。
+
+      ![1645170449538](assets/1645170449538.png)
+
+      基本原理就是用2N+1台 JournalNode 存储EditLog，每次写数据操作有>=N+1返回成功时即认为该次写成功，数据不会丢失了。当然这个算法所能容忍的是最多有N台机器挂掉，如果多于N台挂掉，这个算法就失效了。这个原理是基于Paxos算法。
+
+      在HA架构里面SecondaryNameNode已经不存在了，为了保持standby NN时时的与Active NN的元数据保持一致，他们之间交互通过JournalNode进行操作同步。
+
+      任何修改操作在 Active NN上执行时，JournalNode进程同时也会记录修改log到至少半数以上的JN中，这时 Standby NN 监测到JN 里面的同步log发生变化了会读取 JN 里面的修改log，然后同步到自己的目录镜像树里面，如下图：
+
+      ![1645170465343](assets/1645170465343.png)
+
+      当发生故障时，Active的 NN 挂掉后，Standby NN 会在它成为Active NN 前，读取所有的JN里面的修改日志，这样就能高可靠的保证与挂掉的NN的目录镜像树一致，然后无缝的接替它的职责，维护来自客户端请求，从而达到一个高可用的目的。
+
+      在HA模式下，datanode需要确保同一时间有且只有一个NN能命令DN。为此：
+
+      每个NN改变状态的时候，向DN发送自己的状态和一个序列号。
+
+      DN在运行过程中维护此序列号，当failover时，新的NN在返回DN心跳时会返回自己的active状态和一个更大的序列号。DN接收到这个返回则认为该NN为新的active。
+
+      如果这时原来的active NN恢复，返回给DN的心跳信息包含active状态和原来的序列号，这时DN就会拒绝这个NN的命令。
 
    2. #### Failover Controller
 
-      
+      HA模式下，会将FailoverController部署在每个NameNode的节点上，作为一个单独的进程用来监视NN的健康状态。**FailoverController****主要包括三个组件:**
+
+      HealthMonitor: 监控NameNode是否处于unavailable或unhealthy状态。当前通过RPC调用NN相应的方法完成。
+
+      ActiveStandbyElector: 监控NN在ZK中的状态。
+
+      ZKFailoverController: 订阅HealthMonitor 和ActiveStandbyElector 的事件，并管理NN的状态,另外zkfc还负责解决fencing（也就是脑裂问题）。
+
+      上述三个组件都在跑在一个JVM中，这个JVM与NN的JVM在同一个机器上。但是两个独立的进程。一个典型的HA集群，有两个NN组成，每个NN都有自己的ZKFC进程
+
+      ![1645170643536](assets/1645170643536.png)
+
+      **ZKFailoverController主要职责：**
+
+      - **健康监测：**周期性的向它监控的NN发送健康探测命令，从而来确定某个NameNode是否处于健康状态，如果机器宕机，心跳失败，那么zkfc就会标记它处于一个不健康的状态
+
+      - **会话管理：**如果NN是健康的，zkfc就会在zookeeper中保持一个打开的会话，如果NameNode同时还是Active状态的，那么zkfc还会在Zookeeper中占有一个类型为短暂类型的znode，当这个NN挂掉时，这个znode将会被删除，然后备用的NN将会得到这把锁，升级为主NN，同时标记状态为Active
+
+      - 当宕机的NN新启动时，它会再次注册zookeper，发现已经有znode锁了，便会自动变为Standby状态，如此往复循环，保证高可靠，需要注意，目前仅仅支持最多配置2个NN
+
+      - **master选举**：通过在zookeeper中维持一个短暂类型的znode，来实现抢占式的锁机制，从而判断那个NameNode为Active状态
 
 2. ### YARN HA
 
-   
+   Yarn作为资源管理系统，是上层计算框架（如MapReduce,Spark）的基础。在Hadoop 2.4.0版本之前，Yarn存在单点故障（即ResourceManager存在单点故障），一旦发生故障，恢复时间较长，且会导致正在运行的Application丢失，影响范围较大。从Hadoop 2.4.0版本开始，Yarn实现了ResourceManager HA，在发生故障时自动failover，大大提高了服务的可靠性。
+
+   ResourceManager（简写为RM）作为Yarn系统中的主控节点，负责整个系统的资源管理和调度，内部维护了各个应用程序的ApplictionMaster信息、NodeManager（简写为NM）信息、资源使用等。由于资源使用情况和NodeManager信息都可以通过NodeManager的心跳机制重新构建出来，因此只需要对ApplicationMaster相关的信息进行持久化存储即可。
+
+   在一个典型的HA集群中，两台独立的机器被配置成ResourceManger。在任意时间，有且只允许一个活动的ResourceManger,另外一个备用。切换分为两种方式：
+
+   **手动切换**：在自动恢复不可用时，管理员可用手动切换状态，或是从Active到Standby,或是从Standby到Active。
+
+   **自动切换**：基于Zookeeper，但是区别于HDFS的HA，2个节点间无需配置额外的ZFKC守护进程来同步数据
+
+   ![1645170757231](assets/1645170757231.png)
 
 3. ### Hadoop HA集群的搭建
 
