@@ -148,9 +148,70 @@ Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率，原则�
 
       需要注意的是，在下图Fair调度器中，从第二个任务提交到获得资源会有一定的延迟，因为它需要等待第一个任务释放占用的Container。小任务执行完成之后也会释放自己占用的资源，大任务又获得了全部的系统资源。最终效果就是Fair调度器即得到了高的资源利用率又能保证小任务及时完成
 
+      ![1645167388835](assets/1645167388835.png)
+
+      公平调度器 Fair Scheduler 最初是由 Facebook 开发设计使得 Hadoop 应用能够被多用户公平地共享整个集群资源，现被 Cloudera CDH 所采用。
+
+      Fair Scheduler不需要保留集群的资源，因为它会动态在所有正在运行的作业之间平衡资源
+
    4. #### 示例: Capacity调度器配置使用
 
-      
+      调度器的使用是通过yarn-site.xml配置文件中的
+
+      yarn.resourcemanager.scheduler.class参数进行配置的，默认采用Capacity Scheduler调度器。
+
+      假设我们有如下层次的队列：
+
+      root
+
+      ├── prod
+
+      └── dev
+
+      ​    ├── mapreduce
+
+      ​    └── spark
+
+      下面是一个简单的Capacity调度器的配置文件，文件名为capacity-scheduler.xml。在这个配置中，在root队列下面定义了两个子队列prod和dev，分别占40%和60%的容量。需要注意，一个队列的配置是通过属性yarn.sheduler.capacity.<queue-path>.<sub-property>指定的，<queue-path>代表的是队列的继承树，如root.prod队列，<sub-property>一般指capacity和maximum-capacity。
+
+      ```xml
+      <configuration>
+       <property>
+          <name>yarn.scheduler.capacity.root.queues</name>
+          <value>prod,dev</value>
+        </property>
+       <property>
+          <name>yarn.scheduler.capacity.root.dev.queues</name>
+          <value>mapreduce,spark</value>
+        </property>
+          <property>
+          <name>yarn.scheduler.capacity.root.prod.capacity</name>
+          <value>40</value>
+        </property>
+          <property>
+          <name>yarn.scheduler.capacity.root.dev.capacity</name>
+          <value>60</value>
+        </property>
+          <property>
+          <name>yarn.scheduler.capacity.root.dev.maximum-capacity</name>
+          <value>75</value>
+        </property>
+        <property>
+          <name>yarn.scheduler.capacity.root.dev.mapreduce.capacity</name>
+          <value>50</value>
+        </property>
+         <property>
+          <name>yarn.scheduler.capacity.root.dev.spark.capacity</name>
+          <value>50</value>
+        </property>
+      </configuration>
+      ```
+
+      我们可以看到，dev队列又被分成了mapreduce和spark两个相同容量的子队列。dev的maximum-capacity属性被设置成了75%，所以即使prod队列完全空闲dev也不会占用全部集群资源，也就是说，prod队列仍有25%的可用资源用来应急。我们注意到，mapreduce和spark两个队列没有设置maximum-capacity属性，也就是说mapreduce或spark队列中的job可能会用到整个dev队列的所有资源（最多为集群的75%）。而类似的，prod由于没有设置maximum-capacity属性，它有可能会占用集群全部资源。
+
+      关于队列的设置，这取决于我们具体的应用。比如，在MapReduce中，我们可以通过`mapreduce.job.queuename`属性指定要用的队列。如果队列不存在，我们在提交任务时就会收到错误。如果我们没有定义任何队列，所有的应用将会放在一个`default`队列中。
+
+      注意：对于Capacity调度器，我们的队列名必须是队列树中的最后一部分，如果我们使用队列树则不会被识别。比如，在上面配置中，我们使用prod和mapreduce作为队列名是可以的，但是如果我们用root.dev.mapreduce或者dev.mapreduce是无效的
 
 ## III. Hadoop High Availability(HA)
 
