@@ -30,7 +30,7 @@ Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率，原则�
 
 ## II. Apache Hadoop YARN
 
-### Yet Another Resource Negotiator, 一种新的Hadoop资源管理器
+### Yet Another Resource Negotiator, 一种新的Hadoop通用资源管理器
 
 1. ### YARN通俗介绍
 
@@ -120,9 +120,17 @@ Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率，原则�
 
 5. ### YARN调度器Scheduler
 
+   理想情况下，我们应用对Yarn资源的请求应该立刻得到满足，但现实情况资源往往是有限的，特别是在一个很繁忙的集群，一个应用资源的请求经常需要等待一段时间才能的到相应的资源。在**Yarn中，负责给应用分配资源的就是Scheduler**。其实调度本身就是一个难题，很难找到一个完美的策略可以解决所有的应用场景。为此，Yarn提供了多种调度器和可配置的策略供我们选择。
+
+   在Yarn中有三种调度器可以选择：**FIFO Scheduler**，**Capacity Scheduler**，**Fair Scheduler**。
+
    1. #### FIFO Scheduler
 
-      
+      **FIFO** Scheduler把应用按提交的顺序排成一个队列，这是一个**先进先出**队列，在进行资源分配的时候，先给队列中最头上的应用进行分配资源，待最头上的应用需求满足后再给下一个分配，以此类推。
+
+      ![1645167036073](assets/1645167036073.png)
+
+      FIFO Scheduler是最简单也是最容易理解的调度器，也不需要任何配置，但它并不适用于共享集群。大的应用可能会占用所有集群资源，这就导致其它应用被阻塞。在共享集群中，更适合采用Capacity Scheduler或Fair Scheduler，这两个调度器都允许大任务和小任务在提交的同时获得一定的系统资源
 
    2. #### Capacity Scheduler
 
