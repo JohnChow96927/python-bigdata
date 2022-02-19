@@ -230,15 +230,15 @@
 
 # Apache Hive
 
-​	Hive的本质：基于Hadoop的数仓 把结构化文件映射成为表  重点理解映射二字？
+​	Hive的本质：基于Hadoop的数仓 把结构化文件映射成为表  重点理解映射二字？hive就负责映射到数据库表
 ​	因为映射不成功 表就没有数据 没有数据你sql分析个锤子
 ​	Hive的架构组件
-​		hive到底做了什么？
-​		hadoop做了什么？
-​		mysql充当了什么？
+​		hive到底做了什么？ hive其实就是用户和大数据计算服务之间的翻译官, 将用户的SQL(HQL)语句转换成MR代码(或者其他代码)
+​		hadoop做了什么？HDFS存储数据文件本身, MR负责计算处理执行, YARN负责资源的统一调度规划
+​		mysql充当了什么？存储元数据文件
 ​			存储数据  存储的是文件数据 还是元数据？
-​	Hive的3种部署模式
-​    	metadata metastore
+​	Hive的3种部署模式: 内嵌模式 本地模式 远程模式
+​    	metadata metastore metastore管理metadata元数据
 ​    	区别是什么
 ​    Hive远程模式部署安装
 ​    	bin/hive bin/beeline  metastore服务、HS2服务的启动（前台后台）
