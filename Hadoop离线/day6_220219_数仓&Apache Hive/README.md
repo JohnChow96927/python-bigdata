@@ -188,17 +188,35 @@
 
    1. #### Hive架构图
 
-      ![1645253108803](assets/1645253108803.png)
-
       **文件和表之间的对应关系**是一种**映射**, 映射信息专业的叫法称之为**元数据信息**(metadata)
 
       Hive软件本身承担了**SQL语法解析编译成为MapReduce程序**的**功能职责**
 
       ![1645254491180](assets/1645254491180.png)
 
+      ![1645253108803](assets/1645253108803.png)
+
    2. #### Hive组件
 
-      
+      - ##### 用户接口
+
+        包括 **CLI**、**JDBC**/**ODBC**、**WebGUI**。
+
+        其中，CLI(command line interface)为shell命令行；Hive中的Thrift服务器允许外部客户端通过网络与Hive进行交互，类似于JDBC或ODBC协议。WebGUI是通过浏览器访问Hive。
+
+      - ##### 元数据存储
+
+        通常是存储在关系数据库如 mysql/derby中。Hive 中的元数据包括表的名字，表的列和分区及其属性，表的属性（是否为外部表等），表的数据所在目录等
+
+      - ##### Driver驱动程序
+
+        包括**语法解析器**, **计划编译器**, **优化器**, **执行器**
+
+        完成HQL查询语句从词法分析, 语法分析, 编译, 优化以及查询计划的生成. 生成的查询计划存储在HDFS中, 并在随后由执行引擎调用执行
+
+      - ##### 执行引擎
+
+        Hive本身并**不直接处理数据文件**。而是**通过执行引擎处理**。当下Hive支持**MapReduce**、**Tez**、**Spark**3种执行引擎。
 
    3. #### Hive与Hadoop的关系
 
@@ -215,31 +233,98 @@
 
       ![1645253768463](assets/1645253768463.png)
 
-3. ### Hive与传统数据库对比
+3. ### Hive与传统数据库(MySQL)对比
 
-   
+   - Hive虽然具有RDBMS数据库的外表，包括数据模型、SQL语法都十分相似，但应用场景却完全不同。
+
+   - **Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。**
+
+   - 因此时刻告诉自己，**Hive不是大型数据库，也不是要取代MySQL承担业务数据处理**。
+
+     ![1645256854575](assets/1645256854575.png)
 
 ## III. Hive安装部署
 
 1. ### metadata与metastore
 
-   
+   - **元数据（Metadata）**，又称中介数据、中继数据，为**描述数据的数据**（data about data），主要是描述数据属性（property）的信息，用来支持如指示存储位置、历史数据、资源查找、文件记录等功能。
+
+     ![1645256890330](assets/1645256890330.png)
+
+   - **Hive Metadata**: 
+
+     - **Hive Metadata即Hive的元数据**。
+
+     - 包含用Hive创建的database、table、表的位置、类型、属性，字段顺序类型等元信息。
+
+     - 元数据存储在关系型数据库中。如hive内置的Derby、或者第三方如MySQL等。
+
+   - **Hive Metastore**: 
+
+     - Metastore即**元数据服务**。Metastore服务的作用是**管理metadata元数据**，对外暴露服务地址，让各种客户端通过连接metastore服务，由metastore再去连接MySQL数据库来存取元数据。
+
+     - 有了metastore服务，就可以有多个客户端同时连接，而且这些客户端不需要知道MySQL数据库的用户名和密码，只需要连接metastore 服务即可。某种程度上也保证了hive元数据的安全。
+
+       ![1645257009387](assets/1645257009387.png)
 
 2. ### metastore三种配置方式
 
+   - metastore服务配置有3种模式：**内嵌模式**、**本地模式**、**远程模式**。
+
+   - 区分3种配置方式的关键是弄清楚两个问题：
+
+     Metastore服务是否需要单独配置、单独启动？
+
+     Metadata是存储在内置的derby中，还是第三方RDBMS,比如MySQL。
+
+   - **本系列课程中使用企业推荐模式--远程模式部署**。
+
+     ![1645257065402](assets/1645257065402.png)
+
    1. #### 内嵌模式
 
-      
+      - **内嵌模式**（Embedded Metastore）是**metastore默认部署模式**。
+
+      - 此种模式下，元数据存储在**内置的Derby数据库**，并且Derby数据库和metastore服务都嵌入在主HiveServer进程中，当启动HiveServer进程时，Derby和metastore都会启动。**不需要额外起Metastore服务**。
+
+      - 但是一次只能支持一个活动用户，适用于测试体验，**不适用于生产环境**。
+
+        ![1645257089851](assets/1645257089851.png)
 
    2. #### 本地模式
 
-      
+      - **本地模式**（Local Metastore）下，**Metastore服务与主HiveServer进程在同一进程中运行**，但是存储元数据的数据库在单独的进程中运行，并且可以在单独的主机上。metastore服务将通过JDBC与metastore数据库进行通信。
+
+      - 本地模式**采用外部数据库来存储元数据**，推荐使用MySQL。
+
+      - hive根据hive.metastore.uris参数值来判断，如果为空，则为本地模式。
+
+      - 缺点是：**每启动一次hive服务，都内置启动了一个metastore**。
+
+        ![1645257225347](assets/1645257225347.png)
 
    3. #### 远程模式
 
-      
+      - **远程模式**（**Remote Metastore**）下，**Metastore服务在其自己的单独JVM上运行**，而不在HiveServer的JVM中运行。如果其他进程希望与Metastore服务器通信，则可以使用Thrift Network API进行通信。
+
+      - 远程模式下，需要配置hive.metastore.uris参数来指定metastore服务运行的机器ip和端口，并且**需要单独手动启动metastore服务**。元数据也采用外部数据库来存储元数据，推荐使用MySQL。
+
+      - 在生产环境中，建议用远程模式来配置Hive Metastore。在这种情况下，其他依赖hive的软件都可以通过Metastore访问hive。由于还可以完全屏蔽数据库层，因此这也带来了更好的可管理性/安全性。
+
+        ![1645257353318](assets/1645257353318.png)
 
 3. ### Hive metastore远程模式与安装部署
+
+   安装前准备: 
+
+   ```properties
+   	由于Apache Hive是一款基于Hadoop的数据仓库软件，通常部署运行在Linux系统之上。因此不管使用何种方式配置Hive Metastore，必须要先保证服务器的基础环境正常，Hadoop集群健康可用。
+   	服务器基础环境
+   		集群时间同步、防火墙关闭、主机Host映射、免密登录、JDK安装
+   	Hadoop集群健康可用
+   		启动Hive之前必须先启动Hadoop集群。特别要注意，需等待HDFS安全模式关闭之后			再启动运行Hive。
+   		Hive不是分布式安装运行的软件，其分布式的特性主要借由Hadoop完成。包括分布式	存储、分布式计算。
+   ```
 
    1. #### Hadoop中添加用户代理配置
 
