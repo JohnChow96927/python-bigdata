@@ -328,43 +328,191 @@
 
    1. #### Hadoop中添加用户代理配置
 
-      
+      - 因为Hive需要把数据存储在HDFS上，并且通过MapReduce作为执行引擎处理数据；
+
+      - 因此需要在Hadoop中添加相关配置属性，以满足Hive在Hadoop上运行。
+
+      - 修改Hadoop中core-site.xml，并且Hadoop集群同步配置文件，重启生效。
+
+      ```xml
+      #修改hadoop 配置文件 etc/hadoop/core-site.xml,加入如下配置项
+      <property>
+          <name>hadoop.proxyuser.root.hosts</name>
+          <value>*</value>
+      </property>
+      <property>
+          <name>hadoop.proxyuser.root.groups</name>
+          <value>*</value>
+      </property>
+      ```
 
    2. #### 上传安装包并解压
 
-      
+      ```shell
+      tar zxvf apache-hive-3.1.2-bin.tar.gz
+      mv apache-hive-3.1.2-bin/ hive
+      # 解决Hive与Hadoop之间guava版本差异
+      cd /export/server/apache-hive-3.1.2-bin/
+      rm -rf lib/guava-19.0.jar
+      cp /export/server/hadoop-3.3.0/share/hadoop/common/lib/guava-27.0-jre.jar \ ./lib/
+      ```
 
    3. #### 修改配置文件hive-env.sh
 
+      ```shell
+      cd /export/server/apache-hive-3.1.2-bin/conf
+      mv hive-env.sh.template hive-env.sh
       
+      vim hive-env.sh
+      
+      export HADOOP_HOME=/export/server/hadoop-3.3.0
+      export HIVE_CONF_DIR=/export/server/apache-hive-3.1.2-bin/conf
+      export HIVE_AUX_JARS_PATH=/export/server/apache-hive-3.1.2-bin/lib
+      ```
 
    4. #### 添加配置文件hive-site.xml
 
+      ```xml
+      <configuration>
+      <!-- 存储元数据mysql相关配置 -->
+      <property>
+      	<name>javax.jdo.option.ConnectionURL</name>
+      	<value>jdbc:mysql://node1:3306/hive3?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
+      </property>
       
+      <property>
+      	<name>javax.jdo.option.ConnectionDriverName</name>
+      	<value>com.mysql.jdbc.Driver</value>
+      </property>
+      
+      <property>
+      	<name>javax.jdo.option.ConnectionUserName</name>
+      	<value>root</value>
+      </property>
+      
+      <property>
+      	<name>javax.jdo.option.ConnectionPassword</name>
+      	<value>hadoop</value>
+      </property>
+      
+      <!-- H2S运行绑定host -->
+      <property>
+          <name>hive.server2.thrift.bind.host</name>
+          <value>node1</value>
+      </property>
+      
+      <!-- 远程模式部署metastore metastore地址 -->
+      <property>
+          <name>hive.metastore.uris</name>
+          <value>thrift://node1:9083</value>
+      </property>
+      
+      <!-- 关闭元数据存储授权  --> 
+      <property>
+          <name>hive.metastore.event.db.notification.api.auth</name>
+          <value>false</value>
+      </property>
+      </configuration>
+      ```
 
    5. #### 上传MySQL驱动
 
+      ```shell
+      #上传mysql jdbc驱动到hive安装包lib目录下
       
+      mysql-connector-java-5.1.32.jar
+      ```
 
    6. #### 初始化元数据
 
+      ```shell
+      cd /export/server/apache-hive-3.1.2-bin/
       
+      bin/schematool -initSchema -dbType mysql -verbos
+      #初始化成功会在mysql中创建74张表
+      ```
 
    7. #### 创建hive存储目录
 
-      
+      ```shell
+      hadoop fs -mkdir /tmp
+      hadoop fs -mkdir -p /user/hive/warehouse
+      hadoop fs -chmod g+w /tmp
+      hadoop fs -chmod g+w /user/hive/warehouse
+      ```
 
 4. ### metastore的启动方式
 
+   ```shell
+   #前台启动  关闭ctrl+c
+   /export/server/apache-hive-3.1.2-bin/bin/hive --service metastore
    
+   #前台启动开启debug日志
+   /export/server/apache-hive-3.1.2-bin/bin/hive --service metastore --hiveconf hive.root.logger=DEBUG,console  
+   
+   #后台启动 进程挂起  关闭使用jps+ kill -9
+   nohup /export/server/apache-hive-3.1.2-bin/bin/hive --service metastore &
+   ```
 
 5. ### Hive Client与Beeline Client
 
    1. #### 第一代客户端Hive Client
 
-      
+      ​	在hive安装包的bin目录下，有hive提供的第一代客户端 bin/hive。使用该客户端可以访问hive的metastore服务。从而达到操作hive的目的。
+
+      ​	如果需要在其他机器上通过该客户端访问hive metastore服务，只需要在该机器的hive-site.xml配置中添加metastore服务地址即可。
+
+      ​	scp安装包到另一个机器上，比如node3：
+
+      ```shell
+      scp -r /export/server/apache-hive-3.1.2-bin/ node3:/export/server/
+      ```
+
+      ```shell
+      # 在node3下
+      vim hive-site.xml
+      ```
+
+      ```xml
+      <configuration>
+      <property>
+          <name>hive.metastore.uris</name>
+          <value>thrift://node1:9083</value>
+      </property>
+      </configuration>
+      ```
+
+      在node1上启动hive客户端
+
+      ```shell
+      /export/server/apache-hive-3.1.2-bin/bin/hive
+      ```
 
    2. #### 第二代客户端Hive Beeline Client
+
+      hive经过发展，推出了第二代客户端beeline，但是beeline客户端不是直接访问metastore服务的，而是**需要单独启动hiveserver2服务**。
+
+      在hive运行的服务器上，==首先启动metastore服务，然后启动hiveserver2服务==。
+
+      ```shell
+      nohup /export/server/apache-hive-3.1.2-bin/bin/hive --service metastore &
+      nohup /export/server/apache-hive-3.1.2-bin/bin/hive --service hiveserver2 &
+      ```
+
+      在node3上使用beeline客户端进行连接访问。
+
+      ```shell
+      [root@node3 ~]# /export/server/hive/bin/beeline
+      Beeline version 3.1.2 by Apache Hive
+      beeline> ! connect jdbc:hive2://node1:10000
+      Connecting to jdbc:hive2://node1:10000
+      Enter username for jdbc:hive2://node1:10000: root
+      Enter password for jdbc:hive2://node1:10000: 
+      Connected to: Apache Hive (version 3.1.2)
+      Driver: Hive JDBC (version 3.1.2)
+      Transaction isolation: TRANSACTION_REPEATABLE_READ
+      0: jdbc:hive2://node1:10000> 
+      ```
 
       
 
