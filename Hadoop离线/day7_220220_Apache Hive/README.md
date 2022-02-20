@@ -689,67 +689,276 @@ from t_usa_covid19_bucket where state="New York";
 
 #### 1.1. create database
 
+Hive中DATABASE的概念和RDBMS中类似，我们称之为数据库。在Hive中， DATABASE和SCHEMA是可互换的，使用DATABASE或SCHEMA都可以。
 
+```sql
+CREATE (DATABASE|SCHEMA) [IF NOT EXISTS] database_name
+[COMMENT database_comment]
+[LOCATION hdfs_path]
+[WITH DBPROPERTIES (property_name=property_value, ...)];
+```
+
+**COMMENT**：数据库的注释说明语句
+
+**LOCATION**：指定数据库在HDFS存储位置，默认/user/hive/warehouse
+
+**WITH DBPROPERTIES**：用于指定一些数据库的属性配置。
+
+下面创建一个数据库：itheima
+
+```sql
+create database if not exists itheima
+comment "this is my first db"
+with dbproperties ('createdBy'='AllenWoon');
+```
+
+![1645345111831](assets/1645345111831.png)
+
+![1645345116186](assets/1645345116186.png)
+
+**注意：使用location指定路径的时候，最好是一个新创建的空文件夹。**
 
 #### 1.2. describe database
 
+Hive中的**DESCRIBE DATABASE**语句用于显示Hive中数据库的名称，其注释（如果已设置）及其在文件系统上的位置等信息。
 
+```sql
+DESCRIBE DATABASE/SCHEMA [EXTENDED] db_name;
+```
+
+**EXTENDED**：用于显示更多信息。
+
+![1645345173876](assets/1645345173876.png)
+
+![1645345178051](assets/1645345178051.png)
 
 #### 1.3. use database
 
+Hive中的**USE DATABASE**语句用于选择特定的数据库,切换当前会话使用哪一个数据库进行操作。
 
+```sql
+USE database_name;
+```
+
+![1645345197637](assets/1645345197637.png)
 
 #### 1.4. drop database
 
+Hive中的**DROP DATABASE**语句用于删除（删除）数据库。
 
+默认行为是RESTRICT，这意味着仅在数据库为空时才删除它。要删除带有表的数据库，我们可以使用**CASCADE**。
+
+```sql
+DROP (DATABASE|SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE];
+```
+
+![1645345216391](assets/1645345216391.png)
 
 #### 1.5 alter database
 
+Hive中的**ALTER DATABASE**语句用于更改与Hive中的数据库关联的元数据。
 
+```sql
+--更改数据库属性
+ALTER (DATABASE|SCHEMA) database_name SET DBPROPERTIES (property_name=property_value, ...);
+
+--更改数据库所有者
+ALTER (DATABASE|SCHEMA) database_name SET OWNER [USER|ROLE] user_or_role;
+
+--更改数据库位置
+ALTER (DATABASE|SCHEMA) database_name SET LOCATION hdfs_path;
+```
+
+![1645345237890](assets/1645345237890.png)
 
 ### 2. Table(表) DDL操作
 
 #### 2.1. describe table
 
+Hive中的**DESCRIBE table**语句用于显示Hive中表的元数据信息。
 
+```sql
+describe formatted [db_name.]table_name;
+describe extended [db_name.]table_name;
+```
+
+如果指定了EXTENDED关键字，则它将以Thrift序列化形式显示表的所有元数据。如果指定了FORMATTED关键字，则它将以表格格式显示元数据。
+
+![1645345268434](assets/1645345268434.png)
 
 #### 2.2. drop table
 
+DROP TABLE删除该表的元数据和数据。如果已配置垃圾桶（且未指定PURGE），则该表对应的数据实际上将移动到.Trash/Current目录，而元数据完全丢失。删除EXTERNAL表时，该表中的数据不会从文件系统中删除，只删除元数据。
 
+如果指定了PURGE，则表数据不会进入.Trash/Current目录，跳过垃圾桶直接被删除。因此如果DROP失败，则无法挽回该表数据。
+
+```sql
+DROP TABLE [IF EXISTS] table_name [PURGE];    -- (Note: PURGE available in Hive 0.14.0 and later)
+```
 
 #### 2.3. truncate table
 
+从表中删除所有行。可以简单理解为清空表的所有数据但是保留表的元数据结构。如果HDFS启用了垃圾桶，数据将被丢进垃圾桶，否则将被删除。
 
+```
+`TRUNCATE [TABLE] table_name;`
+```
 
 #### 2.4. alter table
 
+```sql
+--1、更改表名
+ALTER TABLE table_name RENAME TO new_table_name;
+--2、更改表属性
+ALTER TABLE table_name SET TBLPROPERTIES (property_name = property_value, ... );
+--更改表注释
+ALTER TABLE student SET TBLPROPERTIES ('comment' = "new comment for student table");
+--3、更改SerDe属性
+ALTER TABLE table_name SET SERDE serde_class_name [WITH SERDEPROPERTIES (property_name = property_value, ... )];
+ALTER TABLE table_name [PARTITION partition_spec] SET SERDEPROPERTIES serde_properties;
+ALTER TABLE table_name SET SERDEPROPERTIES ('field.delim' = ',');
+--移除SerDe属性
+ALTER TABLE table_name [PARTITION partition_spec] UNSET SERDEPROPERTIES (property_name, ... );
 
+--4、更改表的文件存储格式 该操作仅更改表元数据。现有数据的任何转换都必须在Hive之外进行。
+ALTER TABLE table_name  SET FILEFORMAT file_format;
+--5、更改表的存储位置路径
+ALTER TABLE table_name SET LOCATION "new location";
+
+--6、更改列名称/类型/位置/注释
+CREATE TABLE test_change (a int, b int, c int);
+// First change column a's name to a1.
+ALTER TABLE test_change CHANGE a a1 INT;
+// Next change column a1's name to a2, its data type to string, and put it after column b.
+ALTER TABLE test_change CHANGE a1 a2 STRING AFTER b;
+// The new table's structure is:  b int, a2 string, c int.
+// Then change column c's name to c1, and put it as the first column.
+ALTER TABLE test_change CHANGE c c1 INT FIRST;
+// The new table's structure is:  c1 int, b int, a2 string.
+// Add a comment to column a1
+ALTER TABLE test_change CHANGE a1 a1 INT COMMENT 'this is column a1';
+
+--7、添加/替换列
+--使用ADD COLUMNS，您可以将新列添加到现有列的末尾但在分区列之前。
+--REPLACE COLUMNS 将删除所有现有列，并添加新的列集。
+ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type,...);
+```
 
 ### 3. Partition(分区) DDL操作
 
 #### 3.1. add partition
 
+分区值仅在为字符串时才应加引号。位置必须是数据文件所在的目录。
 
+ADD PARTITION会更改表元数据，但不会加载数据。如果分区位置中不存在数据，查询将不会返回任何结果。
+
+```sql
+--1、增加分区
+ALTER TABLE table_name ADD PARTITION (dt='20170101') location
+    '/user/hadoop/warehouse/table_name/dt=20170101'; 
+--一次添加一个分区
+
+ALTER TABLE table_name ADD PARTITION (dt='2008-08-08', country='us') location '/path/to/us/part080808'
+                       PARTITION (dt='2008-08-09', country='us') location '/path/to/us/part080809';  
+--一次添加多个分区
+```
 
 #### 3.2. rename partition
 
-
+```sql
+--2、重命名分区
+ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
+ALTER TABLE table_name PARTITION (dt='2008-08-09') RENAME TO PARTITION (dt='20080809');
+```
 
 #### 3.3. delete partition
 
+可以使用ALTER
+TABLE DROP PARTITION删除表的分区。这将删除该分区的数据和元数据。
 
+```sql
+--3、删除分区
+ALTER TABLE table_name DROP [IF EXISTS] PARTITION (dt='2008-08-08', country='us');
+ALTER TABLE table_name DROP [IF EXISTS] PARTITION (dt='2008-08-08', country='us') PURGE; --直接删除数据 不进垃圾桶
+```
 
 #### 3.4. msck partition
 
+Hive将每个表的分区列表信息存储在其metastore中。但是，如果将新分区直接添加到HDFS（例如通过使用hadoop fs -put命令）或从HDFS中直接删除分区文件夹，则除非用户ALTER TABLE table_name ADD/DROP PARTITION在每个新添加的分区上运行命令，否则metastore（也就是Hive）将不会意识到分区信息的这些更改。
 
+但是，用户可以使用修复表选项运行metastore check命令。
+
+```sql
+--4、修复分区
+MSCK [REPAIR] TABLE table_name [ADD/DROP/SYNC PARTITIONS];
+```
+
+MSC命令的默认选项是“添加分区”。使用此选项，它将把HDFS上存在但元存储中不存在的所有分区添加到元存储中。DROP PARTITIONS选项将从已经从HDFS中删除的metastore中删除分区信息。SYNC PARTITIONS选项等效于调用ADD和DROP PARTITIONS。
+
+如果存在大量未跟踪的分区，则可以批量运行MSCK REPAIR TABLE，以避免OOME（内存不足错误）。
 
 #### 3.5. alter partition
 
-
+```sql
+--5、修改分区
+--更改分区文件存储格式
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET FILEFORMAT file_format;
+--更改分区位置
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET LOCATION "new location";
+```
 
 ## V. Hive Show显示语法
 
+Show相关的语句提供了一种查询Hive metastore的方法。可以帮助用户查询相关信息。
 
+```sql
+--1、显示所有数据库 SCHEMAS和DATABASES的用法 功能一样
+show databases;
+show schemas;
+
+--2、显示当前数据库所有表/视图/物化视图/分区/索引
+show tables;
+SHOW TABLES [IN database_name]; --指定某个数据库
+
+--3、显示当前数据库下所有视图
+Show Views;
+SHOW VIEWS 'test_*'; -- show all views that start with "test_"
+SHOW VIEWS FROM test1; -- show views from database test1
+SHOW VIEWS [IN/FROM database_name];
+
+--4、显示当前数据库下所有物化视图
+SHOW MATERIALIZED VIEWS [IN/FROM database_name];
+
+--5、显示表分区信息，分区按字母顺序列出，不是分区表执行该语句会报错
+show partitions table_name;
+
+--6、显示表/分区的扩展信息
+SHOW TABLE EXTENDED [IN|FROM database_name] LIKE table_name;
+show table extended like student;
+
+--7、显示表的属性信息
+SHOW TBLPROPERTIES table_name;
+show tblproperties student;
+
+--8、显示表、视图的创建语句
+SHOW CREATE TABLE ([db_name.]table_name|view_name);
+show create table student;
+
+--9、显示表中的所有列，包括分区列。
+SHOW COLUMNS (FROM|IN) table_name [(FROM|IN) db_name];
+show columns  in student;
+
+--10、显示当前支持的所有自定义和内置的函数
+show functions;
+
+--11、Describe desc
+--查看表信息
+desc extended table_name;
+--查看表信息（格式化美观）
+desc formatted table_name;
+--查看数据库相关信息
+describe database database_name;
+```
 
 ## VI. HQL数据操作语言(DML)
 
@@ -757,21 +966,109 @@ from t_usa_covid19_bucket where state="New York";
 
 #### 1.1. 背景
 
+回想一下，当在Hive中创建好表之后，默认就会在HDFS上创建一个与之对应的文件夹，默认路径是由参数hive.metastore.warehouse.dir控制，默认值是/user/hive/warehouse。
 
+![1645345592734](assets/1645345592734.png)
+
+要想让hive的表和结构化的数据文件产生映射，就需要把文件移到到表对应的文件夹下面，当然，可以在建表的时候使用location语句指定数据文件的路径。但是不管路径在哪里，必须把数据文件移动到对应的路径下面。
+
+最原始暴力直接的方式就是使用hadoop fs –put等方式将数据移动到路径下面。
+
+Hive官方推荐使用Load命令将数据加载到表中。
 
 #### 1.2. Load语法
 
+在将数据load加载到表中时，Hive不会进行任何转换。
 
+加载操作是将数据文件移动到与Hive表对应的位置的纯复制/移动操作。
+
+```sql
+LOAD DATA [LOCAL] INPATH 'filepath' [OVERWRITE] INTO TABLE tablename [PARTITION (partcol1=val1, partcol2=val2 ...)]
+
+LOAD DATA [LOCAL] INPATH 'filepath' [OVERWRITE] INTO TABLE tablename [PARTITION (partcol1=val1, partcol2=val2 ...)] [INPUTFORMAT 'inputformat' SERDE 'serde'] (3.0 or later)
+```
+
+1. ##### filepath
+
+   filepath表示的待移动数据的路径，可以引用一个文件（在这种情况下，Hive将文件移动到表中），也可以是一个目录（在这种情况下，Hive将把该目录中的所有文件移动到表中）。
+
+   相对路径，例如：project/data1 
+
+   绝对路径，例如：/user/hive/project/data1 
+
+   具有schema的完整URI，例如：hdfs://namenode:9000/user/hive/project/data1
+
+2. ##### LOCAL
+
+   如果指定了LOCAL， load命令将在本地文件系统中查找文件路径。如果指定了相对路径，它将相对于用户的当前工作目录进行解释。用户也可以为本地文件指定完整的URI-例如：<file:///user/hive/project/data1>。
+
+   注意，如果对HiveServer2服务运行此命令。这里的**本地文件系统指的是Hiveserver2服务所在机器的本地Linux文件系统**，不是Hive客户端所在的本地文件系统。
+
+   如果没有指定LOCAL关键字，如果filepath指向的是一个完整的URI，hive会直接使用这个URI。 否则如果没有指定schema或者authority，Hive会使用在hadoop配置文件中定义的schema 和 authority，即参数fs.default.name指定的（不出意外，都是HDFS）。 
+
+3. ##### OVERWRITE
+
+   如果使用了OVERWRITE关键字，则目标表（或者分区）中的内容会被删除，然后再将 filepath 指向的文件/目录中的内容添加到表/分区中。
 
 #### 1.3. 案例: Load加载数据到Hive表
 
+```sql
+--------练习:Load Data From Local FS or HDFS------
+--step1:建表
+--建表student_local 用于演示从本地加载数据
+create table student_local(num int,name string,sex string,age int,dept string) row format delimited fields terminated by ',';
+--建表student_HDFS  用于演示从HDFS加载数据
+create external table student_HDFS(num int,name string,sex string,age int,dept string) row format delimited fields terminated by ',';
+--建表student_HDFS_p 用于演示从HDFS加载数据到分区表
+create table student_HDFS_p(num int,name string,sex string,age int,dept string) partitioned by(country string) row format delimited fields terminated by ',';
 
+--建议使用beeline客户端 可以显示出加载过程日志信息
+--step2:加载数据
+-- 从本地加载数据  数据位于HS2（node1）本地文件系统  本质是hadoop fs -put上传操作
+LOAD DATA LOCAL INPATH '/root/hivedata/students.txt' INTO TABLE student_local;
+
+--从HDFS加载数据  数据位于HDFS文件系统根目录下  本质是hadoop fs -mv 移动操作
+--先把数据上传到HDFS上  hadoop fs -put /root/hivedata/students.txt /
+LOAD DATA INPATH '/students.txt' INTO TABLE student_HDFS;
+
+----从HDFS加载数据到分区表中并制定分区  数据位于HDFS文件系统根目录下
+--先把数据上传到HDFS上 hadoop fs -put /root/hivedata/students.txt /
+LOAD DATA INPATH '/students.txt' INTO TABLE student_HDFS_p partition(country ="CHina");
+```
+
+![1645345763635](assets/1645345763635.png)
+
+![1645345768471](assets/1645345768471.png)
+
+![1645345772568](assets/1645345772568.png)
 
 ### 2. DML-Insert插入数据
 
 #### 2.1. 背景: RDBMS中insert使用(insert+values)
 
+在MySQL这样的RDBMS中，通常是insert+values的方式来向表插入数据，并且速度很快。这也是RDBMS中插入数据的核心方式。
 
+```sql
+INSERT INTO table_name ( field1, field2,...fieldN )
+VALUES
+(value1, value2,...valueN);
+```
+
+假如说对Hive的定位不清，把Hive当成RDBMS来使用，也使用insert+values的方式插入数据，会如何呢？
+
+```sql
+--hive中insert+values
+create table t_test_insert(id int,name string,age int);
+insert into table t_test_insert values(1,"allen",18);
+```
+
+你会发现执行过程非常非常慢，底层是使用MapReduce把数据写入HDFS的。
+
+![1645346051520](assets/1645346051520.png)
+
+试想一下，如何在Hive中这样玩，对于大数据分析，海量数据一条条插入是不是非常刺激。因此在Hive中我们通过将数据清洗成为结构化文件，再Load加载到表中。
+
+​       但是并不意味着insert语法在Hive中没有使用地位了，通常在Hive中我们使用insert+select语句。即插入表的数据来自于后续select查询语句返回的结果。
 
 #### 2.2. insert+select
 
