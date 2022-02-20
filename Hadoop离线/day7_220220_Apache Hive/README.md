@@ -618,15 +618,70 @@ CREATE TABLE itcast.t_usa_covid19(
 CLUSTERED BY(state) INTO 5 BUCKETS;
 ```
 
+在创建分桶表时，还可以指定分桶内的数据排序规则
 
+```sql
+--根据state州分为5桶 每个桶内根据cases确诊病例数倒序排序
+CREATE TABLE itcast.t_usa_covid19_bucket_sort(
+      count_date string,
+      county string,
+      state string,
+      fips int,
+      cases int,
+      deaths int)
+CLUSTERED BY(state) sorted by (cases desc) INTO 5 BUCKETS;
+```
 
 #### 3.4. 分桶表的数据加载
 
+```sql
+--step1:开启分桶的功能 从Hive2.0开始不再需要设置
+set hive.enforce.bucketing=true;
 
+--step2:把源数据加载到普通hive表中
+CREATE TABLE itcast.t_usa_covid19(
+       count_date string,
+       county string,
+       state string,
+       fips int,
+       cases int,
+       deaths int)
+row format delimited fields terminated by ",";
+--将源数据上传到HDFS，t_usa_covid19表对应的路径下
+hadoop fs -put us-covid19-counties.dat /user/hive/warehouse/itcast.db/t_usa_covid19
+
+--step3:使用insert+select语法将数据加载到分桶表中
+insert into t_usa_covid19_bucket select * from t_usa_covid19;
+```
+
+到HDFS上查看t_usa_covid19_bucket底层数据结构可以发现，数据被分为了5个部分。
+
+![1645343655280](assets/1645343655280.png)
+
+并且从结果可以发现，只要hash_function(bucketing_column)一样的，就一定被分到同一个桶中。
 
 #### 3.5. 分桶表的使用好处
 
+和非分桶表相比，分桶表的使用好处有以下几点：
 
+1、基于分桶字段查询时，减少全表扫描
+
+```sql
+--基于分桶字段state查询来自于New York州的数据
+--不再需要进行全表扫描过滤
+--根据分桶的规则hash_function(New York) mod 5计算出分桶编号
+--查询指定分桶里面的数据 就可以找出结果  此时是分桶扫描而不是全表扫描
+select *
+from t_usa_covid19_bucket where state="New York";
+```
+
+2、JOIN时可以提高MR程序效率，减少笛卡尔积数量
+
+对于JOIN操作两个表有一个相同的列，如果对这两个表都进行了分桶操作。那么将保存相同列值的桶进行JOIN操作就可以，可以大大较少JOIN的数据量。
+
+3、分桶表数据进行抽样
+
+当数据量特别大时，对全体数据进行处理存在困难时，抽样就显得尤其重要了。抽样可以从被抽取的数据中估计和推断出整体的特性，是科学实验、质量检验、社会调查普遍采用的一种经济有效的工作和研究方法。
 
 ## IV. Hive DDL其他语法
 
