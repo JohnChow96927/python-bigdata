@@ -1127,15 +1127,95 @@ select name;
 
 1. 功能
 
+   对于分区表的数据导入加载，最常见最基础的是通过load命令加载数据。如下：
+
+   ```SQK
+   create table student_HDFS_p(Sno int,Sname string,Sex string,Sage int,Sdept string) partitioned by(country string) row format delimited fields terminated by ',';
+   --注意 分区字段country的值是在导入数据的时候手动指定的 China
+   LOAD DATA INPATH '/students.txt' INTO TABLE student_HDFS_p partition(country ="China");
    
+   ```
+
+   接下来我们考虑一下性能问题：
+
+   假如说现在有全球224个国家的人员名单（每个国家名单单独一个文件），让你导入数据到分区表中，不同国家不同分区，如何高效实现？使用load语法导入224次？
+
+   再假如，现在有一份名单students.txt，内容如下：
+
+   ```shell
+   95001,李勇,男,20,CS
+   95002,刘晨,女,19,IS
+   95003,王敏,女,22,MA
+   95004,张立,男,19,IS
+   95005,刘刚,男,18,MA
+   95006,孙庆,男,23,CS
+   95007,易思玲,女,19,MA
+   95008,李娜,女,18,CS
+   95009,梦圆圆,女,18,MA
+   95010,孔小涛,男,19,CS
+   95011,包小柏,男,18,MA
+   95012,孙花,女,20,CS
+   95013,冯伟,男,21,CS
+   95014,王小丽,女,19,CS
+   95015,王君,男,18,MA
+   95016,钱国,男,21,MA
+   95017,王风娟,女,18,IS
+   95018,王一,女,19,IS
+   95019,邢小丽,女,19,IS
+   95020,赵钱,男,21,IS
+   95021,周二,男,17,MA
+   95022,郑明,男,20,MA
+   ```
+
+   让你创建一张分区表，根据最后一个字段（选修专业）进行分区，同一个专业的同学分到同一个分区中，如何实现？如果还是load加载手动指定，即使最终可以成功，效率也是极慢的。
+
+   为此，Hive提供了**动态分区插入**的语法。
+
+   所谓动态分区插入指的是：**分区的值是由后续的select查询语句的结果来动态确定的。根据查询结果自动分区**。
 
 2. 配置参数
 
+   | hive.exec.dynamic.partition      | true   | 需要设置true为启用动态分区插入                               |
+   | -------------------------------- | ------ | ------------------------------------------------------------ |
+   | hive.exec.dynamic.partition.mode | strict | 在strict模式下，用户必须至少指定一个静态分区，以防用户意外覆盖所有分区；在nonstrict模式下，允许所有分区都是动态的 |
+
+   关于严格模式、非严格模式，演示如下：
+
+   ```sql
+   FROM page_view_stg pvs
+   INSERT OVERWRITE TABLE page_view PARTITION(dt='2008-06-08', country)
+   SELECT pvs.viewTime, pvs.userid, pvs.page_url, pvs.referrer_url, null, null, pvs.ip, pvs.cnt
    
+   --在这里，country分区将由SELECT子句（即pvs.cnt）的最后一列动态创建。
+   --而dt分区是手动指定写死的。
+   --如果是nonstrict模式下，dt分区也可以动态创建。
+   ```
 
 3. 案例: 动态分区插入
 
+   ```sql
+   --动态分区插入
+   --1、首先设置动态分区模式为非严格模式 默认已经开启了动态分区功能
+   set hive.exec.dynamic.partition = true;
+   set hive.exec.dynamic.partition.mode = nonstrict;
    
+   --2、当前库下已有一张表student
+   select * from student;
+   
+   --3、创建分区表 以sdept作为分区字段
+   --注意：分区字段名不能和表中的字段名重复。
+   create table student_partition(Sno int,Sname string,Sex string,Sage int) partitioned by(Sdept string);
+   
+   --4、执行动态分区插入操作
+   insert into table student_partition partition(Sdept)
+   select Sno,Sname,Sex,Sage,Sdept from student;
+   --其中，Sno,Sname,Sex,Sage作为表的字段内容插入表中
+   --Sdept作为分区字段值
+   ```
+
+   最终执行结果如下，可以发现实现了自动分区：
+
+   ![1645346393108](assets/1645346393108.png)
 
 #### 2.5. insert+directory 导出数据
 
