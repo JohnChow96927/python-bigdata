@@ -1072,15 +1072,115 @@ insert into table t_test_insert values(1,"allen",18);
 
 #### 2.2. insert+select
 
+Hive中insert主要是结合select查询语句使用，将查询结果插入到表中，例如：
 
+```sql
+INSERT OVERWRITE TABLE tablename1 [PARTITION (partcol1=val1, partcol2=val2 ...) [IF NOT EXISTS]] select_statement1 FROM from_statement;
+
+INSERT INTO TABLE tablename1 [PARTITION (partcol1=val1, partcol2=val2 ...)] select_statement1 FROM from_statement;
+```
+
+INSERT OVERWRITE将覆盖表或分区中的任何现有数据。
+
+需要保证查询结果列的数目和需要插入数据表格的列数目一致。
+
+如果查询出来的数据类型和插入表格对应的列数据类型不一致，将会进行转换，但是不能保证转换一定成功，转换失败的数据将会为NULL。
+
+```sql
+--step1:创建一张源表student
+drop table if exists student;
+create table student(num int,name string,sex string,age int,dept string)
+row format delimited
+fields terminated by ',';
+--加载数据
+load data local inpath '/root/hivedata/students.txt' into table student;
+
+--step2：创建一张目标表  只有两个字段
+create table student_from_insert(sno int,sname string);
+--使用insert+select插入数据到新表中
+insert into table student_from_insert select num,name from student;
+
+select *
+from student_insert1;
+```
 
 #### 2.3. multiple inserts 多重插入
 
+multiple inserts可以翻译成为多次插入，多重插入，核心是：一次扫描，多次插入。其功能也体现出来了就是减少扫描的次数。
 
+```sql
+------------multiple inserts----------------------
+--当前库下已有一张表student
+select * from student;
+--创建两张新表
+create table student_insert1(sno int);
+create table student_insert2(sname string);
+--多重插入
+from student
+insert overwrite table student_insert1
+select num
+insert overwrite table student_insert2
+select name;
+```
 
 #### 2.4. dynamic partition insert 动态分区插入
 
+1. 功能
 
+   
+
+2. 配置参数
+
+   
+
+3. 案例: 动态分区插入
+
+   
 
 #### 2.5. insert+directory 导出数据
 
+Hive支持将select查询的结果导出成文件存放在文件系统中。语法格式如下：
+
+```sql
+--标准语法:
+INSERT OVERWRITE [LOCAL] DIRECTORY directory1
+    [ROW FORMAT row_format] [STORED AS file_format] (Note: Only available starting with Hive 0.11.0)
+SELECT ... FROM ...
+
+--Hive extension (multiple inserts):
+FROM from_statement
+INSERT OVERWRITE [LOCAL] DIRECTORY directory1 select_statement1
+[INSERT OVERWRITE [LOCAL] DIRECTORY directory2 select_statement2] ...
+
+--row_format
+: DELIMITED [FIELDS TERMINATED BY char [ESCAPED BY char]] [COLLECTION ITEMS TERMINATED BY char]
+[MAP KEYS TERMINATED BY char] [LINES TERMINATED BY char]
+```
+
+注意，**导出操作是一个****OVERWRITE****覆盖操作。慎重。**
+
+目录可以是完整的URI。如果未指定scheme或Authority，则Hive将使用hadoop配置变量fs.default.name中的方案和Authority，该变量指定Namenode URI。
+
+如果使用LOCAL关键字，则Hive会将数据写入本地文件系统上的目录。
+
+写入文件系统的数据被序列化为文本，列之间用^ A隔开，行之间用换行符隔开。如果任何列都不是原始类型，那么这些列将序列化为JSON格式。也可以在导出的时候指定分隔符换行符和文件格式。
+
+```sql
+--当前库下已有一张表student
+select * from student;
+
+--1、导出查询结果到HDFS指定目录下
+insert overwrite directory '/tmp/hive_export/e1' select * from student;
+
+--2、导出时指定分隔符和文件存储格式
+insert overwrite directory '/tmp/hive_export/e2' row format delimited fields terminated by ','
+stored as orc
+select * from student;
+
+--3、导出数据到本地文件系统指定目录下
+insert overwrite local directory '/root/hive_export/e1' select * from student;
+```
+
+![1645346248745](assets/1645346248745.png)
+
+![1645346254743](assets/1645346254743.png)
