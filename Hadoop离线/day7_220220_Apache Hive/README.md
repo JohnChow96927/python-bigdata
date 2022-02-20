@@ -555,8 +555,6 @@ load data local inpath '文件路径' into table t_user_province_city_county par
 select * from t_user_province_city_county where province='zhejiang' and city='hangzhou';
 ```
 
-
-
 ### 3. Hive分桶表
 
 #### 3.1. 分桶表的概念
