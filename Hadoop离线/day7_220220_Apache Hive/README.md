@@ -106,6 +106,12 @@ Hive使用SerDe（和FileFormat）读取和写入行对象。
 
 ![1645339033311](assets/1645339033311.png)
 
+需要注意的是，“key”部分在读取时会被忽略，而在写入时key始终是常数。基本上**行对象存储在“value”中**。
+
+可以通过desc formatted tablename查看表的相关SerDe信息。默认如下：
+
+![1645339070559](assets/1645339070559.png)
+
 #### 3.2. Hive读写文件流程
 
 
