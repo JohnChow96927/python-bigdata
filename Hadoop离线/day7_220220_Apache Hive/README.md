@@ -449,7 +449,43 @@ load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part p
 
 #### 2.4. 分区表数据加载--动态分区
 
+往hive分区表中插入加载数据时，如果需要创建的分区很多，则需要复制粘贴修改很多sql去执行，效率低。因为hive是批处理系统，所以hive提供了一个动态分区功能，其可以基于查询参数的位置去推断分区的名称，从而建立分区。
 
+所谓**动态分区**指的是分区的字段值是基于查询结果自动推断出来的。核心语法就是insert+select。
+
+启用hive动态分区，需要在hive会话中设置两个参数：
+
+> **set hive.exec.dynamic.partition=true;**
+>
+> **set hive.exec.dynamic.partition.mode=nonstrict;**
+
+第一个参数表示开启动态分区功能，第二个参数指定动态分区的模式。分为nonstick非严格模式和strict严格模式。strict严格模式要求至少有一个分区为静态分区。
+
+创建一张新的分区表**t_all_hero_part_dynamic**:
+
+```sql
+create table t_all_hero_part_dynamic(
+         id int,
+         name string,
+         hp_max int,
+         mp_max int,
+         attack_max int,
+         defense_max int,
+         attack_range string,
+         role_main string,
+         role_assist string
+) partitioned by (role string)
+row format delimited
+fields terminated by "\t";
+```
+
+执行动态分区插入
+
+```sql
+insert into table t_all_hero_part_dynamic partition(role) select tmp.*,tmp.role_main from t_all_hero tmp;
+```
+
+动态分区插入时，分区值是根据查询返回字段位置自动推断的。
 
 #### 2.5. 分区表的本质
 
@@ -467,7 +503,7 @@ load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part p
 
 分区的概念提供了一种将Hive表数据分离为多个文件/目录的方法。**不同分区对应着不同的文件夹，同一分区的数据存储在同一个文件夹下**。只需要根据分区值找到对应的文件夹，扫描本分区下的文件即可，避免全表数据扫描。
 
-#### 2.6.分区表的使用
+#### 2.6. 分区表的使用
 
 分区表的使用重点在于：
 
@@ -486,9 +522,38 @@ select count(*) from t_all_hero_part where role="sheshou" and hp_max >6000;
 
 #### 2.7. 分区表的注意事项
 
-
+1. 分区表不是建表的必要语法规则, 是一种**优化手段**表, 可选
+2. **分区字段不能是表中已有的字段, 不能重复**
+3. 分区字段是**虚拟字段**, 其数据并不存储在底层的文件中
+4. 分区字段值的确定来自于用户价值数据手动指定(**静态分区**)或者根据查询结果自动推断(**动态分区**)
+5. Hive支持**多重分区**, 在分区的基础上继续分区, 划分更加细的粒度
 
 #### 2.8. 多重分区表
+
+通过建表语句中关于分区的相关语法可以发现，Hive支持多个分区字段：PARTITIONED BY (partition1 data_type, partition2 data_type,….)。
+
+多重分区下，**分区之间是一种递进关系，可以理解为在前一个分区的基础上继续分区**。从HDFS的角度来看就是**文件夹下继续划分子文件夹**。比如：把全国人口数据首先根据省进行分区，然后根据市进行划分，如果你需要甚至可以继续根据区县再划分，此时就是3分区表。
+
+```sql
+--单分区表，按省份分区
+create table t_user_province (id int, name string,age int) partitioned by (province string);
+
+--双分区表，按省份和市分区
+create table t_user_province_city (id int, name string,age int) partitioned by (province string, city string);
+
+--三分区表，按省份、市、县分区
+create table t_user_province_city_county (id int, name string,age int) partitioned by (province string, city string,county string);
+```
+
+多分区表的数据插入和查询使用
+
+```sql
+load data local inpath '文件路径' into table t_user_province partition(province='shanghai');
+
+load data local inpath '文件路径' into table t_user_province_city_county partition(province='zhejiang',city='hangzhou',county='xiaoshan');
+
+select * from t_user_province_city_county where province='zhejiang' and city='hangzhou';
+```
 
 
 
