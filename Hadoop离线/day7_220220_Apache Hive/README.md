@@ -196,7 +196,7 @@ LOCATION '<hdfs_location>'
 
 分析一下：字段都是基本类型，字段的顺序需要注意一下。字段之间的分隔符是制表符，需要使用row format语法进行指定。
 
-建表语句: 
+**建表语句**: 
 
 ```sql
 --创建数据库并切换使用
@@ -244,7 +244,7 @@ hadoop fs -put archer.txt  /user/hive/warehouse/honor_of_kings.db/t_archer
 
 分析一下：前3个字段原生数据类型、最后一个字段复杂类型map。需要指定字段之间分隔符、集合元素之间分隔符、map kv之间分隔符。
 
-建表语句：
+**建表语句**：
 
 ```sql
 create table t_hot_hero_skin_price(
@@ -267,9 +267,37 @@ hadoop fs -put hot_hero_skin_price.txt /user/hive/warehouse/honor_of_kings.db/t_
 
 执行查询操作，可以看出数据已经映射成功。
 
+![1645339679083](assets/1645339679083.png)
+
 #### 5.3. 默认分隔符案例
 
+文件team_ace_player.txt中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
 
+![1645339695587](assets/1645339695587.png)
+
+字段：id、team_name（战队名称）、ace_player_name（王牌选手名字）
+
+分析一下：数据都是原生数据类型，且字段之间分隔符是\001，因此在建表的时候可以省去row format语句，因为hive默认的分隔符就是\001。
+
+**建表语句**：
+
+```sql
+create table t_team_ace_player(
+    id int,
+    team_name string,
+    ace_player_name string
+);
+```
+
+建表成功后，把team_ace_player.txt文件上传到对应的表文件夹下。
+
+```shell
+hadoop fs -put team_ace_player.txt /user/hive/warehouse/honor_of_kings.db/t_team_ace_player
+```
+
+执行查询操作，可以看出数据已经映射成功。
+
+![1645339764033](assets/1645339764033.png)
 
 ## III. Hive DDL建表高阶
 
