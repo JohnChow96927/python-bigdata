@@ -559,13 +559,64 @@ select * from t_user_province_city_county where province='zhejiang' and city='ha
 
 #### 3.1. 分桶表的概念
 
+分桶表也叫做桶表，源自建表语法中bucket单词。是一种用于优化查询而设计的表类型。该功能可以让数据分解为若干个部分易于管理。
 
+在分桶时，我们要指定根据哪个字段将数据分为几桶（几个部分）。默认规则是：Bucket number = hash_function(bucketing_column) mod num_buckets。
+
+可以发现桶编号相同的数据会被分到同一个桶当中。hash_function取决于分桶字段bucketing_column的类型：
+
+如果是int类型，hash_function(int) == int;
+
+如果是其他类型，比如bigint,string或者复杂数据类型，hash_function比较棘手，将是从该类型派生的某个数字，比如hashcode值。
 
 #### 3.2. 分桶表的语法
 
+```sql
+--分桶表建表语句
+CREATE [EXTERNAL] TABLE [db_name.]table_name
+[(col_name data_type, ...)]
+CLUSTERED BY (col_name)
+INTO N BUCKETS;
+```
 
+其中CLUSTERED BY (col_name)表示根据哪个字段进行分；
+
+INTO N BUCKETS表示分为几桶（也就是几个部分）。
+
+需要注意的是，**分桶的字段必须是表中已经存在的字段**。
 
 #### 3.3. 分桶表的创建
+
+现有美国2021-1-28号，各个县county的新冠疫情累计案例信息，包括确诊病例和死亡病例，数据格式如下所示：
+
+```shell
+2021-01-28,Juneau City and Borough,Alaska,02110,1108,3
+2021-01-28,Kenai Peninsula Borough,Alaska,02122,3866,18
+2021-01-28,Ketchikan Gateway Borough,Alaska,02130,272,1
+2021-01-28,Kodiak Island Borough,Alaska,02150,1021,5
+2021-01-28,Kusilvak Census Area,Alaska,02158,1099,3
+2021-01-28,Lake and Peninsula Borough,Alaska,02164,5,0
+2021-01-28,Matanuska-Susitna Borough,Alaska,02170,7406,27
+2021-01-28,Nome Census Area,Alaska,02180,307,0
+2021-01-28,North Slope Borough,Alaska,02185,973,3
+2021-01-28,Northwest Arctic Borough,Alaska,02188,567,1
+2021-01-28,Petersburg Borough,Alaska,02195,43,0
+```
+
+字段含义如下：count_date（统计日期）,county（县）,state（州）,fips（县编码code）,cases（累计确诊病例）,deaths（累计死亡病例）。
+
+根据state州把数据分为5桶，建表语句如下：
+
+```sql
+CREATE TABLE itcast.t_usa_covid19(
+    count_date string,
+    county string,
+    state string,
+    fips int,
+    cases int,
+    deaths int)
+CLUSTERED BY(state) INTO 5 BUCKETS;
+```
 
 
 
