@@ -114,39 +114,158 @@ Hive使用SerDe（和FileFormat）读取和写入行对象。
 
 #### 3.2. Hive读写文件流程
 
+**Hive读取文件机制**：首先调用InputFormat（默认TextInputFormat），返回一条一条kv键值对记录（默认是一行对应一条记录）。然后调用SerDe（默认LazySimpleSerDe）的Deserializer，将一条记录中的value根据分隔符切分为各个字段。
 
+**Hive写文件机制**：将Row写入文件时，首先调用SerDe（默认LazySimpleSerDe）的Serializer将对象转换成字节序列，然后调用OutputFormat将数据写入HDFS文件中。
 
 #### 3.3. SerDe相关语法
 
+在Hive的建表语句中，和SerDe相关的语法为：
 
+![1645339177201](assets/1645339177201.png)
+
+其中ROW FORMAT是语法关键字，DELIMITED和SERDE二选其一。
+
+如果使用delimited表示使用默认的LazySimpleSerDe类来处理数据。如果数据文件格式比较特殊可以使用ROW FORMAT SERDE serde_name指定其他的Serde类来处理数据,甚至支持用户自定义SerDe类。
 
 #### 3.4. LazySimpleSerDe分隔符指定
 
+LazySimpleSerDe是Hive默认的序列化类，包含4种子语法，分别用于指定**字段之间**、**集合元素之间**、**map映射 kv之间**、**换行**的分隔符号。在建表的时候可以根据数据的特点灵活搭配使用。
 
+![1645339235410](assets/1645339235410.png)
 
 #### 3.5. 默认分隔符
 
+hive建表时如果没有row
+format语法。此时**字段之间默认的分割符是'\001'**，是一种特殊的字符，使用的是ascii编码的值，键盘是打不出来的。
 
+![1645339343120](assets/1645339343120.png)
+
+在vim编辑器中，连续按下Ctrl+v/Ctrl+a即可输入'\001' ，显示**^A**
+
+![1645339365866](assets/1645339365866.png)
+
+在一些文本编辑器中将以SOH的形式显示：
+
+![1645339376150](assets/1645339376150.png)
 
 ### 4. Hive数据存储路径
 
 #### 4.1. 默认存储路径
 
+Hive表默认存储路径是由${HIVE_HOME}/conf/hive-site.xml配置文件的hive.metastore.warehouse.dir属性指定。默认值是：/user/hive/warehouse。
 
+![1645339388760](assets/1645339388760.png)
+
+在该路径下，文件将根据所属的库、表，有规律的存储在对应的文件夹下。
+
+![1645339399348](assets/1645339399348.png)
 
 #### 4.2. 指定存储路径
 
+在Hive建表的时候，可以通过**location语法来更改数据在HDFS上的存储路径**，使得建表加载数据更加灵活方便。
 
+语法：
+
+```sql
+LOCATION '<hdfs_location>'
+```
+
+对于已经生成好的数据文件，使用location指定路径将会很方便。
 
 ### 5. 案例: 王者荣耀
 
 #### 5.1. 原生数据类型案例
 
+文件archer.txt中记录了手游《王者荣耀》射手的相关信息，内容如下所示，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。
 
+```shell
+1	后羿	5986	1784	396	336	remotely	archer
+2	马可波罗	5584	200	362	344	remotely	archer
+3	鲁班七号	5989	1756	400	323	remotely	archer
+4	李元芳	5725	1770	396	340	remotely	archer
+5	孙尚香	6014	1756	411	346	remotely	archer
+6	黄忠	5898	1784	403	319	remotely	archer
+7	狄仁杰	5710	1770	376	338	remotely	archer
+8	虞姬	5669	1770	407	329	remotely	archer
+9	成吉思汗	5799	1742	394	329	remotely	archer
+10	百里守约	5611	1784	410	329	remotely	archer	assassin
+```
+
+字段含义：id、name（英雄名称）、hp_max（最大生命）、mp_max（最大法力）、attack_max（最高物攻）、defense_max（最大物防）、attack_range（攻击范围）、role_main（主要定位）、role_assist（次要定位）。
+
+分析一下：字段都是基本类型，字段的顺序需要注意一下。字段之间的分隔符是制表符，需要使用row format语法进行指定。
+
+建表语句: 
+
+```sql
+--创建数据库并切换使用
+create database itcast;
+use itcast;
+
+--ddl create table
+create table t_archer(
+    id int comment "ID",
+    name string comment "英雄名称",
+    hp_max int comment "最大生命",
+    mp_max int comment "最大法力",
+    attack_max int comment "最高物攻",
+    defense_max int comment "最大物防",
+    attack_range string comment "攻击范围",
+    role_main string comment "主要定位",
+    role_assist string comment "次要定位"
+) comment "王者荣耀射手信息"
+row format delimited fields terminated by "\t";
+```
+
+建表成功之后，在Hive的默认存储路径下就生成了表对应的文件夹，把archer.txt文件上传到对应的表文件夹下。
+
+```shell
+hadoop fs -put archer.txt  /user/hive/warehouse/honor_of_kings.db/t_archer
+```
+
+执行查询操作，可以看出数据已经映射成功。
+
+![1645339571509](assets/1645339571509.png)
 
 #### 5.2. 复杂数据类型案例
 
+文件hot_hero_skin_price.txt中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
 
+```shell
+1,孙悟空,53,西部大镖客:288-大圣娶亲:888-全息碎片:0-至尊宝:888-地狱火:1688
+2,鲁班七号,54,木偶奇遇记:288-福禄兄弟:288-黑桃队长:60-电玩小子:2288-星空梦想:0
+3,后裔,53,精灵王:288-阿尔法小队:588-辉光之辰:888-黄金射手座:1688-如梦令:1314
+4,铠,52,龙域领主:288-曙光守护者:1776
+5,韩信,52,飞衡:1788-逐梦之影:888-白龙吟:1188-教廷特使:0-街头霸王:888
+```
+
+字段：id、name（英雄名称）、win_rate（胜率）、skin_price（皮肤及价格）
+
+分析一下：前3个字段原生数据类型、最后一个字段复杂类型map。需要指定字段之间分隔符、集合元素之间分隔符、map kv之间分隔符。
+
+建表语句：
+
+```sql
+create table t_hot_hero_skin_price(
+    id int,
+    name string,
+    win_rate int,
+    skin_price map<string,int>
+)
+row format delimited
+fields terminated by ','
+collection items terminated by '-'
+map keys terminated by ':' ;
+```
+
+建表成功后，把hot_hero_skin_price.txt文件上传到对应的表文件夹下。
+
+```shell
+hadoop fs -put hot_hero_skin_price.txt /user/hive/warehouse/honor_of_kings.db/t_hot_hero_skin_price
+```
+
+执行查询操作，可以看出数据已经映射成功。
 
 #### 5.3. 默认分隔符案例
 
