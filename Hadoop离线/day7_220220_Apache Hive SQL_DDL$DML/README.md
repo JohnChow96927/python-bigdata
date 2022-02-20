@@ -672,7 +672,7 @@ insert into t_usa_covid19_bucket select * from t_usa_covid19;
 --根据分桶的规则hash_function(New York) mod 5计算出分桶编号
 --查询指定分桶里面的数据 就可以找出结果  此时是分桶扫描而不是全表扫描
 select *
-from t_usa_covid19_bucket_sort where state="New York";
+from t_usa_covid19_bucket where state="New York";
 ```
 
 2、JOIN时可以提高MR程序效率，减少笛卡尔积数量
