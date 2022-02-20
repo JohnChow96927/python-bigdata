@@ -1,0 +1,48 @@
++-------------------------------+----------------------------------------------------+-----------------------+
+|           col_name            |                     data_type                      |        comment        |
++-------------------------------+----------------------------------------------------+-----------------------+
+| # col_name                    | data_type                                          | comment               |
+| id                            | int                                                |                       |
+| name                          | string                                             |                       |
+| hp_max                        | int                                                |                       |
+| mp_max                        | int                                                |                       |
+| attack_max                    | int                                                |                       |
+| defense_max                   | int                                                |                       |
+| attack_range                  | string                                             |                       |
+| role_main                     | string                                             |                       |
+| role_assist                   | string                                             |                       |
+|                               | NULL                                               | NULL                  |
+| # Partition Information       | NULL                                               | NULL                  |
+| # col_name                    | data_type                                          | comment               |
+| juesedingwei                  | string                                             |                       |
+|                               | NULL                                               | NULL                  |
+| # Detailed Table Information  | NULL                                               | NULL                  |
+| Database:                     | itheima                                            | NULL                  |
+| OwnerType:                    | USER                                               | NULL                  |
+| Owner:                        | root                                               | NULL                  |
+| CreateTime:                   | Wed Sep 01 11:58:58 CST 2021                       | NULL                  |
+| LastAccessTime:               | UNKNOWN                                            | NULL                  |
+| Retention:                    | 0                                                  | NULL                  |
+| Location:                     | hdfs://node1:8020/user/hive/warehouse/itheima.db/t_all_hero_part | NULL                  |
+| Table Type:                   | MANAGED_TABLE                                      | NULL                  |
+| Table Parameters:             | NULL                                               | NULL                  |
+|                               | bucketing_version                                  | 2                     |
+|                               | numFiles                                           | 7                     |
+|                               | numPartitions                                      | 7                     |
+|                               | numRows                                            | 0                     |
+|                               | rawDataSize                                        | 0                     |
+|                               | totalSize                                          | 4064                  |
+|                               | transient_lastDdlTime                              | 1630468738            |
+|                               | NULL                                               | NULL                  |
+| # Storage Information         | NULL                                               | NULL                  |
+| SerDe Library:                | org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe | NULL                  |
+| InputFormat:                  | org.apache.hadoop.mapred.TextInputFormat           | NULL                  |
+| OutputFormat:                 | org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat | NULL                  |
+| Compressed:                   | No                                                 | NULL                  |
+| Num Buckets:                  | -1                                                 | NULL                  |
+| Bucket Columns:               | []                                                 | NULL                  |
+| Sort Columns:                 | []                                                 | NULL                  |
+| Storage Desc Params:          | NULL                                               | NULL                  |
+|                               | field.delim                                        | \t                    |
+|                               | serialization.format                               | \t                    |
++-------------------------------+----------------------------------------------------+-----------------------+

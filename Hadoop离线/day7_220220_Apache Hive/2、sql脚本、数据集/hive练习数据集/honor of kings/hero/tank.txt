@@ -1,0 +1,10 @@
+42	夏侯惇	7350	1746	321	397	melee	tank	warrior
+43	张飞	8341	100	301	504	melee	tank	support
+44	牛魔	8476	1926	273	394	melee	tank	support
+45	程咬金	8611	0	316	504	melee	tank	warrior
+46	廉颇	9328	1708	286	514	melee	tank
+47	东皇太一	7669	1926	286	360	melee	tank
+48	白起	8638	1666	288	430	melee	tank
+49	刘邦	8073	1940	302	504	melee	tank	support
+50	刘禅	8581	1694	295	459	melee	tank
+51	项羽	8057	1694	306	494	melee	tank

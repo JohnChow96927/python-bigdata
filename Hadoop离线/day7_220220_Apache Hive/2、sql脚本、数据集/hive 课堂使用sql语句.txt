@@ -1,0 +1,407 @@
+----------------------------------------------------------------------------------------------------
+数据库相关操作
+	Hive配置单元包含一个名为 default 默认的数据库.
+	
+	create database [if not exists] <database name>；---创建数据库
+	
+	show databases;  --显示所有数据库
+	
+	drop database if exists <database name> [restrict|cascade];  --删除数据库，默认情况下，hive不允许删除含有表的数据库，要先将数据库中的表清空才能drop，否则会报错
+	--加入cascade关键字，可以强制删除一个数据库,默认是restrict，表示有限制的
+		eg.  hive> drop database if exists users cascade;
+	
+	use <database name>; --切换数据库
+
+----------------------------------------------------------------------------------------------------
+分区表（PARTITIONED BY）
+     分区建表分为2种，一种是单分区，也就是说在表文件夹目录下只有一级文件夹目录。另外一种是多分区，表文件夹下出现多文件夹嵌套模式。
+	
+	 单分区建表语句：create table day_table (id int, content string) partitioned by (dt string);单分区表，按天分区，在表结构中存在id，content，dt三列。
+
+	 双分区建表语句：create table day_hour_table (id int, content string) partitioned by (dt string, hour string);双分区表，按天和小时分区，在表结构中新增加了dt和hour两列。
+
+	 导入数据
+	 load data local inpath '/root/hivedata/dat_table.txt' into table day_table partition(dt='2017-07-07');
+	 
+	 load data local inpath '/root/hivedata/dat_table.txt' into table day_hour_table partition(dt='2017-07-07', hour='08');
+	 
+	 基于分区的查询：
+
+	 SELECT day_table.* FROM day_table WHERE day_table.dt = '2017-07-07';
+
+     查看分区：
+
+     show partitions day_hour_table;  
+
+	 总的说来partition就是辅助查询，缩小查询范围，加快数据的检索速度和对数据按照一定的规格和条件进行管理。
+
+----------------------------------------------------------------------------------------------------
+ROW FORMAT DELIMITED（指定分隔符） 
+	
+	create table day_table (id int, content string) partitioned by (dt string) row format delimited fields terminated by ',';   ---指定分隔符创建分区表
+
+	复杂类型的数据表指定分隔符
+	
+	create table complex_array(name string,work_locations array<string>) row format
+	delimited fields terminated by '\t' collection items terminated by ',';
+	
+	数据如下：
+	 zhangsan	beijing,shanghai,tianjin,hangzhou
+	 wangwu	shanghai,chengdu,wuhan,haerbin
+
+	create table t_map(id int,name string,hobby map<string,string>)
+	row format delimited 
+	fields terminated by ','
+	collection items terminated by '-'
+	map keys terminated by ':' ;
+
+	数据：
+	1,zhangsan,唱歌:非常喜欢-跳舞:喜欢-游泳:一般般
+	2,lisi,打游戏:非常喜欢-篮球:不喜欢
+
+
+----------------------------------------------------------------------------------------------------
+内部表、外部表
+	建内部表
+	create table student(Sno int,Sname string,Sex string,Sage int,Sdept string) row format delimited fields terminated by ',';
+	建外部表
+	create external table student_ext(Sno int,Sname string,Sex string,Sage int,Sdept string) row format delimited fields terminated by ',' location '/stu';
+
+
+	内、外部表加载数据：
+	load data local inpath '/root/hivedata/students.txt' overwrite into table student;
+	
+	load data inpath '/stu' into table student_ext;
+
+------------------------------------------------------------------------------------
+本地模式
+set hive.exec.mode.local.auto=true;
+
+------------------------------------------------------------------------------------
+分桶表（cluster by  into num buckets）
+
+#指定开启分桶
+set hive.enforce.bucketing = true;
+set mapreduce.job.reduces=4;
+
+TRUNCATE TABLE  stu_buck;
+
+drop table stu_buck;
+create table stu_buck(Sno int,Sname string,Sex string,Sage int,Sdept string)
+clustered by(Sno) 
+sorted by(Sno DESC)
+into 4 buckets
+row format delimited
+fields terminated by ',';
+
+分桶表导入数据
+set hive.enforce.bucketing = true;
+
+insert overwrite table stu_buck
+select * from student;
+
+或者
+set mapreduce.job.reduces=4;
+
+insert overwrite table stu_buck
+select * from stu_buck cluster by(Sno);
+
+
+--------------------------------------------------------------
+分桶、排序等查询：cluster by 、sort by、distribute by
+
+select * from student cluster by(Sno);
+
+insert overwrite table student_buck
+select * from student cluster by(Sno) sort by(Sage);  报错,cluster 和 sort 不能共存
+
+对某列进行分桶的同时，根据另一列进行排序
+insert overwrite table stu_buck
+select * from student distribute by(Sno) sort by(Sage asc);
+
+总结：
+cluster（分且排序，必须一样）==distribute（分） + sort（排序）（可以不一样）  
+
+------------------------------------------------------------------------------------
+增加/删除分区
+
+drop table t_partition;
+create table t_partition(id int,name string)
+partitioned by (dt string)
+row format delimited
+fields terminated by ',';
+
+增加分区
+
+alter table t_partition add partition (dt='2008-08-08') location 'hdfs://node-21:9000/t_parti/';
+执行添加分区时   /t_parti文件夹下的数据不会被移动。并且没有分区目录dt=2008-08-08 
+
+
+删除分区
+
+alter table t_partition drop partition (dt='2008-08-08');
+执行删除分区时/t_parti下的数据会被删除并且连同/t_parti文件夹也会被删除
+
+注意区别于load data时候添加分区:会移动数据 会创建分区目录
+
+------------------------------------------------------------------------------------
+Insert查询语句
+
+
+多重插入：
+
+create table source_table (id int, name string) row format delimited fields terminated by ',';
+
+create table test_insert1 (id int) row format delimited fields terminated by ',';
+create table test_insert2 (name string) row format delimited fields terminated by ',';
+
+
+普通插入：
+insert into table test_insert1 select id from source_table;
+insert into table test_insert2 select name from source_table;
+
+多重插入：
+from source_table                     
+insert overwrite table test_insert1 
+select id
+insert overwrite table test_insert2
+select name;
+
+------------------------------------------------------------------------------------
+动态分区插入
+
+set hive.exec.dynamic.partition=true;    #是否开启动态分区功能，默认false关闭。
+set hive.exec.dynamic.partition.mode=nonstrict;   #动态分区的模式，默认strict，表示必须指定至少一个分区为静态分区，nonstrict模式表示允许所有的分区字段都可以使用动态分区。
+
+
+需求：
+将dynamic_partition_table中的数据按照时间(day)，插入到目标表d_p_t的相应分区中。
+
+原始表：
+create table dynamic_partition_table(day string,ip string)row format delimited fields terminated by ","; 
+
+load data local inpath '/root/hivedata/dynamic_partition_table.txt' into table dynamic_partition_table;
+2015-05-10,ip1
+2015-05-10,ip2
+2015-06-14,ip3
+2015-06-14,ip4
+2015-06-15,ip1
+2015-06-15,ip2
+ 
+目标表：
+create table d_p_t(ip string) partitioned by (month string,day string);
+
+
+静态分区：
+
+insert into table d_p_t partition(month="2015-05",day="2015-05-10")
+select ip from dynamic_partition_table limit 1;
+
+
+动态插入：
+insert overwrite table d_p_t partition (month,day) 
+select ip,substr(day,1,7) as month,day from dynamic_partition_table;
+
+
+
+select substr(day,1,7) as month,day,ip from dynamic_partition_table; --错误的 动态分区是根据位置来确定的
+
+
+---------------------------------------------------------------------------------------
+查询结果导出到文件系统
+
+3、将查询结果保存到指定的文件目录（可以是本地，也可以是hdfs）
+insert overwrite local directory '/root/123123'
+select * from student;
+
+insert overwrite directory '/aaa/test'
+select * from stu_tmp;
+
+------------------------------------------------------------------------------------
+关于hive中的各种join
+
+准备数据
+1,a
+2,b
+3,c
+4,d
+7,y
+8,u
+
+2,bb
+3,cc
+7,yy
+9,pp
+
+
+
+建表：
+create table a(id int,name string)
+row format delimited fields terminated by ',';
+
+create table b(id int,name string)
+row format delimited fields terminated by ',';
+
+导入数据：
+load data local inpath '/root/hivedata/a.txt' into table a;
+load data local inpath '/root/hivedata/b.txt' into table b;
+
+
+实验：
+** inner join
+select * from a inner join b on a.id=b.id;
+
++-------+---------+-------+---------+--+
+| a.id  | a.name  | b.id  | b.name  |
++-------+---------+-------+---------+--+
+| 2     | b       | 2     | bb      |
+| 3     | c       | 3     | cc      |
+| 7     | y       | 7     | yy      |
++-------+---------+-------+---------+--+
+
+
+
+
+
+**left join   
+select * from a left join b on a.id=b.id;
++-------+---------+-------+---------+--+
+| a.id  | a.name  | b.id  | b.name  |
++-------+---------+-------+---------+--+
+| 1     | a       | NULL  | NULL    |
+| 2     | b       | 2     | bb      |
+| 3     | c       | 3     | cc      |
+| 4     | d       | NULL  | NULL    |
+| 7     | y       | 7     | yy      |
+| 8     | u       | NULL  | NULL    |
++-------+---------+-------+---------+--+
+
+
+
+
+
+**right join
+select * from a right join b on a.id=b.id;
+
+select * from b right join a on b.id=a.id;
++-------+---------+-------+---------+--+
+| a.id  | a.name  | b.id  | b.name  |
++-------+---------+-------+---------+--+
+| 2     | b       | 2     | bb      |
+| 3     | c       | 3     | cc      |
+| 7     | y       | 7     | yy      |
+| NULL  | NULL    | 9     | pp      |
++-------+---------+-------+---------+--+
+
+
+
+
+**
+select * from a full outer join b on a.id=b.id;
++-------+---------+-------+---------+--+
+| a.id  | a.name  | b.id  | b.name  |
++-------+---------+-------+---------+--+
+| 1     | a       | NULL  | NULL    |
+| 2     | b       | 2     | bb      |
+| 3     | c       | 3     | cc      |
+| 4     | d       | NULL  | NULL    |
+| 7     | y       | 7     | yy      |
+| 8     | u       | NULL  | NULL    |
+| NULL  | NULL    | 9     | pp      |
++-------+---------+-------+---------+--+
+
+
+**hive中的特别join
+select * from a left semi join b on a.id = b.id;
++-------+---------
+| a.id  | a.name  
++-------+---------
+| 2     | b       
+| 3     | c       
+| 7     | y       
++-------+---------
+
+
+select a.* from a inner join b on a.id=b.id;
++-------+---------
+| a.id  | a.name  
++-------+---------
+| 2     | b       
+| 3     | c       
+| 7     | y       
++-------+---------
+
+
+
+相当于
+select a.id,a.name from a where a.id in (select b.id from b); 在hive中效率极低
+
+select a.id,a.name from a join b on (a.id = b.id);
+
+select * from a inner join b on a.id=b.id;
+
+
+cross join（##慎用）
+返回两个表的笛卡尔积结果，不需要指定关联键。
+select a.*,b.* from a cross join b;
+
+------------------------------------------------------------------------------------
+内置jason函数
+select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') as rate  from rat_json limit 10;
+------------------------------------------------------------------------------------
+transform案例:
+
+1、先加载rating.json文件到hive的一个原始表 rat_json
+create table rat_json(line string) row format delimited;
+load data local inpath '/root/hivedata/rating.json' into table rat_json;
+
+2、需要解析json数据成四个字段，插入一张新的表 t_rating
+drop table if exists t_rating;
+create table t_rating(movieid string,rate int,timestring string,uid string)
+row format delimited fields terminated by '\t';
+
+insert overwrite table t_rating
+select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') as rate,get_json_object(line,'$.timeStamp') as timestring, get_json_object(line,'$.uid') as uid from rat_json limit 10;
+
+
+3、使用transform+python的方式去转换unixtime为weekday
+先编辑一个python脚本文件
+########python######代码
+vi weekday_mapper.py
+#!/bin/python
+import sys
+import datetime
+
+for line in sys.stdin:
+  line = line.strip()
+  movieid, rating, unixtime,userid = line.split('\t')
+  weekday = datetime.datetime.fromtimestamp(float(unixtime)).isoweekday()
+  print '\t'.join([movieid, rating, str(weekday),userid])
+
+保存文件
+然后，将文件加入hive的classpath：
+hive>add FILE /root/hivedata/weekday_mapper.py;
+
+
+create table u_data_new as select
+  transform (movieid, rate, timestring,uid)
+  using 'python weekday_mapper.py'
+  as (movieid, rate, weekday,uid)
+from t_rating;
+
+select distinct(weekday) from u_data_new limit 10;
+
+-----------------------
+desc formatted student;
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,19 @@
+17	芈月	6164	100	289	361	remotely	mage	tank
+18	嬴政	5471	1946	309	295	remotely	mage
+19	武则天	5037	1988	297	348	remotely	mage
+20	甄姬	5584	2002	296	330	remotely	mage
+21	妲己	5824	2016	293	326	remotely	mage
+22	干将莫邪	5583	1946	292	323	remotely	mage
+23	姜子牙	5399	2002	317	342	remotely	mage	support
+24	王昭君	5429	1960	296	305	remotely	mage
+25	诸葛亮	5655	1988	287	330	remotely	mage
+26	安琪拉	5994	1960	293	315	remotely	mage
+27	小乔	5916	1988	263	309	remotely	mage
+28	周瑜	5513	1974	298	320	remotely	mage
+29	张良	5799	1988	293	320	remotely	mage
+30	高渐离	6165	1988	290	343	remotely	mage
+31	扁鹊	6703	2016	309	374	remotely	mage	support
+32	墨子	7176	1722	328	475	melee	mage	tank
+33	不知火舞	6014	200	293	336	melee	mage	assassin
+34	貂蝉	5611	1960	287	330	melee	mage	assassin
+35	钟馗	6280	1988	278	390	melee	mage	warrior

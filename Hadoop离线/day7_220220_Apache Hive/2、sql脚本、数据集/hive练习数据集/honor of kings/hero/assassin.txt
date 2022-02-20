@@ -1,0 +1,6 @@
+11	橘石京	7000	0	347	392	melee	assassin	warrior
+12	李白	5483	1808	330	358	melee	assassin	warrior
+13	韩信	5655	1704	386	323	melee	assassin	warrior
+14	阿轲	5968	0	427	349	melee	assassin
+15	娜可露露	6205	1808	385	359	melee	assassin
+16	兰陵王	6232	1822	388	342	melee	assassin

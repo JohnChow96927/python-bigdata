@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="DBE_MODULE" version="4">
   <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../Hadoop离线" />
     <content url="file://$MODULE_DIR$" />
     <content url="file://$MODULE_DIR$/../就业指导文档/220114" />
     <orderEntry type="inheritedJdk" />

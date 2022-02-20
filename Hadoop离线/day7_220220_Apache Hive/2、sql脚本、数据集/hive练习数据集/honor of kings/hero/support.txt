@@ -1,0 +1,6 @@
+36	孙膑	6811	1926	328	413	remotely	support	mage
+37	蔡文姬	5910	1898	292	350	remotely	support
+38	庄周	8149	1694	297	497	melee	support	tank
+39	太乙真人	6835	1680	284	396	melee	support	tank
+40	大乔	5399	1926	305	340	melee	support
+41	鬼谷子	7107	1808	297	394	melee	support

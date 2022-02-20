@@ -1,0 +1,18 @@
+52	刘备	6900	1742	363	381	remotely	warrior
+53	钟无艳	7000	1760	318	409	melee	warrior	tank
+54	吕布	7344	0	343	390	melee	warrior	tank
+55	亚瑟	8050	0	346	400	melee	warrior	tank
+56	雅典娜	6264	1732	327	418	melee	warrior	tank
+57	关羽	7107	10	343	386	melee	warrior	tank
+58	露娜	6612	1836	335	375	melee	warrior	mage
+59	花木兰	5397	100	362	349	melee	warrior	assassin
+60	赵云	6732	1760	380	394	melee	warrior	assassin
+61	杨戬	7420	1694	325	428	melee	warrior
+62	达摩	7140	1694	355	415	melee	warrior
+63	孙悟空	6585	1760	349	385	melee	warrior	assassin
+64	曹操	7473	0	361	371	melee	warrior
+65	典韦	7516	1774	345	402	melee	warrior
+66	宫本武藏	6210	0	330	391	melee	warrior
+67	老夫子	7155	5	329	409	melee	warrior
+68	哪吒	7268	1808	320	408	melee	warrior
+69	铠	6700	1784	328	388	melee	warrior	tank
