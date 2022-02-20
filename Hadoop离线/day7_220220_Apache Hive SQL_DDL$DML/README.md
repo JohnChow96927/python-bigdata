@@ -221,7 +221,7 @@ row format delimited fields terminated by "\t";
 建表成功之后，在Hive的默认存储路径下就生成了表对应的文件夹，把archer.txt文件上传到对应的表文件夹下。
 
 ```shell
-hadoop fs -put archer.txt  /user/hive/warehouse/honor_of_kings.db/t_archer
+hadoop fs -put archer.txt  /user/hive/warehouse/itcast.db/t_archer
 ```
 
 执行查询操作，可以看出数据已经映射成功。
@@ -608,7 +608,7 @@ INTO N BUCKETS表示分为几桶（也就是几个部分）。
 根据state州把数据分为5桶，建表语句如下：
 
 ```sql
-CREATE TABLE itcast.t_usa_covid19(
+CREATE TABLE itcast.t_usa_covid19_bucket(
     count_date string,
     county string,
     state string,
@@ -672,7 +672,7 @@ insert into t_usa_covid19_bucket select * from t_usa_covid19;
 --根据分桶的规则hash_function(New York) mod 5计算出分桶编号
 --查询指定分桶里面的数据 就可以找出结果  此时是分桶扫描而不是全表扫描
 select *
-from t_usa_covid19_bucket where state="New York";
+from t_usa_covid19_bucket_sort where state="New York";
 ```
 
 2、JOIN时可以提高MR程序效率，减少笛卡尔积数量
