@@ -1101,7 +1101,7 @@ create table student_from_insert(sno int,sname string);
 insert into table student_from_insert select num,name from student;
 
 select *
-from student_insert1;
+from student_from_insert;
 ```
 
 #### 2.3. multiple inserts 多重插入
@@ -1129,7 +1129,7 @@ select name;
 
    对于分区表的数据导入加载，最常见最基础的是通过load命令加载数据。如下：
 
-   ```SQK
+   ```sql
    create table student_HDFS_p(Sno int,Sname string,Sex string,Sage int,Sdept string) partitioned by(country string) row format delimited fields terminated by ',';
    --注意 分区字段country的值是在导入数据的时候手动指定的 China
    LOAD DATA INPATH '/students.txt' INTO TABLE student_HDFS_p partition(country ="China");
@@ -1208,7 +1208,7 @@ select name;
    
    --4、执行动态分区插入操作
    insert into table student_partition partition(Sdept)
-   select Sno,Sname,Sex,Sage,Sdept from student;
+   select num,name,sex,age,dept from student;
    --其中，Sno,Sname,Sex,Sage作为表的字段内容插入表中
    --Sdept作为分区字段值
    ```
@@ -1237,13 +1237,13 @@ INSERT OVERWRITE [LOCAL] DIRECTORY directory1 select_statement1
 [MAP KEYS TERMINATED BY char] [LINES TERMINATED BY char]
 ```
 
-注意，**导出操作是一个****OVERWRITE****覆盖操作。慎重。**
+注意，**导出操作是一个OVERWRITE覆盖操作。慎重。**
 
 目录可以是完整的URI。如果未指定scheme或Authority，则Hive将使用hadoop配置变量fs.default.name中的方案和Authority，该变量指定Namenode URI。
 
 如果使用LOCAL关键字，则Hive会将数据写入本地文件系统上的目录。
 
-写入文件系统的数据被序列化为文本，列之间用^ A隔开，行之间用换行符隔开。如果任何列都不是原始类型，那么这些列将序列化为JSON格式。也可以在导出的时候指定分隔符换行符和文件格式。
+写入文件系统的数据被序列化为文本，列之间用^A隔开，行之间用换行符隔开。如果任何列都不是原始类型，那么这些列将序列化为JSON格式。也可以在导出的时候指定分隔符换行符和文件格式。
 
 ```sql
 --当前库下已有一张表student
