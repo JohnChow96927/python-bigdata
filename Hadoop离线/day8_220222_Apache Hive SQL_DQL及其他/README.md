@@ -807,15 +807,59 @@ $HIVE_HOME/bin/hive是一个shellUtil,通常称之为hive的第一代客户端�
 
 ##### Batch Mode 批处理模式
 
+当使用**-e或-f选项**运行$ HIVE_HOME / bin / hive时，它将以批处理模式执行SQL命令。所谓的批处理可以理解为一次性执行，执行完毕退出。
 
+```shell
+#-e
+$HIVE_HOME/bin/hive -e 'show databases'
+
+#-f
+cd ~
+#编辑一个sql文件 里面写上合法正确的sql语句
+vim hive.sql
+show databases;
+#执行 从客户端所在机器的本地磁盘加载文件
+$HIVE_HOME/bin/hive -f /root/hive.sql
+#也可以从其他文件系统加载sql文件执行
+$HIVE_HOME/bin/hive -f hdfs://<namenode>:<port>/hive-script.sql
+$HIVE_HOME/bin/hive -f s3://mys3bucket/s3-script.sql
+#使用静默模式将数据从查询中转储到文件中
+$HIVE_HOME/bin/hive -S -e 'select * from itheima.student' > a.txt
+```
 
 ##### Interactive Shell 交互式模式
 
+所谓交互式模式可以理解为客户端和hive服务一直保持连接，除非手动退出客户端。
 
+```shell
+/export/server/hive/bin/hive
+
+hive> show databases;
+OK
+default
+itcast
+itheima
+Time taken: 0.028 seconds, Fetched: 3 row(s)
+
+hive> use itcast;
+OK
+Time taken: 0.027 seconds
+
+hive> exit;
+```
 
 ##### 启动服务, 修改配置
 
+远程模式部署方式下，hive metastore服务需要单独配置手动启动，此时就可以使用Hive CLI来进行相关服务的启动，hiveserver2服务类似。
 
+```shell
+#--service
+$HIVE_HOME/bin/hive --service metastore
+$HIVE_HOME/bin/hive --service hiveserver2
+
+#--hiveconf
+$HIVE_HOME/bin/hive --hiveconf hive.root.logger=DEBUG,console
+```
 
 #### 1.2. Beeline CLI
 
