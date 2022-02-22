@@ -148,3 +148,13 @@ where count_date = "2021-01-28"
   and state ="California"
 limit 2,3; --注意 第一个参数偏移量是从0开始的
 
+
+select state,sum(deaths) as cnts
+from t_usa_covid19_p
+where count_date = "2021-01-28"
+group by state
+having cnts> 10000;
+
+
+
+
