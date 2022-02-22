@@ -656,11 +656,32 @@ on e.id =e_conn.id;
 
 ### 7. Hive full outer join
 
+**full outer join 等价 full join**  ,中文叫做全外连接或者外连接。
 
+包含左、右两个表的全部行，不管另外一边的表中是否存在与它们匹配的行
+
+在功能上，它等价于对这两个数据集合分别进行左外连接和右外连接，然后再使用消去重复行的操作将上述两个结果集合并为一个结果集。
+
+![1645513949698](assets/1645513949698.png)
+
+```sql
+--4、full outer join
+select e.id,e.name,e_a.city,e_a.street
+from employee e full outer join employee_address e_a
+on e.id =e_a.id;
+--等价于
+select e.id,e.name,e_a.city,e_a.street
+from employee e full  join employee_address e_a
+on e.id =e_a.id;
+```
+
+![1645513966410](assets/1645513966410.png)
 
 ### 8. Hive left semi join
 
+**左半开连接**（LEFT SEMI JOIN）会返回左边表的记录，前提是其记录对于右边的表满足ON语句中的判定条件。
 
+从效果上来看有点像inner join之后只返回左表的结果。
 
 ### 9. Hive cross join
 
