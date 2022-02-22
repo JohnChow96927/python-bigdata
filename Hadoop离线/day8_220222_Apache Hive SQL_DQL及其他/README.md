@@ -615,10 +615,18 @@ left join的核心就在于left左。左指的是join关键字左边的表，简
 ![1645513775265](assets/1645513775265.png)
 
 ```sql
+--2、left join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e left join employee_connection e_conn
+on e.id =e_conn.id;
 
+--等价于 left outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e left outer join  employee_connection e_conn
+on e.id =e_conn.id;
 ```
 
-
+![1645513828232](assets/1645513828232.png)
 
 ### 6. Hive right join
 
