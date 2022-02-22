@@ -1592,7 +1592,33 @@ UDF函数通常把它叫做普通函数，最大的特点是一进一出，也�
 
 #### 4.2. UDAF聚合函数
 
+UDAF函数通常把它叫做聚合函数，A所代表的单词就是Aggregation聚合的意思。最大的特点是多进一出，也就是输入多行输出一行。比如count、sum这样的函数。
 
+![1645520364754](assets/1645520364754.png)
+
+```shell
+•count:统计检索到的总行数。
+•sum:求和
+•avg:求平均
+•min:最小值
+•max:最大值
+•数据收集函数（去重）: collect_set(col)
+•数据收集函数（不去重）: collect_list(col)
+```
+
+```sql
+select sex from student;
+
+select collect_set(sex) from student;
+select collect_list(sex) from student;
+```
+
+![1645520450480](assets/1645520450480.png)
 
 #### 4.3. UDTF表生成函数
 
+UDTF函数通常把它叫做表生成函数，T所代表的单词是Table-Generating表生成的意思。最大的特点是一进多出，也就是输入一行输出多行。
+
+之所以叫做表生成函数，原因在于这类型的函数作用返回的结果类似于表（多行数据嘛），同时，UDTF函数也是我们接触比较少的函数，陌生。比如explode函数。
+
+![1645520473579](assets/1645520473579.png)
