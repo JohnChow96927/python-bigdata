@@ -6,11 +6,60 @@
 
 #### 1.1. 语法树
 
+```sql
+[WITH CommonTableExpression (, CommonTableExpression)*] 
+SELECT [ALL | DISTINCT] select_expr, select_expr, ...
+  FROM table_reference
+  [WHERE where_condition]
+  [GROUP BY col_list]
+  [ORDER BY col_list]
+  [CLUSTER BY col_list
+    | [DISTRIBUTE BY col_list] [SORT BY col_list]
+  ]
+ [LIMIT [offset,] rows]
+```
 
+table_reference指示查询的输入。它可以是普通物理表，视图，join查询结果或子查询结果。
+
+表名和列名不区分大小写。
 
 #### 1.2. 案例: 美国Covid-19新冠select查询
 
+在附件资料中有一份数据文件"us-covid19-counties.dat"，里面记录了2021-01-28美国各个县累计新冠确诊病例数和累计死亡病例数。
 
+在Hive中创建表，加载该文件到表中：
+
+```sql
+--step1:创建普通表t_usa_covid19
+drop table t_usa_covid19;
+CREATE TABLE  t_usa_covid19(
+       count_date string,
+       county string,
+       state string,
+       fips int,
+       cases int,
+       deaths int)
+row format delimited fields terminated by ",";
+--将源数据load加载到t_usa_covid19表对应的路径下
+load data local inpath '/root/hivedata/us-covid19-counties.dat' into table t_usa_covid19;
+
+--step2:创建一张分区表 基于count_date日期,state州进行分区
+CREATE TABLE itcast.t_usa_covid19_p(
+     county string,
+     fips int,
+     cases int,
+     deaths int)
+partitioned by(count_date string,state string)
+row format delimited fields terminated by ",";
+
+--step3:使用动态分区插入将数据导入t_usa_covid19_p中
+set hive.exec.dynamic.partition.mode = nonstrict;
+
+insert into table t_usa_covid19_p partition (count_date,state)
+select county,fips,cases,deaths,count_date,state from t_usa_covid19;
+```
+
+![1645499602054](assets/1645499602054.png)
 
 #### 1.3. select_expr
 
