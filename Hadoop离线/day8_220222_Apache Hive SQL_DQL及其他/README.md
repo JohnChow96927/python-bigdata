@@ -580,9 +580,43 @@ load data local inpath '/root/hivedata/employee_connection.txt' into table emplo
 
 ### 4. Hive inner join
 
+**内连接**是最常见的一种连接，它也被称为普通连接，而关系模型提出者E.FCodd（埃德加•科德）最早称之为自然连接。其中inner可以省略。**inner join == join** 等价于早期的连接语法。
 
+内连接，只有进行连接的两个表中都存在与连接条件相匹配的数据才会被留下来。
+
+![1645513668649](assets/1645513668649.png)
+
+```sql
+--1、inner join
+select e.id,e.name,e_a.city,e_a.street
+from employee e inner join employee_address e_a
+on e.id =e_a.id;
+--等价于 inner join=join
+select e.id,e.name,e_a.city,e_a.street
+from employee e join employee_address e_a
+on e.id =e_a.id;
+
+--等价于 隐式连接表示法
+select e.id,e.name,e_a.city,e_a.street
+from employee e , employee_address e_a
+where e.id =e_a.id;
+```
+
+![1645513717192](assets/1645513717192.png)
 
 ### 5. Hive left join
+
+**left join**中文叫做是左外连接(Left Outer Jion)或者**左连接**，其中outer可以省略，left outer join是早期的写法。
+
+left join的核心就在于left左。左指的是join关键字左边的表，简称左表。
+
+通俗解释：join时以左表的全部数据为准，右边与之关联；左表数据全部返回，右表关联上的显示返回，关联不上的显示null返回。
+
+![1645513775265](assets/1645513775265.png)
+
+```sql
+
+```
 
 
 

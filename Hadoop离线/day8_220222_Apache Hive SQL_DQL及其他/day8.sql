@@ -313,4 +313,32 @@ load data local inpath '/root/hivedata/employee_connection.txt' into table emplo
 select * from employee_address;
 select * from employee_connection;
 
+--1、inner join
+select e.id,e.name,e_a.city,e_a.street
+from employee e inner join employee_address e_a
+on e.id =e_a.id;
+--等价于 inner join=join
+select e.id,e.name,e_a.city,e_a.street
+from employee e join employee_address e_a
+on e.id =e_a.id;
+
+--等价于 隐式连接表示法
+select e.id,e.name,e_a.city,e_a.street
+from employee e , employee_address e_a
+where e.id =e_a.id;
+
+--2、left join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e left join employee_connection e_conn
+on e.id =e_conn.id;
+
+--等价于 left outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e left outer join  employee_connection e_conn
+on e.id =e_conn.id;
+
+
+
+
+
 
