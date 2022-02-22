@@ -723,13 +723,97 @@ select * from employee a inner join employee_address b on a.id=b.id;
 
 ### 10. Hive join使用注意事项
 
+总体来说，随着Hive的版本发展，join语法的功能也愈加丰富。当下我们课程使用的是3.1.2版本，有以下几点需要注意：
 
+##### a. 允许使用复杂的联接表达式
+
+```sql
+SELECT a.* FROM a JOIN b ON (a.id = b.id)
+SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department)
+SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id)
+```
+
+##### b. 同一查询中可以连接2个以上的表
+
+```sql
+SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key2)
+```
+
+##### c. 如果每个表在联接子句中使用相同的列，则Hive将多个表上的联接转换为单个MR作业
+
+```sql
+SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
+--由于联接中仅涉及b的key1列，因此被转换为1个MR作业来执行
+SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key2)
+--会转换为两个MR作业，因为在第一个连接条件中使用了b中的key1列，而在第二个连接条件中使用了b中的key2列。第一个map / reduce作业将a与b联接在一起，然后将结果与c联接到第二个map / reduce作业中。
+```
+
+##### d. join时的最后一个表会通过reducer流式传输，并在其中缓冲之前的其他表，因此，将大表放置在最后有助于减少reducer阶段缓存数据所需要的内存
+
+```sql
+SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
+--由于联接中仅涉及b的key1列，因此被转换为1个MR作业来执行，并且表a和b的键的特定值的值被缓冲在reducer的内存中。然后，对于从c中检索的每一行，将使用缓冲的行来计算联接。
+SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key2)
+--计算涉及两个MR作业。其中的第一个将a与b连接起来，并缓冲a的值，同时在reducer中流式传输b的值。
+在第二个MR作业中，将缓冲第一个连接的结果，同时将c的值通过reducer流式传输。
+```
+
+##### e. 在join的时候，可以通过语法STREAMTABLE提示指定要流式传输的表。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。
+
+```sql
+SELECT /*+ STREAMTABLE(a) */ a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
+--a,b,c三个表都在一个MR作业中联接，并且表b和c的键的特定值的值被缓冲在reducer的内存中。然后，对于从a中检索到的每一行，将使用缓冲的行来计算联接。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。
+
+```
+
+##### f. join在WHERE条件之前进行。
+
+##### g. 如果除一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行
+
+```sql
+SELECT /*+ MAPJOIN(b) */ a.key, a.value FROM a JOIN b ON a.key = b.key
+--不需要reducer。对于A的每个Mapper，B都会被完全读取。限制是不能执行FULL / RIGHT OUTER JOIN b。
+```
+
+还有一些其他相关的使用注意事项，可以参考官方
+
+<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Joins>
 
 ## III. Hive参数配置
 
 ### 1. CLIs and Commands客户端和命令
 
 #### 1.1. Hive CLI
+
+$HIVE_HOME/bin/hive是一个shellUtil,通常称之为hive的第一代客户端或者旧客户端，主要功能有两个：
+
+一：用于以**交互式**或**批处理模式**运行**Hive查询**，注意，此时作为客户端，需要并且能够访问的是Hive metastore服务，而不是hiveserver2服务。
+
+二：用于hive相关**服务的启动**，比如metastore服务。
+
+可以通过运行"hive -H" 或者 "hive --help"来查看命令行选项。
+
+![1645514711114](assets/1645514711114.png)
+
+```shell
+-e <quoted-query-string>        执行命令行-e参数后指定的sql语句 运行完退出。(重要)
+-f <filename>                  执行命令行-f参数后指定的sql文件 运行完退出。(重要)
+-H,--help                      打印帮助信息
+    --hiveconf <property=value>   设置参数(重要)
+-S,--silent                     静默模式
+-v,--verbose                   详细模式，将执行sql回显到console
+   --service service_name        启动hive的相关服务(重要)
+```
+
+##### Batch Mode 批处理模式
+
+
+
+##### Interactive Shell 交互式模式
+
+
+
+##### 启动服务, 修改配置
 
 
 
