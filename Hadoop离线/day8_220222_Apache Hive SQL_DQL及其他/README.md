@@ -268,19 +268,196 @@ having cnts> 10000;
 
 ##### order by
 
+ORDER BY [ASC|DESC]
+
+Hive SQL中的ORDER BY语法类似于SQL语言中的ORDER BY语法。会对输出的结果进行全局排序，因此底层使用MapReduce引擎执行的时候，只会有一个reducetask执行。也因此，如果输出的行数太大，会导致需要很长的时间才能完成全局排序。
+
+默认排序顺序为升序（ASC），也可以指定为DESC降序。
+
+在Hive 2.1.0和更高版本中，支持在“ order by”子句中为每个列指定null类型结果排序顺序。ASC顺序的默认空排序顺序为NULLS FIRST，而DESC顺序的默认空排序顺序为NULLS LAST。
+
+```sql
+---order by
+--根据字段进行排序
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+and state ="California"
+order by deaths; --默认asc null first
+
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+and state ="California"
+order by deaths desc; --指定desc null last
+
+--强烈建议将LIMIT与ORDER BY一起使用。避免数据集行数过大
+--当hive.mapred.mode设置为strict严格模式时，使用不带LIMIT的ORDER BY时会引发异常。
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+  and state ="California"
+order by deaths desc
+limit 3;
+```
+
 ##### cluster by
+
+SELECT expression… FROM table CLUSTER BY col_name;
+
+Hive SQL中的**CLUSTER BY**语法可以指定根据后面的字段将数据分组，每组内再根据这个字段正序排序（不允许指定排序规则），概况起来就是：**根据同一个字段，分且排序**。
+
+分组的规则hash散列。hash_func(col_name) % reduce task nums
+
+分为几组取决于reduce task的个数。下面在Hive beeline客户端中针对student表进行演示。
+
+```sql
+--cluster by
+select * from student;
+--不指定reduce task个数
+--日志显示：Number of reduce tasks not specified. Estimated from input data size: 1
+select * from student cluster by num;
+
+--手动设置reduce task个数
+set mapreduce.job.reduces =2;
+select * from student cluster by num;
+```
+
+假如说，现在想法如下：把学生表数据根据性别分为两个部分，每个分组内根据年龄的倒序排序。你会发现CLUSTER BY无法完成了。而order by更不能在这里使用，因为它是全局排序，一旦使用order by，编译期间就会强制把reduce task个数设置为1。无法满足分组的需求。
 
 ##### distribute by + sort by
 
+如果说CLUSTER BY的功能是分且排序（同一个字段），那么DISTRIBUTE BY +SORT BY就相当于把cluster by的功能一分为二：**DISTRIBUTE BY负责分，SORT BY负责分组内排序**，并且可以是不同的字段。如果DISTRIBUTE BY +SORT BY的字段一样，可以得出下列结论：
+
+**CLUSTER BY = DISTRIBUTE BY + SORT BY（字段一样）**
+
+```sql
+--案例：把学生表数据根据性别分为两个部分，每个分组内根据年龄的倒序排序。
+select * from student distribute by sex sort by age desc;
+
+--下面两个语句执行结果一样
+select * from student distribute by num sort by num;
+select * from student cluster by num;
+```
+
 ##### 总结
+
+- order by会对输入做全局排序，因此只有一个reducer，会导致当输入规模较大时，需要较长的计算时间。
+
+- sort by不是全局排序，其在数据进入reducer前完成排序。因此，如果用sort by进行排序，并且设置mapred.reduce.tasks>1，则sort by只保证每个reducer的输出有序，不保证全局有序。
+
+- distribute by(字段)根据指定字段将数据分到不同的reducer，分发算法是hash散列。
+
+- Cluster by(字段) 除了具有Distribute by的功能外，还会对该字段进行排序。
+
+  如果distribute和sort的字段是同一个时，此时，cluster by = distribute by + sort by
+
+  ![1645502191881](assets/1645502191881.png)
+
+- distribute by(字段)根据指定字段将数据分到不同的reducer，分发算法是hash散列。
+
+- 
+
+  
 
 #### 2.2. union联合查询
 
+UNION用于将来自多个SELECT语句的结果合并为一个结果集。语法如下：
 
+```sql
+select_statement UNION [ALL | DISTINCT] select_statement UNION [ALL | DISTINCT] select_statement ...
+```
+
+使用DISTINCT关键字与只使用UNION默认值效果一样，都会删除重复行。
+
+使用ALL关键字，不会删除重复行，结果集包括所有SELECT语句的匹配行（包括重复行）。
+
+1.2.0之前的Hive版本仅支持UNION ALL，在这种情况下不会消除重复的行。
+
+每个select_statement返回的列的数量和名称必须相同。
+
+```sql
+--union
+--使用DISTINCT关键字与使用UNION默认值效果一样，都会删除重复行。
+select num,name from student_local
+UNION
+select num,name from student_hdfs;
+--和上面一样
+select num,name from student_local
+UNION DISTINCT
+select num,name from student_hdfs;
+
+--使用ALL关键字会保留重复行。
+select num,name from student_local
+UNION ALL
+select num,name from student_hdfs;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT应用于单个SELECT
+--请将子句放在括住SELECT的括号内
+SELECT num,name FROM (select num,name from student_local LIMIT 2) subq1
+UNION
+SELECT num,name FROM (select num,name from student_hdfs LIMIT 3) subq2;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT子句应用于整个UNION结果
+--请将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT放在最后一个之后。
+select num,name from student_local
+UNION
+select num,name from student_hdfs
+order by num desc;
+```
 
 #### 2.3. Common Table Expressions(CTE)
 
+##### CTE介绍
 
+公用表表达式（CTE）是一个临时结果集，该结果集是从WITH子句中指定的简单查询派生而来的，该查询紧接在SELECT或INSERT关键字之前。
+
+CTE仅在单个语句的执行范围内定义。一个或多个CTE可以在Hive SELECT，INSERT，  CREATE TABLE AS SELECT或CREATE VIEW AS SELECT语句中使用。
+
+##### CTE案例
+
+```sql
+--选择语句中的CTE
+with q1 as (select num,name,age from student where num = 95002)
+select *
+from q1;
+
+-- from风格
+with q1 as (select num,name,age from student where num = 95002)
+from q1
+select *;
+
+-- chaining CTEs 链式
+with q1 as ( select * from student where num = 95002),
+     q2 as ( select num,name,age from q1)
+select * from (select num from q2) a;
+
+
+-- union案例
+with q1 as (select * from student where num = 95002),
+     q2 as (select * from student where num = 95004)
+select * from q1 union all select * from q2;
+
+--视图，CTAS和插入语句中的CTE
+-- insert
+create table s1 like student;
+
+with q1 as ( select * from student where num = 95002)
+from q1
+insert overwrite table s1
+select *;
+
+select * from s1;
+
+-- ctas
+create table s2 as
+with q1 as ( select * from student where num = 95002)
+select * from q1;
+
+-- view
+create view v1 as
+with q1 as ( select * from student where num = 95002)
+select * from q1;
+
+select * from v1;
+```
 
 ## II. HQL join连接查询
 

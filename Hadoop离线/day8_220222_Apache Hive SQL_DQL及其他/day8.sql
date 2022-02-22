@@ -157,4 +157,120 @@ having cnts> 10000;
 
 
 
+---order by
+--根据字段进行排序
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+and state ="California"
+order by deaths; --默认asc null first
+
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+and state ="California"
+order by deaths desc; --指定desc null last
+
+--强烈建议将LIMIT与ORDER BY一起使用。避免数据集行数过大
+--当hive.mapred.mode设置为strict严格模式时，使用不带LIMIT的ORDER BY时会引发异常。
+select * from t_usa_covid19_p
+where count_date = "2021-01-28"
+  and state ="California"
+order by deaths desc
+limit 3;
+
+--cluster by
+select * from student;
+--不指定reduce task个数
+--日志显示：Number of reduce tasks not specified. Estimated from input data size: 1
+select * from student cluster by num;
+
+--手动设置reduce task个数
+set mapreduce.job.reduces =2;
+select * from student cluster by num;
+
+
+--案例：把学生表数据根据性别分为两个部分，每个分组内根据年龄的倒序排序。
+select * from student distribute by sex sort by age desc;
+
+--下面两个语句执行结果一样
+select * from student distribute by num sort by num;
+select * from student cluster by num;
+
+
+--union
+--使用DISTINCT关键字与使用UNION默认值效果一样，都会删除重复行。
+select num,name from student_local
+UNION
+select num,name from student_hdfs;
+--和上面一样
+select num,name from student_local
+UNION DISTINCT
+select num,name from student_hdfs;
+
+--使用ALL关键字会保留重复行。
+select num,name from student_local
+UNION ALL
+select num,name from student_hdfs;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT应用于单个SELECT
+--请将子句放在括住SELECT的括号内
+SELECT num,name FROM (select num,name from student_local LIMIT 2) subq1
+UNION
+SELECT num,name FROM (select num,name from student_hdfs LIMIT 3) subq2;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT子句应用于整个UNION结果
+--请将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT放在最后一个之后。
+select num,name from student_local
+UNION
+select num,name from student_hdfs
+order by num desc;
+
+
+--选择语句中的CTE
+with q1 as (select num,name,age from student where num = 95002)
+select *
+from q1;
+
+-- from风格
+with q1 as (select num,name,age from student where num = 95002)
+from q1
+select *;
+
+-- chaining CTEs 链式
+with q1 as ( select * from student where num = 95002),
+     q2 as ( select num,name,age from q1)
+select * from (select num from q2) a;
+
+
+-- union案例
+with q1 as (select * from student where num = 95002),
+     q2 as (select * from student where num = 95004)
+select * from q1 union all select * from q2;
+
+--视图，CTAS和插入语句中的CTE
+-- insert
+create table s1 like student;
+
+with q1 as ( select * from student where num = 95002)
+from q1
+insert overwrite table s1
+select *;
+
+select * from s1;
+
+-- ctas
+create table s2 as
+with q1 as ( select * from student where num = 95002)
+select * from q1;
+
+-- view
+create view v1 as
+with q1 as ( select * from student where num = 95002)
+select * from q1;
+
+select * from v1;
+
+
+
+
+
 
