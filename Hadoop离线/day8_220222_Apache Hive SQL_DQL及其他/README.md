@@ -699,9 +699,29 @@ on e.id =e_addr.id;
 
 ### 9. Hive cross join
 
+**交叉连接cross join**，将会返回被连接的两个表的笛卡尔积，返回结果的行数等于两个表行数的乘积。对于**大表来说，cross join慎用**。
 
+在SQL标准中定义的cross join就是无条件的inner join。返回两个表的笛卡尔积,无需指定关联键。
 
-### 10 Hive join使用注意事项
+在HiveSQL语法中，cross join 后面可以跟where子句进行过滤，或者on条件过滤。
+
+```sql
+--6、cross join
+--下列A、B、C 执行结果相同，但是效率不一样：
+--A:
+select a.*,b.* from employee a,employee_address b where a.id=b.id;
+--B:
+select * from employee a cross join employee_address b on a.id=b.id;
+select * from employee a cross join employee_address b where a.id=b.id;
+
+--C:
+select * from employee a inner join employee_address b on a.id=b.id;
+
+--一般不建议使用方法A和B，因为如果有WHERE子句的话，往往会先进行笛卡尔积返回数据然后才根据WHERE条件从中选择。
+--因此，如果两个表太大，将会非常非常慢，不建议使用。
+```
+
+### 10. Hive join使用注意事项
 
 
 
