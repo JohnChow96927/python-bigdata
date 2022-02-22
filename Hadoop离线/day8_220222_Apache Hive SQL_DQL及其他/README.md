@@ -463,13 +463,47 @@ select * from v1;
 
 ### 1. join概念回顾
 
+根据数据库的三范式设计要求和日常工作习惯来说，我们通常不会设计一张大表把所有类型的数据都放在一起，而是不同类型的数据设计不同的表存储。比如在设计一个订单数据表的时候，可以将客户编号作为一个外键和订单表建立相应的关系。而不可以在订单表中添加关于客户其它信息（比如姓名、所属公司等）的字段。
 
+![1645511803844](assets/1645511803844.png)
+
+在这种情况下，有时需要基于多张表查询才能得到最终完整的结果，SQL中join语法的出现是**用于根据两个或多个表中的列之间的关系，从这些表中共同组合查询数据**，因此有时为了得到完整的结果，我们就需要执行 join。
+
+Hive作为面向分析的数据仓库软件，为了更好的支持数据分析的功能丰富，也实现了join的语法，整体上来看和RDBMS中的join语法类似，只不过在某些点有自己的特色。需要特别注意。
 
 ### 2. Hive join语法
 
+Hive 3.1.2 中共支持6中join语法, 分别是:
+
+**inner** join（内连接）、**left** join（左连接）、**right** join（右连接）、**full outer** join（全外连接）、**left semi** join（左半开连接）、**cross** join（交叉连接，也叫做笛卡尔乘积）。
+
 #### 2.1. 规则树
 
+```sql
+join_table:
+    table_reference [INNER] JOIN table_factor [join_condition]
+  | table_reference {LEFT|RIGHT|FULL} [OUTER] JOIN table_reference join_condition
+  | table_reference LEFT SEMI JOIN table_reference join_condition
+  | table_reference CROSS JOIN table_reference [join_condition] (as of Hive 0.10)
 
+table_reference:
+    table_factor
+  | join_table
+
+table_factor:
+    tbl_name [alias]
+  | table_subquery alias
+  | ( table_references )
+
+join_condition:
+    ON expression
+```
+
+**table_reference**：是join查询中使用的表名，也可以是子查询别名（查询结果当成表参与join）。
+
+**table_factor**：与table_reference相同,是联接查询中使用的表名,也可以是子查询别名。
+
+**join_condition**：join查询关联的条件， 如果在两个以上的表上需要连接，则使用AND关键字。
 
 #### 2.2. 语法丰富
 
