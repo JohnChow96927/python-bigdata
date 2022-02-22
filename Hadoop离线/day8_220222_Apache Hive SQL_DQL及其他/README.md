@@ -1159,7 +1159,7 @@ Hive的函数很多，除了自己内置所支持的函数之外，还支持用�
 
 ### 3. 内置函数分类
 
-所谓的**内置函数（buildin）**指的是Hive开发实现好，直接可以使用的函数,也叫做内建函数。
+所谓的**内置函数（builtin）**指的是Hive开发实现好，直接可以使用的函数,也叫做内建函数。
 
 官方文档地址：<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF>
 
@@ -1221,7 +1221,7 @@ select ucase("angelababy");
 select lower("ANGELABABY");
 select lcase("ANGELABABY");
 
---去空格函数：trim 去除左右两边的空格
+--去空格函数：trim 去除左右两边的空格/tab
 select trim(" angelababy ");
 
 --左边去空格函数：ltrim
