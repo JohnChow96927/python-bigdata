@@ -246,5 +246,25 @@
 
 
 
+分区表, 分桶表的区别
+
+
+
+partition的增加修改修复
+
+
+
+常见的show
+
+
+
+DML中load的使用
+
+
+
+DML中insert的使用
+
+
+
 
 
