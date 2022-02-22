@@ -63,6 +63,83 @@ select county,fips,cases,deaths,count_date,state from t_usa_covid19;
 
 #### 1.3. select_expr
 
+```sql
+--select_expr
+--查询所有字段或者指定字段
+select * from t_usa_covid19_p;
+select county, cases, deaths from t_usa_covid19_p;
+
+--查询匹配正则表达式的所有字段
+SET hive.support.quoted.identifiers = none; --带反引号的名称被解释为正则表达式
+select `^c.*` from t_usa_covid19_p;
+--查询当前数据库
+select current_database(); --省去from关键字
+--查询使用函数
+select count(county) from t_usa_covid19_p;
+```
+
+#### 1.4. all/distinct
+
+ALL和DISTINCT选项指定是否应返回重复的行。如果没有给出这些选项，则默认值为ALL（返回所有匹配的行）。DISTINCT指定从结果集中删除重复的行。
+
+```sql
+--ALL DISTINCT
+--返回所有匹配的行
+select state
+from t_usa_covid19_p;
+--相当于
+select all state
+from t_usa_covid19_p;
+--返回所有匹配的行 去除重复的结果
+select distinct state
+from t_usa_covid19_p;
+--多个字段distinct 整体去重
+select distinct county,state from t_usa_covid19_p;
+```
+
+#### 1.5. where
+
+WHERE条件是一个布尔表达式。在WHERE表达式中，您可以使用Hive支持的任何函数和运算符，但聚合函数除外。
+
+从Hive 0.13开始，WHERE子句支持某些类型的子查询。
+
+```sql
+select * from t_usa_covid19_p where state ="California" and deaths > 1000;
+select * from t_usa_covid19_p where 1 > 2;  -- 1 > 2 返回false
+select * from t_usa_covid19_p where 1 = 1;  -- 1 = 1 返回true
+
+--where条件中使用函数 找出州名字母超过10个
+select * from t_usa_covid19_p where length(state) >10 ;
+
+--WHERE子句支持子查询
+SELECT *
+FROM A
+WHERE A.a IN (SELECT foo FROM B);
+
+--where条件中不能使用聚合函数
+--报错 SemanticException:Not yet supported place for UDAF 'sum'
+select state,sum(deaths)
+from t_usa_covid19_p where sum(deaths) >100 group by state;
+```
+
+#### 1.6. 分区查询, 分区裁剪
+
+
+
+#### 1.7. group by
+
+
+
+#### 1.8. having
+
+
+
+#### 1.9 limit
+
+
+
+#### 1.10. Hive SQL查询执行顺序
+
 
 
 ### 2. 高阶查询
