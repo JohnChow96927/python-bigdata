@@ -392,4 +392,11 @@ select parse_url('http://www.itcast.cn/path/p1.php?query=1&name=allen', 'QUERY',
 
 select rpad('hi', 5, 'abcasf');
 
+select mask_first_n("abc123DEF",4);
+
+select mask_show_first_n("abc123DEF",4);
+select mask_hash("allen");
+select java_method("java.lang.Math","max",11,22);
+select reflect("java.lang.Math","max",11,22);
+
 
