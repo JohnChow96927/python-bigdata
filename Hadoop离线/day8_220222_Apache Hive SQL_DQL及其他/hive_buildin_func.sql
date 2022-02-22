@@ -1,4 +1,4 @@
-describe function extended get_json_object;
+describe function extended parse_url;
 
 ------------String Functions 字符串函数------------
 select concat("angela","baby");
@@ -13,6 +13,7 @@ select regexp_replace('100-200', '(\\d+)', 'num');
 select regexp_extract('100-200', '(\\d+)-(\\d+)', 2);
 --URL解析函数：parse_url 注意要想一次解析出多个 可以使用parse_url_tuple这个UDTF函数
 select parse_url('http://www.itcast.cn/path/p1.php?query=1', 'HOST');
+select parse_url('http://www.itcast.cn/path/p1.php?query=1&name=allen', 'QUERY','name');
 --分割字符串函数: split(str, regex)
 select split('apache hive', '\\s+');
 --json解析函数：get_json_object(json_txt, path)
