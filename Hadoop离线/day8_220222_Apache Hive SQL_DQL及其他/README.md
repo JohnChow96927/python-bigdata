@@ -791,7 +791,7 @@ $HIVE_HOME/bin/hive是一个shellUtil,通常称之为hive的第一代客户端�
 
 二：用于hive相关**服务的启动**，比如metastore服务。
 
-可以通过运行"hive -H" 或者 "hive --help"来查看命令行选项。
+可以通过运行"hive -H" 或者 "hive 5--help"来查看命令行选项。
 
 ![1645514711114](assets/1645514711114.png)
 
@@ -863,37 +863,289 @@ $HIVE_HOME/bin/hive --hiveconf hive.root.logger=DEBUG,console
 
 #### 1.2. Beeline CLI
 
+$HIVE_HOME/**bin/beeline**被称之为第二代客户端或者新客户端，是一个JDBC客户端，是官方强烈推荐使用的Hive命令行工具，和第一代客户端相比，性能加强安全性提高。Beeline在嵌入式模式和远程模式下均可工作。
 
+在嵌入式模式下，它运行嵌入式Hive(类似于Hive CLI)；
+
+**远程模式下beeline通过Thrift连接到单独的HiveServer2服务上**，这也是官方推荐在生产环境中使用的模式。
+
+常见的使用方式如下所示，在启动hiveserver2服务的前提下使用beeline远程连接：
+
+```shell
+[root@node3 ~]# /export/server/hive/bin/beeline 
+Beeline version 3.1.2 by Apache Hive
+beeline> ! connect jdbc:hive2://node1:10000
+Connecting to jdbc:hive2://node1:10000
+Enter username for jdbc:hive2://node1:10000: root
+Enter password for jdbc:hive2://node1:10000: 
+Connected to: Apache Hive (version 3.1.2)
+Driver: Hive JDBC (version 3.1.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://node1:10000>
+
+```
+
+beeline支持的参数非常多，可以通过官方文档进行查询
+
+[https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-Beeline%E2%80%93NewCommandLineShell](https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients%23HiveServer2Clients-Beeline%E2%80%93NewCommandLineShell)
+
+![1645516602139](assets/1645516602139.png)
+
+![1645516606212](assets/1645516606212.png)
 
 ### 2. Configuration Properties配置属性
 
 #### 2.1. 配置属性概述
 
+Hive作为一款复杂的数据仓库软件，除了一些默认的属性行为之外，还支持用户配置属性进行修改，使得在某些场景下满足用户的需求。
 
+作为用户我们需要掌握两件事：
+
+一是：Hive有哪些属性支持修改，修改了有什么功能；
+
+二是：Hive支持哪种方式进行修改，修改是临时生效还是永久生效的。
+
+**Hive配置属性的规范列表是在HiveConf.Java类中管理**的，因此请参考该HiveConf.java文件，以获取Hive当前使用的发行版中可用的配置属性的完整列表。从Hive 0.14.0开始，会从HiveConf.java类中直接生成配置模板文件hive-default.xml.template，它是当前版本配置及其默认值的可靠来源。
+
+详细的配置参数大全可以参考Hive官网配置参数，在页面使用ctrl+f进行搜索。
+
+<https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties>
+
+![1645516621556](assets/1645516621556.png)
 
 #### 2.2. 修改配置属性方式
 
+##### 方式1: hive-site.xml配置文件
 
+在$HIVE_HOME/conf路径下，可以添加一个hive-site.xml文件，把需要定义修改的配置属性添加进去，这个配置文件会影响到这个Hive安装包的任何一种服务启动、客户端使用方式，可以理解为是Hive的全局配置。
+
+比如我们指定使用MySQL作为Hive元数据的存储介质，那么就需要把Hive连接MySQL的相关属性配置在hive-site.xml文件中，这样不管是本地模式还是远程模式启动，不管客户端本地连接还是远程连接，都将访问同一个元数据存储介质，大家使用的元数据都是一致的。
+
+```xml
+<configuration>
+    <!-- 存储元数据mysql相关配置 -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value> jdbc:mysql://node1:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>root</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hadoop</value>
+    </property>
+</configuration>
+```
+
+##### 方式2: --hiveconf命令行参数
+
+hiveconf是一个命令行的参数，用于在使用Hive CLI或者Beeline CLI的时候指定配置参数。这种方式的配置在整个的会话session中有效，会话结束，失效。
+
+比如在启动hive服务的时候，为了更好的查看启动详情，可以通过hiveconf参数修改日志级别：
+
+```shell
+$HIVE_HOME/bin/hive --hiveconf hive.root.logger=DEBUG,console
+```
+
+##### 方式3: set命令(不出意外就用这种方式)
+
+在Hive CLI或Beeline中使用s**et****命令**为set命令之后的所有SQL语句设置配置参数，这个也是会话级别的。
+
+这种方式也是用户日常开发中使用最多的一种配置参数方式。因为Hive倡导一种：**谁需要、谁配置、谁使用**的一种思想，避免你的属性修改影响其他用户的修改。
+
+```sql
+#启用hive动态分区，需要在hive会话中设置两个参数：
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+```
+
+##### 方式4: 服务器特定的配置文件
+
+可以设置特定metastore的配置值hivemetastore-site.xml中，并在HiveServer2特定的配置值hiveserver2-site.xml中。
+
+Hive Metastore服务器读取$ HIVE_CONF_DIR或类路径中可用的hive-site.xml以及hivemetastore-site.xml配置文件。
+
+HiveServer2读取$ HIVE_CONF_DIR或类路径中可用的hive-site.xml以及hiveserver2-site.xml。
+
+如果HiveServer2以嵌入式模式使用元存储，则还将加载hivemetastore-site.xml。
+
+##### 概括总结:
+
+配置文件的优先顺序如下，后面的优先级越高：
+
+hive-site.xml-> hivemetastore-site.xml-> hiveserver2-site.xml->' -hiveconf'命令行参数
+
+从Hive 0.14.0开始，会从HiveConf.java类中直接生成配置模板文件hive-default.xml.template，它是当前版本配置变量及其默认值的可靠来源。
+
+hive-default.xml.template 位于安装根目录下的conf目录中，并且 hive-site.xml 也应在同一目录中创建。
+
+从 Hive 0.14.0开始， 您可以使用SHOW CONF命令显示有关配置变量的信息。
+
+配置方式的优先级顺序，优先级依次递增：
+
+set参数生命>hiveconf命令行参数>hive-site.xml配置文件。
+
+即**set参数声明覆盖命令行参数hiveconf，命令行参数覆盖配置文件hive-site.xml设定。**
+
+日常的开发使用中，如果不是核心的需要全局修改的参数属性，建议大家使用**set命令**进行设置。
+
+另外，Hive也会读入Hadoop的配置，因为Hive是作为Hadoop的客户端启动的，Hive的配置会覆盖Hadoop的配置。
 
 ## IV. Hive内置运算符
 
+随着Hive版本的不断发展，在Hive SQL中支持的、内置的运算符也越来越多。可以使用下面的命令查看当下支持的运算符和函数，并且查看其详细的使用方式。
+
+<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF>
+
+也可以使用课程附件中的中文版本运算符函数说明文档进行查看。
+
+```sql
+--显示所有的函数和运算符
+show functions;
+--查看运算符或者函数的使用说明
+describe function +;
+--使用extended 可以查看更加详细的使用说明
+describe function extended +;
+```
+
+![1645517748640](assets/1645517748640.png)
+
+从Hive 0.13.0开始，select查询语句FROM关键字是可选的（例如SELECT 1+1）。因此可以使用这种方式来练习测试内置的运算符、函数的功能。
+
+除此之外，还可以通过创建一张虚表dual来满足于测试需求。
+
+```sql
+--1、创建表dual
+create table dual(id string);
+--2、加载一个文件dual.txt到dual表中
+--dual.txt只有一行内容：内容为一个空格
+--3、在select查询语句中使用dual表完成运算符、函数功能测试
+select 1+1 from dual;
+```
+
 ### 1. 关系运算符
 
+**关系运算符**是二元运算符，执行的是两个操作数的比较运算。每个关系运算符都返回boolean类型结果（TRUE或FALSE）。
 
+```shell
+•等值比较: = 、==
+•不等值比较: <> 、!=
+•小于比较: <
+•小于等于比较: <=
+•大于比较: >
+•大于等于比较: >=
+•空值判断: IS NULL 
+•非空判断: IS NOT NULL
+•LIKE比较: LIKE
+•JAVA的LIKE操作: RLIKE
+•REGEXP操作: REGEXP
+```
+
+```sql
+--is null空值判断
+select 1 from dual where 'itcast' is null;
+
+--is not null 非空值判断
+select 1 from dual where 'itcast' is not null;
+
+--like比较： _表示任意单个字符 %表示任意数量字符
+--否定比较： NOT A like B
+select 1 from dual where 'itcast' like 'it_';
+select 1 from dual where 'itcast' like 'it%';
+select 1 from dual where not 'itcast' like 'hadoo_';
+
+--rlike：确定字符串是否匹配正则表达式，是REGEXP_LIKE()的同义词。
+select 1 from dual where 'itcast' rlike '^i.*t$';
+select 1 from dual where '123456' rlike '^\\d+$';  --判断是否全为数字
+select 1 from dual where '123456aa' rlike '^\\d+$';
+
+--regexp：功能与rlike相同 用于判断字符串是否匹配正则表达式
+select 1 from dual where 'itcast' regexp '^i.*t$';
+```
 
 ### 2. 算术运算符
 
+算术运算符操作数必须是数值类型。 分为一元运算符和二元运算符; 一元运算符,只有一个操作数; 二元运算符有两个操作数,运算符在两个操作数之间。
 
+```shell
+•加法操作: +
+•减法操作: -
+•乘法操作: *
+•除法操作: /
+•取整操作: div
+•取余操作: %
+•位与操作: &
+•位或操作: |
+•位异或操作: ^
+•位取反操作: ~
+```
+
+```sql
+--取整操作: div  给出将A除以B所得的整数部分。例如17 div 3得出5。
+select 17 div 3;
+
+--取余操作: %  也叫做取模  A除以B所得的余数部分
+select 17 % 3;
+
+--位与操作: &  A和B按位进行与操作的结果。 与表示两个都为1则结果为1
+select 4 & 8 from dual;  --4转换二进制：0100 8转换二进制：1000
+select 6 & 4 from dual;  --4转换二进制：0100 6转换二进制：0110
+
+--位或操作: |  A和B按位进行或操作的结果  或表示有一个为1则结果为1
+select 4 | 8 from dual;
+select 6 | 4 from dual;
+
+--位异或操作: ^ A和B按位进行异或操作的结果 异或表示两个不同则结果为1
+select 4 ^ 8 from dual;
+select 6 ^ 4 from dual;
+```
 
 ### 3. 逻辑运算符
 
+```shell
+•与操作: A AND B
+•或操作: A OR B
+•非操作: NOT A 、!A
+•在:A IN (val1, val2, ...)
+•不在:A NOT IN (val1, val2, ...)
+•逻辑是否存在: [NOT] EXISTS (subquery)
+```
 
+```sql
+--与操作: A AND B   如果A和B均为TRUE，则为TRUE，否则为FALSE。如果A或B为NULL，则为NULL。
+select 1 from dual where 3>1 and 2>1;
+--或操作: A OR B   如果A或B或两者均为TRUE，则为TRUE，否则为FALSE。
+select 1 from dual where 3>1 or 2!=2;
+--非操作: NOT A 、!A   如果A为FALSE，则为TRUE；如果A为NULL，则为NULL。否则为FALSE。
+select 1 from dual where not 2>1;
+select 1 from dual where !2=1;
+--在:A IN (val1, val2, ...)  如果A等于任何值，则为TRUE。
+select 1 from dual where 11 in(11,22,33);
+--不在:A NOT IN (val1, val2, ...) 如果A不等于任何值，则为TRUE
+select 1 from dual where 11 not in(22,33,44);
+--逻辑是否存在: [NOT] EXISTS (subquery) 如果子查询返回至少一行，则为TRUE。
+select A.* from A
+where exists (select B.id from B where A.id = B.id)
+```
 
 ## V. Hive函数入门
 
 ### 1. 函数概述
 
+如同RDBMS中标准SQL语法一样，Hive SQL也内建了不少函数，满足于用户在不同场合下的数据分析需求，提高开发SQL数据分析的效率。
 
+可以使用show functions查看当下版本支持的函数，并且可以通过**describe function extended funcname**来查看函数的使用方式和方法。
+
+![1645518234625](assets/1645518234625.png)
 
 ### 2. 函数分类概述
 
