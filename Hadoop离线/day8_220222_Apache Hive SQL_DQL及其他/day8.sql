@@ -370,4 +370,26 @@ on e.id =e_addr.id;
 
 describe function extended concat;
 
+describe function extended find_in_set;
+
+select length("John");
+
+select reverse("John");
+
+select concat("John","Chow");
+
+select concat_ws(" ","niu", array('sfd', 'swww'));
+select concat_ws(" ",`array`('sss','io'), array('sfd', 'swww'));
+
+select substr('john', -1);
+
+select trim('      as john did as         end');
+
+select regexp_replace('9-200', '(\\d+)', 'num');
+select regexp_extract('10000-2010', '(\\d+)-(\\d+)', 1);
+
+select parse_url('http://www.itcast.cn/path/p1.php?query=1&name=allen', 'QUERY','name');
+
+select rpad('hi', 5, 'abcasf');
+
 
