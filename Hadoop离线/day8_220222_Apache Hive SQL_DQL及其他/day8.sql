@@ -348,7 +348,25 @@ select e.id,e.name,e_conn.phno,e_conn.email
 from employee e right outer join employee_connection e_conn
 on e.id =e_conn.id;
 
+--4、full outer join
+select e.id,e.name,e_a.city,e_a.street
+from employee e full outer join employee_address e_a
+on e.id =e_a.id;
+--等价于
+select e.id,e.name,e_a.city,e_a.street
+from employee e full  join employee_address e_a
+on e.id =e_a.id;
 
+
+--5、left semi join
+select *
+from employee e left semi join employee_address e_addr
+on e.id =e_addr.id;
+
+--相当于 inner join 只不过效率高一些
+select e.*
+from employee e inner join employee_address e_addr
+on e.id =e_addr.id;
 
 
 

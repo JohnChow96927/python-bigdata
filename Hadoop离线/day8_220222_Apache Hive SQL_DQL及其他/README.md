@@ -683,6 +683,20 @@ on e.id =e_a.id;
 
 从效果上来看有点像inner join之后只返回左表的结果。
 
+```sql
+--5、left semi join
+select *
+from employee e left semi join employee_address e_addr
+on e.id =e_addr.id;
+
+--相当于 inner join 只不过效率高一些
+select e.*
+from employee e inner join employee_address e_addr
+on e.id =e_addr.id;
+```
+
+![1645514052887](assets/1645514052887.png)
+
 ### 9. Hive cross join
 
 
