@@ -146,13 +146,13 @@ select sort_array(`array`(12,2,32));
 
 -----Conditional Functions 条件函数------------------
 --使用之前课程创建好的student表数据
-select * from student_tmp limit 3;
+select * from student limit 3;
 
 describe function extended isnull;
 
 --if条件判断: if(boolean testCondition, T valueTrue, T valueFalseOrNull)
 select if(1=2,100,200);
-select if(sex ='男','M','W') from student_tmp limit 3;
+select if(sex ='男','M','W') from student limit 3;
 
 --空判断函数: isnull( a )
 select isnull("allen");
@@ -174,7 +174,7 @@ select COALESCE(null,null,null);
 
 --条件转换函数: CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
 select case 100 when 50 then 'tom' when 100 then 'mary' else 'tim' end;
-select case sex when '男' then 'male' else 'female' end from student_tmp limit 3;
+select case sex when '男' then 'male' else 'female' end from student limit 3;
 
 
 ----Type Conversion Functions 类型转换函数-----------------

@@ -368,6 +368,6 @@ select e.*
 from employee e inner join employee_address e_addr
 on e.id =e_addr.id;
 
-
+describe function extended concat;
 
 

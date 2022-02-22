@@ -725,7 +725,7 @@ select * from employee a inner join employee_address b on a.id=b.id;
 
 总体来说，随着Hive的版本发展，join语法的功能也愈加丰富。当下我们课程使用的是3.1.2版本，有以下几点需要注意：
 
-##### a. 允许使用复杂的联接表达式
+a. **允许使用复杂的联接表达式**
 
 ```sql
 SELECT a.* FROM a JOIN b ON (a.id = b.id)
@@ -733,13 +733,13 @@ SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department)
 SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id)
 ```
 
-##### b. 同一查询中可以连接2个以上的表
+b. **同一查询中可以连接2个以上的表**
 
 ```sql
 SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key2)
 ```
 
-##### c. 如果每个表在联接子句中使用相同的列，则Hive将多个表上的联接转换为单个MR作业
+c. **如果每个表在联接子句中使用相同的列，则Hive将多个表上的联接转换为单个MR作业**
 
 ```sql
 SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
@@ -748,7 +748,7 @@ SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = 
 --会转换为两个MR作业，因为在第一个连接条件中使用了b中的key1列，而在第二个连接条件中使用了b中的key2列。第一个map / reduce作业将a与b联接在一起，然后将结果与c联接到第二个map / reduce作业中。
 ```
 
-##### d. join时的最后一个表会通过reducer流式传输，并在其中缓冲之前的其他表，因此，将大表放置在最后有助于减少reducer阶段缓存数据所需要的内存
+d. **join时的最后一个表会通过reducer流式传输，并在其中缓冲之前的其他表，因此，将大表放置在最后有助于减少reducer阶段缓存数据所需要的内存**
 
 ```sql
 SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
@@ -758,7 +758,7 @@ SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = 
 在第二个MR作业中，将缓冲第一个连接的结果，同时将c的值通过reducer流式传输。
 ```
 
-##### e. 在join的时候，可以通过语法STREAMTABLE提示指定要流式传输的表。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。
+e. **在join的时候，可以通过语法STREAMTABLE提示指定要流式传输的表。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。**
 
 ```sql
 SELECT /*+ STREAMTABLE(a) */ a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)
@@ -766,9 +766,9 @@ SELECT /*+ STREAMTABLE(a) */ a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key
 
 ```
 
-##### f. join在WHERE条件之前进行。
+f. **join在WHERE条件之前进行。**
 
-##### g. 如果除一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行
+g. **如果除一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行**
 
 ```sql
 SELECT /*+ MAPJOIN(b) */ a.key, a.value FROM a JOIN b ON a.key = b.key
@@ -978,7 +978,7 @@ HiveServer2读取$ HIVE_CONF_DIR或类路径中可用的hive-site.xml以及hives
 
 如果HiveServer2以嵌入式模式使用元存储，则还将加载hivemetastore-site.xml。
 
-##### 概括总结:
+**概括总结**:
 
 配置文件的优先顺序如下，后面的优先级越高：
 
