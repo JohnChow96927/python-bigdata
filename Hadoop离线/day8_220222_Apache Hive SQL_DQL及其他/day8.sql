@@ -269,8 +269,48 @@ select * from q1;
 
 select * from v1;
 
+--隐式联结表示法
+--SELECT *
+--FROM table1 t1, table2 t2, table3 t3
+--WHERE t1.id = t2.id AND t2.id = t3.id AND t1.zipcode = '02535';
 
 
+-- SELECT a.* FROM a JOIN b ON (a.id = b.id)
+-- SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department)
+-- SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id)
 
+--table1: 员工表
+CREATE TABLE employee(
+   id int,
+   name string,
+   deg string,
+   salary int,
+   dept string
+ ) row format delimited
+fields terminated by ',';
+
+--table2:员工住址信息表
+CREATE TABLE employee_address (
+    id int,
+    hno string,
+    street string,
+    city string
+) row format delimited
+fields terminated by ',';
+
+--table3:员工联系方式表
+CREATE TABLE employee_connection (
+    id int,
+    phno string,
+    email string
+) row format delimited
+fields terminated by ',';
+--加载数据到表中
+load data local inpath '/root/hivedata/employee.txt' into table employee;
+load data local inpath '/root/hivedata/employee_address.txt' into table employee_address;
+load data local inpath '/root/hivedata/employee_connection.txt' into table employee_connection;
+
+select * from employee_address;
+select * from employee_connection;
 
 

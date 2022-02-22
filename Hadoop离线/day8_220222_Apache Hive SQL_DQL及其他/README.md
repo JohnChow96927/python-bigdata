@@ -507,11 +507,76 @@ join_condition:
 
 #### 2.2. 语法丰富
 
+Hive中join语法从面世开始其实并不丰富，不像在RDBMS中那么灵活，很多早期接触Hive的用户在使用join的时候，一个最大的感受就是不支持不相等连接。
 
+从Hive 0.13.0开始，支持**隐式联接表示法**（请参阅HIVE-5558）。这允许FROM子句连接以逗号分隔的表列表，而省略JOIN关键字。例如：
+
+```sql
+SELECT *
+FROM table1 t1, table2 t2, table3 t3
+WHERE t1.id = t2.id AND t2.id = t3.id AND t1.zipcode = '02535';
+```
+
+从Hive 2.2.0开始，**支持ON子句中的复杂表达式，支持不相等连接**（请参阅HIVE-15211和HIVE-15251）。在此之前，Hive不支持不是相等条件的联接条件。
+
+```sql
+SELECT a.* FROM a JOIN b ON (a.id = b.id)
+SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department)
+SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id)
+```
 
 ### 3. join查询数据环境准备
 
+为了更好的练习、学习掌握Hive中的join语法，下面我们去创建3张表并且加载数据到表中。
 
+表1：**employee 员工表**；
+
+```sql
+--table1: 员工表
+CREATE TABLE employee(
+   id int,
+   name string,
+   deg string,
+   salary int,
+   dept string
+ ) row format delimited
+fields terminated by ',';
+```
+
+表2：**employee_address 员工住址信息表**；
+
+```sql
+--table2:员工住址信息表
+CREATE TABLE employee_address (
+    id int,
+    hno string,
+    street string,
+    city string
+) row format delimited
+fields terminated by ',';
+```
+
+![1645513167955](assets/1645513167955.png)
+
+表3：**employee_connection 员工联系方式表**；
+
+```sql
+CREATE TABLE employee_connection (
+    id int,
+    phno string,
+    email string
+) row format delimited
+fields terminated by ',';
+```
+
+![1645513212462](assets/1645513212462.png)
+
+```sql
+--加载数据到表中
+load data local inpath '/root/hivedata/employee.txt' into table employee;
+load data local inpath '/root/hivedata/employee_address.txt' into table employee_address;
+load data local inpath '/root/hivedata/employee_connection.txt' into table employee_connection;
+```
 
 ### 4. Hive inner join
 
