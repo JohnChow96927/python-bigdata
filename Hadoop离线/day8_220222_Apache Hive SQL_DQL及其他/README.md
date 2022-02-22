@@ -630,7 +630,29 @@ on e.id =e_conn.id;
 
 ### 6. Hive right join
 
+**right join**中文叫做是右外连接(Right Outer Jion)或者**右连接**，其中outer可以省略。
 
+right join的核心就在于Right右。右指的是join关键字右边的表，简称右表。
+
+通俗解释：join时以右表的全部数据为准，左边与之关联；右表数据全部返回，左表关联上的显示返回，关联不上的显示null返回。
+
+很明显，right join和left join之间很相似，重点在于以哪边为准，也就是一个方向的问题。
+
+![1645513882716](assets/1645513882716.png)
+
+```sql
+--3、right join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e right join employee_connection e_conn
+on e.id =e_conn.id;
+
+--等价于 right outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e right outer join employee_connection e_conn
+on e.id =e_conn.id;
+```
+
+![1645513898286](assets/1645513898286.png)
 
 ### 7. Hive full outer join
 
