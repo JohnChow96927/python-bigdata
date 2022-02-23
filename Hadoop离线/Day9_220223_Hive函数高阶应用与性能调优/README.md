@@ -528,13 +528,41 @@ Hive中除了提供JSON的解析函数以外，还提供了一种专门用于**�
 
 ##### 功能
 
+上述解析JSON的过程中是将数据作为一个JSON字符串加载到表中，再通过JSON解析函数对JSON字符串进行解析，灵活性比较高，但是对于如果整个文件就是一个JSON文件，在使用起来就相对比较麻烦。Hive中为了简化对于JSON文件的处理，内置了一种专门用于解析JSON文件的Serde解析器，**在创建表时，只要指定使用JSONSerde解析表的文件，就会自动将JSON文件中的每一列进行解析**。
+
 ##### 使用
 
+- 创建表
 
+  ```sql
+  create table tb_json_test2(
+      device string,
+      deviceType string,
+      signal double,
+      `time` string
+  )
+  row format serde 'org.apache.hive.hcatalog.data.JsonSerDe'
+  stored as TEXTFILE;
+  ```
+
+- 加载数据
+
+  ```sql
+  load data local inpath '/root/hivedata/device.json' into table tb_json_test2;
+  ```
+
+- 查询数据
+
+  ```sql
+  select *
+  from tb_json_test2;
+  ```
+
+  ![1645622690317](assets/1645622690317.png)
 
 #### 4.6. 总结
 
-
+不论是Hive中的JSON函数还是自带的JSON SerDe, 都可以实现对于JSON数据的解析, 工作中一般根据数据格式以及对应的需求来实现解析. 如果数据中每一行只有个别字段是JSON格式字符串, 就可以使用JSON函数来实现处理, 但是如果数据加载的文件整体就是JSON文件, 每一行数据就是一个JSON数据, 那么建议直接使用JSON SerDe来实现处理最为方便.
 
 ## II. Window functions窗口函数
 

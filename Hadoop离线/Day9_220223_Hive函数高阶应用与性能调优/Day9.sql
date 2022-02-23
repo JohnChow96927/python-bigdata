@@ -137,6 +137,21 @@ lateral view
 json_tuple(json, "device", "deviceType", "signal", "time") b
 as device, deviceType, signal, stime;
 
+
+-- json Serde
+create table tb_json_test2(
+    device string,
+    deviceType string,
+    signal double,
+    `time` string
+)
+row format serde 'org.apache.hive.hcatalog.data.JsonSerDe'
+stored as TEXTFILE;
+
+load data local inpath '/root/hivedata/device.json' into table tb_json_test2;
+select *
+from tb_json_test2;
+
 -- 窗口排序函数
 -----窗口排序函数
 SELECT cookieid,
