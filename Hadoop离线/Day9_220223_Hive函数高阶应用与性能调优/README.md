@@ -939,7 +939,7 @@ The total number of reduce tasks required is 1 or 0.
 
 多个表关联时，最好分拆成小段sql分段执行，避免一个大sql（无法控制中间Job）。
 
-#### 3.1. map side join
+#### 3.1. map join
 
 如果不指定MapJoin或者不符合MapJoin的条件，那么Hive解析器会将Join操作转换成Common Join，即：在Reduce阶段完成join。容易发生数据倾斜。可以用MapJoin把小表全部加载到内存在map端进行join，避免reducer处理。
 
@@ -961,31 +961,92 @@ set hive.auto.convert.join = true; 默认为true
 
 （2）大表小表的阈值设置：
 
-set hive.mapjoin.smalltable.filesize= 25000000;
+hive.auto.convert.join.noconditionaltask.size=10000000;
 
 小表的输入文件大小的阈值（以字节为单位）;如果文件大小小于此阈值，它将尝试将common join转换为map join。
 
 因此在实际使用中，只要根据业务把握住小表的阈值标准即可，hive会自动帮我们完成mapjoin，提高执行的效率。
 
-#### 3.2. 大表join小表
+#### 3.2. reduce join
 
-#### 3.3. 大小表/小大表join
 
-### 4. group by优化 - map端聚合
 
-### 5. MapReduce引擎并行度调整
+#### 3.3. bucket join
 
-#### 5.1. maptask个数调整
 
-#### 5.2. reducetask个数调整
 
-### 6. 执行计划 - explain(了解)
+#### 3.4. 大表join大表
 
-### 7. 并行执行机制
 
-### 8. 严格模式
 
-### 9. 推测执行机制
+#### 3.5. 大小表/小大表join
+
+
+
+### 4. 数据倾斜优化
+
+数据倾斜:
+
+- 分布式计算中最常见的，最容易遇到的问题就是数据倾斜；
+
+- 数据倾斜的现象是，当提交运行一个程序时，这个程序的大多数的Task都已经运行结束了，只有某一个Task一直在运行，迟迟不能结束，导致整体的进度卡在99%或者100%，这时候就可以判定程序出现了数据倾斜的问题。
+- 风险: 程序执行时间过长, 出bug几率变大, 程序一直霸占资源
+
+- 数据倾斜的原因：
+
+  1. 数据分配不均衡
+  2. 分区规则不合理: 学生表根据性别分区可能倾斜, 根据标号奇偶分则不会倾斜
+  3. 业务影响导致数据改变, 本来不倾斜, 受到了影响
+
+  ![1645609938058](assets/1645609938058.png)
+
+- 通用解决方案:
+
+  1. 如果能提前预知数据倾斜, 针对倾斜的数据单独处理, 比如加硬件: 电商双十一之订单数据爆炸
+  2. 针对倾斜的数据**打散**后**分步执行**
+
+#### 4.1.
+
+#### 4.2. 
+
+#### 4.3. skew Join
+
+##### 原理
+
+![1645610946709](assets/1645610946709.png)
+
+##### 配置
+
+```sql
+-- 开启运行过程中skewjoin
+set hive.optimize.skewjoin=true;
+-- 如果这个key的出现的次数超过这个范围
+set hive.skewjoin.key=100000;
+-- 在编译时判断是否会产生数据倾斜
+set hive.optimize.skewjoin.compiletime=true;
+-- 不合并，提升性能
+set hive.optimize.union.remove=true;
+-- 如果Hive的底层走的是MapReduce，必须开启这个属性，才能实现不合并
+set mapreduce.input.fileinputformat.input.dir.recursive=true;
+```
+
+
+
+### 5. group by优化 - map端聚合
+
+### 6. MapReduce引擎并行度调整
+
+#### 6.1. maptask个数调整
+
+#### 6.2. reducetask个数调整
+
+### 7. 执行计划 - explain(了解)
+
+### 8. 并行执行机制
+
+### 9. 严格模式
+
+### 10. 推测执行机制
 
 
 
