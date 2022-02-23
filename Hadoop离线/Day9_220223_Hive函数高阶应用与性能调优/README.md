@@ -1030,15 +1030,82 @@ set hive.optimize.union.remove=true;
 set mapreduce.input.fileinputformat.input.dir.recursive=true;
 ```
 
-
-
 ### 5. group by优化 - map端聚合
 
 ### 6. MapReduce引擎并行度调整
 
 #### 6.1. maptask个数调整
 
+##### 小文件场景
+
+对已经存在的小文件做出的解决方案：
+
+使用Hadoop achieve把小文件进行归档
+
+重建表，建表时减少reduce的数量
+
+通过参数调节，设置map数量（下面的API属于hadoop低版本的API）
+
+```sql
+//每个Map最大输入大小(这个值决定了合并后文件的数量)
+set mapred.max.split.size=112345600;  
+//一个节点上split的至少的大小(这个值决定了多个DataNode上的文件是否需要合并)
+set mapred.min.split.size.per.node=112345600;
+//一个交换机下split的至少的大小(这个值决定了多个交换机上的文件是否需要合并)  
+set mapred.min.split.size.per.rack=112345600;
+//执行Map前进行小文件合并
+set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
+```
+
+##### 大文件场景
+
+当input的文件都很大，任务逻辑复杂，map执行非常慢的时候，可以考虑增加Map数，来使得每个map处理的数据量减少，从而提高任务的执行效率。
+
+如果表a只有一个文件，大小为120M，但包含几千万的记录，如果用1个map去完成这个任务，肯定是比较耗时的，这种情况下，我们要考虑将这一个文件合理的拆分成多个，这样就可以用多个map任务去完成。
+
+```sql
+set mapreduce.job.reduces =10;
+
+create table a_1 as
+select * from a
+distribute by rand(123);
+```
+
+这样会将a表的记录，随机的分散到包含10个文件的a_1表中，再用a_1代替上面sql中的a表，则会用10个map任务去完成。
+
+每个map任务处理大于12M（几百万记录）的数据，效率肯定会好很多。
+
 #### 6.2. reducetask个数调整
+
+总共受3个参数控制：
+
+（1）每个Reduce处理的数据量默认是256MB
+
+```
+hive.exec.reducers.bytes.per.reducer=256123456
+```
+
+（2）每个任务最大的reduce数，默认为1009
+
+```
+hive.exec.reducers.max=1009
+```
+
+（3）mapreduce.job.reduces
+
+**该值默认为-1，由hive自己根据任务情况进行判断。**
+
+因此，可以手动设置每个job的Reduce个数
+
+`set mapreduce.job.reduces = 8;`
+
+reduce个数并不是越多越好
+
+1）过多的启动和初始化reduce也会消耗时间和资源；
+
+2）另外，有多少个reduce，就会有多少个输出文件，如果生成了很多个小文件，那么如果这些小文件作为下一个任务的输入，则也会出现小文件过多的问题；
+
+在设置reduce个数的时候也需要考虑这两个原则：处理大数据量利用合适的reduce数；使单个reduce任务处理数据量大小要合适.
 
 ### 7. 执行计划 - explain(了解)
 
