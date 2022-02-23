@@ -543,29 +543,140 @@ FROM website_url_info;
 
 ### 1. 优缺点
 
+优点: 
+
+1. 减少存储磁盘空间, 降低单节点的磁盘IO
+
+2. 由于压缩后的数据占用的带宽更少, 因此可以加快数据在Hadoop集群流动的速度, 减少网络传输带宽
+
+缺点
+
+需要花费额外的时间/CPU做压缩和解压缩计算
+
 ### 2. 压缩分析
 
+首先说明mapreduce哪些过程可以设置压缩：需要分析处理的数据在进入map前可以压缩，然后解压处理，map处理完成后的输出可以压缩，这样可以减少网络I/O(reduce通常和map不在同一节点上)，reduce拷贝压缩的数据后进行解压，处理完成后可以压缩存储在hdfs上，以减少磁盘占用量。
+
+![1645599167029](assets/1645599167029.png)
+
 ### 3. Hadoop中支持的压缩算法
+
+| 压缩格式 | 压缩格式所在的类                           |
+| -------- | ------------------------------------------ |
+| Zlib     | org.apache.hadoop.io.compress.DefaultCodec |
+| Gzip     | org.apache.hadoop.io.compress.GzipCodec    |
+| Bzip2    | org.apache.hadoop.io.compress.BZip2Codec   |
+| Lzo      | com.hadoop.compression.lzo.LzoCodec        |
+| Lz4      | org.apache.hadoop.io.compress.Lz4Codec     |
+| Snappy   | org.apache.hadoop.io.compress.SnappyCodec  |
 
 ### 4. Hive的压缩设置
 
 #### 4.1. 开启Hive中间传输数据压缩功能
 
+1. 开启hive中间传输数据压缩功能
+
+   `set hive.exec.compress.intermediate=true;`
+
+2. 开启mapreduce中map输出压缩功能
+
+   `set mapreduce.map.output.compress=true;`
+
+3. 设置mapreduce中map输出数据的压缩方式
+
+   `set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;`
+
 #### 4.2. 开启Reduce输出阶段压缩
+
+1. 开启hive最终输出数据压缩功能
+
+   `set hive.exec.compress.output=true;`
+
+2. 开启mapreduce最终输出数据压缩
+
+   `set mapreduce.output.fileoutputformat.compress=true;`
+
+3. 设置mapreduce最终数据输出压缩方式
+
+   `set mapreduce.output.fileoutputformat.compress.codec = org.apache.hadoop.io.compress.SnappyCodec;`
+
+4. 设置mapreduce最终数据输出压缩为块压缩
+
+   `set mapreduce.output.fileoutputformat.compress.type=BLOCK;`
 
 ## IV. Hive数据存储格式
 
 ### 1. 列式存储和行式存储
 
+逻辑表中的数据，最终需要落到磁盘上，以文件的形式存储，有两种常见的存储形式。行式存储和列式存储。
+
+![1645599476395](assets/1645599476395.png)
+
 #### 1.1. 行式存储
+
+##### 优点
+
+相关数据是保存在一起, 比较符合面向对象的思维, 因为一行数据就是一条记录
+
+这种存储格式比较方便进行insert/update操作
+
+##### 缺点
+
+如果查询只涉及某几个列, 它会把整行数据都读取出来, 不能跳过不必要的列读取. 如果数据量大则会影响性能
+
+由于每一行中, 列的数据类型不一致, 导致不容易获得一个极高的压缩比, 空间利用率不高.
+
+不是所有的列都适合作为索引
 
 #### 1.2. 列式存储
 
+##### 优点
+
+查询时，只有涉及到的列才会被查询，不会把所有列都查询出来，即可以跳过不必要的列查询
+
+高效的压缩率，不仅节省储存空间也节省计算内存和CPU
+
+任何列都可以作为索引
+
+##### 缺点
+
+INSERT/UPDATE很麻烦或者不方便；
+
+不适合扫描小量的数据
+
+
+
+
+
+**Hive支持的存储数的格式主要有: ==TEXTFILE==(行式存储), SEQUENCEFILE(行式存储), ==ORC==(列式存储), PARQUET(列式存储).**
+
 ### 2. TEXTFILE格式
+
+**默认格式**，数据不做压缩，磁盘开销大，数据解析开销大。可结合Gzip、Bzip2使用(系统自动检查，执行查询时自动解压)，但使用这种方式，**hive不会对数据进行切分**，从而**==无法==对数据进行并行操作**。
 
 ### 3. ORC格式
 
+ORC的全称是(Optimized Row Columnar)，ORC文件格式是一种Hadoop生态圈中的列式存储格式，它的产生早在2013年初，最初产生自Apache Hive，用于降低Hadoop数据存储空间和加速Hive查询速度。它**并不是一个单纯的列式存储格式，仍然是首先根据行组分割整个表，在每一个行组内进行按列存储**。
+
+优点如下：
+
+ORC是列式存储，有多种文件压缩方式，并且有着很高的压缩比。
+
+文件是可切分（Split）的。因此，在Hive中使用ORC作为表的文件存储格式，不仅节省HDFS存储资源，查询任务的输入数据量减少，使用的MapTask也就减少了。
+
+ORC可以支持复杂的数据结构（比如Map等）。
+
+==**ORC文件也是以二进制方式存储的，所以是不可以直接读取，ORC文件也是自解析的。**==
+
 #### 3.1. 了解ORC结构
+
+一个orc文件可以分为若干个Stripe，一个stripe可以分为三个部分：
+
+​	indexData：某些列的索引数据
+
+​	rowData :真正的数据存储
+
+​	StripFooter：stripe的元数据信息
 
 ### 4. PARQUET格式
 
