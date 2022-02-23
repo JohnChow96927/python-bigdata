@@ -1109,7 +1109,39 @@ reduce个数并不是越多越好
 
 ### 7. 执行计划 - explain(了解)
 
+基本语法
+
+`EXPLAIN [EXTENDED | DEPENDENCY | AUTHORIZATION] query`
+
+案例实操
+
+（1）查看下面这条语句的执行计划
+
+```sql
+explain select * from course;
+explain select s_id ,avg(s_score) avgscore from score group by s_id;
+```
+
+（2）查看详细执行计划
+
+```sql
+explain extended select * from course;
+explain extended select s_id ,avg(s_score) avgscore from score group by s_id;
+```
+
 ### 8. 并行执行机制
+
+Hive会将一个查询转化成一个或者多个阶段。这样的阶段可以是MapReduce阶段、抽样阶段、合并阶段、limit阶段。或者Hive执行过程中可能需要的其他阶段。
+
+默认情况下，Hive一次只会执行一个阶段。不过，某个特定的job可能包含众多的阶段，而这些阶段可能并非完全互相依赖的，也就是说有些阶段是可以并行执行的，这样可能使得整个job的执行时间缩短。不过，如果有更多的阶段可以并行执行，那么job可能就越快完成。
+
+通过设置参数hive.exec.parallel值为true，就可以开启并发执行。不过，在共享集群中，需要注意下，如果job中并行阶段增多，那么集群利用率就会增加。
+
+`set hive.exec.parallel=true; `             //打开任务并行执行
+
+`set hive.exec.parallel.thread.number=16;`  //同一个sql允许最大并行度，默认为8。
+
+当然，得是在系统资源比较空闲的时候才有优势，否则，没资源，并行也起不来。
 
 ### 9. 严格模式
 
