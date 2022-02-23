@@ -1,5 +1,8 @@
 select explode(`array`(11,22,33)) as item;
 
+select explode(`map`("id", 10086, "name", "zhangsan", "age", 18));
+
+--step1:建表
 create table the_nba_championship(
     team_name string,
     champion_year array<string>
@@ -11,13 +14,21 @@ load data local inpath '/root/hivedata/The_NBA_Championship.txt'
     into table the_nba_championship;
 
 select * from the_nba_championship;
-
+-- 使用explode函数对champion_year进行拆分 俗称炸开
 select explode(champion_year) as champion_year from the_nba_championship;
 
-select team_name, explode(champion_year) from the_nba_championship;
+
+-- [42000][10081] Error while compiling statement:
+-- FAILED: SemanticException [Error 10081]:
+-- UDTF's are not supported outside the SELECT clause,
+-- nor nested in expressions
+-- select team_name, explode(champion_year) from the_nba_championship;
 
 select a.team_name, b.year
-from the_nba_championship a lateral view explode(champion_year) b as year order by b.year desc;
+from the_nba_championship a lateral view explode(champion_year) b as year
+order by b.year desc;
+
+
 
 --建表
 create table row2col2(

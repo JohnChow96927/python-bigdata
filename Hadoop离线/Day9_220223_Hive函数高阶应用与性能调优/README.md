@@ -6,7 +6,7 @@
 
 #### 1.1. explode语法功能
 
-Hive当中内置的一个非常著名的UDTF函数，名字叫做**explode函数**，中文戏称之为“爆炸函数”，可以炸开数据。
+Hive当中内置的一个非常著名的UDTF函数，名字叫做**explode函数**，中文戏称之为“爆炸函数”，可以"**炸开**"数据。
 
 explode函数接收map或者array类型的数据作为参数，然后把参数中的每个元素炸开变成一行数据。一个元素一行。这样的效果正好满足于输入一行输出多行。
 
@@ -24,7 +24,7 @@ explode(array)将array列表里的每个元素生成一行；
 
 explode(map)将map里的每一对元素作为一行，其中key为一列，value为一列；
 
-一般情况下，explode函数可以直接使用即可，也可以根据需要结合lateral view侧视图使用。
+一般情况下，explode函数可以直接使用即可，也可以根据需要结合**lateral view侧视图**使用。
 
 #### 1.2. explode函数的使用
 
@@ -55,7 +55,7 @@ Houston Rockets,1994|1995
 New York Knicks,1970|1973
 ```
 
-第一个字段表示的是球队名称，第二个字段是获取总冠军的年份，字段之间以，分割；
+第一个字段表示的是球队名称，第二个字段是获取总冠军的年份，**字段之间以，分割**；
 
 获取总冠军**年份之间以|进行分割**。
 
@@ -92,7 +92,7 @@ from the_nba_championship;
 --step4:使用explode函数对champion_year进行拆分 俗称炸开
 select explode(champion_year) from the_nba_championship;
 
-select team_name,explode(champion_year) from the_nba_championship;
+-- select team_name,explode(champion_year) from the_nba_championship;
 ```
 
 ![1645581540692](assets/1645581540692.png)
@@ -121,6 +121,12 @@ select team_name,explode(champion_year) from the_nba_championship;
 
 7. Hive专门提供了Lateral View侧视图, 专门用于搭配explode这样的UFTF函数, 以满足上述需求
 
+   ```sql
+   select a.team_name, b.year
+   from the_nba_championship a lateral view explode(champion_year) b as year
+   order by b.year desc;
+   ```
+
    ![1645582252232](assets/1645582252232.png)
 
 ### 2. Lateral View侧视图
@@ -131,9 +137,9 @@ select team_name,explode(champion_year) from the_nba_championship;
 
 **Lateral View**是一种特殊的语法，主要用于**搭配UDTF类型功能的函数一起使用**，用于解决UDTF函数的一些查询限制的问题。
 
-侧视图的原理是将UDTF的结果构建成一个类似于视图的表，然后将原表中的每一行和UDTF函数输出的每一行进行连接，生成一张新的虚拟表。这样就避免了UDTF的使用限制问题。使用lateral view时也可以对UDTF产生的记录设置字段名称，产生的字段可以用于group by、order by 、limit等语句中，不需要再单独嵌套一层子查询。
+侧视图的原理是将UDTF的结果构建成一个类似于视图的表，然后将原表中的每一行和UDTF函数输出的每一行进行连接，生成一张新的虚拟表。这样就避免了UDTF的使用限制问题。使用lateral view时也可以对UDTF产生的记录设置字段名称，产生的字段可以用于group by、order by 、limit等语句中，**不需要再单独嵌套一层子查询**。
 
-一般只要使用UDTF，就会固定搭配lateral view使用。
+**一般只要使用UDTF，就会固定搭配lateral view使用。**
 
 官方链接：<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LateralView>
 
@@ -1174,3 +1180,4 @@ hive本身也提供了配置项来控制reduce-side的推测执行：
 
 关于调优推测执行机制，还很难给一个具体的建议。如果用户对于运行时的偏差非常敏感的话，那么可以将这些功能关闭掉。如果用户因为输入数据量很大而需要执行长时间的map或者Reduce task的话，那么启动推测执行造成的浪费是非常巨大。
 
+ 
