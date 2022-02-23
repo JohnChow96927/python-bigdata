@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/../Hadoop离线/Day9_220223_Hive函数高阶应用与性能调优/Day9.sql" dialect="HiveQL" />
+    <file url="file://$PROJECT_DIR$/../Hadoop离线/Day9_220223_Hive函数高阶应用与性能调优/hive_explode_lateral_view.sql" dialect="HiveQL" />
+    <file url="file://$PROJECT_DIR$/../Hadoop离线/Day9_220223_Hive函数高阶应用与性能调优/hive_window_func.sql" dialect="HiveQL" />
+    <file url="file://$PROJECT_DIR$/../Hadoop离线/Day9_220223_Hive函数高阶应用与性能调优/hive_行列转换_json数据处理.sql" dialect="HiveQL" />
     <file url="file://$PROJECT_DIR$/../Hadoop离线/day8_220222_Apache Hive SQL_DQL及其他/day8.sql" dialect="HiveQL" />
     <file url="file://$PROJECT_DIR$/../Hadoop离线/day8_220222_Apache Hive SQL_DQL及其他/hive_buildin_func.sql" dialect="HiveQL" />
     <file url="file://$PROJECT_DIR$/../Hadoop离线/day8_220222_Apache Hive SQL_DQL及其他/hive_join.sql" dialect="HiveQL" />

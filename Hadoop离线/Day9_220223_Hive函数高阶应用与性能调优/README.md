@@ -6,7 +6,35 @@
 
 #### 1.1. explode语法功能
 
+Hive当中内置的一个非常著名的UDTF函数，名字叫做**explode函数**，中文戏称之为“爆炸函数”，可以炸开数据。
+
+explode函数接收map或者array类型的数据作为参数，然后把参数中的每个元素炸开变成一行数据。一个元素一行。这样的效果正好满足于输入一行输出多行。
+
+explode函数在关系型数据库中本身是不该出现的。
+
+因为他的出现本身就是在操作不满足第一范式的数据（每个属性都不可再分）。本身已经违背了数据库的设计原理，但是在面向分析的数据库或者数据仓库中，这些规范可以发生改变。
+
+```shell
+explode(a) - separates the elements of array a into multiple rows, or the elements of a map into multiple rows and columns 
+```
+
+![1645580872550](assets/1645580872550.png)
+
+explode(array)将array列表里的每个元素生成一行；
+
+explode(map)将map里的每一对元素作为一行，其中key为一列，value为一列；
+
+一般情况下，explode函数可以直接使用即可，也可以根据需要结合lateral view侧视图使用。
+
 #### 1.2. explode函数的使用
+
+```sql
+select explode(`array`(11,22,33)) as item;
+
+select explode(`map`("id",10086,"name","zhangsan","age",18));
+```
+
+![1645580913239](assets/1645580913239.png)
 
 #### 1.3. 案例: NBA总冠军球队名单
 

@@ -1,4 +1,4 @@
-# Apache Hive DQL及其他
+#  Apache Hive DQL及其他
 
 ## I. HQL数据查询(DQL)语句
 
