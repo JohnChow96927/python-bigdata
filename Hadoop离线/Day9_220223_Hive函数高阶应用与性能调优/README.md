@@ -558,17 +558,17 @@ SELECT * from
 
 #### 3.4. 窗口分析函数
 
-LAG(col,n,DEFAULT) 用于统计窗口内往上第n行值
+**LAG(col,n,DEFAULT)** 用于统计窗口内往上第n行值
 
 第一个参数为列名，第二个参数为往上第n行（可选，默认为1），第三个参数为默认值（当往上第n行为NULL时候，取默认值，如不指定，则为NULL）；
 
-LEAD(col,n,DEFAULT) 用于统计窗口内往下第n行值
+**LEAD(col,n,DEFAULT)** 用于统计窗口内往下第n行值
 
 第一个参数为列名，第二个参数为往下第n行（可选，默认为1），第三个参数为默认值（当往下第n行为NULL时候，取默认值，如不指定，则为NULL）；
 
-FIRST_VALUE 取分组内排序后，截止到当前行，第一个值；
+**FIRST_VALUE** 取分组内排序后，截止到当前行，第一个值；
 
-LAST_VALUE取分组内排序后，截止到当前行，最后一个值；
+**LAST_VALUE** 取分组内排序后，截止到当前行，最后一个值；
 
 ```sql
 -----------窗口分析函数----------
@@ -610,78 +610,13 @@ FROM website_url_info;
 
 ![1645598837277](assets/1645598837277.png)
 
-## III. Hive数据压缩
-
-### 1. 优缺点
-
-##### 优点
-
-1. 减少存储磁盘空间, 降低单节点的磁盘IO
-
-2. 由于压缩后的数据占用的带宽更少, 因此可以加快数据在Hadoop集群流动的速度, 减少网络传输带宽
-
-##### 缺点
-
-需要花费额外的时间/CPU做压缩和解压缩计算
-
-### 2. 压缩分析
-
-首先说明mapreduce哪些过程可以设置压缩：需要分析处理的数据在进入map前可以压缩，然后解压处理，map处理完成后的输出可以压缩，这样可以减少网络I/O(reduce通常和map不在同一节点上)，reduce拷贝压缩的数据后进行解压，处理完成后可以压缩存储在hdfs上，以减少磁盘占用量。
-
-![1645599167029](assets/1645599167029.png)
-
-### 3. Hadoop中支持的压缩算法
-
-| 压缩格式 | 压缩格式所在的类                           |
-| -------- | ------------------------------------------ |
-| Zlib     | org.apache.hadoop.io.compress.DefaultCodec |
-| Gzip     | org.apache.hadoop.io.compress.GzipCodec    |
-| Bzip2    | org.apache.hadoop.io.compress.BZip2Codec   |
-| Lzo      | com.hadoop.compression.lzo.LzoCodec        |
-| Lz4      | org.apache.hadoop.io.compress.Lz4Codec     |
-| Snappy   | org.apache.hadoop.io.compress.SnappyCodec  |
-
-### 4. Hive的压缩设置
-
-#### 4.1. 开启Hive中间传输数据压缩功能
-
-1. 开启hive中间传输数据压缩功能
-
-   `set hive.exec.compress.intermediate=true;`
-
-2. 开启mapreduce中map输出压缩功能
-
-   `set mapreduce.map.output.compress=true;`
-
-3. 设置mapreduce中map输出数据的压缩方式
-
-   `set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;`
-
-#### 4.2. 开启Reduce输出阶段压缩
-
-1. 开启hive最终输出数据压缩功能
-
-   `set hive.exec.compress.output=true;`
-
-2. 开启mapreduce最终输出数据压缩
-
-   `set mapreduce.output.fileoutputformat.compress=true;`
-
-3. 设置mapreduce最终数据输出压缩方式
-
-   `set mapreduce.output.fileoutputformat.compress.codec = org.apache.hadoop.io.compress.SnappyCodec;`
-
-4. 设置mapreduce最终数据输出压缩为块压缩
-
-   `set mapreduce.output.fileoutputformat.compress.type=BLOCK;`
-
-## IV. Hive数据存储格式
+## III. Hive数据存储格式
 
 ### 1. 列式存储和行式存储
 
 逻辑表中的数据，最终需要落到磁盘上，以文件的形式存储，有两种常见的存储形式。行式存储和列式存储。
 
-![1645599476395](assets/1645599476395.png)
+![1645599476395](../../../../GitHub%20Desktop/ITheima_python_bigdata/Hadoop%E7%A6%BB%E7%BA%BF/Day9_220223_Hive%E5%87%BD%E6%95%B0%E9%AB%98%E9%98%B6%E5%BA%94%E7%94%A8%E4%B8%8E%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/assets/1645599476395.png)
 
 #### 1.1. 行式存储
 
@@ -749,7 +684,7 @@ ORC可以支持复杂的数据结构（比如Map等）。
 
 ​	StripFooter：stripe的元数据信息'
 
-![1645600267763](assets/1645600267763.png)
+![1645600267763](../../../../GitHub%20Desktop/ITheima_python_bigdata/Hadoop%E7%A6%BB%E7%BA%BF/Day9_220223_Hive%E5%87%BD%E6%95%B0%E9%AB%98%E9%98%B6%E5%BA%94%E7%94%A8%E4%B8%8E%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/assets/1645600267763.png)
 
 1）Index Data：一个轻量级的index，默认是每隔1W行做一个索引。这里做的索引只是记录某行的各字段在Row Data中的offset。
 
@@ -763,13 +698,109 @@ ORC可以支持复杂的数据结构（比如Map等）。
 
 #### 4.1. 了解PARQUET格式
 
+Parquet文件的格式如下图所示：
+
+![1645603511194](assets/1645603511194.png)
+
+上图展示了一个Parquet文件的内容，一个文件中可以存储多个行组，文件的首位都是该文件的Magic Code，用于校验它是否是一个Parquet文件，Footer length了文件元数据的大小，通过该值和文件长度可以计算出元数据的偏移量，文件的元数据中包括每一个行组的元数据信息和该文件存储数据的Schema信息。除了文件中每一个行组的元数据，每一页的开始都会存储该页的元数据，在Parquet中，有三种类型的页：数据页、字典页和索引页。数据页用于存储当前行组中该列的值，字典页存储该列值的编码字典，每一个列块中最多包含一个字典页，索引页用来存储当前行组下该列的索引，目前Parquet中还不支持索引页，但是在后面的版本中增加。
+
 ### 5. 文件格式存储对比
 
 #### 5.1. TEXTFILE
 
+创建表, 存储数据格式为TEXTFILE
+
+```sql
+create table log_text (
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE ;
+```
+
+加载数据
+
+```sql
+load data local inpath '/root/hivedata/log.data' into table log_text ;
+```
+
+查看表中数据大小
+
+![1645604161014](assets/1645604161014.png)
+
 #### 5.2. ORC
 
+创建表, 存储数据格式为orc
+
+```sql
+create table log_orc(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc;
+```
+
+加载数据
+
+```sql
+insert into table log_orc select * from log_text ;
+```
+
+查看表中数据大小
+
+```shell
+dfs -du -h /user/hive/warehouse/log_orc;
+```
+
+![1645604239485](assets/1645604239485.png)
+
 #### 5.3. PARQUET
+
+创建表, 存储数据格式为parquet
+
+```sql
+create table log_parquet(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS PARQUET ;	
+```
+
+加载数据
+
+```sql
+insert into table log_parquet select * from log_text ;
+```
+
+查看表中数据大小
+
+```shell
+dfs -du -h /user/hive/warehouse/log_parquet;
+```
+
+![1645604332735](assets/1645604332735.png)
+
+存储文件的压缩比总结：
+
+**==ORC > Parquet > textFile==**
 
 ### 6. 存储文件查询速度对比
 
@@ -778,6 +809,71 @@ ORC可以支持复杂的数据结构（比如Map等）。
 #### 7.1. 非压缩ORC文件
 
 #### 7.2. Snappy压缩ORC文件
+
+## IV. Hive数据压缩
+
+### 1. 优缺点
+
+##### 优点
+
+1. 减少存储磁盘空间, 降低单节点的磁盘IO
+
+2. 由于压缩后的数据占用的带宽更少, 因此可以加快数据在Hadoop集群流动的速度, 减少网络传输带宽
+
+##### 缺点
+
+​	需要花费额外的时间/CPU做压缩和解压缩计算
+
+### 2. 压缩分析
+
+首先说明mapreduce哪些过程可以设置压缩：需要分析处理的数据在进入map前可以压缩，然后解压处理，map处理完成后的输出可以压缩，这样可以减少网络I/O(reduce通常和map不在同一节点上)，reduce拷贝压缩的数据后进行解压，处理完成后可以压缩存储在hdfs上，以减少磁盘占用量。
+
+![1645599167029](assets/1645599167029.png)
+
+### 3. Hadoop中支持的压缩算法
+
+| 压缩格式   | 压缩格式所在的类                           |
+| ---------- | ------------------------------------------ |
+| Zlib       | org.apache.hadoop.io.compress.DefaultCodec |
+| Gzip       | org.apache.hadoop.io.compress.GzipCodec    |
+| Bzip2      | org.apache.hadoop.io.compress.BZip2Codec   |
+| ==Lzo==    | com.hadoop.compression.lzo.LzoCodec        |
+| Lz4        | org.apache.hadoop.io.compress.Lz4Codec     |
+| ==Snappy== | org.apache.hadoop.io.compress.SnappyCodec  |
+
+### 4. Hive的压缩设置
+
+#### 4.1. 开启Hive中间传输数据压缩功能
+
+1. 开启hive中间传输数据压缩功能
+
+   `set hive.exec.compress.intermediate=true;`
+
+2. 开启mapreduce中map输出压缩功能
+
+   `set mapreduce.map.output.compress=true;`
+
+3. 设置mapreduce中map输出数据的压缩方式
+
+   `set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;`
+
+#### 4.2. 开启Reduce输出阶段压缩
+
+1. 开启hive最终输出数据压缩功能
+
+   `set hive.exec.compress.output=true;`
+
+2. 开启mapreduce最终输出数据压缩
+
+   `set mapreduce.output.fileoutputformat.compress=true;`
+
+3. 设置mapreduce最终数据输出压缩方式
+
+   `set mapreduce.output.fileoutputformat.compress.codec = org.apache.hadoop.io.compress.SnappyCodec;`
+
+4. 设置mapreduce最终数据输出压缩为块压缩
+
+   `set mapreduce.output.fileoutputformat.compress.type=BLOCK;`
 
 ## V. Hive调优
 
