@@ -38,15 +38,127 @@ select explode(`map`("id",10086,"name","zhangsan","age",18));
 
 #### 1.3. 案例: NBA总冠军球队名单
 
+##### 业务需求
+
+数据"The_NBA_Championship.txt"关于部分年份的NBA总冠军球队名单:
+
+```txt
+Chicago Bulls,1991|1992|1993|1996|1997|1998
+San Antonio Spurs,1999|2003|2005|2007|2014
+Golden State Warriors,1947|1956|1975|2015
+Boston Celtics,1957|1959|1960|1961|1962|1963|1964|1965|1966|1968|1969|1974|1976|1981|1984|1986|2008
+L.A. Lakers,1949|1950|1952|1953|1954|1972|1980|1982|1985|1987|1988|2000|2001|2002|2009|2010
+Miami Heat,2006|2012|2013
+Philadelphia 76ers,1955|1967|1983
+Detroit Pistons,1989|1990|2004
+Houston Rockets,1994|1995
+New York Knicks,1970|1973
+```
+
+第一个字段表示的是球队名称，第二个字段是获取总冠军的年份，字段之间以，分割；
+
+获取总冠军**年份之间以|进行分割**。
+
+需求：使用Hive建表映射成功数据，对数据拆分，要求拆分之后数据如下所示：
+
+![1645581123706](assets/1645581123706.png)
+
+并且最好根据年份的倒序进行排序。
+
+##### 代码实现
+
+```sql
+--step1:建表
+create table the_nba_championship(
+    team_name string,
+    champion_year array<string>
+) row format delimited
+fields terminated by ','
+collection items terminated by '|';
+
+--step2:加载数据文件到表中
+load data local inpath '/root/hivedata/The_NBA_Championship.txt' into table the_nba_championship;
+
+--step3:验证
+select *
+from the_nba_championship;
+```
+
+![1645581495015](assets/1645581495015.png)
+
+使用explode函数:
+
+```sql
+--step4:使用explode函数对champion_year进行拆分 俗称炸开
+select explode(champion_year) from the_nba_championship;
+
+select team_name,explode(champion_year) from the_nba_championship;
+```
+
+![1645581540692](assets/1645581540692.png)
+
+##### explode使用限制
+
+在select条件中，如果只有explode函数表达式，程序执行是没有任何问题的；
+
+但是如果在select条件中，包含explode和其他字段，就会报错。错误信息为：
+
+> org.apache.hadoop.hive.ql.parse.SemanticException:UDTF's are not supported outside the SELECT clause, nor nested in expressions
+
+##### explode语法限制原因
+
+1. explode函数属于UDTF函数, 即表生成函数
+
+2. explode函数执行返回的结果可以理解为一张虚拟的表, 其数据来源于源表
+
+3. 在select中只查询源表数据没有问题, 只查询explode生成的虚拟表数据也没问题
+
+4. 但是不能在只查询源表的时候, 既想返回源表字段又想返回explode生成的虚拟表字段
+
+5. 通俗点讲, 有两张表, 不能只查询一张表但是返回分别属于两张表的字段
+
+6. 从SQL层面上来说应该对两张表进行关联查询
+
+7. Hive专门提供了Lateral View侧视图, 专门用于搭配explode这样的UFTF函数, 以满足上述需求
+
+   ![1645582252232](assets/1645582252232.png)
+
 ### 2. Lateral View侧视图
+
+![1645582461837](assets/1645582461837.png)
 
 #### 2.1. 概念
 
+**Lateral View**是一种特殊的语法，主要用于**搭配UDTF类型功能的函数一起使用**，用于解决UDTF函数的一些查询限制的问题。
+
+侧视图的原理是将UDTF的结果构建成一个类似于视图的表，然后将原表中的每一行和UDTF函数输出的每一行进行连接，生成一张新的虚拟表。这样就避免了UDTF的使用限制问题。使用lateral view时也可以对UDTF产生的记录设置字段名称，产生的字段可以用于group by、order by 、limit等语句中，不需要再单独嵌套一层子查询。
+
+一般只要使用UDTF，就会固定搭配lateral view使用。
+
+官方链接：<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LateralView>
+
 #### 2.2 UDTF配合侧视图使用
+
+针对上述NBA冠军球队年份排名案例，使用explode函数+lateral view侧视图，可以完美解决：
+
+```sql
+--lateral view侧视图基本语法如下
+select …… from tabelA lateral view UDTF(xxx) 别名 as col1,col2,col3……;
+
+select a.team_name ,b.year
+from the_nba_championship a lateral view explode(champion_year) b as year
+
+--根据年份倒序排序
+select a.team_name ,b.year
+from the_nba_championship a lateral view explode(champion_year) b as year
+order by b.year desc;
+```
 
 ### 3. 行列转换应用与实现
 
 #### 3.1. 工作应用场景
+
+
 
 #### 3.2. 行转列: 多行转单列
 

@@ -28,7 +28,7 @@ order by b.year desc;
 
 
 --lateral view侧视图基本语法如下
-select …… from tabelA lateral view UDTF(xxx) 别名 as col1,col2,col3……;
+select …… from tableA lateral view UDTF(xxx) 别名 as col1,col2,col3……;
 
 
 select a.team_name ,b.year
