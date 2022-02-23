@@ -804,11 +804,29 @@ dfs -du -h /user/hive/warehouse/log_parquet;
 
 ### 6. 存储文件查询速度对比
 
+可以针对三张表，使用sql统计表数据个数。查看执行时间。
+
+select count(*) from log_orc;
+
+![1645605046664](assets/1645605046664.png)
+
+select count(*) from log_orc;
+
+![1645605055779](assets/1645605055779.png)
+
+select count(*) from log_parquet;
+
+![1645605064199](assets/1645605064199.png)
+
 ### 7. 存储格式和压缩的整合
 
 #### 7.1. 非压缩ORC文件
 
+
+
 #### 7.2. Snappy压缩ORC文件
+
+
 
 ## IV. Hive数据压缩
 
