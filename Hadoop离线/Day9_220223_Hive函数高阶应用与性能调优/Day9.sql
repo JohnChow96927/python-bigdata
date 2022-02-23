@@ -59,6 +59,19 @@ from
     lateral view
   explode(split(col3, ',')) lv as col3;
 
+-- 窗口排序函数
+-----窗口排序函数
+SELECT
+    cookieid,
+    createtime,
+    pv,
+    RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn1,
+    DENSE_RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn2,
+    ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS rn3
+FROM website_pv_info
+WHERE cookieid = 'cookie1';
+
+
 
 -- 窗口分析函数
 -----------窗口分析函数----------
