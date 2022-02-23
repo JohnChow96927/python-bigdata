@@ -897,6 +897,28 @@ select count(*) from log_parquet;
 
 ### 1. Fetch抓取机制
 
+Hive中对某些情况的查询可以不必使用MapReduce计算。例如：SELECT * FROM employees;在这种情况下，Hive可以简单地读取employee对应的存储目录下的文件，然后输出查询结果到控制台。
+
+在hive-default.xml.template文件中hive.fetch.task.conversion默认是more，老版本hive默认是minimal，该属性修改为more以后，在**全局查找**、**字段查找**、**limit查找**等都不走mapreduce。
+
+把hive.fetch.task.conversion设置成none，然后执行查询语句，都会执行mapreduce程序。
+
+```sql
+set hive.fetch.task.conversion=none;
+select * from score;
+select s_score from score;
+select s_score from score limit 3;
+```
+
+把hive.fetch.task.conversion设置成more，然后执行查询语句，如下查询方式都不会执行mapreduce程序。
+
+```sql
+set hive.fetch.task.conversion=more;
+select * from score;
+select s_score from score;
+select s_score from score limit 3;
+```
+
 ### 2. mapreduce本地模式
 
 ### 3. join查询的优化
