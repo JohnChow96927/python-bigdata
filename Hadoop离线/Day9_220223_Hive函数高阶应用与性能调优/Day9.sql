@@ -60,3 +60,39 @@ from
   explode(split(col3, ',')) lv as col3;
 
 
+-- 窗口分析函数
+-----------窗口分析函数----------
+--LAG
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY createtime) AS rn,
+       LAG(createtime,1,'1970-01-01 00:00:00') OVER(PARTITION BY cookieid ORDER BY createtime) AS last_1_time,
+       LAG(createtime,2) OVER(PARTITION BY cookieid ORDER BY createtime) AS last_2_time
+FROM website_url_info;
+
+
+--LEAD
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY createtime) AS rn,
+       LEAD(createtime,1,'1970-01-01 00:00:00') OVER(PARTITION BY cookieid ORDER BY createtime) AS next_1_time,
+       LEAD(createtime,2) OVER(PARTITION BY cookieid ORDER BY createtime) AS next_2_time
+FROM website_url_info;
+
+--FIRST_VALUE
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY createtime) AS rn,
+       FIRST_VALUE(url) OVER(PARTITION BY cookieid ORDER BY createtime) AS first1
+FROM website_url_info;
+
+--LAST_VALUE
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY createtime) AS rn,
+       LAST_VALUE(url) OVER(PARTITION BY cookieid ORDER BY createtime) AS last1
+FROM website_url_info;
