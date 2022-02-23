@@ -485,6 +485,77 @@ select id,name,deg,salary,dept,sum(salary) over(partition by dept) as total from
 
 #### 3.3. 窗口排序函数
 
+窗口排序函数用于给每个分组内的数据打上排序的标号。注意窗口排序函数不支持窗口表达式。总共有4个函数需要掌握：
+
+**row_number**：在每个分组中，为每行分配一个从1开始的唯一序列号，递增，不考虑重复；
+
+**rank**: 在每个分组中，为每行分配一个从1开始的序列号，考虑重复，挤占后续位置；
+
+**dense_rank**: 在每个分组中，为每行分配一个从1开始的序列号，考虑重复，不挤占后续位置；
+
+```sql
+-----窗口排序函数
+SELECT
+    cookieid,
+    createtime,
+    pv,
+    RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn1,
+    DENSE_RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn2,
+    ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS rn3
+FROM website_pv_info
+WHERE cookieid = 'cookie1';
+```
+
+![1645600342183](assets/1645600342183.png)
+
+上述这三个函数用于分组TopN的场景非常适合。
+
+```sql
+--需求：找出每个用户访问pv最多的Top3 重复并列的不考虑
+SELECT * from
+(SELECT
+    cookieid,
+    createtime,
+    pv,
+    ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS seq
+FROM website_pv_info) tmp where tmp.seq <4;
+```
+
+![1645600363225](assets/1645600363225.png)
+
+还有一个函数，叫做ntile函数，其功能为：将每个分组内的数据分为指定的若干个桶里（分为若干个部分），并且为每一个桶分配一个桶编号。
+
+如果不能平均分配，则优先分配较小编号的桶，并且各个桶中能放的行数最多相差1。
+
+有时会有这样的需求:如果数据排序后分为三部分，业务人员只关心其中的一部分，如何将这中间的三分之一数据拿出来呢?NTILE函数即可以满足。
+
+```sql
+--把每个分组内的数据分为3桶
+SELECT
+    cookieid,
+    createtime,
+    pv,
+    NTILE(3) OVER(PARTITION BY cookieid ORDER BY createtime) AS rn2
+FROM website_pv_info
+ORDER BY cookieid,createtime;
+```
+
+![1645600384655](assets/1645600384655.png)
+
+```sql
+--需求：统计每个用户pv数最多的前3分之1天。
+--理解：将数据根据cookieid分 根据pv倒序排序 排序之后分为3个部分 取第一部分
+SELECT * from
+(SELECT
+     cookieid,
+     createtime,
+     pv,
+     NTILE(3) OVER(PARTITION BY cookieid ORDER BY pv DESC) AS rn
+ FROM website_pv_info) tmp where rn =1;
+```
+
+![1645600397959](assets/1645600397959.png)
+
 #### 3.4. 窗口分析函数
 
 LAG(col,n,DEFAULT) 用于统计窗口内往上第n行值
