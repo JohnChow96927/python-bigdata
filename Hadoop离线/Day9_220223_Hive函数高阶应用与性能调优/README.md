@@ -208,7 +208,7 @@ order by b.year desc;
 - 特点: 如果任意一个元素为null, 结果就为null
 
   ```sql
-  select concat("it","cast","And",null);
+  select concat("it","cast","And",null);	-- null
   ```
 
 ##### concat_ws
@@ -355,6 +355,8 @@ order by b.year desc;
   load data local inpath '/root/hivedata/c2r2.txt' into table col2row2;
   ```
 
+  ![1645620396954](assets/1645620396954.png)
+
 - SQL实现转换
 
   ```sql
@@ -415,7 +417,7 @@ Hive中除了提供JSON的解析函数以外，还提供了一种专门用于**�
 - 参数
 
   - 第一个参数：指定要解析的JSON字符串
-  -  第二个参数：指定要返回的字段，通过**$.columnName**的方式来指定path
+  - 第二个参数：指定要返回的字段，通过**$.columnName**的方式来指定path
 
 - 特点: 每次只能返回JSON对象中一列的值
 
@@ -423,31 +425,97 @@ Hive中除了提供JSON的解析函数以外，还提供了一种专门用于**�
 
 - 创建表
 
-  
+  ```sql
+  create table tb_json_test1 (json string);
+  ```
 
 - 加载数据
 
-  
+  ```sql
+  load data local inpath '/root/hivedata/device.json' into table tb_json_test1;
+  ```
 
 - 查询数据
 
-  
+  ```sql
+  select * from tb_json_test1;
+  ```
 
 - 获取设备名称字段
 
-  
+  ```sql
+  select
+         json,
+         get_json_object(json,"$.device") as device
+  from tb_json_test1;
+  ```
 
 - 获取设备名称及信号强度字段
 
-  
+  ```sql
+  select json,
+         get_json_object(json, "$.device") as device,
+         get_json_object(json, "$.signal") as signal
+  from tb_json_test1;
+  ```
 
 - 实现需求
 
-  
+  ```sql
+  select get_json_object(json, "$.device") as device,
+         get_json_object(json, "$.deviceType") as devicetype,
+         get_json_object(json, "$.signal") as signal,
+         get_json_object(json, "$.time") as stime
+  from tb_json_test1;
+  ```
 
 #### 4.4. JSON函数: json_tuple
 
+##### 功能
 
+用于实现JSON字符串的解析, 可以通过指定多个参数来解析JSON返回多列的值
+
+##### 语法
+
+- 语法
+
+  ```sql
+  json_tuple(jsonStr, p1, p2, ..., pn) 
+  like get_json_object, but it takes multiple names and return a tuple
+  ```
+
+- 参数
+
+  - 第一个参数: 指定要解析的JSON字符串
+  - 第二个参数: 指定要返回的第一个字段
+  - ......
+  - 第N+1个参数: 指定要返回的第N个字段
+
+- 特点
+
+  - 功能类似于get_json_object, 但是可以**调用一次返回多列的值**, 属于**UDTF**类型函数
+  - 返回的每一列都是**字符串类型**
+  - **一般搭配lateral view使用**
+
+##### 使用
+
+- 获取设备名称及信号强度字段
+
+  ```sql
+  
+  ```
+
+- 实现需求, 单独使用
+
+  ```sql
+  
+  ```
+
+- 实现需求, 搭配侧视图
+
+  ```sql
+  
+  ```
 
 #### 4.5. JSON Serde
 
