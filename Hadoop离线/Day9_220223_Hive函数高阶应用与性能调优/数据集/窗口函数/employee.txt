@@ -1,0 +1,5 @@
+1201,gopal,manager,50000,TP
+1202,manisha,cto,50000,TP
+1203,khalil,dev,30000,AC
+1204,prasanth,dev,30000,AC
+1206,kranthi,admin,20000,TP
