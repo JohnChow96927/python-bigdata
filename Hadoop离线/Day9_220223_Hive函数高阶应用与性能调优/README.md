@@ -921,9 +921,51 @@ select s_score from score limit 3;
 
 ### 2. mapreduce本地模式
 
+mapreduce程序除了可以提交到yarn执行之外，还可以使用本地模拟环境运行，此时就不是分布式执行的程序，但是针对小文件小数据处理特别有效果。
+
+用户可以通过设置hive.exec.mode.local.auto的值为true，来让Hive在适当的时候自动启动这个优化。
+
+hive自动根据下面三个条件判断是否启动本地模式：
+
+```shell
+The total input size of the job is lower than:
+ hive.exec.mode.local.auto.inputbytes.max (128MB by default)
+The total number of map-tasks is less than:
+ hive.exec.mode.local.auto.tasks.max (4 by default)
+The total number of reduce tasks required is 1 or 0.
+```
+
 ### 3. join查询的优化
 
+多个表关联时，最好分拆成小段sql分段执行，避免一个大sql（无法控制中间Job）。
+
 #### 3.1. map side join
+
+如果不指定MapJoin或者不符合MapJoin的条件，那么Hive解析器会将Join操作转换成Common Join，即：在Reduce阶段完成join。容易发生数据倾斜。可以用MapJoin把小表全部加载到内存在map端进行join，避免reducer处理。
+
+![1645606452306](assets/1645606452306.png)
+
+首先是Task A，它是一个Local Task（在客户端本地执行的Task），负责扫描小表b的数据，将其转换成一个HashTable的数据结构，并写入本地的文件中，之后将该文件加载到DistributeCache中。
+
+接下来是Task B，该任务是一个没有Reduce的MR，启动MapTasks扫描大表a,在Map阶段，根据a的每一条记录去和DistributeCache中b表对应的HashTable关联，并直接输出结果。
+
+由于MapJoin没有Reduce，所以由Map直接输出结果文件，有多少个Map Task，就有多少个结果文件。
+
+map端join的参数设置：
+
+开启mapjoin参数设置：
+
+（1）设置自动选择mapjoin
+
+set hive.auto.convert.join = true; 默认为true
+
+（2）大表小表的阈值设置：
+
+set hive.mapjoin.smalltable.filesize= 25000000;
+
+小表的输入文件大小的阈值（以字节为单位）;如果文件大小小于此阈值，它将尝试将common join转换为map join。
+
+因此在实际使用中，只要根据业务把握住小表的阈值标准即可，hive会自动帮我们完成mapjoin，提高执行的效率。
 
 #### 3.2. 大表join小表
 
