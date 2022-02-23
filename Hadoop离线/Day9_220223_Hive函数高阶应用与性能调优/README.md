@@ -303,7 +303,12 @@ order by b.year desc;
 ##### 需求
 
 - 原始数据表
+
+  ![1645587080060](assets/1645587080060.png)
+
 - 目标结果表
+
+  ![1645587083682](assets/1645587083682.png)
 
 ##### explode
 
@@ -328,9 +333,6 @@ order by b.year desc;
 - 创建原始数据表, 加载数据
 
   ```sql
-  --切换数据库
-  use db_function;
-  
   --创建表
   create table col2row2(
      col1 string,
@@ -346,19 +348,14 @@ order by b.year desc;
 - SQL实现转换
 
   ```sql
-  --切换数据库
-  use db_function;
-  
-  --创建表
-  create table col2row2(
-     col1 string,
-     col2 string,
-     col3 string
-  )row format delimited fields terminated by '\t';
-  
-  
-  --加载数据
-  load data local inpath '/root/hivedata/c2r2.txt' into table col2row2;
+  select
+    col1,
+    col2,
+    lv.col3 as col3
+  from
+    col2row2
+      lateral view
+    explode(split(col3, ',')) lv as col3;
   ```
 
   
@@ -369,17 +366,88 @@ order by b.year desc;
 
 #### 4.1. 应用场景
 
+JSON数据格式是数据存储及数据处理中最常见的结构化数据格式之一，很多场景下公司都会将数据以JSON格式存储在HDFS中，当构建数据仓库时，需要对JSON格式的数据进行处理和分析，那么就需要在Hive中对JSON格式的数据进行解析读取。
+
+例如，当前我们JSON格式的数据如下：
+
+![1645587186253](assets/1645587186253.png)
+
+每条数据都以JSON形式存在，每条数据中都包含4个字段，分别为**设备名称【device】、设备类型【deviceType】、信号强度【signal】和信号发送时间【time】，**现在我们需要将这四个字段解析出来，在Hive表中以每一列的形式存储，最终得到以下Hive表：
+
+![1645587197468](assets/1645587197468.png)
+
 #### 4.2. 处理方式
+
+Hive中为了实现JSON格式的数据解析，提供了两种解析JSON数据的方式，在实际工作场景下，可以根据不同数据，不同的需求来选择合适的方式对JSON格式数据进行处理。
+
+- **方式一：使用JSON函数进行处理**
+
+Hive中提供了两个专门用于解析JSON字符串的函数：**get_json_object、json_tuple**，这两个函数都可以实现将JSON数据中的每个字段独立解析出来，构建成表。
+
+- **方式二：使用Hive内置的JSON Serde加载数据**
+
+Hive中除了提供JSON的解析函数以外，还提供了一种专门用于**加载JSON文件的Serde**来实现对JSON文件中数据的解析，在创建表时指定Serde，加载文件到表中，会自动解析为对应的表格式。
 
 #### 4.3. JSON函数: get_json_object
 
+##### 功能
+
+  用于解析JSON字符串，可以从JSON字符串中返回指定的某个对象列的值
+
+##### 语法
+
+- 语法
+
+  ```sql
+  get_json_object(json_txt, path) - Extract a json object from path
+  ```
+
+- 参数
+
+  - 第一个参数：指定要解析的JSON字符串
+  -  第二个参数：指定要返回的字段，通过**$.columnName**的方式来指定path
+
+- 特点: 每次只能返回JSON对象中一列的值
+
+##### 使用
+
+- 创建表
+
+  
+
+- 加载数据
+
+  
+
+- 查询数据
+
+  
+
+- 获取设备名称字段
+
+  
+
+- 获取设备名称及信号强度字段
+
+  
+
+- 实现需求
+
+  
+
 #### 4.4. JSON函数: json_tuple
+
+
 
 #### 4.5. JSON Serde
 
+
+
 #### 4.6. 总结
 
-## II. Windows functions窗口函数
+
+
+## II. Window functions窗口函数
 
 ### 1. 窗口函数概述
 
