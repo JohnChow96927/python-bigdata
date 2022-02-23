@@ -31,8 +31,8 @@ order by b.year desc;
 select …… from tableA lateral view UDTF(xxx) 别名 as col1,col2,col3……;
 
 
-select a.team_name ,b.year
-from the_nba_championship a lateral view explode(champion_year) b as year;
+select a.team_name ,b.*
+from the_nba_championship a lateral view explode(champion_year) b;
 
 --根据年份倒序排序
 select a.team_name ,b.year

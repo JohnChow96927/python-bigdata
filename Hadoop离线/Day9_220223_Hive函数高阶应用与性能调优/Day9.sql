@@ -19,4 +19,22 @@ select team_name, explode(champion_year) from the_nba_championship;
 select a.team_name, b.year
 from the_nba_championship a lateral view explode(champion_year) b as year order by b.year desc;
 
+--建表
+create table row2col2(
+   col1 string,
+   col2 string,
+   col3 int
+)row format delimited fields terminated by '\t';
+
+--加载数据到表中
+load data local inpath '/root/hivedata/r2c2.txt' into table row2col2;
+
+select
+  col1,
+  col2,
+  concat_ws(',', collect_list(cast(col3 as string))) as col3
+from
+  row2col2
+group by
+  col1, col2;
 

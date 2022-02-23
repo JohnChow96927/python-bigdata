@@ -158,11 +158,212 @@ order by b.year desc;
 
 #### 3.1. 工作应用场景
 
+实际工作场景中经常需要实现对于Hive中的表进行行列转换操作，例如统计得到每个小时不同维度下的UV、PV、IP的个数，而现在为了构建可视化报表，得到每个小时的UV、PV的线图，观察访问趋势，我们需要构建如下的表结构：
 
+![1645583262908](assets/1645583262908.png)
+
+在Hive中，我们可以通过函数来实现各种复杂的行列转换。
 
 #### 3.2. 行转列: 多行转单列
 
+##### 需求
+
+- 原始数据表:
+
+  ![1645583485672](assets/1645583485672.png)
+
+- 目标数据表:
+
+  ![1645583491500](assets/1645583491500.png)
+
+##### concat
+
+- 功能: 用于实现字符串拼接, 不可指定分隔符
+
+- 语法:
+
+  ```sql
+  concat(element1,element2,element3……)
+  ```
+
+- 测试:
+
+  ```sql
+  select concat("it","cast","And","heima");
+  +-----------------+
+  | itcastAndheima  |
+  +-----------------+
+  ```
+
+- 特点: 如果任意一个元素为null, 结果就为null
+
+  ```sql
+  select concat("it","cast","And",null);
+  ```
+
+##### concat_ws
+
+- 功能: 用于实现字符串拼接, 可以指定分隔符
+
+- 语法:
+
+  ```sql
+  concat_ws(SplitChar，element1，element2……)
+  ```
+
+- 测试:
+
+  ```sql
+  select concat_ws("-","itcast","And","heima");
+  +-------------------+
+  | itcast-And-heima  |
+  +-------------------+
+  ```
+
+- 特点: 任意一个元素不为null, 结果就不为null
+
+  ```sql
+  select concat_ws("-","itcast","And",null);
+  +-------------+
+  | itcast-And  |
+  +-------------+
+  ```
+
+##### collect_list
+
+- 功能: 用于将一列中的多行合并为一行, 不进行去重
+
+- 语法:
+
+  ```sql
+  collect_list（colName）
+  ```
+
+- 测试:
+
+  ```sql
+  select collect_list(col1) from row2col1;
+  +----------------------------+
+  | ["a","a","a","b","b","b"]  |
+  +----------------------------+
+  ```
+
+##### concat_set
+
+- 功能: 用于将一列中的多行合并为一行, 并进行去重
+
+- 语法:
+
+  ```sql
+  collect_set（colName）
+  ```
+
+- 测试:
+
+  ```sql
+  select collect_set(col1) from row2col1;
+  +------------+
+  | ["b","a"]  |
+  +------------+
+  ```
+
+##### 实现
+
+- 创建原始数据表, 加载数据
+
+  ```sql
+  --建表
+  create table row2col2(
+     col1 string,
+     col2 string,
+     col3 int
+  )row format delimited fields terminated by '\t';
+  
+  --加载数据到表中
+  load data local inpath '/root/hivedata/r2c2.txt' into table row2col2;
+  ```
+
+- SQL实现转换
+
+  ```sql
+  select
+    col1,
+    col2,
+    concat_ws(',', collect_list(cast(col3 as string))) as col3
+  from
+    row2col2
+  group by
+    col1, col2;
+  ```
+
+  ![1645584681934](assets/1645584681934.png)
+
 #### 3.3. 列转行: 单列转多行
+
+##### 需求
+
+- 原始数据表
+- 目标结果表
+
+##### explode
+
+- 功能: 用于将一个集合或者数组中的每个元素展开, 将每个元素变成一行
+
+- 语法:
+
+  ```sql
+  explode(Map | Array)
+  ```
+
+- 测试:
+
+  ```sql
+  select explode(split("a,b,c,d",","));
+  ```
+
+  ![1645584798532](assets/1645584798532.png)
+
+##### 实现
+
+- 创建原始数据表, 加载数据
+
+  ```sql
+  --切换数据库
+  use db_function;
+  
+  --创建表
+  create table col2row2(
+     col1 string,
+     col2 string,
+     col3 string
+  )row format delimited fields terminated by '\t';
+  
+  
+  --加载数据
+  load data local inpath '/root/hivedata/c2r2.txt' into table col2row2;
+  ```
+
+- SQL实现转换
+
+  ```sql
+  --切换数据库
+  use db_function;
+  
+  --创建表
+  create table col2row2(
+     col1 string,
+     col2 string,
+     col3 string
+  )row format delimited fields terminated by '\t';
+  
+  
+  --加载数据
+  load data local inpath '/root/hivedata/c2r2.txt' into table col2row2;
+  ```
+
+  
+
+  ![1645584822832](assets/1645584822832.png)
 
 ### 4. JSON数据处理
 
