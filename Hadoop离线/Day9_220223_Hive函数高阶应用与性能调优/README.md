@@ -502,22 +502,33 @@ Hive中除了提供JSON的解析函数以外，还提供了一种专门用于**�
 - 获取设备名称及信号强度字段
 
   ```sql
-  
+  select json_tuple(json, "device", "signal") as (device, signal)
+  from tb_json_test1;
   ```
 
 - 实现需求, 单独使用
 
   ```sql
-  
+  select json_tuple(json, "device", "deviceType", "signal", "time")
+             as (device, deviceType, signal, stime)
+  from tb_json_test1;
   ```
 
 - 实现需求, 搭配侧视图
 
   ```sql
-  
+  select json, device, deviceType, signal, stime
+  from tb_json_test1
+  lateral view
+  json_tuple(json, "device", "deviceType", "signal", "time") b
+  as device, deviceType, signal, stime;
   ```
 
 #### 4.5. JSON Serde
+
+##### 功能
+
+##### 使用
 
 
 

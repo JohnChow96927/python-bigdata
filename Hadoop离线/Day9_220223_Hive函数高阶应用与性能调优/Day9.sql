@@ -37,7 +37,8 @@ order by b.year desc;
 -- concat
 select concat('it', 'cast', 'and', 'heima');
 
-select concat('it', 'cast', null, 'heima'); -- null
+select concat('it', 'cast', null, 'heima');
+-- null
 
 -- concat_ws
 select concat_ws('?', 'john', 'chow');
@@ -49,14 +50,15 @@ create table row2col1
     col1 string,
     col2 string,
     col3 int
-) row format delimited  fields terminated by '\t';
+) row format delimited fields terminated by '\t';
 load data local inpath '/root/hivedata/r2c1.txt' into table row2col1;
 -- collect_list
-select collect_list(col1) from row2col1;
+select collect_list(col1)
+from row2col1;
 
 -- collect_set
-select collect_set(col1) from row2col1;
-
+select collect_set(col1)
+from row2col1;
 
 
 --建表
@@ -99,10 +101,14 @@ from col2row2
 ------------- json数据处理 ---------
 -- get_json_object
 --创建表
-create table tb_json_test1 (json string);
+create table tb_json_test1
+(
+    json string
+);
 --加载数据
 load data local inpath '/root/hivedata/device.json' into table tb_json_test1;
-select * from tb_json_test1;
+select *
+from tb_json_test1;
 select json,
        get_json_object(json, "$.device") as device
 from tb_json_test1;
@@ -111,15 +117,25 @@ select json,
        get_json_object(json, "$.signal") as signal
 from tb_json_test1;
 
-select get_json_object(json, "$.device") as device,
+select get_json_object(json, "$.device")     as device,
        get_json_object(json, "$.deviceType") as devicetype,
-       get_json_object(json, "$.signal") as signal,
-       get_json_object(json, "$.time") as stime
+       get_json_object(json, "$.signal")     as signal,
+       get_json_object(json, "$.time")       as stime
 from tb_json_test1;
 
 -- json_tuple
+select json_tuple(json, "device", "signal") as (device, signal)
+from tb_json_test1;
 
+select json_tuple(json, "device", "deviceType", "signal", "time")
+           as (device, deviceType, signal, stime)
+from tb_json_test1;
 
+select json, device, deviceType, signal, stime
+from tb_json_test1
+lateral view
+json_tuple(json, "device", "deviceType", "signal", "time") b
+as device, deviceType, signal, stime;
 
 -- 窗口排序函数
 -----窗口排序函数
