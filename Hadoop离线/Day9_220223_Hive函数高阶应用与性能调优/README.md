@@ -676,7 +676,17 @@ ORC可以支持复杂的数据结构（比如Map等）。
 
 ​	rowData :真正的数据存储
 
-​	StripFooter：stripe的元数据信息
+​	StripFooter：stripe的元数据信息'
+
+![1645600267763](assets/1645600267763.png)
+
+1）Index Data：一个轻量级的index，默认是每隔1W行做一个索引。这里做的索引只是记录某行的各字段在Row Data中的offset。
+
+2）Row Data：存的是具体的数据，先取部分行，然后对这些行按列进行存储。对每个列进行了编码，分成多个Stream来存储。
+
+3）Stripe Footer：存的是各个stripe的元数据信息。
+
+每个文件有一个File Footer，这里面存的是每个Stripe的行数，每个Column的数据类型信息等；每个文件的尾部是一个PostScript，这里面记录了整个文件的压缩类型以及FileFooter的长度信息等。在读取文件时，会seek到文件尾部读PostScript，从里面解析到File Footer长度，再读FileFooter，从里面解析到各个Stripe信息，再读各个Stripe，即从后往前读。
 
 ### 4. PARQUET格式
 
