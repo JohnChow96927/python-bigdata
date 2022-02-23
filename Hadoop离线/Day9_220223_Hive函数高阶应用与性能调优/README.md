@@ -1137,9 +1137,9 @@ Hive会将一个查询转化成一个或者多个阶段。这样的阶段可以�
 
 通过设置参数hive.exec.parallel值为true，就可以开启并发执行。不过，在共享集群中，需要注意下，如果job中并行阶段增多，那么集群利用率就会增加。
 
-`set hive.exec.parallel=true; `             //打开任务并行执行
+`set hive.exec.parallel=true; `	//打开任务并行执行
 
-`set hive.exec.parallel.thread.number=16;`  //同一个sql允许最大并行度，默认为8。
+`set hive.exec.parallel.thread.number=16;`	//同一个sql允许最大并行度，默认为8。
 
 当然，得是在系统资源比较空闲的时候才有优势，否则，没资源，并行也起不来。
 
