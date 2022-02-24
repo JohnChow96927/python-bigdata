@@ -1517,7 +1517,7 @@ hive.auto.convert.join.noconditionaltask.size=10000000;
   1. 如果能提前预知数据倾斜, 针对倾斜的数据单独处理, 比如加硬件: 电商双十一之订单数据爆炸
   2. 针对倾斜的数据**打散**后**分步执行**
 
-**数据倾斜-join优化**
+**数据倾斜-join查询优化**
 
 - join操作时, 如果两张表比较大, 无法实现mapjoin, 只能走Reduce join, 那么当关联字段中某一种值过多的时候依旧会导致数据倾斜的问题
 - 面对join产生的数据倾斜, 核心的思想时尽量避免Reduce join的产生, 优先使用map join来实现
@@ -1574,7 +1574,7 @@ set mapreduce.input.fileinputformat.input.dir.recursive=true;
 
 对已经存在的小文件做出的解决方案：
 
-使用Hadoop achieve把小文件进行归档
+使用Hadoop archive把小文件进行归档
 
 重建表，建表时减少reduce的数量
 
@@ -1598,7 +1598,7 @@ set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
 如果表a只有一个文件，大小为120M，但包含几千万的记录，如果用1个map去完成这个任务，肯定是比较耗时的，这种情况下，我们要考虑将这一个文件合理的拆分成多个，这样就可以用多个map任务去完成。
 
 ```sql
-set mapreduce.job.reduces =10;
+set mapreduce.job.reduces = 10;
 
 create table a_1 as
 select * from a
