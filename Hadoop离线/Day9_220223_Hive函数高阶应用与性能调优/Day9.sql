@@ -152,6 +152,30 @@ load data local inpath '/root/hivedata/device.json' into table tb_json_test2;
 select *
 from tb_json_test2;
 
+-- 窗口函数
+create table website_pv_info(
+    cookieid string,
+    createtime string,
+    pv int
+) row format delimited
+fields terminated by ',';
+
+create table website_url_info(
+    cookieid string,
+    createtime string,
+    url string
+) row format delimited
+fields terminated by ',';
+
+load data local inpath '/root/hivedata/website_pv_info.txt' into table website_pv_info;
+load data local inpath '/root/hivedata/website_url_info.txt' into table website_url_info;
+
+select * from website_pv_info;
+select *
+from website_url_info;
+
+
+
 -- 窗口排序函数
 -----窗口排序函数
 SELECT cookieid,

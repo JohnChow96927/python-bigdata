@@ -612,6 +612,41 @@ Function(arg1,..., argn) OVER ([PARTITION BY <...>] [ORDER BY <....>] [<window_e
 
 ### 3. 案例: 网站用户页面浏览次数分析
 
+在网站访问中, 经常使用cookie来标识不用的用户身份, 通过cookie可以追踪不同用户的页面访问情况, 有下面两份数据: 
+
+![1645668476830](assets/1645668476830.png)
+
+字段含义：cookieid 、访问时间、pv数(页面浏览数)
+
+![1645668503970](assets/1645668503970.png)
+字段含义：cookieid、访问时间、访问页面url
+
+在Hive中创建两张表，把数据加载进去用于窗口分析。
+
+```sql
+---建表并且加载数据
+create table website_pv_info(
+   cookieid string,
+   createtime string,   --day
+   pv int
+) row format delimited
+fields terminated by ',';
+
+create table website_url_info (
+    cookieid string,
+    createtime string,  --访问时间
+    url string       --访问页面
+) row format delimited
+fields terminated by ',';
+
+
+load data local inpath '/root/hivedata/website_pv_info.txt' into table website_pv_info;
+load data local inpath '/root/hivedata/website_url_info.txt' into table website_url_info;
+
+select * from website_pv_info;
+select * from website_url_info;
+```
+
 #### 3.1. 窗口聚合函数
 
 #### 3.2. 窗口表达式
