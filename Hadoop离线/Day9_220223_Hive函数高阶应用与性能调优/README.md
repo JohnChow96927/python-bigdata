@@ -1482,7 +1482,7 @@ hive.auto.convert.join.noconditionaltask.size=10000000;
 
   ![1645609938058](assets/1645609938058.png)
 
-- 当程序中出现group by或者count(distinct) 等分组聚合场景时, 如果数据本身是倾斜的, 根据MapReduce的Hash分区规则, 肯定会出现数据倾斜的现象
+- 当程序中出现**group by或者count(distinct) 等分组聚合**场景时, 如果数据本身是倾斜的, 根据MapReduce的Hash分区规则, 肯定会出现数据倾斜的现象
 
 - 根本原因是分区规则导致的, 所以可以根据以下几种方案来解决group by导致的数据倾斜的问题
 
@@ -1517,15 +1517,39 @@ hive.auto.convert.join.noconditionaltask.size=10000000;
   1. 如果能提前预知数据倾斜, 针对倾斜的数据单独处理, 比如加硬件: 电商双十一之订单数据爆炸
   2. 针对倾斜的数据**打散**后**分步执行**
 
-#### 4.1.
+**数据倾斜-join优化**
 
-#### 4.2. 
+- join操作时, 如果两张表比较大, 无法实现mapjoin, 只能走Reduce join, 那么当关联字段中某一种值过多的时候依旧会导致数据倾斜的问题
+- 面对join产生的数据倾斜, 核心的思想时尽量避免Reduce join的产生, 优先使用map join来实现
+- 但往往很多的join场景不满足map join的需求, 那么可以以以下几种方案来解决join产生的数据倾斜问题
+
+#### 4.1. 提前过滤, 将大数据变成小数据, 实现map join
+
+```sql
+select a.id,a.value1,b.value2 from table1 a
+join (select b.* from table2 b where b.ds>='20181201' and b.ds<'20190101') c
+on (a.id=c.id)
+```
+
+#### 4.2. 使用bucket join
+
+如果使用方案4.1, 过滤后的数据依然是一张大表, 那么最后的join依旧是一个Reduce join
+
+这种场景下, 可以将两张表的数据构建为桶表, 实现Bucket Map Join, 避免数据倾斜
 
 #### 4.3. skew Join
 
+Skew join是Hive中一种专门为了避免数据倾斜而涉及的特殊的join过程
+
+这种join的原理是将Map join和Reduce join进行合并, 如果某个值出现了数据倾斜, 就会将产生数据倾斜的数据单独使用Map Join来实现
+
+其他没有产生数据倾斜的数据由Reduce join来实现, 这样就避免了Reduce join中产生数据倾斜的问题
+
+最终将Map Join的结果和Reduce join的结果进行Union合并
+
 ##### 原理
 
-![1645610946709](assets/1645610946709.png)
+![1645684317548](assets/1645684317548.png)
 
 ##### 配置
 
@@ -1541,8 +1565,6 @@ set hive.optimize.union.remove=true;
 -- 如果Hive的底层走的是MapReduce，必须开启这个属性，才能实现不合并
 set mapreduce.input.fileinputformat.input.dir.recursive=true;
 ```
-
-### 
 
 ### 5. MapReduce引擎并行度调整
 
