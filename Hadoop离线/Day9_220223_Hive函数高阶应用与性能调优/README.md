@@ -1271,7 +1271,9 @@ insert into table log_orc_snappy select * from log_text ;
 
 ### 2. 压缩分析
 
-首先说明mapreduce哪些过程可以设置压缩：需要分析处理的数据在进入map前可以压缩，然后解压处理，map处理完成后的输出可以压缩，这样可以减少网络I/O(reduce通常和map不在同一节点上)，reduce拷贝压缩的数据后进行解压，处理完成后可以压缩存储在hdfs上，以减少磁盘占用量。
+首先说明mapreduce哪些过程可以设置压缩：
+
+需要分析处理的数据在**进入map前可以压缩**，然后解压处理，**map处理完成后的输出可以压缩**，这样可以减少网络I/O(reduce通常和map不在同一节点上)，reduce拷贝压缩的数据后进行解压，**处理完成后可以压缩**存储在hdfs上，以减少磁盘占用量。
 
 ![1645599167029](assets/1645599167029.png)
 
@@ -1319,6 +1321,10 @@ insert into table log_orc_snappy select * from log_text ;
 4. 设置mapreduce最终数据输出压缩为块压缩
 
    `set mapreduce.output.fileoutputformat.compress.type=BLOCK;`
+
+### 5. 压缩方式性能对比
+
+![1645674351478](assets/1645674351478.png)
 
 ## V. Hive调优
 
