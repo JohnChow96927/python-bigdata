@@ -1368,6 +1368,8 @@ The total number of map-tasks is less than:
 The total number of reduce tasks required is 1 or 0.
 ```
 
+![1645681144505](assets/1645681144505.png)
+
 ### 3. join查询的优化
 
 多个表关联时，最好分拆成小段sql分段执行，避免一个大sql（无法控制中间Job）。
