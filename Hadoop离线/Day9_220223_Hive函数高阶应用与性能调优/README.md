@@ -745,9 +745,56 @@ from website_pv_info;
 
    ![1645670627455](assets/1645670627455.png)
 
-#### 3.2. 窗口表达式
+#### 3.2. 窗口表达式(window子句)
 
+在**sum(...) over( partition by... order by ... )语法完整**的情况下，进行的累积聚合操作，默认累积聚合行为是：**从第一行聚合到当前行**。
 
+Window expression窗口表达式给我们提供了一种控制行范围的能力，比如向前2行，向后3行。
+
+语法如下：
+
+```sql
+unbounded 无边界
+preceding 往前
+following 往后
+unbounded preceding 往前所有行，即初始行
+n preceding 往前n行
+unbounded following 往后所有行，即末尾行
+n following 往后n行
+current row 当前行
+
+语法
+(ROWS | RANGE) BETWEEN (UNBOUNDED | [num]) PRECEDING AND ([num] PRECEDING | CURRENT ROW | (UNBOUNDED | [num]) FOLLOWING)
+(ROWS | RANGE) BETWEEN CURRENT ROW AND (CURRENT ROW | (UNBOUNDED | [num]) FOLLOWING)
+(ROWS | RANGE) BETWEEN [num] FOLLOWING AND (UNBOUNDED | [num]) FOLLOWING
+```
+
+```sql
+--第一行到当前行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding and current row) as pv2
+from website_pv_info;
+
+--向前3行至当前行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between 3 preceding and current row) as pv4
+from website_pv_info;
+
+--向前3行 向后1行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between 3 preceding and 1 following) as pv5
+from website_pv_info;
+
+--当前行至最后一行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between current row and unbounded following) as pv6
+from website_pv_info;
+
+--第一行到最后一行 也就是分组内的所有行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding  and unbounded following) as pv6
+from website_pv_info;
+```
 
 #### 3.3. 窗口排序函数
 
