@@ -270,3 +270,6 @@ SELECT cookieid,
        ROW_NUMBER() OVER (PARTITION BY cookieid ORDER BY createtime)    AS rn,
        LAST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime) AS last1
 FROM website_url_info;
+
+
+
