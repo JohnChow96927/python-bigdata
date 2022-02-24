@@ -222,10 +222,6 @@ select cookieid,createtime,pv,
        sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding  and unbounded following) as pv6
 from website_pv_info;
 
-
-
-
-
 -- 窗口排序函数
 -----窗口排序函数
 SELECT cookieid,
@@ -236,7 +232,6 @@ SELECT cookieid,
        ROW_NUMBER() OVER (PARTITION BY cookieid ORDER BY pv DESC) AS rn3
 FROM website_pv_info
 WHERE cookieid = 'cookie1';
-
 
 
 -- 窗口分析函数
