@@ -319,3 +319,30 @@ select count(*) from log_text;
 select count(*) from log_orc;
 
 select count(*) from log_parquet;
+
+create table log_orc_none(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc tblproperties ("orc.compress"="NONE");
+
+insert into table log_orc_none select * from log_text ;
+
+create table log_orc_snappy(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc tblproperties ("orc.compress"="SNAPPY");
+insert into table log_orc_snappy select * from log_text ;

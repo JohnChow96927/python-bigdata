@@ -1187,15 +1187,73 @@ select count(*) from log_parquet;
 
 ![1645673837401](assets/1645673837401.png)
 
+存储文件的查询速度对比总结：
+
+**==Parquet > ORC > textFile==**
+
 ### 7. 存储格式和压缩的整合
 
 #### 7.1. 非压缩ORC文件
 
-Jian
+建表语句
+
+```sql
+create table log_orc_none(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc tblproperties ("orc.compress"="NONE");
+```
+
+插入数据
+
+```sql
+insert into table log_orc_none select * from log_text ;
+```
+
+查看插入后数据
+
+```shell
+dfs -du -h /user/hive/warehouse/log_orc_none;
+```
+
+![1645674042777](assets/1645674042777.png)
 
 #### 7.2. Snappy压缩ORC文件
 
+建表语句
 
+```sql
+create table log_orc_snappy(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc tblproperties ("orc.compress"="SNAPPY");
+```
+
+插入数据
+
+```sql
+insert into table log_orc_snappy select * from log_text ;
+```
+
+![1645674095929](assets/1645674095929.png)
+
+上一节中默认创建的ORC存储方式，导入数据后的大小为比Snappy压缩的还小。原因是orc存储文件默认采用ZLIB压缩。比snappy压缩的小。
+
+**在实际的项目开发当中，hive表的数据存储格式一般选择：orc或parquet。压缩方式一般选择snappy。**
 
 ## IV. Hive数据压缩
 
