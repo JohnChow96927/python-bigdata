@@ -174,6 +174,31 @@ select * from website_pv_info;
 select *
 from website_url_info;
 
+-- 窗口聚合函数
+-- 求出每个用户总pv数, sum+group by常规聚合操作
+select cookieid, sum(pv) as total_pv from website_pv_info group by cookieid;
+
+-- 求出网站总的pv数, 所有用户所有访问加起来
+-- sum(...) over() 对表所有行求和
+select cookieid, createtime, pv, sum(pv) over() as total_pv
+from website_pv_info
+group by cookieid, createtime, pv;
+
+--需求：求出每个用户总pv数
+--sum(...) over( partition by... )，同组内所行求和
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid) as total_pv
+from website_pv_info;
+
+--需求：求出每个用户截止到当天，累积的总pv数
+--sum(...) over( partition by... order by ... )，在每个分组内，连续累积求和
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime) as current_total_pv
+from website_pv_info;
+
+
+
+
 
 
 -- 窗口排序函数

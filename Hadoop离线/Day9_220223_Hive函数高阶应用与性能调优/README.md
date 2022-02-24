@@ -649,7 +649,105 @@ select * from website_url_info;
 
 #### 3.1. 窗口聚合函数
 
+##### 概述
+
+- 所谓窗口聚合函数指的是sum、max、min、avg这样的聚合函数在窗口中的使用
+- 这里以**sum()**函数为例，其他聚合函数使用类似
+- 易错点：在没有使用window子句指定范围时，**默认是rows between还是range between需要搞清楚**。
+
+```sql
+-----窗口聚合函数的使用-----------
+--1、求出每个用户总pv数  sum+group by普通常规聚合操作
+select cookieid,sum(pv) as total_pv from website_pv_info group by cookieid;
+
+--2、sum+窗口函数 总共有四种用法 注意是整体聚合 还是累积聚合
+--sum(...) over( )对表所有行求和
+--sum(...) over( order by ... ) 连续累积求和
+--sum(...) over( partition by... ) 同组内所有行求和
+--sum(...) over( partition by... order by ... ) 在每个分组内，连续累积求和
+
+--需求：求出网站总的pv数 所有用户所有访问加起来
+--sum(...) over( )对表所有行求和
+select cookieid,createtime,pv,
+       sum(pv) over() as total_pv
+from website_pv_info;
+
+--需求：求出每个用户总pv数
+--sum(...) over( partition by... )，同组内所行求和
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid) as total_pv
+from website_pv_info;
+
+--需求：求出每个用户截止到当天，累积的总pv数
+--sum(...) over( partition by... order by ... )，在每个分组内，连续累积求和
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime) as current_total_pv
+from website_pv_info;
+```
+
+![1645670185321](assets/1645670185321.png)
+
+![1645670211152](assets/1645670211152.png)
+
+##### rows还是range
+
+- 共同的前提是都没有手动指定window字句
+- 有order by时, 默认是range, 首行到当前行
+- 没有order by时, 默认是rows, 首行到最后一行
+
+##### partition by影响
+
+- partition by的语法功能类似于group by分组，有无partition by语法，影响是否分组；
+
+  有的话，根据指定字段分组；没有的话，全表所有行是一组
+
+  ![1645670402543](assets/1645670402543.png)
+
+##### order by影响
+
+1. **没有order by**时，默认是**rows** **between**，首行到最后一行
+
+   这里的“行”指的是物理意义上的行。
+
+   ![1645670442669](assets/1645670442669.png)
+
+   ```sql
+   --sum(...) over( )
+   select cookieid,createtime,pv,
+   sum(pv) over() as total_pv  --注意这里窗口函数是没有partition by 也就是没有分组  全表所有行
+   from website_pv_info;
+   --sum(...) over( partition by... )
+   select cookieid,createtime,pv,
+   sum(pv) over(partition by cookieid) as total_pv --注意这里有partition分组了，那就是组内所有行
+   from website_pv_info;
+   ```
+
+   ![1645670530029](assets/1645670530029.png)
+
+   ![1645670537722](assets/1645670537722.png)
+
+2. **有order by**时，默认是range between，首行到当前行
+
+   这里的“行”指的是逻辑上的行，由order by字段的值来划分的范围。
+
+   ![1645670589843](assets/1645670589843.png)
+
+   ```sql
+   --sum(...) over( partition by... order by ... )
+   select cookieid,createtime,pv,
+   sum(pv) over(partition by cookieid order by createtime) as current_total_pv
+   from website_pv_info;
+   select cookieid,createtime,pv,
+   sum(pv) over(partition by cookieid order by pv) as current_total_pvfrom website_pv_info;
+   ```
+
+   ![1645670620685](assets/1645670620685.png)
+
+   ![1645670627455](assets/1645670627455.png)
+
 #### 3.2. 窗口表达式
+
+
 
 #### 3.3. 窗口排序函数
 
