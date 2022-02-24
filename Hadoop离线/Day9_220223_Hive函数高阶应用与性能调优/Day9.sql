@@ -271,5 +271,51 @@ SELECT cookieid,
        LAST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime) AS last1
 FROM website_url_info;
 
+-- TEXTFILE
+create table log_text (
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE ;
 
+load data local inpath '/root/hivedata/log.data' into table log_text ;
 
+create table log_orc(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS orc;
+
+insert into table log_orc select * from log_text ;
+
+create table log_parquet(
+track_time string,
+url string,
+session_id string,
+referer string,
+ip string,
+end_user_id string,
+city_id string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS PARQUET ;
+
+insert into table log_parquet select * from log_text ;
+
+select count(*) from log_text;
+
+select count(*) from log_orc;
+
+select count(*) from log_parquet;

@@ -1173,23 +1173,25 @@ dfs -du -h /user/hive/warehouse/log_parquet;
 
 可以针对三张表，使用sql统计表数据个数。查看执行时间。
 
+```sql
+select count(*) from log_text;
+```
+
+```sql
 select count(*) from log_orc;
+```
 
-![1645605046664](assets/1645605046664.png)
-
-select count(*) from log_orc;
-
-![1645605055779](assets/1645605055779.png)
-
+```sql
 select count(*) from log_parquet;
+```
 
-![1645605064199](assets/1645605064199.png)
+![1645673837401](assets/1645673837401.png)
 
 ### 7. 存储格式和压缩的整合
 
 #### 7.1. 非压缩ORC文件
 
-
+Jian
 
 #### 7.2. Snappy压缩ORC文件
 
