@@ -11,31 +11,31 @@ def buildMaxHeap(arr):
 
 
 def heapify(arr, i):
-    left = 2 * i + 1
-    right = 2 * i + 2
+    left = 2 * i + 1    # 左子节点性质
+    right = 2 * i + 2   # 右子节点性质
     largest = i
-    if left < arrLen and arr[left] > arr[largest]:
-        largest = left
-    if right < arrLen and arr[right] > arr[largest]:
-        largest = right
+    if left < arrLen and arr[left] > arr[largest]:  # 若左子节点大于当前记录最大节点值
+        largest = left  # 标记位置
+    if right < arrLen and arr[right] > arr[largest]:    # 若右子节点大于当前记录最大节点值
+        largest = right # 标记
 
-    if largest != i:
-        swap(arr, i, largest)
-        heapify(arr, largest)
+    if largest != i:    # 若最大值发生变化
+        swap(arr, i, largest)   # 将最大值与当前位置节点交换位置
+        heapify(arr, largest)   # 递归
 
 
 def swap(arr, i, j):
-    arr[i], arr[j] = arr[j], arr[i]
+    arr[i], arr[j] = arr[j], arr[i]  # 交换arr中i与j位置上的元素
 
 
 def heapSort(arr):
     global arrLen
-    arrLen = len(arr)
-    buildMaxHeap(arr)
+    arrLen = len(arr)  # 取堆中元素总数
+    buildMaxHeap(arr)  # 建大顶堆
     for i in range(len(arr) - 1, 0, -1):
-        swap(arr, 0, i)
-        arrLen -= 1
-        heapify(arr, 0)
+        swap(arr, 0, i)  # 将堆尾与堆首元素(最大值)交换
+        arrLen -= 1  # 将当前最大值排除(更新arr)
+        heapify(arr, 0)  # 将剩下的元素重新建大顶堆
     return arr
 
 
