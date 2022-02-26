@@ -300,7 +300,64 @@ HUE=Hadoop User Experience
 
 ### 2.5 Sqoop数据导入至Hive
 
+- 测试准备
 
+  ```sql
+  --Hive中创建测试使用的数据库
+  create database test;
+  ```
+
+- 方式一：先复制表结构、再导入数据
+
+  ```shell
+  #将关系型数据的表结构复制到hive中
+  sqoop create-hive-table \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --table emp_add \
+  --username root \
+  --password 123456 \
+  --hive-table test.emp_add_sp
+  
+  #其中 
+  --table emp_add为mysql中的数据库sqoopdb中的表   
+  --hive-table emp_add_sp 为hive中新建的表名称。如不指定，将会在hive的default库下创建和MySQL同名表
+  ```
+
+  可以在Hive中查看表结构信息
+
+  ```sql
+  desc formatted emp_add_sp;
+  ```
+
+  ![image-20211005210311530](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005210311530.png)
+
+  > 可以发现此时表的很多属性都是采用默认值来设定的。
+
+  然后执行数据导入操作
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table emp_add \
+  --hive-table test.emp_add_sp \
+  --hive-import \
+  --m 1
+  ```
+
+- 方式二：直接导入数据（包括建表）
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table emp_conn \
+  --hive-import \
+  --m 1 \
+  --hive-database test
+  ```
 
 ### 2.6. Sqoop数据导入至Hive--HCatalog API
 
