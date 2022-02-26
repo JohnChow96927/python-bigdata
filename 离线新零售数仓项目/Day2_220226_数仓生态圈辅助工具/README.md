@@ -480,7 +480,139 @@ HUE=Hadoop User Experience
 
 ### 2.8. Sqoop数据导入--增量导入
 
+- 方式一：sqoop自带参数实现
 
+  > 设计思路：对某一列值进行判断，只要大于上一次的值就会导入。
+  >
+  > 所谓的增量实现，肯定需要一个判断的依据，上次到哪里了，这次从哪里开始。
+
+  ```shell
+     --check-column <column>        Source column to check for incremental
+                                    change
+     --incremental <import-type>    Define an incremental import of type
+                                    'append' or 'lastmodified'
+     --last-value <value>           Last imported value in the incremental
+                                    check column
+     
+   #增量导入3个相关参数
+    	--check-column：以哪一列的值作为增量的基准
+  	--last-value：指定上一次这一列的值是什么
+  	--incremental：指定增量的方式
+     		- append模式
+     		- lastmodified模式
+  ```
+
+  
+
+  - ==append==模式
+
+    > - 要求：必须有一列自增的值，按照==自增的int值==进行判断
+    > - 特点：只能导入增加的数据，**无法导入更新的数据**
+
+    ```shell
+    #首先执行以下指令先将我们之前的数据导入
+    sqoop import \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --target-dir /sqoop/appendresult \
+    --table emp --m 1
+    
+    #查看生成的数据文件，发现数据已经导入到hdfs中.
+    
+    #然后在mysql的emp中插入2条数据:
+    insert into `userdb`.`emp` (`id`, `name`, `deg`, `salary`, `dept`) values ('1206', 'allen', 'admin', '30000', 'tp');
+    insert into `userdb`.`emp` (`id`, `name`, `deg`, `salary`, `dept`) values ('1207', 'woon', 'admin', '40000', 'tp');
+    
+    #执行如下的指令，实现增量的导入:
+    sqoop import \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --table emp --m 1 \
+    --target-dir /sqoop/appendresult \
+    --incremental append \
+    --check-column id \
+    --last-value 1205
+    
+    
+    ####如果想实现sqoop自动维护增量记录  可以使用sqoop job作业来实现
+    21/10/09 15:03:37 INFO tool.ImportTool:  --incremental append
+    21/10/09 15:03:37 INFO tool.ImportTool:   --check-column id
+    21/10/09 15:03:37 INFO tool.ImportTool:   --last-value 1207
+    21/10/09 15:03:37 INFO tool.ImportTool: (Consider saving this with 'sqoop job --create')
+    ```
+
+    ![image-20211005214836575](assets/image-20211005214836575.png)
+
+    > 并且还可以结合sqoop job作业，实现sqoop自动记录维护last-value值，详细可以参考课程资料。
+
+    ![image-20211005214755032](assets/image-20211005214755032.png)
+
+  - lastmodifield模式
+
+    > - 要求：==**必须包含动态时间变化这一列**==，按照数据变化的时间进行判断
+    > - 特点：既导入新增的数据也导入更新的数据
+
+    ```shell
+    # 首先我们要在mysql中创建一个customer表，指定一个时间戳字段
+    create table customertest(id int,name varchar(20),last_mod timestamp default current_timestamp on update current_timestamp);
+    #此处的时间戳设置为在数据的产生和更新时都会发生改变. 
+    
+    #插入如下记录:
+    insert into customertest(id,name) values(1,'neil');
+    insert into customertest(id,name) values(2,'jack');
+    insert into customertest(id,name) values(3,'martin');
+    insert into customertest(id,name) values(4,'tony');
+    insert into customertest(id,name) values(5,'eric');
+    
+    #此时执行sqoop指令将数据导入hdfs:
+    sqoop import \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --target-dir /sqoop/lastmodifiedresult \
+    --table customertest --m 1
+    
+    #再次插入一条数据进入customertest表
+    insert into customertest(id,name) values(6,'james');
+    #更新一条已有的数据，这条数据的时间戳会更新为我们更新数据时的系统时间.
+    update customertest set name = 'Neil' where id = 1;
+    
+    
+    #执行如下指令，把id字段作为merge-key:
+    sqoop import \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --table customertest \
+    --target-dir /sqoop/lastmodifiedresult \
+    --check-column last_mod \
+    --incremental lastmodified \
+    --last-value "2022-01-03 12:13:56" \
+    --m 1 \
+    --merge-key id 
+    
+    #由于merge-key这种模式是进行了一次完整的mapreduce操作，
+    #因此最终我们在lastmodifiedresult文件夹下可以发现id=1的name已经得到修改，同时新增了id=6的数据
+    ```
+
+- 方式二：用户条件过滤实现
+
+  > - 通过where对字段进行过滤
+  > - 指定分区目录
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --query "select * from emp where id>1203 and  \$CONDITIONS" \
+  --fields-terminated-by '\001' \
+  --hcatalog-database test \
+  --hcatalog-table emp_hive \
+  -m 1
+  ```
 
 ### 2.9. Sqoop数据导出
 
