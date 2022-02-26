@@ -683,7 +683,7 @@ HUE=Hadoop User Experience
 - 增量数据导出
 
   > - updateonly：只增量导出更新的数据
-  > - allowerinsert：既导出更新的数据，也导出新增的数据
+  > - allowinsert：既导出更新的数据，也导出新增的数据
 
   - updateonly模式(已有数据的更新同步操作)
 
