@@ -829,3 +829,66 @@ HUE=Hadoop User Experience
 
 ![image-20211005224643377](assets/image-20211005224643377.png)
 
+### 3.4. Oozie使用案例
+
+- 查看已有oozie程序
+
+  ![1645865953134](assets/1645865953134.png)
+
+- 新增oozie程序
+
+  ![1645865983303](assets/1645865983303.png)
+
+  ![1645866025379](assets/1645866025379.png)
+
+  ![1645866065285](assets/1645866065285.png)
+
+  ![1645866078260](assets/1645866078260.png)
+
+- 提交任务
+
+  ![1645866109729](assets/1645866109729.png)
+
+  ![1645866133155](assets/1645866133155.png)
+
+- 修复异常
+
+  org.apache.oozie.action.ActionExecutorException: JA009: Invalid resource request! Cannot allocate containers as requested resource is greater than maximum allowed allocation.
+  Requested resource type=[memory-mb], Requested resource=<memory:2048, vCores:1>, maximum allowed allocation=<memory:1024, vCores:4>, please note that maximum allowed allocation is calculated by scheduler based on maximum resource of registered NodeManagers, which might be less than configured maximum allocation=<memory:1024, vCores:4>
+
+  **内存分配过小导致的错误, 需要设置内存并重启Yarn**
+
+  ```xml
+  <property>
+      <name>yarn.scheduler.minimum-allocation-mb</name>
+      <value>526</value>
+  </property>
+  <property>
+      <name>yarn.scheduler.maximum-allocation-mb</name>
+      <value>4086</value>
+  </property>
+  <property>
+      <name>yarn.scheduler.minimum-allocation-vcores</name>
+      <value>1</value>
+  </property>
+  <property>
+      <name>yarn.scheduler.maximum-allocation-vcores</name>
+      <value>2</value>
+  </property>
+  <property>
+      <name>yarn.nodemanager.resource.memory-mb</name>
+      <value>2048</value>
+  </property>
+  <property>
+      <name>yarn.nodemanager.vmem-pmem-ratio</name>
+      <value>4.1</value>
+  </property>
+  ```
+
+- 修改后重启任务
+
+  ![1645866638456](assets/1645866638456.png)
+
+- 执行成功
+
+![1645866727846](assets/1645866727846.png)
