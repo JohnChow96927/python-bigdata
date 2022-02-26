@@ -780,6 +780,8 @@ HUE=Hadoop User Experience
   - 自己开发实现调度工具
   - 使用第三方调度软件
 
+工作流(DAG)---->有向无环图
+
 ### 3.2. Apache Oozie介绍与架构
 
 - oozie介绍
@@ -796,11 +798,11 @@ HUE=Hadoop User Experience
   		运行结果或异常的通报。
   ```
 
-  ![image-20211005224357114](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005224357114.png)
+  ![image-20211005224357114](assets/image-20211005224357114.png)
 
 - oozie架构
 
-  ![image-20211005224406173](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005224406173.png)
+  ![image-20211005224406173](assets/image-20211005224406173.png)
 
   ```shell
   #Oozie Client
@@ -815,11 +817,11 @@ HUE=Hadoop User Experience
 
 ### 3.3. Oozie工作流类型
 
-> ==workflow== 普通工作流 没有定时和条件触发功能。
+> ==**workflow**== 普通工作流 没有定时和条件触发功能。
 >
-> ==coordinator== 定时工作流 可以设置执行周期和频率
+> ==**coordinator**== 定时工作流 可以设置执行周期和频率
 >
-> bundle 批处理工作流  一次可以提交执行多个coordinator
+> **bundle** 批处理工作流  一次可以提交执行多个coordinator
 
 ![image-20211005224532079](assets/image-20211005224532079.png)
 
