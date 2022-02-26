@@ -553,7 +553,7 @@ HUE=Hadoop User Experience
 
     ![image-20211005214755032](assets/image-20211005214755032.png)
 
-  - lastmodifield模式
+  - lastmodified模式
 
     > - 要求：==**必须包含动态时间变化这一列**==，按照数据变化的时间进行判断
     > - 特点：既导入新增的数据也导入更新的数据
