@@ -616,7 +616,146 @@ HUE=Hadoop User Experience
 
 ### 2.9. Sqoop数据导出
 
+> sqoop导出操作最大的特点是，==目标表需要自己手动提前创建==。
 
+- 全量数据导出
+
+  ```shell
+  #step1:MySQL中建表
+  mysql> use userdb;
+  mysql> create table employee ( 
+     id int not null primary key, 
+     name varchar(20), 
+     deg varchar(20),
+     salary int,
+     dept varchar(10));
+     
+  #step2:从HDFS导出数据到MySQL
+  sqoop export \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table employee \
+  --export-dir /sqoop/result1/
+  
+  
+  sqoop export \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table employee \
+  --export-dir /sqoop/result2/
+  #启动jobhistory服务 日志显示java.lang.RuntimeException: Can't parse input data: '1205kranthiadmin20000TP' 
+  解析数据失败  失败的原因在于HDFS上sqoop默认分隔符是, 而数据中是\001 所以需要指定分隔符。
+  
+  
+  sqoop export \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table employee \
+  --input-fields-terminated-by '\001' \
+  --export-dir /sqoop/result2/
+  
+  
+  
+  #step3:从Hive导出数据到MySQL
+  #首先清空MySQL表数据
+  truncate table employee;
+  
+  sqoop export \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table employee \
+  --hcatalog-database test \
+  --hcatalog-table emp_hive \
+  --input-fields-terminated-by '\t' \
+  -m 1 
+  
+  #注意，如果Hive中的表底层是使用ORC格式存储的，那么必须使用hcatalog API进行操作。
+  ```
+
+- 增量数据导出
+
+  > - updateonly：只增量导出更新的数据
+  > - allowerinsert：既导出更新的数据，也导出新增的数据
+
+  - updateonly模式
+
+    ```shell
+    #在HDFS文件系统中/sqoop/updateonly/目录的下创建一个文件updateonly_1.txt
+    hadoop fs -mkdir -p /sqoop/updateonly/
+    hadoop fs -put updateonly_1.txt /sqoop/updateonly/
+    
+    1201,gopal,manager,50000
+    1202,manisha,preader,50000
+    1203,kalil,php dev,30000
+    
+    #手动创建mysql中的目标表
+    mysql> USE userdb;
+    mysql> CREATE TABLE updateonly ( 
+       id INT NOT NULL PRIMARY KEY, 
+       name VARCHAR(20), 
+       deg VARCHAR(20),
+       salary INT);
+    
+    #先执行全部导出操作：
+    sqoop export \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --table updateonly \
+    --export-dir /sqoop/updateonly/updateonly_1.txt
+    
+    #新增一个文件updateonly_2.txt：修改了前三条数据并且新增了一条记录
+    1201,gopal,manager,1212
+    1202,manisha,preader,1313
+    1203,kalil,php dev,1414
+    1204,allen,java,1515
+    
+    hadoop fs -put updateonly_2.txt /sqoop/updateonly/
+    
+    #执行更新导出：
+    sqoop export \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --table updateonly \
+    --export-dir /sqoop/updateonly/updateonly_2.txt \
+    --update-key id \
+    --update-mode updateonly
+    ```
+
+  - allowinsert模式
+
+    ```shell
+    #手动创建mysql中的目标表
+    mysql> USE userdb;
+    mysql> CREATE TABLE allowinsert ( 
+       id INT NOT NULL PRIMARY KEY, 
+       name VARCHAR(20), 
+       deg VARCHAR(20),
+       salary INT);
+       
+    #先执行全部导出操作
+    sqoop export \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root \
+    --password 123456 \
+    --table allowinsert \
+    --export-dir /sqoop/updateonly/updateonly_1.txt
+    
+    
+    #执行更新导出
+    sqoop export \
+    --connect jdbc:mysql://192.168.88.80:3306/userdb \
+    --username root --password 123456 \
+    --table allowinsert \
+    --export-dir /sqoop/updateonly/updateonly_2.txt \
+    --update-key id \
+    --update-mode allowinsert
+    ```
 
 ## 3. 工作流调度工具Oozie
 
