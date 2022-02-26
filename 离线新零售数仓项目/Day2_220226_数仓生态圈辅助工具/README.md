@@ -361,7 +361,83 @@ HUE=Hadoop User Experience
 
 ### 2.6. Sqoop数据导入至Hive--HCatalog API
 
+- sqoop API 原生方式
 
+  > 所谓sqoop原生的方式指的是sqoop自带的参数完成的数据导入。
+  >
+  > 但是有什么不好的地方呢？请看下面案例
+
+  ```sql
+  --手动在hive中建一张表
+  create table test.emp_hive(id int,name string,deg string,salary int ,dept string) 
+  row format delimited fields terminated by '\t'
+  stored as orc;
+  --注意，这里指定了表的文件存储格式为ORC。
+  --从存储效率来说，ORC格式胜于默认的textfile格式。
+  ```
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table emp \
+  --fields-terminated-by '\t' \
+  --hive-database test \
+  --hive-table emp_hive \
+  -m 1
+  ```
+
+  > 执行之后，可以发现虽然针对表emp_hive的sqoop任务成功，但是==Hive表中却没有数据==。
+
+  ![image-20211005212152604](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212152604.png)
+
+  ![image-20211005212245412](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212245412.png)
+
+- ==HCatalog== API方式
+
+  > Apache HCatalog是基于Apache Hadoop之上的数据表和存储管理服务。
+  >
+  > 包括：
+  >
+  > - 提供一个共享的模式和数据类型的机制。
+  > - 抽象出表，使用户不必关心他们的数据怎么存储，底层什么格式。
+  > - 提供可操作的跨数据处理工具，如Pig，MapReduce，Streaming，和Hive。
+
+  sqoop的官网也做了相关的描述说明，使用HCatalog支持ORC等数据格式。
+
+  ![image-20211005212545730](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212545730.png)
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --table emp \
+  --fields-terminated-by '\t' \
+  --hcatalog-database test \
+  --hcatalog-table emp_hive \
+  -m 1
+  ```
+
+  > 可以发现数据导入成功，并且底层是使用ORC格式存储的。
+
+  
+
+- sqoop原生API和 HCatalog区别
+
+  ```shell
+  #数据格式支持（这是实际中使用HCatalog的主要原因，否则还是原生的灵活一些）
+  	Sqoop方式支持的数据格式较少;
+  	HCatalog支持的数据格式多，包括RCFile, ORCFile, CSV, JSON和SequenceFile等格式。
+  
+  #数据覆盖
+  	Sqoop方式允许数据覆盖，HCatalog不允许数据覆盖，每次都只是追加。
+  
+  #字段名匹配
+  	Sqoop方式比较随意，不要求源表和目标表字段相同(字段名称和个数都可以不相同)，它抽取的方式是将字段按顺序插入，比如目标表有3个字段，源表有一个字段，它会将数据插入到Hive表的第一个字段，其余字段为NULL。
+  	但是HCatalog不同，源表和目标表字段名需要相同，字段个数可以不相等，如果字段名不同，抽取数据的时候会报NullPointerException错误。HCatalog抽取数据时，会将字段对应到相同字段名的字段上，哪怕字段个数不相等。
+  ```
 
 ### 2.7. Sqoop数据导入--条件部分导入
 
