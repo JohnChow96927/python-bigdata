@@ -246,7 +246,7 @@ HUE=Hadoop User Experience
   --target-dir /sqoop/result1 \
   --table emp --m 1
   
-  #sqoop把数据导入到HDFS  默认字段之间分隔符是,
+  #sqoop把数据导入到HDFS  默认字段之间分隔符是','
   ```
 
 - 指定分隔符
