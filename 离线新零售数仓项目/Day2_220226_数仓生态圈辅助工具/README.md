@@ -685,7 +685,7 @@ HUE=Hadoop User Experience
   > - updateonly：只增量导出更新的数据
   > - allowerinsert：既导出更新的数据，也导出新增的数据
 
-  - updateonly模式
+  - updateonly模式(已有数据的更新同步操作)
 
     ```shell
     #在HDFS文件系统中/sqoop/updateonly/目录的下创建一个文件updateonly_1.txt
