@@ -359,6 +359,10 @@ HUE=Hadoop User Experience
   --hive-database test
   ```
 
+> **实际工作中, 通常使用自己再Hive中建表, 只使用Sqoop导入数据操作,**
+>
+> **理由是这样可以精准控制文件格式**
+
 ### 2.6. Sqoop数据导入至Hive--HCatalog API
 
 - sqoop API 原生方式
@@ -439,7 +443,7 @@ HUE=Hadoop User Experience
 
 ### 2.7. Sqoop数据导入--条件部分导入
 
-> 所谓的条件部分指的就是数据的子集。一部分。
+> 所谓的条件部分指的就是数据的子集。全量数据的一部分。
 
 - where过滤
 
