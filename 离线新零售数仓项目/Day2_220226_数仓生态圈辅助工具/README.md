@@ -214,12 +214,6 @@ HUE=Hadoop User Experience
   --connect jdbc:mysql://localhost:3306/ \
   --username root \
   --password 123456
-  
-  
-  sqoop list-databases \
-  --connect jdbc:mysql://localhost:3306/ \
-  --username root \
-  --password 123456
   ```
 
 ### 2.3. 增量数据与全量数据
@@ -238,7 +232,71 @@ HUE=Hadoop User Experience
 
 ### 2.4. Sqoop数据导入至HDFS
 
+- 测试数据准备
 
+  ![image-20211005211142826](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005211142826.png)
+
+- ==全量==导入MySQL数据到HDFS
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --target-dir /sqoop/result1 \
+  --table emp --m 1
+  
+  #sqoop把数据导入到HDFS  默认字段之间分隔符是,
+  ```
+
+- 指定分隔符
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --target-dir /sqoop/result2 \
+  --fields-terminated-by '\001' \
+  --table emp --m 1
+  
+  #--fields-terminated-by 可以用于指定字段之间的分隔符
+  
+  ```
+
+- 指定任务并行度（maptask个数）
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --target-dir /sqoop/result3 \
+  --fields-terminated-by '\t' \
+  --split-by id \
+  --table emp --m 2
+  
+  #请结合一下的日志信息感受如何进行切片的
+  BoundingValsQuery: SELECT MIN(`id`), MAX(`id`) FROM `emp`
+  Split size: 2; Num splits: 2 from: 1201 to: 1205
+  mapreduce.JobSubmitter: number of splits:2
+  
+  #下面这个命令是错误的  没有指定切割的判断依据
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --target-dir /sqoop/result3 \
+  --fields-terminated-by '\t' \
+  --table emp --m 2
+  
+  
+  #扩展知识点
+  关于mr输出的结果文件名称
+  
+  part-r-00000  r表示reducetask 说明这个mr程序是一个标准的两个阶段的程序
+  part-m-00000  m表示maptask   说明这个mr是一个只有map阶段没有reduce阶段的程序
+  ```
 
 ### 2.5 Sqoop数据导入至Hive
 
