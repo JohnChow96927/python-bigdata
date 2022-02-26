@@ -94,7 +94,7 @@ HUE=Hadoop User Experience
 
   ![image-20211005181325273](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005181325273.png)
 
-  - 数据抽取
+  - 数据抽取(E)
 
     ```shell
     确定数据源，需要确定从哪些源系统进行数据抽取;
@@ -115,7 +115,7 @@ HUE=Hadoop User Experience
     	OLTP系统提供对外输出数据的接口（比如telnet），采集系统与该接口对接，从数据流接口抽取需要的数据。
     ```
 
-  - 数据转换
+  - 数据转换(T)
 
     ```shell
     	数据转换也叫做数据清洗转换。是将采集过来的原始数据（通常原始数据存在一定的脏数据）清洗（过虑）掉不符合要求的脏数据，并且根据数据仓库的要求对数据格式进行转换。
@@ -139,7 +139,7 @@ HUE=Hadoop User Experience
         省份:  31  32  33  34  35		 
     ```
 
-  - 数据加载
+  - 数据加载(L)
 
     ```shell
     数据加载就是清洗转换后的数据存储到数据仓库中，数据加载的方式包括：全量加载、增量加载。
@@ -149,8 +149,6 @@ HUE=Hadoop User Experience
     #增量加载：
     	增量加载按照一定的计划（通常是时间计划）逐步的一批一批的将数据加载到数据仓库，此类加载方式通常用于OLTP的业务操作数据。
     ```
-
-    
 
 - ETL与ELT的区别
 
@@ -183,7 +181,60 @@ HUE=Hadoop User Experience
 
   - 当下的语境中，把ETL的范围描述更大：从数据产生开始到最终应用之前，经历的各种调整转换都叫着ETL。因此有的公司把数仓工程师叫做==ETL工程师==（包括离线和实时）
 
-- > 
+### 2.2. Apache Sqoop介绍与工作机制
+
+- Sqoop介绍
+
+  ```properties
+  sqoop是apache旗下一款“Hadoop和关系数据库服务器之间传送数据”的工具。
+  导入数据：MySQL，Oracle导入数据到Hadoop的HDFS、HIVE、HBASE等数据存储系统；
+  导出数据：从Hadoop的HDFS、HIVE中导出数据到关系数据库mysql等。
+  
+  sqoop  sql+hadoop
+  ```
+
+  ![image-20211005184736673](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184736673.png)
+
+- Sqoop工作机制
+
+  ```
+  Sqoop工作机制是将导入或导出命令翻译成mapreduce程序来实现。
+  在翻译出的mapreduce中主要是对inputformat和outputformat进行定制。
+  ```
+
+  ![image-20211005184826460](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184826460.png)
+
+- sqoop安装、测试
+
+  ```shell
+  sqoop list-databases --connect jdbc:mysql://localhost:3306/ --username root --password 123456
+  
+  #也可以这么写  \表示命令未完待续 下一行还有命令参数  否则遇到回车换行就会自动提交执行
+  sqoop list-databases \
+  --connect jdbc:mysql://localhost:3306/ \
+  --username root \
+  --password 123456
+  
+  
+  sqoop list-databases \
+  --connect jdbc:mysql://localhost:3306/ \
+  --username root \
+  --password 123456
+  ```
+
+### 2.3. 增量数据与全量数据
+
+- 全量数据（Full data）
+
+  > 就是全部数据，所有数据。如对于表来说，就是表中的所有数据。
+
+- 增量数据（Incremental data）
+
+  > 就是上次操作之后至今产生的新数据。
+
+- 数据子集
+
+  > 也叫做部分数据。整体当中的一部分。
 
 ### 2.4. Sqoop数据导入至HDFS
 
