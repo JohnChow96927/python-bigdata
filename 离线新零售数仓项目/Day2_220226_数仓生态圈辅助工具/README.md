@@ -92,7 +92,7 @@ HUE=Hadoop User Experience
   >
   > ETL较常用在数据仓库中，是将原始数据经过抽取（Extract）、清洗转换（Transform）之后加载（Load）到数据仓库的过程，目的是将企业中的分散、零乱、标准不统一的数据整合到一起，为企业的决策提供分析依据。
 
-  ![image-20211005181325273](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005181325273.png)
+  ![image-20211005181325273](assets/image-20211005181325273.png)
 
   - 数据抽取(E)
 
@@ -160,7 +160,7 @@ HUE=Hadoop User Experience
     	如果要增加整个ETL过程的效率，则只能增强ETL工具服务器的配置，优化系统处理流程（一般可调的东西非常少）。
     ```
 
-    ![image-20211005184110888](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184110888.png)
+    ![image-20211005184110888](assets/image-20211005184110888.png)
 
   - ELT
 
@@ -169,7 +169,7 @@ HUE=Hadoop User Experience
     	比如Hive作为数据仓库工具，本身就具备通过SQL对数据进行各种转换的操作。（insert+select ）
     ```
 
-    ![image-20211005184319272](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184319272.png)
+    ![image-20211005184319272](assets/image-20211005184319272.png)
 
 - 结论
 
@@ -193,7 +193,7 @@ HUE=Hadoop User Experience
   sqoop  sql+hadoop
   ```
 
-  ![image-20211005184736673](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184736673.png)
+  ![image-20211005184736673](assets/image-20211005184736673.png)
 
 - Sqoop工作机制
 
@@ -202,7 +202,7 @@ HUE=Hadoop User Experience
   在翻译出的mapreduce中主要是对inputformat和outputformat进行定制。
   ```
 
-  ![image-20211005184826460](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005184826460.png)
+  ![image-20211005184826460](assets/image-20211005184826460.png)
 
 - sqoop安装、测试
 
@@ -234,7 +234,7 @@ HUE=Hadoop User Experience
 
 - 测试数据准备
 
-  ![image-20211005211142826](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005211142826.png)
+  ![image-20211005211142826](assets/image-20211005211142826.png)
 
 - ==全量==导入MySQL数据到HDFS
 
@@ -329,7 +329,7 @@ HUE=Hadoop User Experience
   desc formatted emp_add_sp;
   ```
 
-  ![image-20211005210311530](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005210311530.png)
+  ![image-20211005210311530](assets/image-20211005210311530.png)
 
   > 可以发现此时表的很多属性都是采用默认值来设定的。
 
@@ -390,9 +390,9 @@ HUE=Hadoop User Experience
 
   > 执行之后，可以发现虽然针对表emp_hive的sqoop任务成功，但是==Hive表中却没有数据==。
 
-  ![image-20211005212152604](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212152604.png)
+  ![image-20211005212152604](assets/image-20211005212152604.png)
 
-  ![image-20211005212245412](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212245412.png)
+  ![image-20211005212245412](assets/image-20211005212245412.png)
 
 - ==HCatalog== API方式
 
@@ -406,7 +406,7 @@ HUE=Hadoop User Experience
 
   sqoop的官网也做了相关的描述说明，使用HCatalog支持ORC等数据格式。
 
-  ![image-20211005212545730](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005212545730.png)
+  ![image-20211005212545730](assets/image-20211005212545730.png)
 
   ```shell
   sqoop import \
@@ -421,8 +421,6 @@ HUE=Hadoop User Experience
   ```
 
   > 可以发现数据导入成功，并且底层是使用ORC格式存储的。
-
-  
 
 - sqoop原生API和 HCatalog区别
 
@@ -441,7 +439,44 @@ HUE=Hadoop User Experience
 
 ### 2.7. Sqoop数据导入--条件部分导入
 
+> 所谓的条件部分指的就是数据的子集。一部分。
 
+- where过滤
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --where "city ='sec-bad'" \
+  --target-dir /sqoop/result4 \
+  --table emp_add --m 1
+  ```
+
+  ![image-20211005213141440](assets/image-20211005213141440.png)
+
+- query查询
+
+  ```shell
+  sqoop import \
+  --connect jdbc:mysql://192.168.88.80:3306/userdb \
+  --username root \
+  --password 123456 \
+  --target-dir /sqoop/result5 \
+  --query 'select id,name,deg from emp WHERE  id>1203 and $CONDITIONS' \
+  --fields-terminated-by '\001' \
+  --m 1
+  ```
+
+  > 使用sql query语句来进行查找时，==不能加参数--table==；
+  >
+  > 并且==必须要添加where条件==；
+  >
+  > 并且where条件后面==必须带一个$CONDITIONS==这个字符串；
+  >
+  > 并且这个sql语句==必须用单引号==，不能用双引号。
+
+  ![image-20211005213336317](assets/image-20211005213336317.png)
 
 ### 2.8. Sqoop数据导入--增量导入
 
