@@ -765,19 +765,65 @@ HUE=Hadoop User Experience
 
 ### 3.1. 工作流介绍
 
+- 工作流概念
 
+  ```properties
+  	工作流（Workflow），指“业务过程的部分或整体在计算机应用环境下的自动化”。是对工作流程及其各操作步骤之间业务规则的抽象、概括描述。
+  	工作流解决的主要问题是：为了实现某个业务目标，利用计算机软件在多个参与者之间按某种预定规则自动传递文档、信息或者任务。
+  	一个完整的数据分析系统通常都是由多个前后依赖的模块组合构成的：数据采集、数据预处理、数据分析、数据展示等。各个模块单元之间存在时间先后依赖关系，且存在着周期性重复。
+  
+  	核心概念:依赖执行 周期重复执行
+  ```
+
+- 工作流实现方式
+
+  - 自己开发实现调度工具
+  - 使用第三方调度软件
 
 ### 3.2. Apache Oozie介绍与架构
 
+- oozie介绍
 
+  ```properties
+  	Oozie是一个用来管理 Hadoop生态圈job的工作流调度系统。由Cloudera公司贡献给Apache。
+  	Oozie是运行于Java servlet容器上的一个java web应用。
+  	Oozie的目的是按照DAG（有向无环图）调度一系列的Map/Reduce或者Hive等任务。Oozie 工作流由hPDL（Hadoop Process Definition Language）定义（这是一种XML流程定义语言）。
+  	适用场景包括：
+  		需要按顺序进行一系列任务；
+  		需要并行处理的任务；
+  		需要定时、周期触发的任务；
+  		可视化作业流运行过程；
+  		运行结果或异常的通报。
+  ```
+
+  ![image-20211005224357114](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005224357114.png)
+
+- oozie架构
+
+  ![image-20211005224406173](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday02--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day02_%E6%95%B0%E4%BB%93%E7%94%9F%E6%80%81%E5%9C%88%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7.assets/image-20211005224406173.png)
+
+  ```shell
+  #Oozie Client
+  	提供命令行、java api、rest等方式，对Oozie的工作流流程的提交、启动、运行等操作；
+  
+  #Oozie WebApp
+  	即 Oozie Server,本质是一个java应用。可以使用内置的web容器，也可以使用外置的web容器；
+  
+  #Hadoop Cluster
+  	底层执行Oozie编排流程的各个hadoop生态圈组件；
+  ```
 
 ### 3.3. Oozie工作流类型
 
+> ==workflow== 普通工作流 没有定时和条件触发功能。
+>
+> ==coordinator== 定时工作流 可以设置执行周期和频率
+>
+> bundle 批处理工作流  一次可以提交执行多个coordinator
 
+![image-20211005224532079](assets/image-20211005224532079.png)
 
-### 3.4. Oozie使用案例
+![image-20211005224613359](assets/image-20211005224613359.png)
 
-
-
-
+![image-20211005224643377](assets/image-20211005224643377.png)
 
