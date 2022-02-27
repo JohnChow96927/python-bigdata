@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$/../Hadoop离线" />
     <content url="file://$MODULE_DIR$" />
     <content url="file://$MODULE_DIR$/../就业指导文档/220114" />
+    <content url="file://$MODULE_DIR$/../离线新零售数仓项目" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
