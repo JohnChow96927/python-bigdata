@@ -412,7 +412,7 @@ HUE=Hadoop User Experience
   --hive-database test
   ```
 
-> **实际工作中, 通常使用自己再Hive中建表, 只使用Sqoop导入数据操作,**
+> **实际工作中, 通常使用自己在Hive中建表, 只使用Sqoop导入数据操作,**
 >
 > **理由是这样可以精准控制文件格式**
 
