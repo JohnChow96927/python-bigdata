@@ -664,7 +664,7 @@ HUE=Hadoop User Experience
   --connect jdbc:mysql://192.168.88.80:3306/userdb \
   --username root \
   --password 123456 \
-  --query "select * from emp where id>1203 and  \$CONDITIONS" \
+  --query "select * from emp where id>1203 and $CONDITIONS" \
   --fields-terminated-by '\001' \
   --hcatalog-database test \
   --hcatalog-table emp_hive \
