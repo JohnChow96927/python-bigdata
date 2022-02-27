@@ -64,15 +64,47 @@ HUE=Hadoop User Experience
 
 - 新建文件、文件夹
 
+  ![1645940903758](assets/1645940903758.png)
+
+  ![1645940913603](assets/1645940913603.png)
+
+  ![1645940932937](assets/1645940932937.png)
+
+  ![1645940958281](assets/1645940958281.png)
+
+  ![1645940973062](assets/1645940973062.png)
+
+  ![1645940985078](assets/1645940985078.png)
+
+  ![1645941005060](assets/1645941005060.png)
+
 - 上传、下载文件
+
+  ![1645941022642](assets/1645941022642.png)
+
+  ![1645941033048](assets/1645941033048.png)
+
+  ![1645941245878](assets/1645941245878.png)
 
 - 查看文件内容
 
+  ![1645941263497](assets/1645941263497.png)
+
 - 在线实时编辑文件内容
+
+  ![1645941281003](assets/1645941281003.png)
+
+  ![1645941291467](assets/1645941291467.png)
 
 - 删除文件
 
+  ![1645941303503](assets/1645941303503.png)
+
 - 修改文件权限
+
+  ![1645941314489](assets/1645941314489.png)
+
+  ![1645941322935](assets/1645941322935.png)
 
 ### 1.6.  Hue操作Hive
 
@@ -81,6 +113,27 @@ HUE=Hadoop User Experience
   ![image-20211005181140973](assets/image-20211005181140973.png)
 
 - SQL编写、执行
+
+  ```sql
+  -- 创建数据库
+  create database if not exists `test`;
+  
+  -- 创建表
+  create table test.test_table(
+  	id int,
+      name string comment '姓名'
+  )
+  comment '测试表'
+  row format delimited fields terminated by '\t';
+  
+  -- 插入数据
+  insert into test.test_table values(1, '张三');
+  
+  -- 查询数据
+  select * from test.test_table;
+  ```
+
+  ![1645942646138](assets/1645942646138.png)
 
 ## 2. 数据迁移同步工具Sqoop
 
@@ -166,7 +219,7 @@ HUE=Hadoop User Experience
 
     ```
     	ELT架构则把“L”这一步工作提前到“T”之前来完成：先抽取、然后加载到目标数据库中、在目标数据库中完成转换操作。
-    	比如Hive作为数据仓库工具，本身就具备通过SQL对数据进行各种转换的操作。（insert+select ）
+    	比如Hive作为数据仓库工具，本身就具备通过SQL对数据进行各种转换的操作。（insert+select）
     ```
 
     ![image-20211005184319272](assets/image-20211005184319272.png)
