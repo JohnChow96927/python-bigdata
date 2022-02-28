@@ -871,11 +871,11 @@
 
 - 电商平台案例
 
-  ![image-20211008165125636](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211008165125636.png)
+  ![image-20211008165125636](assets/image-20211008165125636.png)
 
 - 阿里巴巴数仓分层案例
 
-  ![image-20211008165154648](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211008165154648.png)
+  ![image-20211008165154648](assets/image-20211008165154648.png)
 
 - **美团点评酒旅数据仓库建设实践**
 
