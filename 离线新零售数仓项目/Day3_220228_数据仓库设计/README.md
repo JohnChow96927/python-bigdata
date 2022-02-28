@@ -897,7 +897,7 @@
 
 - 新零售分层架构图
 
-  ![image-20211008165458523](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211008165458523.png)
+  ![image-20211008165458523](assets/image-20211008165458523.png)
 
 - ODS（数据临时存储层）
 
