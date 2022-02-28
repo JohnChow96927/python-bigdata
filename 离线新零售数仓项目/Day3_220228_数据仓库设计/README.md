@@ -117,7 +117,7 @@
 >
 > 把==数据从获取、存储到数据仓库、数据分析的所有部分==称为一个==数据仓库系统==
 
-![image-20211006223704552](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211006223704552.png)
+![image-20211006223704552](assets/image-20211006223704552.png)
 
 - 核心1：==ETL(Extra, Transfer, Load)==
 
@@ -135,15 +135,15 @@
   
   ```
 
-  ![image-20211006225344759](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211006225344759.png)
+  ![image-20211006225344759](assets/image-20211006225344759.png)
 
 - 核心2：==数仓分层==
 
   - 将各种数据的处理流程进行规范化。
 
-    ![image-20211006225632654](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211006225632654.png)
+    ![image-20211006225632654](assets/image-20211006225632654.png)
 
-    ![image-20211006225643092](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday03--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day03_%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E8%AE%BE%E8%AE%A1.assets/image-20211006225643092.png)
+    ![image-20211006225643092](assets/image-20211006225643092.png)
 
   - 分层的实现
 
