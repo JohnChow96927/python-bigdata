@@ -1102,3 +1102,18 @@
 ![image-20211011112454116](assets/image-20211011112454116.png)
 
 ### 附: hive相关配置参数
+
+```shell
+--分区
+SET hive.exec.dynamic.partition=true;
+SET hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.max.dynamic.partitions.pernode=10000;
+set hive.exec.max.dynamic.partitions=100000;
+set hive.exec.max.created.files=150000;
+--hive压缩
+set hive.exec.compress.intermediate=true;
+set hive.exec.compress.output=true;
+--写入时压缩生效
+set hive.exec.orc.compression.strategy=COMPRESSION;
+```
+
