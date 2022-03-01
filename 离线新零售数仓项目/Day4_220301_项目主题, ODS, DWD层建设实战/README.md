@@ -968,7 +968,33 @@
 
 ### 7. 时间维度表 -- 全量覆盖导入
 
+> 适合场景：
+>
+> 表是低表  数据几乎不更新  而且不需要历史状态维护
 
+- 建表操作
+
+  ```sql
+  DROP TABLE if EXISTS yp_dwd.dim_district;
+  CREATE TABLE yp_dwd.dim_district(
+    id string COMMENT '主键ID', 
+    code string COMMENT '区域编码', 
+    name string COMMENT '区域名称', 
+    pid string COMMENT '父级ID', 
+    alias string COMMENT '别名')
+  COMMENT '区域字典表'
+  row format delimited fields terminated by '\t'
+  stored as orc 
+  tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+- 全量覆盖操作
+
+  ```sql
+  INSERT overwrite TABLE yp_dwd.dim_district
+  select * from yp_ods.t_district
+  WHERE code IS NOT NULL AND name IS NOT NULL;
+  ```
 
 ### 8. 订单评价表 -- 增量导入
 
