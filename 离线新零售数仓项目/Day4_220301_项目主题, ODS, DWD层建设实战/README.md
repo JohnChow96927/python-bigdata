@@ -200,7 +200,47 @@
 
 ### 2. Hive中文注释乱码的问题
 
+- 现象
 
+  ![image-20211009230956878](assets/image-20211009230956878.png)
+
+- 原因
+
+  > Hive元数据信息存储在MySQL中。
+  >
+  > Hive要求数据库级别的字符集必须是latin1。但是对于具体表中字段的字符集则没做要求。
+  >
+  > 默认情况下，==字段字符集也是latin1，但是latin1不支持中文==。
+
+  ![image-20211009231441443](assets/image-20211009231441443.png)
+
+- 解决
+
+  > 在mysql中，对于记录注释comment信息的几个表字段字符集进行修改。
+
+  - step1：DataGrip打开MySQL console控制台
+
+    ![image-20211009231723858](assets/image-20211009231723858.png)
+
+    
+
+  - step2：执行下述sql语句修改字符集
+
+    ```sql
+    alter table hive.COLUMNS_V2 modify column COMMENT varchar(256) character set utf8;
+    alter table hive.TABLE_PARAMS modify column PARAM_VALUE varchar(4000) character set utf8;
+    alter table hive.PARTITION_PARAMS modify column PARAM_VALUE varchar(4000) character set utf8 ;
+    alter table hive.PARTITION_KEYS modify column PKEY_COMMENT varchar(4000) character set utf8;
+    alter table hive.INDEX_PARAMS modify column PARAM_VALUE varchar(4000) character set utf8;
+    ```
+
+  - step3：查看验证是否修改成功
+
+    ![image-20211009231927493](assets/image-20211009231927493.png)
+
+    ![image-20211009231944909](assets/image-20211009231944909.png)
+
+  - step4：删除之前hive中创建的表，重新建表
 
 ## III. ODS层构建
 
