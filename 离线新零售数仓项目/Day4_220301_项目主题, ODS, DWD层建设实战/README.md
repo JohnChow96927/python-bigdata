@@ -685,7 +685,115 @@
 
 ### 5. 订单事实表 -- 建表与首次导入
 
+> 适合场景：表的数据既有更新 又有新增  至于要不要使用拉链表 取决于两个条件
+>
+> 1、要不要维护历史状态
+>
+> 2、数据冗余要不要考虑
 
+- step1：建表操作
+
+  ```properties
+  1. 抽取哪些字段, 影响DWD建表语句, 宁滥勿缺
+  2. 转换动作要哪些? 不一定要在这里做, 明显有问题的数据可以在这里处理一下, 也可以后面涉及到再出来
+  3. 
+  ```
+
+  ```sql
+  DROP TABLE if EXISTS yp_dwd.fact_shop_order;
+  CREATE TABLE yp_dwd.fact_shop_order(
+    id string COMMENT '根据一定规则生成的订单编号', 
+    order_num string COMMENT '订单序号', 
+    buyer_id string COMMENT '买家的userId', 
+    store_id string COMMENT '店铺的id', 
+    order_from string COMMENT '此字段可以转换 1.安卓\; 2.ios\; 3.小程序H5 \; 4.PC', 
+    order_state int COMMENT '订单状态:1.已下单\; 2.已付款, 3. 已确认 \;4.配送\; 5.已完成\; 6.退款\;7.已取消', 
+    create_date string COMMENT '下单时间', 
+    finnshed_time timestamp COMMENT '订单完成时间,当配送员点击确认送达时,进行更新订单完成时间,后期需要根据订单完成时间,进行自动收货以及自动评价', 
+    is_settlement tinyint COMMENT '是否结算\;0.待结算订单\; 1.已结算订单\;', 
+    is_delete tinyint COMMENT '订单评价的状态:0.未删除\;  1.已删除\;(默认0)', 
+    evaluation_state tinyint COMMENT '订单评价的状态:0.未评价\;  1.已评价\;(默认0)', 
+    way string COMMENT '取货方式:SELF自提\;SHOP店铺负责配送', 
+    is_stock_up int COMMENT '是否需要备货 0：不需要    1：需要    2:平台确认备货  3:已完成备货 4平台已经将货物送至店铺 ', 
+    create_user string, 
+    create_time string, 
+    update_user string, 
+    update_time string, 
+    is_valid tinyint COMMENT '是否有效  0: false\; 1: true\;   订单是否有效的标志',
+    end_date string COMMENT '拉链结束日期')
+  COMMENT '订单表'
+  partitioned by (start_date string)	--拉链起始时间, 也是分区字段(减少全表扫描)
+  row format delimited fields terminated by '\t' 
+  stored as orc 
+  tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+  ![image-20211011094553267](assets/image-20211011094553267.png)
+
+- step2：首次导入
+
+  > - 如果是==动态分区插入，别忘了相关参数==
+  > - 如果ods层中表的字段有==枚举类型==，可以在ETL到dwd的过程中==使用case when语句转换==。
+
+  ```sql
+  --注意事项 由于项目第一次采集把之前所有的数据都当成一天的数据2021-11-29 在往DWD层插入数据的时候就会遇到一个选择题：分区以哪个为准？
+  --以数据时间发生的那天为准  create_time
+  --以采集时间发生的那天为准  
+  
+  
+  ------------------因为采用了动态分区插入技术 因此需要设置相关参数---------------
+  --分区
+  SET hive.exec.dynamic.partition=true;
+  SET hive.exec.dynamic.partition.mode=nonstrict;
+  set hive.exec.max.dynamic.partitions.pernode=10000;
+  set hive.exec.max.dynamic.partitions=100000;
+  set hive.exec.max.created.files=150000;
+  --hive压缩
+  set hive.exec.compress.intermediate=true;
+  set hive.exec.compress.output=true;
+  --写入时压缩生效
+  set hive.exec.orc.compression.strategy=COMPRESSION;
+  
+  --首次全量导入
+  INSERT overwrite TABLE yp_dwd.fact_shop_order PARTITION (start_date)
+  SELECT 
+     id,
+     order_num,
+     buyer_id,
+     store_id,
+     case order_from 
+        when 1
+        then 'android'
+        when 2
+        then 'ios'
+        when 3
+        then 'miniapp'
+        when 4
+        then 'pcweb'
+        else 'other'
+        end
+        as order_from,
+     order_state,
+     create_date,
+     finnshed_time,
+     is_settlement,
+     is_delete,
+     evaluation_state,
+     way,
+     is_stock_up,
+     create_user,
+     create_time,
+     update_user,
+     update_time,
+     is_valid,
+     '9999-99-99' end_date,
+     dt as start_date
+  FROM yp_ods.t_shop_order;
+  ```
+
+- step3：查看验证表结果
+
+  ![image-20211128222847971](assets/image-20211128222847971.png)
 
 ### 6. 订单事实表 -- 循环与拉链导入
 
