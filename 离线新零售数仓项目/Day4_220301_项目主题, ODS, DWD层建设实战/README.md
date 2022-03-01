@@ -569,7 +569,42 @@
 
 ### 6. 数据导入 -- 完整
 
+- 掌握完全量覆盖、增量同步、新增和更新同步如何实现之后，对于ODS的表其他操作类比进行。
 
+- 可以使用课程中提供的脚本批量执行，提高效率。
+
+- ==**注意脚本中的时间，是写死的还是动态获取的。如果有需要进行修改**==。
+
+- 注意数据同步之后，最好和mysql数据源表做一次校验比对，同时也验证一下同步数据是否成功、正确。
+
+  ![image-20211010220321069](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211010220321069.png)
+
+- step1：关于ODS层建表语句sql文件的执行
+
+  - Datagrip中选中sql文件执行
+
+    ![image-20211010220555514](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211010220555514.png)
+
+    ![image-20211010220633357](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211010220633357.png)
+
+    ![image-20211010220658356](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211010220658356.png)
+
+    ![image-20211010220859334](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211010220859334.png)
+
+- step2：关于ODS层sqoop数据同步的shell脚本执行
+
+  - ==执行之前，把脚本中的写死的日期根据当前操作的实际情况修改一下==。
+
+  - 可以选择复制shell脚本中的sqoop导入命令  一个一个一次执行
+
+  - 也可以选择上传shell脚本到hadoop01服务器上，执行如下命令
+
+    ```shell
+    chmod u+x sqoop_import.sh
+    sh sqoop_import.sh
+    ```
+
+  - 这样shell脚本就会依次执行每一个sqoop任务了。
 
 ## IV. DWD(detail)层构建
 
