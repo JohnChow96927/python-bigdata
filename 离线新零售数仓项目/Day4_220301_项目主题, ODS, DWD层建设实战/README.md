@@ -998,10 +998,107 @@
 
 ### 8. 订单评价表 -- 增量导入
 
+> 适合场景：表数据有新增 但是没有更新 不需要历史状态维护  每次只要把新增的数据作为新的分区即可。
 
+- 建表
+
+  ```sql
+  DROP TABLE if EXISTS yp_dwd.fact_goods_evaluation;
+  CREATE TABLE yp_dwd.fact_goods_evaluation(
+    id string, 
+    user_id string COMMENT '评论人id', 
+    store_id string COMMENT '店铺id', 
+    order_id string COMMENT '订单id', 
+    geval_scores int COMMENT '综合评分', 
+    geval_scores_speed int COMMENT '送货速度评分0-5分(配送评分)', 
+    geval_scores_service int COMMENT '服务评分0-5分', 
+    geval_isanony tinyint COMMENT '0-匿名评价，1-非匿名', 
+    create_user string, 
+    create_time string, 
+    update_user string, 
+    update_time string, 
+    is_valid tinyint COMMENT '0 ：失效，1 ：开启')
+  COMMENT '订单评价表'
+  partitioned by (dt string)
+  row format delimited fields terminated by '\t'
+  stored as orc 
+  tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+- 第一次导入（全量）
+
+  ```sql
+  --只有在项目的第一天 涉及到之前很多天的数据时候 需要这么考虑
+  --其他情况下 都是今天的前一天
+  
+  --这里是以数据发生的时间作为分区字段值
+  INSERT overwrite TABLE yp_dwd.fact_goods_evaluation PARTITION(dt)
+  select 
+     id,
+     user_id,
+     store_id,
+     order_id,
+     geval_scores,
+     geval_scores_speed,
+     geval_scores_service,
+     geval_isanony,
+     create_user,
+     create_time,
+     update_user,
+     update_time,
+     is_valid,
+     substr(create_time, 1, 10) as dt
+  from yp_ods.t_goods_evaluation;
+  
+  --下面这个是以数据采集同步的日期作为分区字段值
+  --课堂演示采用这种方式
+  INSERT overwrite TABLE yp_dwd.fact_goods_evaluation PARTITION(dt)
+  select 
+     id,
+     user_id,
+     store_id,
+     order_id,
+     geval_scores,
+     geval_scores_speed,
+     geval_scores_service,
+     geval_isanony,
+     create_user,
+     create_time,
+     update_user,
+     update_time,
+     is_valid,
+     dt
+  from yp_ods.t_goods_evaluation;
+  ```
+
+- 增量导入操作
+
+  ```sql
+  INSERT overwrite TABLE yp_dwd.fact_goods_evaluation PARTITION(dt)
+  select 
+     id,
+     user_id,
+     store_id,
+     order_id,
+     geval_scores,
+     geval_scores_speed,
+     geval_scores_service,
+     geval_isanony,
+     create_user,
+     create_time,
+     update_user,
+     update_time,
+     is_valid,
+     substr(create_time, 1, 10) as dt
+  from yp_ods.t_goods_evaluation
+  where dt='xxxx-xx-xx';
+  ```
 
 ### 9. 完整
 
+> - 对于DWD的层中其他表操作，可以使用课程中提供的脚本批量执行，提高效率。
+> - 前提是：==必须掌握拉链表的使用==。
 
+![image-20211011112454116](assets/image-20211011112454116.png)
 
 ### 附: hive相关配置参数
