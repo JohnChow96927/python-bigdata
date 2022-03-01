@@ -649,18 +649,9 @@
 
   ```sql
   create database if not exists yp_dwd;
-  
   ```
 
   ![image-20211011094218767](assets/image-20211011094218767.png)
-
-### 2. 渐变维: 拉链表 -- 设计
-
-
-
-### 3. 渐变维: 拉链表 -- 实现
-
-
 
 ### 4. DWD搭建 -- 3种导入方式
 
