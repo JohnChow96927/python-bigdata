@@ -797,7 +797,174 @@
 
 ### 6. 订单事实表 -- 循环与拉链导入
 
+- step1：修改mysql中t_shop_order表数据
 
+  > ==模拟业务有新增订单、更新订单数据发生==;
+  >
+  > 因为上次ODS导入时，指定分区时间为2021-11-29，所以这里在模拟数据时把时间设为2021-11-30这一天的的新增及更新操作。
+
+  ```sql
+  delete from t_shop_order where id ='dd9999999999999999';
+  
+  --新增订单
+  INSERT INTO yipin.t_shop_order (id, order_num, buyer_id, store_id, order_from, order_state, create_date, finnshed_time, is_settlement, is_delete, evaluation_state, way, is_stock_up, create_user, create_time, update_user, update_time, is_valid) VALUES ('dd9999999999999999', '251', '2f322c3f55e211e998ec7cd30ad32e2e', 'e438ca06cdf711e998ec7cd30ad32e2e', 3, 2, '2021-11-30 17:52:23', null, 0, 0, 0, 'SELF', 0, '2f322c3f55e211e998ec7cd30ad32e2e', '2021-11-30 17:52:23', '2f322c3f55e211e998ec7cd30ad32e2e', '2021-11-30 18:52:34', 1);
+  
+  
+  --更新订单
+  UPDATE t_shop_order SET order_num=666
+  WHERE id='dd1910223851672f32';
+  
+  
+  UPDATE t_shop_order SET update_time='2021-11-30 12:12:12'
+  WHERE id='dd1910223851672f32';
+  ```
+
+- step2：ODS层抽取新增、更新数据
+
+  > - 使用sqoop新增和更新同步实现。
+
+  ```sql
+  --首先验证sql能否够将新增及更新数据查询出来
+  select *, '2021-11-30' as dt from t_shop_order where 1=1 and (create_time between '2021-11-30 00:00:00' and '2021-11-30 23:59:59') or (update_time between '2021-11-30 00:00:00' and '2021-11-30 23:59:59')
+  ```
+
+  ![image-20211128223400945](assets/image-20211128223400945.png)
+
+  ```shell
+    /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+    --connect 'jdbc:mysql://192.168.88.80:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+    --username root \
+    --password 123456 \
+    --query "select *, '2021-11-30' as dt from t_shop_order where 1=1 and (create_time between '2021-11-30 00:00:00' and '2021-11-30 23:59:59') or (update_time between '2021-11-30 00:00:00' and '2021-11-30 23:59:59') and  \$CONDITIONS" \
+    --hcatalog-database yp_ods \
+    --hcatalog-table t_shop_order \
+    -m 1
+  ```
+
+- step3：创建中间临时表,用于保存拉链结果
+
+  > 临时表的结构和最终的拉链表结构一样。
+
+  ```sql
+  DROP TABLE if EXISTS yp_dwd.fact_shop_order_tmp;
+  CREATE TABLE yp_dwd.fact_shop_order_tmp(
+    id string COMMENT '根据一定规则生成的订单编号',
+    order_num string COMMENT '订单序号',
+    buyer_id string COMMENT '买家的userId',
+    store_id string COMMENT '店铺的id',
+    order_from string COMMENT '此字段可以转换 1.安卓\; 2.ios\; 3.小程序H5 \; 4.PC',
+    order_state int COMMENT '订单状态:1.已下单\; 2.已付款, 3. 已确认 \;4.配送\; 5.已完成\; 6.退款\;7.已取消',
+    create_date string COMMENT '下单时间',
+    finnshed_time timestamp COMMENT '订单完成时间,当配送员点击确认送达时,进行更新订单完成时间,后期需要根据订单完成时间,进行自动收货以及自动评价',
+    is_settlement tinyint COMMENT '是否结算\;0.待结算订单\; 1.已结算订单\;',
+    is_delete tinyint COMMENT '订单评价的状态:0.未删除\;  1.已删除\;(默认0)',
+    evaluation_state tinyint COMMENT '订单评价的状态:0.未评价\;  1.已评价\;(默认0)',
+    way string COMMENT '取货方式:SELF自提\;SHOP店铺负责配送',
+    is_stock_up int COMMENT '是否需要备货 0：不需要    1：需要    2:平台确认备货  3:已完成备货 4平台已经将货物送至店铺 ',
+    create_user string,
+    create_time string,
+    update_user string,
+    update_time string,
+    is_valid tinyint COMMENT '是否有效  0: false\; 1: true\;   订单是否有效的标志',
+    end_date string COMMENT '拉链结束日期')
+  COMMENT '订单表'
+  partitioned by (start_date string)
+  row format delimited fields terminated by '\t'
+  stored as orc
+  tblproperties ('orc.compress' = 'SNAPPY')
+  ```
+
+- step4：拉链操作，结果to临时表
+
+  ```sql
+  insert overwrite table yp_dwd.fact_shop_order_tmp partition (start_date)
+  select *
+  from (
+     --1、ods表的新分区数据(有新增和更新的数据)
+           select id,
+                  order_num,
+                  buyer_id,
+                  store_id,
+                  case order_from
+                      when 1
+                          then 'android'
+                      when 2
+                          then 'ios'
+                      when 3
+                          then 'miniapp'
+                      when 4
+                          then 'pcweb'
+                      else 'other'
+                      end
+                      as order_from,
+                  order_state,
+                  create_date,
+                  finnshed_time,
+                  is_settlement,
+                  is_delete,
+                  evaluation_state,
+                  way,
+                  is_stock_up,
+                  create_user,
+                  create_time,
+                  update_user,
+                  update_time,
+                  is_valid,
+                  '9999-99-99' end_date,
+            '2021-11-30' as start_date
+           from yp_ods.t_shop_order
+           where dt='2021-11-30'
+  
+           union all
+  
+      -- 2、历史拉链表数据，并根据up_id判断更新end_time有效期
+           select
+               fso.id,
+               fso.order_num,
+               fso.buyer_id,
+               fso.store_id,
+               fso.order_from,
+               fso.order_state,
+               fso.create_date,
+               fso.finnshed_time,
+               fso.is_settlement,
+               fso.is_delete,
+               fso.evaluation_state,
+               fso.way,
+               fso.is_stock_up,
+               fso.create_user,
+               fso.create_time,
+               fso.update_user,
+               fso.update_time,
+               fso.is_valid,
+               --3、更新end_time：如果没有匹配到变更数据，或者当前已经是无效的历史数据，则保留原始end_time过期时间；否则变更end_time时间为前天（昨天之前有效）
+               if (tso.id is null or fso.end_date<'9999-99-99', fso.end_date, date_add(tso.dt, -1)) end_time,
+               fso.start_date
+           from yp_dwd.fact_shop_order fso left join (select * from yp_ods.t_shop_order where dt='2021-11-30') tso
+           on fso.id=tso.id
+       ) his
+  order by his.id, start_date;
+  ```
+
+- step5：查询临时表验证
+
+  ```sql
+  select *
+  from yp_dwd.fact_shop_order_tmp where id='dd1910223851672f32';
+  
+  --可以看到，这条订单有两条数据 
+  --第一条根据end_date信息可以表名是历史状态数据
+  --第一条根据end_date信息是9999-99-99表明是当前有效的状态数据
+  ```
+
+  ![image-20211128224330673](assets/image-20211128224330673.png)
+
+- step6：临时表结果覆盖拉链表
+
+  ```sql
+  INSERT OVERWRITE TABLE yp_dwd.fact_shop_order partition (start_date)
+  SELECT * from yp_dwd.fact_shop_order_tmp;
+  ```
 
 ### 7. 时间维度表 -- 全量覆盖导入
 
