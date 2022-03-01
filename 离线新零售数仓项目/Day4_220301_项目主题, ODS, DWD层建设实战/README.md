@@ -288,7 +288,49 @@
 
 ### 2. DataGrip链接Hive, 建库ODS
 
+- DataGrip连接Hive
+
+  > 注意，本项目环境中使用的==Hive版本是2.1.1-cdh6.2.1==，因此需要使用Hive2版本的驱动。
+
+  ![image-20211009234541321](assets/image-20211009234541321.png)
+
+  ![image-20211009234615870](assets/image-20211009234615870.png)
+
+  ![image-20211009234624400](assets/image-20211009234624400.png)
+
+  ![image-20211009234630869](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday04--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day04_%E9%A1%B9%E7%9B%AE%E4%B8%BB%E9%A2%98%E3%80%81ODS%E3%80%81DWD%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98.assets/image-20211009234630869.png)
+
+  ![image-20211009234637511](assets/image-20211009234637511.png)
+
+  ![image-20211009234655528](assets/image-20211009234655528.png)
+
+- 建库ODS
+
+  > 库命名规范：==业务简拼_ods==，亿品新零售业务的ods层，可以命名为yp_ods。
+  >
+  > 表命名规范：ods层数据保持与原始数据一致，因此表名可以和原始表名一致。
+  >
+  > 比如t_shop_order表，可以命名为yp_ods.t_shop_order。
+
+  - step1：DataGrip中打开Hive console控制台
+
+    ![image-20211009235049473](assets/image-20211009235049473.png)
+
+  - step2：执行建库语句
+
+    ```sql
+    create database if not exists yp_ods;
+    ```
+
+    ![image-20211009235127884](assets/image-20211009235127884.png)
+
+  - step3：选中创建好的数据库，刷新
+
+    ![image-20211009235222505](assets/image-20211009235222505.png)
+
 ### 3. 全量覆盖
+
+
 
 ### 4. 数据导入 -- 增量同步(仅新增)
 
