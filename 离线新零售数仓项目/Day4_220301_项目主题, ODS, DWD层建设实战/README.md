@@ -376,7 +376,83 @@
 
 ### 4. 数据导入 -- 增量同步(仅新增)
 
+> 每天新增一个日期分区==，同步并存储当天的新增数据。
+>
+> 比如登录日志表、访问日志表、交易记录表、商品评价表，订单评价表等。
+>
+> 这里以==t_user_login登录日志表为例，进行讲解==。
 
+- step1：ods层建表
+
+  ```sql
+  DROP TABLE if exists yp_ods.t_user_login;
+  CREATE TABLE yp_ods.t_user_login(
+     id string,
+     login_user string,
+     login_type string COMMENT '登录类型（登陆时使用）',
+     client_id string COMMENT '推送标示id(登录、第三方登录、注册、支付回调、给用户推送消息时使用)',
+     login_time string,
+     login_ip string,
+     logout_time string
+  ) 
+  COMMENT '用户登录记录表'
+  partitioned by (dt string)
+  row format delimited fields terminated by '\t'
+  stored as orc tblproperties ('orc.compress' = 'ZLIB');
+  
+  ---- dayinfo  daystr  dt   常见的表示天分区的字段
+  ```
+
+- step2：sqoop数据同步
+
+  - 首次(全量)
+
+    > 1、不管什么模式，首次都是全量同步；再次循环同步的时候，可以自己通过where条件来控制同步数据的范围；
+    >
+    > 2、==${TD_DATE}表示分区日期，正常来说应该是今天的前一天==，因为正常情况下，都是过夜里12点，干前一天活，那么数据的分区字段应该属于前一天。
+    >
+    > 3、这里为了演示，${TD_DATE}先写死，最后我们讲自动化调度方案的时候来学习如何编写shell脚本，动态获取时间。 
+    >
+    > TD_DATE=`date -d '1 days ago' "+%Y-%m-%d"`
+
+    ```shell
+    #下面这是自动化调度方案脚本  需要配合shell执行
+    /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+    --connect 'jdbc:mysql://192.168.88.80:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+    --username root \
+    --password 123456 \
+    --query "select *, '${TD_DATE}' as dt from t_user_login where 1=1 and  \$CONDITIONS" \
+    --hcatalog-database yp_ods \
+    --hcatalog-table t_user_login \
+    -m 1
+    
+    #下面这里用于课堂演示
+    /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+    --connect 'jdbc:mysql://192.168.88.80:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+    --username root \
+    --password 123456 \
+    --query "select *, '2021-11-29' as dt from t_user_login where 1=1 and  \$CONDITIONS" \
+    --hcatalog-database yp_ods \
+    --hcatalog-table t_user_login \
+    -m 1
+    ```
+
+  - 循环（增量同步）
+
+    > 自己通过where条件来控制同步数据的范围；
+    >
+    > 比如对于t_user_login表，可以通过login_time登录时间这个字段来确定增量数据的范围。
+
+    ```shell
+    /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+    --connect 'jdbc:mysql://192.168.88.80:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+    --username root \
+    --password 123456 \
+    --query "select *, '${TD_DATE}' as dt from t_user_login where 1=1 and (login_time between '${TD_DATE} 00:00:00' and '${TD_DATE} 23:59:59') and  \$CONDITIONS" \
+    --hcatalog-database yp_ods \
+    --hcatalog-table t_user_login \
+    -m 1
+    ```
 
 ### 5. 数据导入 -- 增量同步(新增和更新)
 
