@@ -330,7 +330,49 @@
 
 ### 3. 全量覆盖
 
+> 不需要分区，每次同步都是先删后写，直接覆盖。
+>
+> 适用于数据不会有任何新增和变化的情况。
+>
+> 比如区域字典表、时间、性别等维度数据，不会变更或很少会有变更，可以只保留最新值。
+>
+> 这里==以t_district区域字典表为例，进行讲解==。
 
+- step1：ods层建表
+
+  > 提示：可以直接使用项目提供的sql脚本。
+
+  ![image-20211010002634407](assets/image-20211010002634407.png)
+
+  ```sql
+  DROP TABLE if exists yp_ods.t_district;
+  CREATE TABLE yp_ods.t_district
+  (
+      `id` string COMMENT '主键ID',
+      `code` string COMMENT '区域编码',
+      `name` string COMMENT '区域名称',
+      `pid`  int COMMENT '父级ID',
+      `alias` string COMMENT '别名'
+  )
+  comment '区域字典表'
+  row format delimited fields terminated by '\t' stored as orc tblproperties ('orc.compress'='ZLIB');
+  ```
+
+- step2：sqoop数据同步
+
+  > - 因为表采用了==ORC格式==存储，因此使用sqoop导入数据的时候需要==使用HCatalog API==。
+  > - 在sqoop并行导入的时候，需要--split-by xxx 这个参数指定数值类型字段进行切分。如果这个字段是一个文本格式，需要在命令中加入选项-Dorg.apache.sqoop.splitter.allow_text_splitter=true
+
+  ```shell
+  /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+  --connect 'jdbc:mysql://192.168.88.80:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+  --username root \
+  --password 123456 \
+  --query "select * from t_district where 1=1 and  \$CONDITIONS" \
+  --hcatalog-database yp_ods \
+  --hcatalog-table t_district \
+  -m 1
+  ```
 
 ### 4. 数据导入 -- 增量同步(仅新增)
 
