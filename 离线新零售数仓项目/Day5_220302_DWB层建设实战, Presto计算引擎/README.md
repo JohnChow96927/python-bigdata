@@ -781,7 +781,59 @@ WHERE goods.end_date='9999-99-99'
 
 ### 2. 架构, 名词术语含义
 
+- 架构图
 
+  > Presto是一个运行在多台服务器上的分布式系统。 完整安装包括==一个coordinator和多个worker==。 
+  > 由客户端提交查询，从Presto命令行CLI提交到coordinator; coordinator进行解析，分析并执行查询计划，然后分发处理队列到worker。
+
+  ![image-20211011185512556](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011185512556.png)
+
+  ```properties
+  Presto查询引擎是一个M-S的架构，由一个coordinator节点，一个Discovery Server节点，多个Worker节点组成,注意Discovery Server通常内嵌在Coordinator节点中。
+  
+  主角色:Coordinator负责SQL的解析，生成执行计划，分发给Worker节点进行执行;
+  从角色:Worker节点负责实时查询执行任务。Worker节点启动后向discovery Server服务注册，Coordinator 从discovery server获取可以工作的Worker节点。
+  
+  如果配置了hive connector，需要配置hive MetaSote服务为Presto提供元信息，worker节点和HDFS进行交互数据。
+  ```
+
+  ![image-20211011185759216](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011185759216.png)
+
+- ==Connector== 连接器
+
+  ```properties
+  1、Presto通过Connector连接器来连接访问不同数据源，例如Hive或mysql。连接器功能类似于数据库的驱动程序。允许Presto使用标准API与资源进行交互。
+  
+  2、Presto包含几个内置连接器：JMX连接器，可访问内置系统表的System连接器，Hive连接器和旨在提供TPC-H基准数据的TPCH连接器。许多第三方开发人员都贡献了连接器，因此Presto可以访问各种数据源中的数据，比如：ES、Kafka、MongoDB、Redis、Postgre、Druid、Cassandra等。
+  ```
+
+- ==Catalog== 连接目录
+
+  ```properties
+  1、Presto Catalog是数据源schema的上一级，并通过连接器访问数据源。
+  
+  2、例如，可以配置Hive Catalog以通过Hive Connector连接器提供对Hive信息的访问。
+  
+  3、在Presto中使用表时，标准表名始终是被支持的。
+  例如，hive.test_data.test的标准表名将引用hive catalog中test_data schema中的test table。
+  Catalog需要在Presto的配置文件中进行配置。
+  
+  ```
+
+- ==schema==
+
+  ```properties
+  Schema是组织表的一种方式。Catalog和Schema共同定义了一组可以查询的表。
+  
+  当使用Presto访问Hive或关系数据库（例如MySQL）时，Schema会转换为目标数据库中的对应Schema。
+  
+  =schema通俗理解就是我们所讲的database.
+  =想一下在hive中，下面这两个sql是否相等。
+  show databases;
+  shwo schemas;
+  ```
+
+- ==table==
 
 ### 3. 集群安装, 启停
 
