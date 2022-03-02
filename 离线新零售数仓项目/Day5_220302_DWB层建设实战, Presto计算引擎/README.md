@@ -348,9 +348,58 @@ where o.end_date='9999-99-99';
 
 ### 4. 店铺明细宽表构建
 
+#### 4.1. 建表
+
+- 表梳理
+
+  ![image-20211011152512209](assets/image-20211011152512209.png)
+
+  ```properties
+  核心表: yp_dwd.dim_store 店铺表
+  退化维度表:
+  	dim_trade_area 商圈表
+  		记录商圈相关信息，店铺需要归属商圈中(ID主键是店铺表中的外键，trade_area_id)
+  	dim_location 地址信息表
+  		记录了店铺地址
+  	dim_district 区域字典表
+  		记录了省市县区域的名称、别名、编码、父级区域ID
+  ```
+
+- 建表语句
+
+  ```sql
+  CREATE TABLE yp_dwb.dwb_shop_detail(
+  --  店铺
+    id string, 
+    address_info string COMMENT '店铺详细地址', 
+    store_name string COMMENT '店铺名称', 
+    is_pay_bond tinyint COMMENT '是否有交过保证金 1：是0：否', 
+    trade_area_id string COMMENT '归属商圈ID', 
+    delivery_method tinyint COMMENT '配送方式  1 ：自提 ；3 ：自提加配送均可\; 2 : 商家配送', 
+    store_type int COMMENT '店铺类型 22天街网店 23实体店 24直营店铺 33会员专区店', 
+    is_primary tinyint COMMENT '是否是总店 1: 是 2: 不是', 
+    parent_store_id string COMMENT '父级店铺的id，只有当is_primary类型为2时有效', 
+  --  商圈
+    trade_area_name string COMMENT '商圈名称',
+  --  区域-店铺
+    province_id string COMMENT '店铺所在省份ID', 
+    city_id string COMMENT '店铺所在城市ID', 
+    area_id string COMMENT '店铺所在县ID', 
+    province_name string COMMENT '省份名称', 
+    city_name string COMMENT '城市名称', 
+    area_name string COMMENT '县名称'
+    )
+  COMMENT '店铺明细表'
+  row format delimited fields terminated by '\t' 
+  stored as orc 
+  tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+#### 4.2. 省市县3级查询思路与实现
 
 
-#### 4.1. 省市县3级查询思路与实现
+
+#### 4.3. 最终SQL实现
 
 
 
