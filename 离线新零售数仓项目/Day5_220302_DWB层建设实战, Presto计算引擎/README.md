@@ -1267,7 +1267,7 @@ WHERE goods.end_date='9999-99-99'
   在高内存压力下保持系统稳定。当general pool常规内存池已满时，操作会被置为blocked阻塞状态，直到通用池中的内存可用为止。此机制可防止激进的查询填满JVM堆并引起可靠性问题。
   
   4、其他参数
-  memory.heap-headroom-per-node:这个内存是JVM堆中预留给第三方库的内存分配，presto无法跟踪统计，默认值是-Xmx * 0.3
+  memory.heap-headroom-per-node:这个内存是JVM堆中预留给第三方库的内存分配，presto无法跟踪统计，默认值是-Xmx * 0.3                                                                                                                                                                                                                                                                                                                                                                                                        
   
   5、结论
   GeneralPool = 服务器总内存 - ReservedPool - memory.heap-headroom-per-node - Linux系统内存
@@ -1312,3 +1312,48 @@ WHERE goods.end_date='9999-99-99'
     3、query.max-total-memory-per-node 与memory.heap-headroom-per-node 之和必须小于 jvm max memory，也就是jvm.config 中配置的-Xmx。
     ```
 
+### Hive Map join优化:
+
+- Map Side Join 
+
+  ```shell
+  set hive.auto.convert.join=true;
+  
+  #如果参与连接的N个表(或分区)中的N-1个的总大小小于512MB，则直接将join转为Map端join,默认值为20MB
+  set hive.auto.convert.join.noconditionaltask.size=512000000;
+  ```
+
+- ==Bucket-Map== Join
+
+  ```shell
+  1）	set hive.optimize.bucketmapjoin = true;
+  
+  2） 一个表的bucket数是另一个表bucket数的整数倍
+  
+  3） bucket分桶字段 == join的字段
+  ```
+
+- Sort Merge Bucket Join（SMB Join）
+
+  > SMB是针对Bucket Map Join的一种优化。条件类似却有些不一样。
+
+  ```shell
+  1）
+  	set hive.optimize.bucketmapjoin = true;
+  	set hive.auto.convert.sortmerge.join=true;
+  	set hive.optimize.bucketmapjoin.sortedmerge = true;
+  	set hive.auto.convert.sortmerge.join.noconditionaltask=true;
+  	
+  2）	
+  	Bucket 列 == Join 列 == sort 列
+  	
+  	#hive并不检查两个join的表是否已经做好bucket且sorted，需要用户自己去保证join的表数据sorted， 否则可能数据不正确。
+  	
+  3）
+  	bucket数相等
+  	
+  
+  #注意：
+  	a、可以设置参数hive.enforce.sorting 为true，开启强制排序。插数据到表中会进行强制排序。
+  	b、表创建时必须是CLUSTERED BY+SORTED BY
+  ```
