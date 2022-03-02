@@ -438,10 +438,36 @@ where o.end_date='9999-99-99';
 #### 4.3. 最终SQL实现
 
 ```sql
-
+INSERT into yp_dwb.dwb_shop_detail
+SELECT 
+	s.id,
+	s.address_info,
+	s.name as store_name,
+	s.is_pay_bond,
+	s.trade_area_id,
+	s.delivery_method,
+	s.store_type,
+	s.is_primary,
+	s.parent_store_id,
+	ta.name as trade_area_name,
+	d3.code as province_id,
+	d2.code as city_id,
+	d1.code as area_id,
+	d3.name as province_name,
+	d2.name as city_name,
+	d1.name as area_name
+--店铺
+FROM yp_dwd.dim_store s
+--商圈
+LEFT JOIN yp_dwd.dim_trade_area ta ON ta.id = s.trade_area_id and ta.end_date='9999-99-99'
+--地区  注意type=2才表示地址是店铺地址
+LEFT JOIN yp_dwd.dim_location lc on lc.correlation_id = s.id and lc.type=2 and lc.end_date='9999-99-99'
+LEFT JOIN yp_dwd.dim_district d1 ON d1.code = lc.adcode
+LEFT JOIN yp_dwd.dim_district d2 ON d2.id = d1.pid
+LEFT JOIN yp_dwd.dim_district d3 ON d3.id = d2.pid
+WHERE s.end_date='9999-99-99'
+;
 ```
-
-
 
 ### 5. 商品明细宽表构建
 
