@@ -397,9 +397,49 @@ where o.end_date='9999-99-99';
 
 #### 4.2. 省市县3级查询思路与实现
 
+- 业务梳理
 
+  > 业务系统在设计地址信息类数据存储时，采用的方法如下。
+
+  ```shell
+  #a、所有地址类信息统一存储在dim_location地址表中，通过type来表名属于什么地址。比如我们需要店铺地址时，需要在查询是添加条件where type=2来找出店铺地址信息。
+  	1：商圈地址；2：店铺地址；3.用户地址管理;4.订单买家地址信息;5.订单卖家地址信息
+  
+  #b、而地址详细信息比如我们业务需要的省、市、县名称及其ID共6个字段，却又是存储在dim_district区域字典表中的。
+  
+  
+  #c、然而比较可惜的是，区域字典表中的数据，不是所谓的帮省市区信息存储在一行种，而是通过父ID这样的方式形成关联。具体数据样式见下图。
+  ```
+
+  ![image-20211011161112899](assets/image-20211011161112899.png)
+
+  ![image-20211011161551573](assets/image-20211011161551573.png)
+
+  ![image-20211011161856077](assets/image-20211011161856077.png)
+
+- 实现思路
+
+  - 见画图。
+
+  - sql伪代码实现
+
+    ```sql
+    --店铺先和地址连接 得到店铺的adcode
+    yp_dwd.dim_store s
+    LEFT JOIN yp_dwd.dim_location lc on lc.correlation_id = s.id and lc.type=2
+    --在根据adcode去区域字典表中进行查询，先查出县
+    LEFT JOIN yp_dwd.dim_district d1 ON d1.code = lc.adcode
+    --根据县的pid再去区域字典表中查询出市
+    LEFT JOIN yp_dwd.dim_district d2 ON d2.id = d1.pid
+    --根据市的pid再去区域字典表中查询出省
+    LEFT JOIN yp_dwd.dim_district d3 ON d3.id = d2.pid
+    ```
 
 #### 4.3. 最终SQL实现
+
+```sql
+
+```
 
 
 
