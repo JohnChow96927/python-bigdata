@@ -1176,7 +1176,40 @@ WHERE goods.end_date='9999-99-99'
 
 #### 6.1. 常规优化
 
+- 数据存储优化
 
+  ```sql
+  --1）合理设置分区
+  	与Hive类似，Presto会根据元信息读取分区数据，合理的分区能减少Presto数据读取量，提升查询性能。
+  
+  --2）使用列式存储
+  	Presto对ORC文件读取做了特定优化，因此在Hive中创建Presto使用的表时，建议采用ORC格式存储。相对于Parquet，Presto对ORC支持更好。
+  	Parquet和ORC一样都支持列式存储，但是Presto对ORC支持更好，而Impala对Parquet支持更好。在数仓设计时，要根据后续可能的查询引擎合理设置数据存储格式。
+  
+  --3）使用压缩
+  	数据压缩可以减少节点间数据传输对IO带宽压力，对于即席查询需要快速解压，建议采用Snappy压缩。
+  
+  --4）预先排序
+  	对于已经排序的数据，在查询的数据过滤阶段，ORC格式支持跳过读取不必要的数据。比如对于经常需要过滤的字段可以预先排序。
+  
+  INSERT INTO table nation_orc partition(p) SELECT * FROM nation SORT BY n_name;
+  如果需要过滤n_name字段，则性能将提升。
+  
+  SELECT count(*) FROM nation_orc WHERE n_name=’AUSTRALIA’; 
+  
+  ```
+
+- SQL优化
+
+  - 列裁剪
+  - 分区裁剪
+  - group by优化
+    - 按照数据量大小降序排列
+  - order by使用limit
+  - 用regexp_like代替多个like语句
+  - join时候大表放置在左边
+
+- 替换非ORC格式的Hive表
 
 #### 6.2. 内存优化
 
