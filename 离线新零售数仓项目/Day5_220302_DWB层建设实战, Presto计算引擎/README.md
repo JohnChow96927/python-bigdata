@@ -231,7 +231,120 @@
 
 #### 3.3. 最终SQL实现
 
+```sql
+INSERT into yp_dwb.dwb_order_detail
+select
+	o.id as order_id,
+	o.order_num,
+	o.buyer_id,
+	o.store_id,
+	o.order_from,
+	o.order_state,
+	o.create_date,
+	o.finnshed_time,
+	o.is_settlement,
+	o.is_delete,
+	o.evaluation_state,
+	o.way,
+	o.is_stock_up,
+	od.order_amount,
+	od.discount_amount,
+	od.goods_amount,
+	od.is_delivery,
+	od.buyer_notes,
+	od.pay_time,
+	od.receive_time,
+	od.delivery_begin_time,
+	od.arrive_store_time,
+	od.arrive_time,
+	od.create_user,
+	od.create_time,
+	od.update_user,
+	od.update_time,
+	od.is_valid,
+	og.group_id,
+	og.is_pay,
+	op.order_pay_amount as group_pay_amount,
+	refund.id as refund_id,
+	refund.apply_date,
+	refund.refund_reason,
+	refund.refund_amount,
+	refund.refund_state,
+	os.id as settle_id,
+	os.settlement_amount,
+	os.dispatcher_user_id,
+	os.dispatcher_money,
+	os.circle_master_user_id,
+	os.circle_master_money,
+	os.plat_fee,
+	os.store_money,
+	os.status,
+	os.settle_time,
+    e.id,
+    e.user_id,
+    e.geval_scores,
+    e.geval_scores_speed,
+    e.geval_scores_service,
+    e.geval_isanony,
+    e.create_time,
+    d.id,
+    d.dispatcher_order_state,
+    d.delivery_fee,
+    d.distance,
+    d.dispatcher_code,
+    d.receiver_name,
+    d.receiver_phone,
+    d.sender_name,
+    d.sender_phone,
+    d.create_time,
+	ogoods.id as order_goods_id,
+	ogoods.goods_id,
+	ogoods.buy_num,
+	ogoods.goods_price,
+	ogoods.total_price,
+	ogoods.goods_name,
+	ogoods.goods_specification,
+	ogoods.goods_type,
+    ogoods.goods_brokerage,
+	ogoods.is_refund as is_goods_refund,
+	SUBSTRING(o.create_date,1,10) as dt --动态分区值
+FROM yp_dwd.fact_shop_order o
+--订单副表
+left join yp_dwd.fact_shop_order_address_detail od on o.id=od.id and od.end_date='9999-99-99'
+--订单组
+left join yp_dwd.fact_shop_order_group og on og.order_id = o.id and og.end_date='9999-99-99'
+--and og.is_pay=1
+--订单组支付信息
+left JOIN yp_dwd.fact_order_pay op ON op.group_id = og.group_id and op.end_date='9999-99-99'
+--退款信息
+left join yp_dwd.fact_refund_order refund on refund.order_id=o.id and refund.end_date='9999-99-99'
+--and refund.refund_state=5
+--结算信息
+LEFT JOIN yp_dwd.fact_order_settle os on os.order_id = o.id and os.end_date='9999-99-99'
+--商品快照
+LEFT JOIN yp_dwd.fact_shop_order_goods_details ogoods on ogoods.order_id = o.id and ogoods.end_date='9999-99-99'
+--订单评价表
+left join yp_dwd.fact_goods_evaluation e on e.order_id=o.id and e.is_valid=1
+--订单配送表
+left join yp_dwd.fact_order_delievery_item d on d.shop_order_id=o.id and d.dispatcher_order_type=1 and d.is_valid=1
+where o.end_date='9999-99-99';
+```
 
+- Hive执行动态分区配置参数
+
+  ```shell
+  --分区
+  SET hive.exec.dynamic.partition=true;
+  SET hive.exec.dynamic.partition.mode=nonstrict;
+  set hive.exec.max.dynamic.partitions.pernode=10000;
+  set hive.exec.max.dynamic.partitions=100000;
+  set hive.exec.max.created.files=150000;
+  --hive压缩
+  set hive.exec.compress.intermediate=true;
+  set hive.exec.compress.output=true;
+  --写入时压缩生效
+  set hive.exec.orc.compression.strategy=COMPRESSION;
+  ```
 
 ### 4. 店铺明细宽表构建
 
