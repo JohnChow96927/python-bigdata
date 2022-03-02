@@ -187,7 +187,47 @@
 
 #### 3.2. join操作
 
+- join方式的选择
 
+  - left左连接
+
+    > 以yp_dwd.fact_shop_order为左表，其他表进行left join
+
+- 注意事项
+
+  - 除fact_order_pay订单组表之外，其他表都是通过order_id与订单主表进行连接
+  - fact_order_pay与fact_shop_order_group通过group_id连接，间接与订单主表连接
+  - ==如果表是一张拉链表，注意加上过滤条件 end_date='9999-99-99',把当前有效的数据查询出来==
+  - 对于fact_shop_order的end_date='9999-99-99'过滤，应该放在where条件中完成，先过滤，后join
+
+- join模板
+
+  ```sql
+  select
+  xxxxx
+  xxx
+  xxxxx
+  FROM yp_dwd.fact_shop_order o
+  --订单副表
+  LEFT JOIN yp_dwd.fact_shop_order_address_detail od on o.id=od.id and od.end_date='9999-99-99'
+  --订单组
+  LEFT JOIN yp_dwd.fact_shop_order_group og on og.order_id = o.id and og.end_date='9999-99-99'
+  --and og.is_pay=1  是否支付的过滤 0未支付 1 已支付
+  --订单组支付信息
+  LEFT JOIN yp_dwd.fact_order_pay op ON op.group_id = og.group_id and op.end_date='9999-99-99'
+  --退款信息
+  LEFT JOIN yp_dwd.fact_refund_order refund on refund.order_id=o.id and refund.end_date='9999-99-99'
+  --and refund.refund_state=5  退款状态 5表示退款已经完成
+  --结算信息
+  LEFT JOIN yp_dwd.fact_order_settle os on os.order_id = o.id and os.end_date='9999-99-99'
+  --商品快照
+  LEFT JOIN yp_dwd.fact_shop_order_goods_details ogoods on ogoods.order_id = o.id and ogoods.end_date='9999-99-99'
+  --订单评价表
+  LEFT JOIN yp_dwd.fact_goods_evaluation e on e.order_id=o.id and e.is_valid=1
+  --订单配送表
+  LEFT JOIN yp_dwd.fact_order_delievery_item d on d.shop_order_id=o.id and d.dispatcher_order_type=1 and d.is_valid=1
+  where o.end_date='9999-99-99';
+  ```
 
 #### 3.3. 最终SQL实现
 
