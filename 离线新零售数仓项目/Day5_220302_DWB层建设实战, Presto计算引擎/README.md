@@ -1068,7 +1068,57 @@ WHERE goods.end_date='9999-99-99'
 
 ### 4. 客户端的使用(命令行, DataGrip集成)
 
+#### 4.1. 命令行
 
+- 下载CLI客户端
+
+  ```shell
+  presto-cli-0.241-executable.jar
+  ```
+
+- 上传客户端到Presto安装包
+
+  ```shell
+  #上传presto-cli-0.245.1-executable.jar到/export/server/presto/bin
+  
+  mv presto-cli-0.245.1-executable.jar presto
+  chmod +x presto
+  ```
+
+- CLI客户端启动
+
+  ```shell
+  /export/server/presto/bin/presto --server localhost:8090 --catalog hive --schema default
+  ```
+
+#### 4.2. DataGrip连接使用
+
+> - JDBC 驱动：==presto-jdbc-0.245.1.jar==
+> - JDBC 地址：==jdbc:presto://192.168.88.80:8090/hive==
+
+- step1：配置驱动
+
+  ![image-20211011192825583](assets/image-20211011192825583.png)
+
+  ![image-20211011192905382](assets/image-20211011192905382.png)
+
+- step2：创建连接
+
+  ![image-20211011193034508](assets/image-20211011193034508.png)
+
+  ![image-20211011193046337](assets/image-20211011193046337.png)
+
+  ![image-20211011193059716](assets/image-20211011193059716.png)
+
+- step3：测试体验
+
+  ![image-20211011193404087](assets/image-20211011193404087.png)
+
+  ![image-20211011193414445](assets/image-20211011193414445.png)
+
+  ![image-20211011193433564](assets/image-20211011193433564.png)
+
+  ![image-20211011193445232](assets/image-20211011193445232.png)
 
 ### 5. Presto时间日期类型使用注意事项
 
