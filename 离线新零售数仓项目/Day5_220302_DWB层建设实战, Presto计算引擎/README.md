@@ -471,6 +471,80 @@ WHERE s.end_date='9999-99-99'
 
 ### 5. 商品明细宽表构建
 
+#### 5.1. 建表
+
+- 表梳理
+
+  ![image-20211011153639120](assets/image-20211011153639120.png)
+
+  ```properties
+  核心表: dim_goods 商品SKU表
+  		记录了商品相关信息
+  退化维度表:
+  	dim_goods_class 商品分类表
+  		记录了商品所属的分类信息：商品大类、商品中类、商品小类
+  	dim_brand 品牌信息表	
+  		记录了品牌信息		
+  ```
+
+- 建表语句
+
+  ```sql
+  CREATE TABLE yp_dwb.dwb_goods_detail(
+    id string, 
+    store_id string COMMENT '所属商店ID', 
+    class_id string COMMENT '分类id:只保存最后一层分类id', 
+    store_class_id string COMMENT '店铺分类id', 
+    brand_id string COMMENT '品牌id', 
+    goods_name string COMMENT '商品名称', 
+    goods_specification string COMMENT '商品规格', 
+    search_name string COMMENT '模糊搜索名称字段:名称_+真实名称', 
+    goods_sort int COMMENT '商品排序', 
+    goods_market_price decimal(36,2) COMMENT '商品市场价', 
+    goods_price decimal(36,2) COMMENT '商品销售价格(原价)', 
+    goods_promotion_price decimal(36,2) COMMENT '商品促销价格(售价)', 
+    goods_storage int COMMENT '商品库存', 
+    goods_limit_num int COMMENT '购买限制数量', 
+    goods_unit string COMMENT '计量单位', 
+    goods_state tinyint COMMENT '商品状态 1正常，2下架,3违规（禁售）', 
+    goods_verify tinyint COMMENT '商品审核状态: 1通过，2未通过，3审核中', 
+    activity_type tinyint COMMENT '活动类型:0无活动1促销2秒杀3折扣', 
+    discount int COMMENT '商品折扣(%)', 
+    seckill_begin_time string COMMENT '秒杀开始时间', 
+    seckill_end_time string COMMENT '秒杀结束时间', 
+    seckill_total_pay_num int COMMENT '已秒杀数量', 
+    seckill_total_num int COMMENT '秒杀总数限制', 
+    seckill_price decimal(36,2) COMMENT '秒杀价格', 
+    top_it tinyint COMMENT '商品置顶：1-是，0-否', 
+    create_user string, 
+    create_time string, 
+    update_user string, 
+    update_time string, 
+    is_valid tinyint COMMENT '0 ：失效，1 ：开启', 
+  --  商品小类
+    min_class_id string COMMENT '分类id:只保存最后一层分类id', 
+    min_class_name string COMMENT '店铺内分类名字', 
+  --  商品中类
+    mid_class_id string COMMENT '分类id:只保存最后一层分类id', 
+    mid_class_name string COMMENT '店铺内分类名字', 
+  --  商品大类
+    max_class_id string COMMENT '分类id:只保存最后一层分类id', 
+    max_class_name string COMMENT '店铺内分类名字', 
+  --  品牌
+    brand_name string COMMENT '品牌名称'
+    )
+  COMMENT '商品明细表'
+  row format delimited fields terminated by '\t' 
+  stored as orc 
+  tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+#### 5.2. 商品分类实现剖析
+
+
+
+#### 5.3. 最终SQL实现
+
 
 
 ## II. 分布式SQL引擎Presto
