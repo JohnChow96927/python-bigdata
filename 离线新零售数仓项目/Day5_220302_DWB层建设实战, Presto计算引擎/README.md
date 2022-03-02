@@ -541,7 +541,96 @@ WHERE s.end_date='9999-99-99'
 
 #### 5.2. 商品分类实现剖析
 
+- 背景
 
+  ```shell
+  # 1、业务系统在设计商品分类表dim_goods_class时，准备采用的是3级存储。通过level值来表示。
+      1	 大类
+      2	 中类
+      3	 小类
+      
+  # 2、但是dim_goods_class数据集中实际等级效果只有两类，level=3的只有1个分类。  
+  ```
+
+  ![image-20211011180436152](assets/image-20211011180436152.png)
+
+- 问题
+
+  > 上述现象也就意味着==很多商品在存储的时候采用的是两类存储==，这点通过简单的sql得到了验证；
+
+  ![image-20211011181418059](assets/image-20211011181418059.png)
+
+  > 构建商品明细表时候，我们需要的是3类结果：商品小类、商品中类、商品大类。
+  >
+  > 因此在编写join的时候，我们需要关联3次，实际中的join情况因为分为下面3种：
+  >
+  > ==如果level=3，才会关联到level=2 ，再去关联level=1==
+  >
+  > ==如果level=2，关联到level=1,结束==
+  >
+  > ==如果level=1，结束==
+  >
+  > 结束指的是，已经到大类级别了，没有parent_id了。就是执行join，结果也是为空。
+
+  ```
+  1、先根据dim_goods.store_class_id = dim_goods_class.id查出商品小类
+  
+  2、然后根据小类.parent_id=dim_goods_class.id查出商品中类
+  
+  3、最后根据中类.parent_id=dim_goods_class.id查出商品大类
+  ```
+
+  > 这样导致的结果是：查询出来的3级分类会形成==错位==。如:
+  >
+  > 一个商品level=2，只能查询出来中类、大类，但是根据上述join的方式，却把
+  >
+  > 中类当成了小类，大类当成了中类，把null当成了大类。
+  >
+  > 那么==在查询结果取值返回的时候，一定要进行条件判断了，使用case when语句==。避免错误。
+
+- 解决
+
+  ```sql
+  --商品小类 如果class1.level=3,说明这个商品第一级就是小类
+  	CASE class1.level WHEN 3
+  		THEN class1.id
+  		ELSE NULL
+  		END as min_class_id,
+  	CASE class1.level WHEN 3
+  		THEN class1.name
+  		ELSE NULL
+  		END as min_class_name,
+  	--商品中类	如果class1.level=2，说明这个商品第一级就是中类
+  	CASE WHEN class1.level=2
+  		THEN class1.id
+  		WHEN class2.level=2
+  		THEN class2.id
+  		ELSE NULL
+  		END as mid_class_id,
+  	CASE WHEN class1.level=2
+  		THEN class1.name
+  		WHEN class2.level=2
+  		THEN class2.name
+  		ELSE NULL
+  		END as mid_class_name,
+  	--商品大类	如果class1.level=1，说明这个商品第一级就是大类
+  	CASE WHEN class1.level=1
+  		THEN class1.id
+  		WHEN class2.level=1
+  		THEN class2.id
+  		WHEN class3.level=1
+  		THEN class3.id
+  		ELSE NULL
+  		END as max_class_id,
+  	CASE WHEN class1.level=1
+  		THEN class1.name
+  		WHEN class2.level=1
+  		THEN class2.name
+  		WHEN class3.level=1
+  		THEN class3.name
+  		ELSE NULL
+  		END as max_class_name,
+  ```
 
 #### 5.3. 最终SQL实现
 
