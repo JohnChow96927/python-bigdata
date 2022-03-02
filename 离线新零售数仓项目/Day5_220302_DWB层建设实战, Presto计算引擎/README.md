@@ -1122,7 +1122,55 @@ WHERE goods.end_date='9999-99-99'
 
 ### 5. Presto时间日期类型使用注意事项
 
+- ==date_format==(timestamp, format)  ==> varchar 
 
+  - 作用: 将指定的日期对象转换为字符串操作
+
+- ==date_parse==(string, format) → timestamp 
+
+  - 作用: 用于将字符串的日期数据转换为日期对象
+
+  ```sql
+  select date_format( timestamp '2020-10-10 12:50:50' , '%Y/%m/%d %H:%i:%s');
+  select date_format( date_parse('2020:10:10 12-50-50','%Y:%m:%d %H-%i-%s') ,'%Y/%m/%d %H:%i:%s');
+  
+  ----
+  注意: 参数一必须是日期对象
+  	所以如果传递的是字符串, 必须将先转换为日期对象:  
+  		方式一:  标识为日期对象, 但是格式必须为标准日期格式
+  			timestamp '2020-10-10 12:50:50'
+  			date '2020-10-10'
+  		方式二: 如果不标准，先用date_parse解析成为标准
+  			date_parse('2020-10-10 12:50:50','%Y-%m-%d %H:%i:%s')  
+  
+  扩展说明: 日期format格式说明
+  	年：%Y
+  	月：%m
+  	日：%d
+  	时：%H
+  	分：%i
+  	秒：%s
+  	周几：%w(0..6)	
+  ```
+
+- ==date_add==(unit, value, timestamp) → [same as input]
+
+  - 作用: 用于对日期数据进行 加 减 操作
+
+- ==date_diff==(unit, timestamp1, timestamp2) → bigint
+
+  - 作用: 用于比对两个日期之间差值
+
+  ```sql
+  select  date_add('hour',3,timestamp '2021-09-02 15:59:50');
+  select  date_add('day',-1,timestamp '2021-09-02 15:59:50');
+  select  date_add('month',-1,timestamp '2021-09-02 15:59:50');
+  
+  
+  select date_diff('year',timestamp '2020-09-02 06:30:30',timestamp '2021-09-02 15:59:50')
+  select date_diff('month',timestamp '2021-06-02 06:30:30',timestamp '2021-09-02 15:59:50')
+  select date_diff('day',timestamp '2021-08-02 06:30:30',timestamp '2021-09-02 15:59:50')
+  ```
 
 ### 6. Presto优化
 
