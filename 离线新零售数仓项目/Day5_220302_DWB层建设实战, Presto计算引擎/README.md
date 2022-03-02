@@ -837,7 +837,234 @@ WHERE goods.end_date='9999-99-99'
 
 ### 3. 集群安装, 启停
 
+#### 3.1. 集群安装
 
+- step1：集群规划
+
+  ![image-20211011190542336](assets/image-20211011190542336.png)
+
+- step2：项目集群环境安装JDK
+
+  ```shell
+  #可以手动安装oracle JDK
+  
+  #也可以使用yum在线安装 openjDK
+  yum install java-1.8.0-openjdk* -y
+  
+  #安装完成后，查看jdk版本：
+  java -version
+  ```
+
+- step3：上传Presto安装包（==hadoop01==）
+
+  ```shell
+  #创建安装目录
+  mkdir -p /export/server
+  
+  #yum安装上传文件插件lrzsz
+  yum install -y lrzsz
+  
+  #上传安装包到hadoop01的/export/server目录
+  presto-server-0.245.1.tar.gz
+  
+  #解压、重命名
+  tar -xzvf presto-server-0.245.1.tar.gz
+  mv presto-server-0.245.1 presto
+  
+  #创建配置文件存储目录
+  mkdir -p /export/server/presto/etc
+  ```
+
+- step4：添加配置文件（==hadoop01==）
+
+  - etc/config.properties
+
+    ```properties
+    cd /export/server/presto
+    
+    vim etc/config.properties
+    
+    #---------添加如下内容---------------
+    coordinator=true
+    node-scheduler.include-coordinator=true
+    http-server.http.port=8090
+    query.max-memory=6GB
+    query.max-memory-per-node=2GB
+    query.max-total-memory-per-node=2GB
+    discovery-server.enabled=true
+    discovery.uri=http://192.168.88.80:8090
+    #---------end-------------------
+    
+    #参数说明
+    coordinator:是否为coordinator节点，注意worker节点需要写false
+    node-scheduler.include-coordinator:coordinator在调度时是否也作为worker
+    discovery-server.enabled:Discovery服务开启功能。presto通过该服务来找到集群中所有的节点。每一个Presto实例都会在启动的时候将自己注册到discovery服务；  注意：worker节点不需要配 
+    discovery.uri:Discovery server的URI。由于启用了Presto coordinator内嵌的Discovery服务，因此这个uri就是Presto coordinator的uri。
+    ```
+
+  - etc/jvm.config
+
+    ```shell
+    vim etc/jvm.config
+    
+    -server
+    -Xmx3G
+    -XX:+UseG1GC
+    -XX:G1HeapRegionSize=32M
+    -XX:+UseGCOverheadLimit
+    -XX:+ExplicitGCInvokesConcurrent
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+ExitOnOutOfMemoryError
+    ```
+
+  - etc/node.properties
+
+    ```properties
+    mkdir -p /export/data/presto
+    vim etc/node.properties
+    
+    node.environment=cdhpresto
+    node.id=presto-cdh01
+    node.data-dir=/export/data/presto
+    ```
+
+  - etc/catalog/hive.properties
+
+    ```properties
+    mkdir -p etc/catalog
+    vim etc/catalog/hive.properties
+    
+    connector.name=hive-hadoop2
+    hive.metastore.uri=thrift://192.168.88.80:9083
+    hive.max-partitions-per-writers=300
+    ```
+
+- step4：scp安装包到其他机器
+
+  ```shell
+  #在hadoop02创建文件夹
+  mkdir -p /export/server
+  
+  #在hadoop01远程cp安装包
+  cd /export/server
+  scp -r presto hadoop02:$PWD
+  
+  #ssh的时候如果没有配置免密登录 需要输入密码scp  密码：123456
+  ```
+
+- step5：hadoop02配置修改
+
+  - etc/config.properties
+
+    ```properties
+    cd /export/server/presto
+    vim etc/config.properties
+    
+    #----删除之前文件中的全部内容 替换为以下的内容   vim编辑器删除命令 8dd
+    coordinator=false
+    http-server.http.port=8090
+    query.max-memory=6GB
+    query.max-memory-per-node=2GB
+    query.max-total-memory-per-node=2GB
+    discovery.uri=http://192.168.88.80:8090
+    ```
+
+  - etc/jvm.config
+
+    > 和hadoop01一样，不变，唯一注意的就是如果机器内存小，需要调整-Xmx参数
+
+    ```properties
+    vim etc/jvm.config
+    
+    -server
+    -Xmx3G
+    -XX:+UseG1GC
+    -XX:G1HeapRegionSize=32M
+    -XX:+UseGCOverheadLimit
+    -XX:+ExplicitGCInvokesConcurrent
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+ExitOnOutOfMemoryError
+    ```
+
+  - etc/node.properties
+
+    > 修改编号node.id
+
+    ```properties
+    mkdir -p /export/data/presto
+    vim etc/node.properties
+    
+    node.environment=cdhpresto
+    node.id=presto-cdh02
+    node.data-dir=/export/data/presto
+    ```
+
+  - etc/catalog/hive.properties
+
+    > 保持不变
+
+    ```properties
+    vim etc/catalog/hive.properties
+    
+    connector.name=hive-hadoop2
+    hive.metastore.uri=thrift://192.168.88.80:9083
+    hive.max-partitions-per-writers=300
+    ```
+
+#### 3.2. 集群启停
+
+> 注意，每台机器都需要启动
+
+- 前台启动
+
+  ```shell
+  [root@hadoop01 ~]# cd ~
+  [root@hadoop01 ~]# /export/server/presto/bin/launcher run
+  
+  
+  [root@hadoop02 ~]# cd ~
+  [root@hadoop02 ~]# /export/server/presto/bin/launcher run
+  
+  
+  #如果出现下面的提示 表示启动成功
+  2021-09-15T18:24:21.780+0800    INFO    main    com.facebook.presto.server.PrestoServer ======== SERVER STARTED ========
+  
+  #前台启动使用ctrl+c进行服务关闭
+  ```
+
+- 后台启动
+
+  ```shell
+  [root@hadoop01 ~]# cd ~
+  [root@hadoop01 ~]# /export/server/presto/bin/launcher start
+  Started as 89560
+  
+  [root@hadoop02 ~]# cd ~
+  [root@hadoop02 ~]# /export/server/presto/bin/launcher start
+  Started as 92288
+  
+  
+  #查看进程是否启动成功
+  PrestoServer
+  
+  #后台启动使用jps 配合kill -9命令 关闭进程
+  ```
+
+- web UI页面
+
+  http://192.168.88.80:8090/ui/
+
+  ![image-20211011192331988](assets/image-20211011192331988.png)
+
+- 启动日志
+
+  ```shell
+  #日志路径：/export/data/presto/var/log/
+  
+  http-request.log
+  launcher.log
+  server.log
+  ```
 
 ### 4. 客户端的使用(命令行, DataGrip集成)
 
