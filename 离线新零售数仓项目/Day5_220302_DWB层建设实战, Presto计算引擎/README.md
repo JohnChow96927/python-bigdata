@@ -634,7 +634,90 @@ WHERE s.end_date='9999-99-99'
 
 #### 5.3. 最终SQL实现
 
-
+```sql
+INSERT into yp_dwb.dwb_goods_detail
+SELECT
+	goods.id,
+	goods.store_id,
+	goods.class_id,
+	goods.store_class_id,
+	goods.brand_id,
+	goods.goods_name,
+	goods.goods_specification,
+	goods.search_name,
+	goods.goods_sort,
+	goods.goods_market_price,
+	goods.goods_price,
+	goods.goods_promotion_price,
+	goods.goods_storage,
+	goods.goods_limit_num,
+	goods.goods_unit,
+	goods.goods_state,
+	goods.goods_verify,
+	goods.activity_type,
+	goods.discount,
+	goods.seckill_begin_time,
+	goods.seckill_end_time,
+	goods.seckill_total_pay_num,
+	goods.seckill_total_num,
+	goods.seckill_price,
+	goods.top_it,
+	goods.create_user,
+	goods.create_time,
+	goods.update_user,
+	goods.update_time,
+	goods.is_valid,
+	--商品小类
+	CASE class1.level WHEN 3
+		THEN class1.id
+		ELSE NULL
+		END as min_class_id,
+	CASE class1.level WHEN 3
+		THEN class1.name
+		ELSE NULL
+		END as min_class_name,
+	--商品中类	
+	CASE WHEN class1.level=2
+		THEN class1.id
+		WHEN class2.level=2
+		THEN class2.id
+		ELSE NULL
+		END as mid_class_id,
+	CASE WHEN class1.level=2
+		THEN class1.name
+		WHEN class2.level=2
+		THEN class2.name
+		ELSE NULL
+		END as mid_class_name,
+	--商品大类	
+	CASE WHEN class1.level=1
+		THEN class1.id
+		WHEN class2.level=1
+		THEN class2.id
+		WHEN class3.level=1
+		THEN class3.id
+		ELSE NULL
+		END as max_class_id,
+	CASE WHEN class1.level=1
+		THEN class1.name
+		WHEN class2.level=1
+		THEN class2.name
+		WHEN class3.level=1
+		THEN class3.name
+		ELSE NULL
+		END as max_class_name,
+	brand.brand_name
+--SKU
+FROM yp_dwd.dim_goods goods
+--商品分类
+left join yp_dwd.dim_goods_class class1 on goods.store_class_id = class1.id AND class1.end_date='9999-99-99'
+left join yp_dwd.dim_goods_class class2 on class1.parent_id = class2.id AND class2.end_date='9999-99-99'
+left join yp_dwd.dim_goods_class class3 on class2.parent_id = class3.id AND class3.end_date='9999-99-99'
+--品牌
+left join yp_dwd.dim_brand brand on goods.brand_id=brand.id AND brand.end_date='9999-99-99'
+WHERE goods.end_date='9999-99-99'
+;
+```
 
 ## II. 分布式SQL引擎Presto
 
