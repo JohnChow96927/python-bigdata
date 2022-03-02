@@ -786,7 +786,7 @@ WHERE goods.end_date='9999-99-99'
   > Presto是一个运行在多台服务器上的分布式系统。 完整安装包括==一个coordinator和多个worker==。 
   > 由客户端提交查询，从Presto命令行CLI提交到coordinator; coordinator进行解析，分析并执行查询计划，然后分发处理队列到worker。
 
-  ![image-20211011185512556](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011185512556.png)
+  ![image-20211011185512556](assets/image-20211011185512556.png)
 
   ```properties
   Presto查询引擎是一个M-S的架构，由一个coordinator节点，一个Discovery Server节点，多个Worker节点组成,注意Discovery Server通常内嵌在Coordinator节点中。
@@ -797,7 +797,7 @@ WHERE goods.end_date='9999-99-99'
   如果配置了hive connector，需要配置hive MetaSote服务为Presto提供元信息，worker节点和HDFS进行交互数据。
   ```
 
-  ![image-20211011185759216](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011185759216.png)
+  ![image-20211011185759216](assets/image-20211011185759216.png)
 
 - ==Connector== 连接器
 
