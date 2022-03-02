@@ -1211,5 +1211,104 @@ WHERE goods.end_date='9999-99-99'
 
 - 替换非ORC格式的Hive表
 
-#### 6.2. 内存优化
+#### 6.2. 内存调优
+
+- 内存管理机制--内存分类
+
+  > Presto管理的内存分为两大类：==user memory==和==system memory==
+
+  - user memory用户内存
+
+    ```
+    跟用户数据相关的，比如读取用户输入数据会占据相应的内存，这种内存的占用量跟用户底层数据量大小是强相关的
+    ```
+
+  - system memory系统内存
+
+    ```
+    执行过程中衍生出的副产品，比如tablescan表扫描，write buffers写入缓冲区，跟查询输入的数据本身不强相关的内存。
+    ```
+
+- 内存管理机制--内存池
+
+  > ==内存池中来实现分配user memory和system memory==。
+  >
+  > 内存池为常规内存池GENERAL_POOL、预留内存池RESERVED_POOL。
+
+  ![image-20211011201539017](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011201539017.png)
+
+  ```properties
+  1、GENERAL_POOL:在一般情况下，一个查询执行所需要的user/system内存都是从general pool中分配的，reserved pool在一般情况下是空闲不用的。
+  
+  2、RESERVED_POOL:大部分时间里是不参与计算的，但是当集群中某个Worker节点的general pool消耗殆尽之后，coordinator会选择集群中内存占用最多的查询，把这个查询分配到reserved pool，这样这个大查询自己可以继续执行，而腾出来的内存也使得其它的查询可以继续执行，从而避免整个系统阻塞。
+  
+  注意:
+  reserved pool到底多大呢？这个是没有直接的配置可以设置的，他的大小上限就是集群允许的最大的查询的大小(query.total-max-memory-per-node)。
+  reserved pool也有缺点，一个是在普通模式下这块内存会被浪费掉了，二是大查询可以用Hive来替代。因此也可以禁用掉reserved pool（experimental.reserved-pool-enabled设置为false），那系统内存耗尽的时候没有reserved pool怎么办呢？它有一个OOM Killer的机制，对于超出内存限制的大查询SQL将会被系统Kill掉，从而避免影响整个presto。
+  
+  ```
+
+- 内存相关参数
+
+  ![image-20211011201802703](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday05--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day05_DWB%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98%E3%80%81Presto%E8%AE%A1%E7%AE%97%E5%BC%95%E6%93%8E.assets/image-20211011201802703.png)
+
+  ```properties
+  1、user memory用户内存参数
+  query.max-memory-per-node:单个query操作在单个worker上user memory能用的最大值
+  query.max-memory:单个query在整个集群中允许占用的最大user memory
+  
+  2、user+system总内存参数
+  query.max-total-memory-per-node:单个query操作可在单个worker上使用的最大(user + system)内存
+  query.max-total-memory:单个query在整个集群中允许占用的最大(user + system) memory
+  
+  当这些阈值被突破的时候，query会以insufficient memory（内存不足）的错误被终结。
+  
+  3、协助阻止机制
+  在高内存压力下保持系统稳定。当general pool常规内存池已满时，操作会被置为blocked阻塞状态，直到通用池中的内存可用为止。此机制可防止激进的查询填满JVM堆并引起可靠性问题。
+  
+  4、其他参数
+  memory.heap-headroom-per-node:这个内存是JVM堆中预留给第三方库的内存分配，presto无法跟踪统计，默认值是-Xmx * 0.3
+  
+  5、结论
+  GeneralPool = 服务器总内存 - ReservedPool - memory.heap-headroom-per-node - Linux系统内存
+  
+  常规内存池内存大小=服务器物理总内存-服务器linux操作系统内存-预留内存池大小-预留给第三方库内存
+  ```
+
+- 内存优化建议
+
+  - 常见的报错解决
+
+    > total memory= user memory +system
+
+    ```properties
+    1、Query exceeded per-node total memory limit of xx
+    适当增加query.max-total-memory-per-node。
+    
+    2、Query exceeded distributed user memory limit of xx
+    适当增加query.max-memory。
+    
+    3、Could not communicate with the remote task. The node may have crashed or be under too much load
+    内存不够，导致节点crash，可以查看/var/log/message。
+    ```
+
+  - 建议参数设置
+
+    ```properties
+    1、query.max-memory-per-node和query.max-total-memory-per-node是query操作使用的主要内存配置，因此这两个配置可以适当加大。
+    memory.heap-headroom-per-node是三方库的内存，默认值是JVM-Xmx * 0.3，可以手动改小一些。
+    
+    1) 各节点JVM内存推荐大小: 当前节点剩余内存*80%
+    
+    2) 对于heap-headroom-pre-node第三方库的内存配置: 建议jvm内存的%15左右
+    
+    3) 在配置的时候, 不要正正好好, 建议预留一点点, 以免出现问题
+    
+    数据量在35TB , presto节点数量大约在30台左右 (128GB内存 + 8核CPU)   
+    
+    注意：
+    1、query.max-memory-per-node小于query.max-total-memory-per-node。
+    2、query.max-memory小于query.max-total-memory。
+    3、query.max-total-memory-per-node 与memory.heap-headroom-per-node 之和必须小于 jvm max memory，也就是jvm.config 中配置的-Xmx。
+    ```
 
