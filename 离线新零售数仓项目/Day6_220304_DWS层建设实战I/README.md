@@ -1099,6 +1099,178 @@ https://tool.lu/hexconvert/
 
 #### step7. 订单量指标统计
 
+```sql
+    -- 8、订单量 order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null , order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null , order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null , order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null , order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null , order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null , order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null , order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 , order_id,null))
+			else null end  as order_cnt ,
+
+	--9、 参评单量 eva_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and evaluation_id is not null , order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and evaluation_id is not null , order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and evaluation_id is not null , order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and evaluation_id is not null , order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and evaluation_id is not null , order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and evaluation_id is not null, order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null  and evaluation_id is not null, order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and evaluation_id is not null, order_id,null))
+			else null end  as eva_order_cnt ,
+	--10、差评单量 bad_eva_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and evaluation_id is not null and coalesce(geval_scores,0) <6 , order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null  and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and evaluation_id is not null and coalesce(geval_scores,0) <6, order_id,null))
+			else null end  as bad_eva_order_cnt ,
+
+	--11、配送单量 deliver_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and delievery_id is not null, order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and delievery_id is not null, order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and delievery_id is not null, order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and delievery_id is not null, order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and delievery_id is not null, order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and delievery_id is not null, order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and delievery_id is not null, order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and delievery_id is not null, order_id,null))
+			else null end  as deliver_order_cnt ,
+
+	--12、退款单量 refund_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and refund_id is not null, order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and refund_id is not null, order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and refund_id is not null, order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and refund_id is not null, order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and refund_id is not null, order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and refund_id is not null, order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and refund_id is not null, order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and refund_id is not null, order_id,null))
+			else null end  as refund_order_cnt ,
+
+	-- 13、小程序订单量 miniapp_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and order_from = 'miniapp', order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and order_from = 'miniapp', order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and order_from = 'miniapp', order_id,null))
+			else null end  as miniapp_order_cnt ,
+
+	-- 14、android订单量 android_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and order_from = 'android', order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and order_from = 'android', order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and order_from = 'android', order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and order_from = 'android', order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and order_from = 'android', order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and order_from = 'android', order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and order_from = 'android', order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and order_from = 'android', order_id,null))
+			else null end  as android_order_cnt ,
+
+	-- 15、ios订单量 ios_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and order_from = 'ios', order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and order_from = 'ios', order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and order_from = 'ios', order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and order_from = 'ios', order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and order_from = 'ios', order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and order_from = 'ios', order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and order_from = 'ios', order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and order_from = 'ios', order_id,null))
+			else null end  as ios_order_cnt ,
+
+	--16、pcweb订单量 pcweb_order_cnt
+		case when grouping(store_id,store_name) =0
+			then count(if(order_rn=1 and store_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then count(if(order_rn=1 and trade_area_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (city_id,city_name) = 0
+			then count(if(order_rn=1 and city_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (brand_id,brand_name) = 0
+			then count(if(brand_rn=1 and brand_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (min_class_id,min_class_name) = 0
+			then count(if(minclass_rn=1 and min_class_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then count(if(midclass_rn=1 and mid_class_id is not null  and order_from = 'pcweb', order_id,null))
+			when grouping (max_class_id,max_class_name) = 0
+			then count(if(maxclass_rn=1 and max_class_id is not null and order_from = 'pcweb', order_id,null))
+			when grouping (create_date) = 0
+			then count(if(order_rn=1 and order_from = 'pcweb', order_id,null))
+			else null end  as pcweb_order_cnt,
+```
+
 
 
 #### 总结. 完整SQL实现
