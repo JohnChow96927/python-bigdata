@@ -130,7 +130,55 @@
 
 ### 2. cube, roll up
 
+- ==**cube**==
 
+  - cube翻译过来叫做立方体，data cubes就是数据立方体。
+
+  - cube的功能：==实现多个任意维度的查询==。也可以理解为所有维度组合。
+
+    > 公式：假如说有==**N个维度，那么所有维度的组合的个数：2^N**==
+    >
+    > 下面这个图，就显示了4个维度所有组合构成的数据立方体。
+
+    ![image-20211012223824098](assets/image-20211012223824098.png)
+
+  - 语法
+
+    ```sql
+    select month,day,count(cookieid)
+    from test.t_cookie
+    group by
+    cube (month, day);
+    
+    --上述sql等价于
+    select month,day,count(cookieid)
+    from test.t_cookie
+    group by
+    grouping sets ((month,day), month, day, ());
+    ```
+
+    ![image-20211012224133056](assets/image-20211012224133056.png)
+
+- ==**rollup**==
+
+  - 语法功能：实现==从右到左递减==多级的统计,显示统计某一层次结构的聚合。
+
+    > 即：rollup((a),(b),(c))等价于grouping sets((a,b,c),(a,b),(a),())。
+
+  ```sql
+  select month,day,count(cookieid)
+  from test.t_cookie
+  group by
+  rollup (month,day);
+  
+  --等价于
+  select month,day,count(cookieid)
+  from test.t_cookie
+  group by
+  grouping sets ((month,day), (month), ());
+  ```
+
+  ![image-20211012224838605](assets/image-20211012224838605.png)
 
 ### 3. grouping
 
