@@ -848,7 +848,96 @@
 
 #### step4. 维度字段判断
 
+> 提示：可以根据待插入的目标表yp_dws.dws_sale_daycount的字段顺序，把结果返回。
 
+![image-20211014153211908](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014153211908.png)
+
+```sql
+case when grouping(city_id) = 0   --如果分组中包含city_id 则grouping为0 那么就返回city_id
+		then city_id
+		else null end as city_id ,
+	case when grouping(city_id) = 0
+		then city_name
+		else null end as city_name ,
+	case when grouping(trade_area_id) = 0--商圈
+		then trade_area_id
+		else null end as trade_area_id ,
+	case when grouping(trade_area_id) = 0
+		then trade_area_name
+		else null end as trade_area_name ,
+	case when grouping(store_id) = 0 --店铺
+		then store_id
+		else null end as store_id ,
+	case when grouping(store_id) = 0
+		then store_name
+		else null end as store_name ,
+	case when grouping(brand_id) = 0 --品牌
+		then brand_id
+		else null end as brand_id ,
+	case when grouping(brand_id) = 0
+		then brand_name
+		else null end as brand_name ,
+	case when grouping(max_class_id) = 0 --大类
+		then max_class_id
+		else null end as max_class_id ,
+	case when grouping(max_class_id) = 0
+		then max_class_name
+		else null end as max_class_name ,
+	case when grouping(mid_class_id) = 0 --中类
+		then mid_class_id
+		else null end as mid_class_id ,
+	case when grouping(mid_class_id) = 0
+		then mid_class_name
+		else null end as mid_class_name ,
+	case when grouping(min_class_id) = 0--小类
+		then min_class_id
+		else null end as min_class_id ,
+	case when grouping(min_class_id) = 0
+		then min_class_name
+		else null end as min_class_name ,
+
+	case when grouping(store_id,store_name) = 0  --分组类型
+		then 'store'
+		when grouping(trade_area_id ,trade_area_name) = 0
+		then 'trade_area'
+		when grouping (city_id,city_name) = 0
+		then 'city'
+		when grouping (brand_id,brand_name) = 0
+		then 'brand'
+		when grouping (min_class_id,min_class_name) = 0
+		then 'min_class'
+		when grouping (mid_class_id,mid_class_name) = 0
+		then 'mid_class'
+		when grouping (max_class_id,max_class_name) = 0
+		then 'max_class'
+		when grouping (create_date) = 0
+		then 'all'
+		else 'other' end as group_type,
+		
+--注意：在使用grouping sets的时候 为了可以快速便捷的区分每条数据是根据谁进行的分组计算，
+--可以有意识的在表中添加类似分组ID 或者分组type这样的字段
+--使用 1 2 3 4 或者具体的字段类标识 数据属于哪一个分组的 
+
+--如何精准识别啊？
+笔记上面的分组判断就不严谨。
+
+--如何严谨 精准的识别8个分组
+(dt),
+(dt,city_id,city_name),
+(dt,city_id,city_name,area_id,area_name),
+(dt,city_id,city_name,area_id,area_name,store_id,store_name),
+(dt,brand_id,brand_name),
+(dt,max_class_id,max_class_name),
+(dt,max_class_id,max_class_name,mid_class_id,mid_class_name)
+   (dt,max_class_id,max_class_name,mid_class_id,mid_class_name,min_class_id,min_class_name)
+   
+   
+--
+grouping(dt,city_id ,area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id)
+
+--十进制转二进制
+https://tool.lu/hexconvert/
+```
 
 #### step5. 销售收入统计
 
