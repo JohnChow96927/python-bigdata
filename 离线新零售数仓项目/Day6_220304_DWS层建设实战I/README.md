@@ -550,7 +550,7 @@
   o04,g03,300,4,80,b01,2021-08-30
   ```
 
-  ![image-20211014091841158](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014091841158.png)
+  ![image-20211014091841158](assets/image-20211014091841158.png)
 
 - 实现思路
 
@@ -574,7 +574,7 @@
     select * from tmp where rn1 = 1;
     ```
 
-    ![image-20211014093802292](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014093802292.png)
+    ![image-20211014093802292](assets/image-20211014093802292.png)
 
   - 以订单oid+品牌brand_id去重
 
@@ -594,7 +594,7 @@
     select * from tmp1 where rn2 = 1;
     ```
 
-    ![image-20211014093937149](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014093937149.png)
+    ![image-20211014093937149](assets/image-20211014093937149.png)
 
   - 再比如以订单oid+品牌brand_id+商品goods_id去重
 
@@ -616,7 +616,7 @@
     select * from tmp2 where rn3 = 1;
     ```
 
-    ![image-20211014094232129](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014094232129.png)
+    ![image-20211014094232129](assets/image-20211014094232129.png)
 
   - 整合一起
 
@@ -631,7 +631,7 @@
     > from test.t_order_detail_dup;
     > ```
 
-    ![image-20211014094518943](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014094518943.png)
+    ![image-20211014094518943](assets/image-20211014094518943.png)
 
 - 结论
 
