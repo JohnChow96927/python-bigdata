@@ -941,9 +941,49 @@ https://tool.lu/hexconvert/
 
 #### step5. 销售收入统计
 
+```sql
+	--指标计算 注意每个指标都对应着8个分组维度的计算
+	--1、销售收入指标 sale_amt
+	case when grouping(store_id,store_name) =0  --如果分组中包含店铺,则分组为：日期+城市+商圈+店铺
+		then sum(if( order_rn = 1 and store_id is not null ,order_amount,0)) --只有分组中标号为1的(去重)，店铺不为空的才参与计算
+		--then sum(if( order_rn = 1 and store_id is not null ,coalesce(order_amount,0),0))  --使用coalesce函数更加成熟
 
+		when grouping (trade_area_id ,trade_area_name) = 0 --日期+城市+商圈
+		then sum(if( order_rn = 1 and trade_area_id is not null ,order_amount,0))
+
+		when grouping (city_id,city_name) = 0 --日期+城市
+		then sum(if( order_rn = 1 and city_id is not null,order_amount,0))
+
+		when grouping (brand_id,brand_name) = 0 --日期+品牌
+		then sum(if(brand_goods_rn = 1 and brand_id is not null,total_price,0))
+
+		when grouping (min_class_id,min_class_name) = 0 --日期+大类+中类+小类
+		then sum(if(minclass_goods_rn = 1 and min_class_id is not null ,total_price,0))
+
+		when grouping (mid_class_id,mid_class_name) = 0 --日期+大类+中类
+		then sum(if(midclass_goods_rn = 1 and mid_class_id is not null,total_price,0))
+
+		when grouping (max_class_id,max_class_name) = 0 ----日期+大类
+		then sum(if(maxclass_goods_rn = 1 and max_class_id is not null ,total_price,0))
+
+		when grouping (create_date) = 0 --日期
+		then sum(if(order_rn=1 and create_date is not null,order_amount,0))
+	else null end  as sale_amt,
+	
+
+--提示
+计算 日期  城市  商圈  店铺   使用orderr_maount
+计算 品牌  大类  中类  小类  使用total_price
+--为什么  详细见课堂画图。
+
+--对于重复的数据 之前使用row_number标记之后 在sum求和之前 使用if进行判断  为1的保留
+```
 
 #### step6. 金额指标统计
+
+```sql
+
+```
 
 
 
