@@ -182,7 +182,42 @@
 
 ### 3. grouping
 
+- 功能：使用grouping操作来==判断==当前数据==是按照哪个字段来分组的==。
 
+  > 对于给定的分组，如果分组中==包含相应的列，则将位设置为0==，否则将其设置为1。
+
+- 例子
+
+  ```sql
+  --为了计算高效 切换至Presto引擎中进行计算
+  
+  select month,
+         day,
+         count(cookieid),
+         grouping(month)      as m,
+         grouping(day)        as d,
+         grouping(month, day) as m_d
+  from test.t_cookie
+  group by
+     grouping sets (month, day, (month, day));
+  ```
+
+  ![image-20211012232435567](assets/image-20211012232435567.png)
+
+- 解释说明
+
+  ```properties
+  grouping(month)列为0时，可以看到month列都是有值的，为1时则相反，证明当前行是按照month来进行分组统计的；
+  
+  grouping(day)同理，为0时day列有值，为1时day为空，证明当前行时按照day来进行分组统计的；
+  
+  grouping(month, day)是grouping(month)、grouping(day)二进制数值组合后转换得到的数字：
+  a. 按照month分组，则month=0，day=1，组合后为01，二进制转换为十进制得到数字1；
+  b. 按照day分组，则month=1，day=0，组合后为10，二进制转换为十进制得到数字2；
+  c. 同时按照month和day分组，则month=0，day=0，组合后为00，二进制转换为十进制得到数字0。
+  
+  因此可以使用grouping操作来判断当前数据是按照哪个字段来分组的。
+  ```
 
 ### 4. 功能: 针对分组聚合操作进行优化
 
