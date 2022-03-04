@@ -494,7 +494,148 @@
 
 #### 3.2. 增强聚合grouping sets
 
+- 项目订单宽表梳理
 
+  > 根据上述的简易模型我们去梳理一下项目中的yp_dwb.dwb_order_detail订单明细宽表。
+  >
+  > 把属于同一笔订单的所有商品信息提取出来，验证一下数据是否匹配模型。
+
+  ```sql
+  --根据订单id分组，找出订单商品数最多的
+  select
+      order_id,
+      count (order_id) as nums
+  from yp_dwb.dwb_order_detail
+  group by order_id
+  order by nums desc limit 10;
+  
+  --查看订单ID为dd190227318021f41f的信息
+  select * from yp_dwb.dwb_order_detail where order_id = 'dd190227318021f41f';
+  
+  --认真比对，可以发现，此订单数据有问题，大量重复。
+  ```
+
+- 问题
+
+  > 上述简易模型中，数据是没有重复的，直接grouping sets 统计没有问题；
+  >
+  > 假如==数据是重复的又该如何处理==呢？如何进行去重？
+  >
+  > 或者说不管数据有没有重复，会不会重复，能不能设计一种解决方案，不管重复如何，先过滤重复，保证计算一定是正确的？？
+
+  ```sql
+  --建表（在hive中创建）
+  create table test.t_order_detail_dup(
+      oid string comment '订单ID',
+      goods_id string comment '商品ID',
+      o_price int comment '订单总金额',
+      g_num int comment '商品数量',
+      g_price int comment '商品单价',
+      brand_id string comment '品牌ID',
+      dt string comment '日期'
+  ) comment '订单详情宽表_复杂模型'
+  row format delimited fields terminated by ',';
+  
+  --加载数据
+  o01,g01,100,1,80,b01,2021-08-29
+  o01,g02,100,1,20,b02,2021-08-29
+  o01,g01,100,1,80,b01,2021-08-29
+  o02,g03,180,1,80,b01,2021-08-29
+  o02,g04,180,2,40,b02,2021-08-29
+  o02,g04,180,2,40,b02,2021-08-29
+  o02,g07,180,3,60,b01,2021-08-29
+  o03,g02,80,1,80,b02,2021-08-30
+  o04,g01,300,2,160,b01,2021-08-30
+  o04,g02,300,3,60,b02,2021-08-30
+  o04,g03,300,4,80,b01,2021-08-30
+  ```
+
+  ![image-20211014091841158](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014091841158.png)
+
+- 实现思路
+
+  > 1、==ROW_NUMBER() OVER(PARTITION BY 需要去重字段 )== ，这样相同的就会分到一组；
+  >
+  > 2、为分组中指定的去重字段标上行号,如果有重复的,选中行号为1的就可以。
+
+  - 比如只以订单oid去重
+
+    ```sql
+    select
+        oid,
+        row_number() over(partition by oid) as rn1
+    from test.t_order_detail_dup;
+    
+    --去重过程
+    with tmp as (select
+        oid,
+        row_number() over(partition by oid) as rn1
+    from test.t_order_detail_dup)
+    select * from tmp where rn1 = 1;
+    ```
+
+    ![image-20211014093802292](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014093802292.png)
+
+  - 以订单oid+品牌brand_id去重
+
+    ```sql
+    select
+        oid,
+        brand_id,
+        row_number() over(partition by oid,brand_id) as rn2
+    from test.t_order_detail_dup;
+    
+    
+    with tmp1 as (select
+        oid,
+        brand_id,
+        row_number() over(partition by oid,brand_id) as rn2
+    from test.t_order_detail_dup)
+    select * from tmp1 where rn2 = 1;
+    ```
+
+    ![image-20211014093937149](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014093937149.png)
+
+  - 再比如以订单oid+品牌brand_id+商品goods_id去重
+
+    ```sql
+    select
+        oid,
+        brand_id,
+        goods_id,
+        row_number() over(partition by oid,brand_id,goods_id) as rn3
+    from test.t_order_detail_dup;
+    
+    
+    with tmp2 as (select
+        oid,
+        brand_id,
+        goods_id,
+        row_number() over(partition by oid,brand_id,goods_id) as rn3
+    from test.t_order_detail_dup)
+    select * from tmp2 where rn3 = 1;
+    ```
+
+    ![image-20211014094232129](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014094232129.png)
+
+  - 整合一起
+
+    > ```sql
+    > select
+    >  oid,
+    >  brand_id,
+    >  goods_id,
+    >  row_number() over(partition by oid) as rn1,
+    >  row_number() over(partition by oid,brand_id) as rn2,
+    >  row_number() over(partition by oid,brand_id,goods_id) as rn3
+    > from test.t_order_detail_dup;
+    > ```
+
+    ![image-20211014094518943](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014094518943.png)
+
+- 结论
+
+  > 当我们以不同维度进行组合统计的时候，==**为了避免重复数据对最终结果的影响，可以考虑配合使用row_number去重**==。
 
 ### 4. 销售主题统计宽表 -- 复杂模型分析
 
