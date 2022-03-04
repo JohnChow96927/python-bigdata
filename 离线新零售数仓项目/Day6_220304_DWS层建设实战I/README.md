@@ -802,7 +802,49 @@
 
 #### step3. grouping sets 分组
 
+- 使用CTE表达式针对上面抽取字段、分组去重的结果进行引导
 
+  ```sql
+  with  temp as (
+      select 抽取字段、row_number去重)   
+  ```
+
+  > 注意，到这一步为止，temp表的数据已经和之前的我们创建的简易模型、复杂模型差不多了。
+  >
+  > 后面的技术主要就是case when+grouoing判断。
+
+- 根据业务需求进行维度组合，使用==grouping sets==进行分组。
+
+  ```properties
+  日期
+  日期+城市
+  日期+城市+商圈
+  日期+城市+商圈+店铺
+  日期+品牌
+  日期+大类
+  日期+大类+中类
+  日期+大类+中类+小类
+  ```
+
+  ```sql
+  with  temp as (
+      select 抽取字段、row_number去重)
+  
+  select
+  	xxxxx
+  from temp
+  group by
+      grouping sets(
+          create_date, --日期
+          (create_date,city_id,city_name),--日期+城市
+          (create_date,city_id,city_name,trade_area_id,trade_area_name),--日期+城市+商圈
+          (create_date,city_id,city_name,trade_area_id,trade_area_name,store_id,store_name), --日期+城市+商圈+店铺
+          (create_date,brand_id,brand_name),--日期+品牌
+          (create_date,max_class_id,max_class_name),--日期+大类
+          (create_date,max_class_id,max_class_name,mid_class_id,mid_class_name),--日期+大类+中类
+          (create_date,max_class_id,max_class_name,mid_class_id,mid_class_name,min_class_id,min_class_name)--日期+大类+中类+小类
+      );
+  ```
 
 #### step4. 维度字段判断
 
