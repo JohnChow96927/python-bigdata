@@ -1312,7 +1312,7 @@ WHERE goods.end_date='9999-99-99'
     3、query.max-total-memory-per-node 与memory.heap-headroom-per-node 之和必须小于 jvm max memory，也就是jvm.config 中配置的-Xmx。
     ```
 
-### Hive Map join优化:
+### Hive Map join优化
 
 - Map Side Join 
 
