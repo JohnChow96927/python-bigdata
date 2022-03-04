@@ -768,7 +768,37 @@
 
 #### step2. row number去重(可选)
 
+> 使用row_number分组去重的时候需要注意：
+>
+> 1、对于城市、商圈、店铺等维度的成交额计算，根据订单order_amount汇总求和即可；
+>
+> 2、而对于品牌、大类、中类、小类等维度成交额计算，需要根据goods_id计算。
 
+- 以品牌为例
+
+  ![image-20211014142049286](../../../../Users/JohnChow/Desktop/%E6%96%B0%E9%9B%B6%E5%94%AEday06--%E7%AC%94%E8%AE%B0+%E6%80%BB%E7%BB%93/Day06_DWS%E5%B1%82%E5%BB%BA%E8%AE%BE%E5%AE%9E%E6%88%98-1.assets/image-20211014142049286.png)
+
+  ```sql
+  --上述表的数据中，如果计算不同品牌的成交额，就不能再根据订单金额相加了
+  --而是必须根据每个订单中，这个品牌的金额进行计算
+  --因为订单中可以有不同的商品品牌。
+  ```
+
+- 分组去重
+
+  ```sql
+  row_number() over(partition by order_id) as order_rn,
+  row_number() over(partition by order_id,g.brand_id) as brand_rn,
+  row_number() over(partition by order_id,g.max_class_name) as maxclass_rn,
+  row_number() over(partition by order_id,g.max_class_name,g.mid_class_name) as midclass_rn,
+  row_number() over(partition by order_id,g.max_class_name,g.mid_class_name,g.min_class_name) as minclass_rn,
+  
+  --下面分组加入goods_id
+  row_number() over(partition by order_id,g.brand_id,o.goods_id) as brand_goods_rn,
+  row_number() over(partition by order_id,g.max_class_name,o.goods_id) as maxclass_goods_rn,
+  row_number() over(partition by order_id,g.max_class_name,g.mid_class_name,o.goods_id) as midclass_goods_rn,
+  row_number() over(partition by order_id,g.max_class_name,g.mid_class_name,g.min_class_name,o.goods_id) as minclass_goods_rn
+  ```
 
 #### step3. grouping sets 分组
 
