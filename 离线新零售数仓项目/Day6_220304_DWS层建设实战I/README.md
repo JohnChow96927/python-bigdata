@@ -982,10 +982,120 @@ https://tool.lu/hexconvert/
 #### step6. 金额指标统计
 
 ```sql
+    --2、平台收入 plat_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null ,plat_fee,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null ,plat_fee,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null,plat_fee,0))
+			when grouping (brand_id,brand_name) = 0
+			then null
+			when grouping (min_class_id,min_class_name) = 0
+			then null
+			when grouping (mid_class_id,mid_class_name) = 0
+			then null
+			when grouping (max_class_id,max_class_name) = 0
+			then null
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null,plat_fee,0))
+			else null end  as plat_amt ,
 
+	-- 3、配送成交额 deliver_sale_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null and delievery_id is not null ,dispatcher_money,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null and delievery_id is not null,dispatcher_money,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null and delievery_id is not null,dispatcher_money,0))
+			when grouping (brand_id,brand_name) = 0
+			then null
+			when grouping (min_class_id,min_class_name) = 0
+			then null
+			when grouping (mid_class_id,mid_class_name) = 0
+			then null
+			when grouping (max_class_id,max_class_name) = 0
+			then null
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null and delievery_id is not null ,dispatcher_money,0))
+			else null end  as deliver_sale_amt ,
+
+	-- 4、小程序成交额 mini_app_sale_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null and order_from='miniapp' ,order_amount,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null and order_from='miniapp',order_amount,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null and order_from='miniapp',order_amount,0))
+			when grouping (brand_id,brand_name) = 0
+			then sum(if(brand_goods_rn = 1 and brand_id is not null and order_from='miniapp',total_price,0))
+			when grouping (min_class_id,min_class_name) = 0
+			then sum(if(minclass_goods_rn = 1 and min_class_id is not null and order_from='miniapp',total_price,0))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then sum(if(midclass_goods_rn = 1 and mid_class_id is not null and order_from='miniapp',total_price,0))
+			when grouping (max_class_id,max_class_name) = 0
+			then sum(if(maxclass_goods_rn = 1 and max_class_id is not null and order_from='miniapp',total_price,0))
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null and order_from='miniapp',order_amount ,0))
+			else null end  as mini_app_sale_amt ,
+
+	-- 5、安卓成交额 android_sale_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null and order_from='android' ,order_amount,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null and order_from='android',order_amount,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null and order_from='android',order_amount,0))
+			when grouping (brand_id,brand_name) = 0
+			then sum(if(brand_goods_rn = 1 and brand_id is not null and order_from='android',total_price,0))
+			when grouping (min_class_id,min_class_name) = 0
+			then sum(if(minclass_goods_rn = 1 and min_class_id is not null and order_from='android',total_price,0))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then sum(if(midclass_goods_rn = 1 and mid_class_id is not null and order_from='android',total_price,0))
+			when grouping (max_class_id,max_class_name) = 0
+			then sum(if(maxclass_goods_rn = 1 and max_class_id is not null and order_from='android',total_price,0))
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null and order_from='android',order_amount ,0))
+			else null end  as android_sale_amt ,
+
+	-- 6、苹果成交额 ios_sale_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null and order_from='ios' ,order_amount,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null and order_from='ios',order_amount,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null and order_from='ios',order_amount,0))
+			when grouping (brand_id,brand_name) = 0
+			then sum(if(brand_goods_rn = 1 and brand_id is not null and order_from='ios',total_price,0))
+			when grouping (min_class_id,min_class_name) = 0
+			then sum(if(minclass_goods_rn = 1 and min_class_id is not null and order_from='ios',total_price,0))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then sum(if(midclass_goods_rn = 1 and mid_class_id is not null and order_from='ios',total_price,0))
+			when grouping (max_class_id,max_class_name) = 0
+			then sum(if(maxclass_goods_rn = 1 and max_class_id is not null and order_from='ios',total_price,0))
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null and order_from='ios',order_amount ,0))
+			else null end  as ios_sale_amt ,
+
+	-- 7、pc成交额 pcweb_sale_amt
+		case when grouping(store_id,store_name) =0
+			then sum(if( order_rn = 1 and store_id is not null and order_from='pcweb' ,order_amount,0))
+			when grouping (trade_area_id ,trade_area_name) = 0
+			then sum(if( order_rn = 1 and trade_area_id is not null and order_from='pcweb',order_amount,0))
+			when grouping (city_id,city_name) = 0
+			then sum(if( order_rn = 1 and city_id is not null and order_from='pcweb',order_amount,0))
+			when grouping (brand_id,brand_name) = 0
+			then sum(if(brand_goods_rn = 1 and brand_id is not null and order_from='pcweb',total_price,0))
+			when grouping (min_class_id,min_class_name) = 0
+			then sum(if(minclass_goods_rn = 1 and min_class_id is not null and order_from='pcweb',total_price,0))
+			when grouping (mid_class_id,mid_class_name) = 0
+			then sum(if(midclass_goods_rn = 1 and mid_class_id is not null and order_from='pcweb',total_price,0))
+			when grouping (max_class_id,max_class_name) = 0
+			then sum(if(maxclass_goods_rn = 1 and max_class_id is not null and order_from='pcweb',total_price,0))
+			when grouping (create_date) = 0
+			then sum(if(order_rn=1 and create_date is not null and order_from='pcweb',order_amount ,0))
+			else null end  as pcweb_sale_amt,
 ```
-
-
 
 #### step7. 订单量指标统计
 
