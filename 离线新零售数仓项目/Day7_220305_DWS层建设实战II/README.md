@@ -258,7 +258,21 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 1.4. 好中差评
 
+- 好评、中评、差评次数
 
+  > 根据评分来判断好评、中评、差评
+
+  ```sql
+  -- 好评、中评、差评数量
+  evaluation_count as (
+      select substring(geval_addtime, 1, 10) dt, e.goods_id sku_id,
+             count(if(geval_scores_goods >= 9, 1, null)) evaluation_good_count,
+             count(if(geval_scores_goods >6 and geval_scores_goods < 9, 1, null)) evaluation_mid_count,
+             count(if(geval_scores_goods <= 6, 1, null)) evaluation_bad_count
+      from yp_dwd.fact_goods_evaluation_detail e
+      group by substring(geval_addtime, 1, 10), e.goods_id
+  ),
+  ```
 
 #### 1.5. Union all和full join合并的区别
 
