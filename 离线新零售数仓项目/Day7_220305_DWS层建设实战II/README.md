@@ -952,7 +952,60 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 2.2. (Bloom Filter Index)布隆过滤器索引
 
+- 布隆过滤器
 
+  - 概念
+
+    > Bloom Filter是由Bloom在1970年提出的一种==多哈希函数映射的快速查找算法==。通常应用在一些需要==快速判断某个元素是否属于集合，但是并不严格==要求100%正确的场合。
+
+  - 特点：**判断有不一定有，判断没有一定没有**。
+
+  - 大致原理
+
+    - 初始状态时，Bloom Filter是一个包含m位的==位数组(bit)==，每一位都置为0
+
+      ![image-20211015211935483](assets/image-20211015211935483.png)
+
+    - 当来了一个元素 a，进行判断，使用两个哈希函数，计算出该元素对应的Hash值为1和5，然后到Bloom Filter中判断第1位和第5位的值，上面全部为0，因此a不在Bloom Filter内，将 a 添加进去:
+
+      ![image-20211015211959613](assets/image-20211015211959613.png)
+
+    - 添加a之后，BloomFilter的第1位和第5位的值为1，之后的元素，要判断是不是在Bloom Filter内，也是同a一样的方法，只有对元素哈希后对应位置上都是 1 才认为这个元素在集合内（虽然这样可能会误判）
+
+      ![image-20211015212019020](assets/image-20211015212019020.png)
+
+    - 随着元素的插入，Bloom filter 中修改的值变多，出现误判的几率也随之变大，当新来一个元素时，满足其在Bloom Filter内的条件，即所有对应位都是 1 ，这样就可能有两种情况，一是这个元素就在集合内，没有发生误判；还有一种情况就是发生误判，出现了哈希碰撞，这个元素本不在集合内。
+
+      ![image-20211015212034179](assets/image-20211015212034179.png)
+
+- hive中布隆过滤器索引
+
+  > 在建表时候，通过表参数==orc.bloom.filter.columns=”pcid”==来指定为那些字段建立BloomFilter索引；
+  >
+  > 这样，在生成数据的时候，会在每个stripe中，为该字段建立BloomFilter的数据结构；
+  >
+  > 当查询条件中包含==对该字段的=号过滤时候，先从BloomFilter中获取以下是否包含该值==，如果不包含，则跳过该stripe。
+
+  ```sql
+  CREATE TABLE t_text_2 stored AS ORC 
+  TBLPROPERTIES
+      ('orc.compress'='SNAPPY',
+      'orc.create.index'='true',
+      "orc.bloom.filter.columns"="pcid", --布隆过滤器 对pcid进行索引
+      'orc.stripe.size'='10485760',
+      'orc.row.index.stride'='10000') 
+  AS 
+  SELECT xxxx
+  FROM t_text_1 
+  DISTRIBUTE BY id sort BY id;
+  
+  
+  --执行查询
+  SET hive.optimize.index.filter=true;
+  
+  SELECT COUNT(1) FROM t_text_2 WHERE id >= 0 AND id <= 1000  
+  AND pcid IN ('0005E26F0DCCDB56F9041C','A');
+  ```
 
 ### Hive相关配置参数
 
