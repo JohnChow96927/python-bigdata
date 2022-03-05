@@ -130,7 +130,100 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 1.2. 下单, 支付, 退款统计
 
+- 大前提：==**使用row_number对数据进行去重**==
 
+  > 基于dwb_order_detail表根据商品（goods_id）进行统计各个指标的时候；
+  >
+  > 为了避免同一笔订单下有多个重复的商品出现（正常来说重复的应该合并在一起了）；
+  >
+  > 应该使用row_number对order_id和goods_id进行去重。
+
+  ```sql
+  --订单明细表抽取字段，并且进行去重，作为后续的base基础数据
+  with order_base as (select
+      dt,
+      order_id, --订单id
+      goods_id, --商品id
+      goods_name,--商品名称
+      buy_num,--购买商品数量
+      total_price,--商品总金额（数量*单价）
+      is_pay,--支付状态（1表示已经支付）
+      row_number() over(partition by order_id,goods_id) as rn
+  from yp_dwb.dwb_order_detail),
+  
+  -- 后面跟,表示后面继续使用CTE,语法如下
+  with t1 as (select....),
+  	 t2 as (select....)
+  select * from t1 join t2;	 
+  ```
+
+- 下单次数、件数、金额统计
+
+  > 基于上述的order_base进行查询
+
+  ```sql
+  --下单次数、件数、金额统计
+  order_count as (select
+      dt,goods_id as sku_id,goods_name as sku_name,
+      count(order_id) order_count,
+      sum(buy_num) order_num,
+      sum(total_price) order_amount
+  from order_base where rn =1
+  group by dt,goods_id,goods_name),
+  ```
+
+- 支付次数、件数、金额统计
+
+  > 计算支付相关指标之前，可以先使用==is_pay进行订单状态过滤==
+  >
+  > 然后基于过滤后的数据进行统计
+  >
+  > 可以继续使用CTE引导
+
+  ```sql
+  --订单状态,已支付
+  pay_base as(
+      select *,
+      row_number() over(partition by order_id, goods_id) rn
+      from yp_dwb.dwb_order_detail
+      where is_pay=1
+  ),
+  
+  --支付次数、件数、金额统计
+  payment_count as(
+      select dt, goods_id sku_id, goods_name sku_name,
+         count(order_id) payment_count,
+         sum(buy_num) payment_num,
+         sum(total_price) payment_amount
+      from pay_base
+      where rn=1
+      group by dt, goods_id, goods_name
+  ),
+  ```
+
+- 退款次数、件数、金额统计
+
+  > 可以先使用==refund_id is not null查询出退款订单==，然后进行统计
+
+  ```sql
+  --先查询出退款订单
+  refund_base as(
+      select *,
+         row_number() over(partition by order_id, goods_id) rn
+      from yp_dwb.dwb_order_detail
+      where refund_id is not null
+  ),
+  -- 退款次数、件数、金额
+  refund_count as (
+      select dt, goods_id sku_id, goods_name sku_name,
+         count(order_id) refund_count,
+         sum(buy_num) refund_num,
+         sum(total_price) refund_amount
+      from refund_base
+      where rn=1
+      group by dt, goods_id, goods_name
+  ),
+  ```
 
 #### 1.3. 购物车, 收藏统计
 
