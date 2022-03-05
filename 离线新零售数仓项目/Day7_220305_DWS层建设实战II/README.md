@@ -276,9 +276,84 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 1.5. Union all和full join合并的区别
 
+> 经过前面的计算，并且通过CTE的引导，得到了6个结果表，分别是：
+>
+> 1、==order_count==  下单次数、件数、金额统计
+>
+> 2、==payment_count==  支付次数、件数、金额统计
+>
+> 3、==refund_count==  退款次数、件数、金额统计
+>
+> 4、==cart_count==  购物车次数、件数
+>
+> 5、==favor_count== 收藏次数
+>
+> 6、==evaluation_count== 好中差评数
 
+- 需求：把上述6张表的结果合并在一起
+
+  - 方式1：union all合并
+  - 方式2：full join合并
+
+  > 注意：上述两种合并有什么区别？？？面试深水区。行合并？列合并？
+
+------
+
+- **==方式1：union all合并==**
+
+  ```properties
+  1):union 通常用于多个结果集行合并、行合并、行合并！合并后列数不变，行数变多;
+  2):Union 可以细分为Union all不去重和Union distinct去重;
+  3):Union 合并时对于结果集字段个数、类型、顺序有要求。
+  
+  4)如果想使用union既继续行合并又进行列合并，那么缺失的应该使用0或者null补上，补足。
+  
+  
+  结果集1：
+  id   name	
+  001	 allen
+  002  james
+  
+  结果集2：
+  id   sex
+  003  男
+  004  女
+  
+  合并结果集
+  id	name	sex
+  001	 allen	null
+  002  james	null
+  003  null	男
+  004  null	女
+  
+  
+  --合并sql如下：
+  select
+      id,
+      name,
+      null as sex
+  from t1
+  union all
+  select
+      id,
+      null as name,
+      sex
+  from t2;
+  ```
+
+- **==方式2：full join合并==**
+
+  ```properties
+  1):full join  通常用于多个结果集列合并、列合并、列合并！
+  
+  2)如果想使用full join既继续行合并又进行列合并,注意关联的字段即可，不需要0或者null补全。
+  ```
 
 #### 1.6. 完整SQL实现
+
+```sql
+
+```
 
 
 
