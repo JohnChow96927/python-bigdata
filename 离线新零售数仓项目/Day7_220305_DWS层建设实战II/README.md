@@ -227,7 +227,34 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 1.3. 购物车, 收藏统计
 
+> 思考：==为什么下面这两个查询需要考虑拉链的状态？上面的下单、支付等统计为什么不需要？==
 
+- 购物车次数、件数统计
+
+  ```sql
+  -- 购物车次数、件数
+  cart_count as (
+      select substring(create_time, 1, 10) dt, goods_id sku_id,
+             count(id) cart_count,
+              sum(buy_num) cart_num
+      from yp_dwd.fact_shop_cart
+      where end_date = '9999-99-99'
+      group by substring(create_time, 1, 10), goods_id
+  ),
+  ```
+
+- 收藏次数统计
+
+  ```sql
+  -- 收藏次数
+  favor_count as (
+      select substring(c.create_time, 1, 10) dt, goods_id sku_id,
+             count(c.id) favor_count
+      from yp_dwd.fact_goods_collect c
+      where end_date='9999-99-99'
+      group by substring(c.create_time, 1, 10), goods_id
+  ),
+  ```
 
 #### 1.4. 好中差评
 
