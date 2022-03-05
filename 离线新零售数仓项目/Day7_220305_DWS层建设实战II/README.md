@@ -749,19 +749,64 @@ yp_dwd.fact_goods_evaluation_detail
 
 - 建表操作
 
-  > 注意: 建表操作需要在hive中执行, presto不支持hive的建表语法
+  > 注意：建表操作需要在hive中执行，presto不支持hive的建表语法。
 
   ```sql
-  
+  create table yp_dws.dws_user_daycount
+  (
+      dt STRING,
+      user_id string comment '用户 id',
+      login_count bigint comment '登录次数',
+      store_collect_count bigint comment '店铺收藏数量',
+      goods_collect_count bigint comment '商品收藏数量',
+      cart_count bigint comment '加入购物车次数',
+      cart_amount decimal(38,2) comment '加入购物车金额',
+      order_count bigint comment '下单次数',
+      order_amount    decimal(38,2)  comment '下单金额',
+      payment_count   bigint      comment '支付次数',
+      payment_amount  decimal(38,2) comment '支付金额'
+  ) COMMENT '每日用户行为'
+  --PARTITIONED BY(dt STRING)
+  ROW format delimited fields terminated BY '\t'
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
   ```
 
+- 确定字段与表关系
+
+  ```shell
+  #登录次数
+  yp_dwd.fact_user_login
+  	id
+  	login_user
   
+  #收藏店铺数、收藏商品数
+  yp_dwd.fact_store_collect
+  	id
+  	user_id
+  	
+  #加入购物车次数、加入购物车金额
+  yp_dwd.fact_shop_cart
+  yp_dwb.dwb_goods_detail
+  	#因为购物车中没有金额，因此需要和商品详情表进行关联
+  	goods_promotion_price: 商品促销价格(售价)
+  
+  #下单次数、下单金额
+  yp_dwd.fact_shop_order
+  yp_dwd.fact_shop_order_address_detail
+  	#通过订单主副表可以提供
+  
+  #支付次数、支付金额
+  yp_dwd.fact_trade_record
+  ```
 
+- 最终实现合并的方式
 
+  - 使用union all合并
+  - 使用full join合并
 
-
-
-
+> 用户主题的统计宽表，作为项目练习由大家自己完成。
+>
+> 所用到的技术点之前已经完成铺垫完毕。
 
 ## II. Hive优化 -- 索引
 
