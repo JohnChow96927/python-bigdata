@@ -62,7 +62,71 @@
 
 #### 1.1. 需求分析
 
+- 确定指标字段与表的关系
 
+  > 当需求提出指标和维度之后，我们需要做的就是确定通过哪些表能够提供支撑。
+  >
+  > 思考：是不是意味着==数仓分层之后，上一层的表只能查询下一层的，能不能跨层？==
+  >
+  > 答案是不一定的。
+
+```shell
+#下单次数、下单件数、下单金额
+dwb_order_detail
+ 	order_id: 下单次数相当于下了多少订单（有多少个包含这个商品的订单）
+ 	buy_num : 下单件数相当于下了多少商品 
+ 	total_price  每个商品下单金额指的是订单金额还是商品金额？应该是商品金额(订单中可能会包含其他商品)
+
+#被支付次数、被支付件数、被支付金额
+dwb_order_detail
+	#支付状态的判断
+		order_state: 只要不是1和7  就是已经支付状态的订单
+		is_pay: 这个字段也可以 0表示未支付，1表示已支付。#推荐使用这个字段来判断
+	#次数 件数 金额
+    	order_id
+    	buy_num
+    	total_price
+
+#被退款次数、被退款件数、被退款金额
+dwb_order_detail
+	#退款的判断
+		refund_id: 退款单号 is not null的就表明有退款
+	#次数 件数 金额	
+		order_id
+    	buy_num
+    	total_price
+
+#被加入购物车次数、被加入购物车件数
+yp_dwd.fact_shop_cart(能够提供购物车相关信息的只有这张表)
+	id: 次数
+	buy_num: 件数
+
+#被收藏次数
+yp_dwd.fact_goods_collect
+	id: 次数
+
+#好评数、中评数、差评数
+yp_dwd.fact_goods_evaluation_detail
+	geval_scores_goods:商品评分0-10分
+	
+	#如何判断 好  中  差 （完全业务指定）
+		得分: >= 9 	 好
+		得分: >6  <9   中
+		得分：<= 6  	差
+
+#维度
+	时间、商品
+```
+
+> 概况起来，计算商品主题宽表，需要参与计算的表有：
+>
+> ==yp_dwb.dwb_order_detail  订单明细宽表==
+>
+> ==yp_dwd.fact_shop_cart  购物车表==
+>
+> ==yp_dwd.fact_goods_collect  商品收藏表==
+>
+> ==yp_dwd.fact_goods_evaluation_detail  商品评价表==
 
 #### 1.2. 下单, 支付, 退款统计
 
