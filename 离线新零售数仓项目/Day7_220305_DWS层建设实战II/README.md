@@ -767,7 +767,140 @@ yp_dwd.fact_goods_evaluation_detail
 
 ### 1. index索引问题
 
+- 索引是什么
 
+  - 在数据库中，索引指的是==提供指向存储在表的指定列中的数据值的指针（地址）==，数据库使用索引以找到特定值，然后顺指针找到包含该值的行。
+  - 索引的作用相当于==新华字典的目录==，可以根据目录中的页码==快速找到所需的内容==。比如我们可以按拼音、笔画、偏旁部首等排序的目录（索引）快速查找到需要的字。
+
+- mysql中的索引
+
+  > 作为OLTP系统软件的典型代表，mysql也支持索引的使用。
+
+  - 索引的优点
+
+    - ==大大提高查询的效率==
+
+  - 索引的缺点
+
+    - ==降低更新表的速度==，如对表进行INSERT、UPDATE和DELETE。因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件。==MySQL支持自动更新索引==。
+    - 建立索引会==占用磁盘空间==的索引文件。
+
+  - 索引使用的注意事项
+
+    - 当创建索引之后，根据具有索引的字段查询，效率才能体现。
+
+  - mysql的索引分类
+
+    - 普通索引
+
+      > 普通索引是最基本的索引，它没有任何限制。
+
+      ```sql
+      CREATE INDEX indexName ON table_name (column_name);
+      
+      --也可以在建表的时候同时指定索引
+      CREATE TABLE `table` (
+          `id` int(11) NOT NULL AUTO_INCREMENT ,
+          `title` char(255) CHARACTER NOT NULL ,
+          `content` text CHARACTER NULL ,
+          `time` int(10) NULL DEFAULT NULL ,
+          PRIMARY KEY (`id`),
+          INDEX index_name (title(length))
+      )
+      
+      --length为可选参数，表示索引的长度，只有字符串类型的字段才能指定索引长度
+      ```
+
+    - 唯一索引
+
+      > 与普通索引类似，不同的就是：==索引列的值必须唯一==，但允许有空值。
+
+      ```sql
+      CREATE UNIQUE INDEX indexName ON table(column(length));
+      
+      --建表的时候创建索引
+      CREATE TABLE `table` (
+          `id` int(11) NOT NULL AUTO_INCREMENT ,
+          `title` char(255) CHARACTER NOT NULL ,
+          `content` text CHARACTER NULL ,
+          `time` int(10) NULL DEFAULT NULL ,
+          UNIQUE indexName (title(length))
+      );
+      ```
+
+    - 主键索引
+
+      > 一种特殊的唯一索引，一个表只能有一个主键，不允许有空值。
+      >
+      > 一般是在建表的时候同时创建主键索引。
+
+      ```sql
+      CREATE TABLE `table` (
+          `id` int(11) NOT NULL AUTO_INCREMENT ,
+          `title` char(255) NOT NULL ,
+          PRIMARY KEY (`id`)
+      );
+      ```
+
+    - 组合索引
+
+      > 指多个字段上创建的索引，只有在查询条件中使用了创建索引时的第一个字段，索引才会被使用。
+      >
+      > 使用组合索引时==**遵循最左前缀**==集合。
+
+      ```sql
+      ALTER TABLE mytable ADD INDEX name_city_age (name(10),city,age);
+      
+      --建表时，name长度为16，这里用10。这是因为一般情况下名字的长度不会超过10，这样会加速索引查询速度，还会减少索引文件的大小，提高INSERT的更新速度。
+      
+      --建立这样的组合索引，其实是相当于分别建立了下面三组组合MySQL数据库索引
+      name,city,age
+      name,city
+      name 
+      
+      --为什么没有 city，age这样的组合索引呢？这是因为MySQL组合索引“最左前缀”的结果。简单的理解就是只从最左面的开始组合。并不是只要包含这三列的查询都会用到该组合索引，下面的几个SQL就会用到这个组合MySQL数据库索引：
+      
+      SELECT * FROM mytable WHERE name="admin" AND city="郑州"
+      
+      SELECT * FROM mytable WHERE name="admin"
+      
+      --而下面几个则不会用到：
+      SELECT * FROM mytable WHERE city="郑州" AND name="admin" 
+      SELECT * FROM mytable WHERE age=20 AND city="郑州"
+      SELECT * FROM mytable WHERE city="郑州"
+      ```
+
+      
+
+- Hive中的索引与问题
+
+  > Hive作为OLAP软件，应该说是要支持索引的，因为这样可以提高查询效率。
+  >
+  > Hive 0.7版本之后，开始支持索引，但是功能很弱。
+
+  ```properties
+  1、在hive表指定列上建立索引，会产生一张索引表（Hive的一张物理表），里面的字段包括，索引列的值、该值对应的HDFS文件路径、该值在文件中的偏移量;
+  
+  2、hive的索引是需要手动进行维护的,索引表不会自动rebuild，如果表有数据新增或删除，那么必须手动rebuild索引表数据;
+  
+  在执行索引字段查询时候，首先额外生成一个MR job，根据对索引列的过滤条件，从索引表中过滤出索引列的值对应的hdfs文件路径及偏移量，输出到hdfs上的一个文件中。
+  
+  然后根据生成的临时文件中的hdfs路径和偏移量，筛选原始input文件，生成新的split,作为整个job的split,这样就达到不用全表扫描的目的。
+  
+  每次查询时候都要先用一个job扫描索引表，如果索引列的值非常稀疏，那么索引表本身也会非常大；
+  
+  ```
+
+> 因此在==**Hive3.0版本之后，直接移除了索**引==，即使使用hive低版本的，也不建议使用索引。
+
+![image-20211015185907147](assets/image-20211015185907147.png)
+
+- Hive给的建议是：
+
+  > - 使用物化视图  自动更新
+  > - ==使用ORC、Parquet等格式文件==。这些文件格式本身列式存储，内部特性支持查询效率的提高。
+
+  ![image-20211015210144113](assets/image-20211015210144113.png)
 
 ### 2. ORC文件格式的索引
 
