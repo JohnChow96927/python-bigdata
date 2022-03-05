@@ -943,7 +943,7 @@ yp_dwd.fact_goods_evaluation_detail
   FROM t_text_1 
   DISTRIBUTE BY id sort BY id;
   
-  --参数hive.optimize.index.filte 表示是否自动使用索引，默认为false（不使用）；
+  --参数hive.optimize.index.filter 表示是否自动使用索引，默认为false（不使用）；
   --如果不设置该参数为true，那么ORC的索引当然也不会使用。
   
   --执行sql之前，为了使用索引，应该设置下面的参数
