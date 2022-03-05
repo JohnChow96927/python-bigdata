@@ -906,7 +906,49 @@ yp_dwd.fact_goods_evaluation_detail
 
 #### 2.1. Row Group Index行组索引
 
+- ORC文件存储格式
 
+  ![ORC file format | CDP Public Cloud](assets/hive_orc_file_structure.png)
+
+  ```properties
+  一个ORC文件包含一个或多个stripes(groups of row data)；
+  
+  每个stripe中包含了每个column的min/max值的索引数据；
+  
+  当查询中有<,>,=的操作时，会根据min/max值，跳过扫描不包含的stripes。
+  ```
+
+- Row Group Index行组索引
+
+  > ORC为每个stripe建立的包含min/max值的索引，就称为Row Group Index，也叫min-max Index，或者Storage Index。
+
+  ```properties
+  1、在建立ORC格式表时，指定表参数’orc.create.index’=’true’之后，便会建立Row Group Index；
+  
+  2、需要注意的是，为了使Row Group Index有效利用，向表中加载数据时，必须对需要使用索引的字段进行排序，否则，min/max会失去意义。
+  
+  3、另外，这种索引通常用于数值型字段的查询过滤优化上。
+  ```
+
+  ```sql
+  --CTAS
+  CREATE TABLE t_text_2 stored AS ORC 
+  TBLPROPERTIES
+      ('orc.compress'='SNAPPY',
+      'orc.create.index'='true', --开启行组索引
+      'orc.stripe.size'='10485760',
+      'orc.row.index.stride'='10000') 	--索引条目之间的行数（必须> = 1000）
+  AS 
+  SELECT xxxx
+  FROM t_text_1 
+  DISTRIBUTE BY id sort BY id;
+  
+  --参数hive.optimize.index.filte 表示是否自动使用索引，默认为false（不使用）；
+  --如果不设置该参数为true，那么ORC的索引当然也不会使用。
+  
+  --执行sql之前，为了使用索引，应该设置下面的参数
+  set hive.optimize.index.filter=true;
+  ```
 
 #### 2.2. (Bloom Filter Index)布隆过滤器索引
 
