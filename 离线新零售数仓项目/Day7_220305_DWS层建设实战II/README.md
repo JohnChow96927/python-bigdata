@@ -1,8 +1,64 @@
-# DWS层建设实战I
+# DWS层建设实战II
 
 ## I. DWS层构建
 
 ### 1. 商品主题统计宽表的实现
+
+- 主题需求
+
+  - 指标
+
+    ```properties
+    下单次数、下单件数、下单金额、被支付次数、被支付件数、被支付金额、被退款次数、被退款件数、被退款金额、被加入购物车次数、被加入购物车件数、被收藏次数、好评数、中评数、差评数
+    
+    --总共15个指标
+    ```
+
+  - 维度
+
+    ```properties
+    日期（day）+商品
+    ```
+
+- 本主题建表操作
+
+  > 注意：建表操作需要在hive中执行，presto不支持hive的建表语法。
+
+  ```sql
+  create table yp_dws.dws_sku_daycount 
+  (
+      dt STRING,
+      sku_id string comment 'sku_id',
+      sku_name string comment '商品名称',
+      order_count bigint comment '被下单次数',
+      order_num bigint comment '被下单件数',
+      order_amount decimal(38,2) comment '被下单金额',
+      payment_count bigint  comment '被支付次数',
+      payment_num bigint comment '被支付件数',
+      payment_amount decimal(38,2) comment '被支付金额',
+      refund_count bigint  comment '被退款次数',
+      refund_num bigint comment '被退款件数',
+      refund_amount  decimal(38,2) comment '被退款金额',
+      cart_count bigint comment '被加入购物车次数',
+      cart_num bigint comment '被加入购物车件数',
+      favor_count bigint comment '被收藏次数',
+      evaluation_good_count bigint comment '好评数',
+      evaluation_mid_count bigint comment '中评数',
+      evaluation_bad_count bigint comment '差评数'
+  ) COMMENT '每日商品行为'
+  --PARTITIONED BY(dt STRING)
+  ROW format delimited fields terminated BY '\t'
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  
+  ```
+
+- 扩展知识：如何优雅的给变量起名字？
+
+  > https://www.zhihu.com/question/21440067/answer/1277465532
+  >
+  > https://unbug.github.io/codelf/
+  >
+  > https://translate.google.cn/  
 
 #### 1.1. 需求分析
 
