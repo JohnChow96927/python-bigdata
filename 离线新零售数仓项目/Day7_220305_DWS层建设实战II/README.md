@@ -352,14 +352,388 @@ yp_dwd.fact_goods_evaluation_detail
 #### 1.6. 完整SQL实现
 
 ```sql
+- 这里采用union all的方式合并结果集
 
+  > 课程资料中提供了full join的方式合并结果集，可以对比理解。
+
+  ```sql
+  --合并结果集
+  unionall as (
+      select
+          dt, sku_id, sku_name,
+          order_count,
+          order_num,
+          order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from order_count
+      union all
+      select
+          dt, sku_id, sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          payment_count,
+          payment_num,
+          payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from payment_count
+      union all
+      select
+          dt, sku_id, sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          refund_count,
+          refund_num,
+          refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from refund_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          cart_count,
+          cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from cart_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from favor_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          evaluation_good_count,
+          evaluation_mid_count,
+          evaluation_bad_count
+      from evaluation_count
+  )
 ```
 
+- 最终对union all的结果集根据日期和商品进行分组 sum求和，结果插入目标表中。
 
+  ```sql
+  select
+      dt, sku_id, max(sku_name),
+      sum(order_count),
+      sum(order_num),
+      sum(order_amount),
+      sum(payment_count),
+      sum(payment_num),
+      sum(payment_amount),
+      sum(refund_count),
+      sum(refund_num),
+      sum(refund_amount),
+      sum(cart_count),
+      sum(cart_num),
+      sum(favor_count),
+      sum(evaluation_good_count),
+      sum(evaluation_mid_count),
+      sum(evaluation_bad_count)
+  from unionall
+  group by dt, sku_id
+  ;
+  ```
+
+- 最终完整版sql
+
+  ```sql
+  insert into hive.yp_dws.dws_sku_daycount
+  --订单明细表抽取字段，并且进行去重，作为后续的base基础数据
+  with order_base as (select
+      dt,
+      order_id, --订单id
+      goods_id, --商品id
+      goods_name,--商品名称
+      buy_num,--购买商品数量
+      total_price,--商品总金额（数量*单价）
+      is_pay,--支付状态（1表示已经支付）
+      row_number() over(partition by order_id,goods_id) as rn
+  from yp_dwb.dwb_order_detail),
+  
+  --下单次数、件数、金额统计
+  order_count as (select
+      dt,goods_id as sku_id,goods_name as sku_name,
+      count(order_id) order_count,
+      sum(buy_num) order_num,
+      sum(total_price) order_amount
+  from order_base where rn =1
+  group by dt,goods_id,goods_name),
+  
+  --订单状态,已支付
+  pay_base as(
+      select *,
+      row_number() over(partition by order_id, goods_id) rn
+      from yp_dwb.dwb_order_detail
+      where is_pay=1
+  ),
+  
+  --支付次数、件数、金额统计
+  payment_count as(
+      select dt, goods_id sku_id, goods_name sku_name,
+         count(order_id) payment_count,
+         sum(buy_num) payment_num,
+         sum(total_price) payment_amount
+      from pay_base
+      where rn=1
+      group by dt, goods_id, goods_name
+  ),
+  
+  --退款次数、件数、金额统计
+  refund_base as(
+      select *,
+         row_number() over(partition by order_id, goods_id) rn
+      from yp_dwb.dwb_order_detail
+      where refund_id is not null
+  ),
+  -- 退款次数、件数、金额
+  refund_count as (
+      select dt, goods_id sku_id, goods_name sku_name,
+         count(order_id) refund_count,
+         sum(buy_num) refund_num,
+         sum(total_price) refund_amount
+      from refund_base
+      where rn=1
+      group by dt, goods_id, goods_name
+  ),
+  
+  -- 购物车次数、件数
+  cart_count as (
+      select substring(create_time, 1, 10) dt, goods_id sku_id,
+             count(id) cart_count,
+              sum(buy_num) cart_num
+      from yp_dwd.fact_shop_cart
+      where end_date = '9999-99-99'
+      group by substring(create_time, 1, 10), goods_id
+  ),
+  -- 收藏次数
+  favor_count as (
+      select substring(c.create_time, 1, 10) dt, goods_id sku_id,
+             count(c.id) favor_count
+      from yp_dwd.fact_goods_collect c
+      where end_date='9999-99-99'
+      group by substring(c.create_time, 1, 10), goods_id
+  ),
+  -- 好评、中评、差评数量
+  evaluation_count as (
+      select substring(geval_addtime, 1, 10) dt, e.goods_id sku_id,
+             count(if(geval_scores_goods >= 9, 1, null)) evaluation_good_count,
+             count(if(geval_scores_goods >6 and geval_scores_goods < 9, 1, null)) evaluation_mid_count,
+             count(if(geval_scores_goods <= 6, 1, null)) evaluation_bad_count
+      from yp_dwd.fact_goods_evaluation_detail e
+      group by substring(geval_addtime, 1, 10), e.goods_id
+  ),
+  
+  --合并结果集
+  unionall as (
+      select
+          dt, sku_id, sku_name,
+          order_count,
+          order_num,
+          order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from order_count
+      union all
+      select
+          dt, sku_id, sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          payment_count,
+          payment_num,
+          payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from payment_count
+      union all
+      select
+          dt, sku_id, sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          refund_count,
+          refund_num,
+          refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from refund_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          cart_count,
+          cart_num,
+          0 as favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from cart_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          favor_count,
+          0 as evaluation_good_count,
+          0 as evaluation_mid_count,
+          0 as evaluation_bad_count
+      from favor_count
+      union all
+      select
+          dt, sku_id, null as sku_name,
+          0 order_count,
+          0 order_num,
+          0 order_amount,
+          0 as payment_count,
+          0 as payment_num,
+          0 as payment_amount,
+          0 as refund_count,
+          0 as refund_num,
+          0 as refund_amount,
+          0 as cart_count,
+          0 as cart_num,
+          0 as favor_count,
+          evaluation_good_count,
+          evaluation_mid_count,
+          evaluation_bad_count
+      from evaluation_count
+  )
+  
+  select
+      dt, sku_id, max(sku_name),
+      sum(order_count),
+      sum(order_num),
+      sum(order_amount),
+      sum(payment_count),
+      sum(payment_num),
+      sum(payment_amount),
+      sum(refund_count),
+      sum(refund_num),
+      sum(refund_amount),
+      sum(cart_count),
+      sum(cart_num),
+      sum(favor_count),
+      sum(evaluation_good_count),
+      sum(evaluation_mid_count),
+      sum(evaluation_bad_count)
+  from unionall
+  group by dt, sku_id
+  --order by dt, sku_id
+  ;
+  ```
 
 ### 2. 用户主题统计宽表的实现
 
 #### 需求分析
+
+
 
 ## II. Hive优化 -- 索引
 
