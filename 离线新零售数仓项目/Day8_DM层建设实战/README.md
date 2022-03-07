@@ -667,7 +667,84 @@ grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_
 
 #### 2.1. 建模
 
+- 概述
 
+  > 商品SKU主题宽表，需求指标和dws层一致，但不是每日统计数据，而是==总累积值== 和 ==最近30天累积值==
+
+- 建表
+
+  ```sql
+  create table yp_dm.dm_sku
+  (
+      sku_id string comment 'sku_id',
+      --下单
+      order_last_30d_count bigint comment '最近30日被下单次数',
+      order_last_30d_num bigint comment '最近30日被下单件数',
+      order_last_30d_amount decimal(38,2)  comment '最近30日被下单金额',
+      order_count bigint comment '累积被下单次数',
+      order_num bigint comment '累积被下单件数',
+      order_amount decimal(38,2) comment '累积被下单金额',
+      --支付
+      payment_last_30d_count   bigint  comment '最近30日被支付次数',
+      payment_last_30d_num bigint comment '最近30日被支付件数',
+      payment_last_30d_amount  decimal(38,2) comment '最近30日被支付金额',
+      payment_count   bigint  comment '累积被支付次数',
+      payment_num bigint comment '累积被支付件数',
+      payment_amount  decimal(38,2) comment '累积被支付金额',
+     --退款
+      refund_last_30d_count bigint comment '最近三十日退款次数',
+      refund_last_30d_num bigint comment '最近三十日退款件数',
+      refund_last_30d_amount decimal(38,2) comment '最近三十日退款金额',
+      refund_count bigint comment '累积退款次数',
+      refund_num bigint comment '累积退款件数',
+      refund_amount decimal(38,2) comment '累积退款金额',
+      --购物车
+      cart_last_30d_count bigint comment '最近30日被加入购物车次数',
+      cart_last_30d_num bigint comment '最近30日被加入购物车件数',
+      cart_count bigint comment '累积被加入购物车次数',
+      cart_num bigint comment '累积被加入购物车件数',
+      --收藏
+      favor_last_30d_count bigint comment '最近30日被收藏次数',
+      favor_count bigint comment '累积被收藏次数',
+      --好中差评
+      evaluation_last_30d_good_count bigint comment '最近30日好评数',
+      evaluation_last_30d_mid_count bigint comment '最近30日中评数',
+      evaluation_last_30d_bad_count bigint comment '最近30日差评数',
+      evaluation_good_count bigint comment '累积好评数',
+      evaluation_mid_count bigint comment '累积中评数',
+      evaluation_bad_count bigint comment '累积差评数'
+  )
+  COMMENT '商品主题宽表'
+  ROW format delimited fields terminated BY '\t' 
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+- 思路分析
+
+  > 1、首次计算如何操作？
+  >
+  > 2、循环计算如何操作？间隔的时间与频率如何？1天计算一次还是一月计算一次？
+
+  ```shell
+  #在dws层，我们已经计算出每个商品每天的一些指标情况，如下
+  dt		sku_id		sku_name	order_count	 order_num	 	order_amount
+  day     商品ID       商品名称      被下单次数	   被下单件数	    被下单金额
+  
+  
+  #首次计算，每件商品的总累积值和近30天累积值  这个简单
+  	总累积值：把全部的数据根据商品分组，每个组内sum求和   也就是说忽略日期计算即可
+  	近30天累积值：控制时间范围后进行分组聚合  (today -30d, today)
+  	
+  #循环计算  本项目采用的是T+1模式
+  	总累积值：  旧的总累积值+新的增值 = 新的总累积值
+  			  (当然如果不嫌弃慢，也可以把之前的全部数据再次重新计算一遍也可以得到  "可以没必要")
+  	近30天累积值：控制时间范围后进行分组聚合  (today -30d, today)	
+      
+      
+      
+  #结论
+  当主题需求计算历史累积值时，不推荐每次都采用全量计算。推荐采用历史累积+新增。
+  ```
 
 #### 2.2. 首次执行
 
