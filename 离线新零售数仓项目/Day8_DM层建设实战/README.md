@@ -156,12 +156,180 @@
 
   ```sql
   yp_dws.dws_sale_daycount dc
-      left join yp_dwd.dim_date d on dc.dt = d.dim_date_id
+      left join yp_dwd.dim_date d on dc.dt = d.data_code
   ```
 
 #### 1.3. 按年统计
 
+> 在dws层已经统计出天的指标数据了，现在需要在其之上上卷计算出周、月、年的数据。
+>
+> 这里并不是简单的分组+sum求和即可，需要考虑到分组的类别。
 
+- step1：确定分组字段
+
+  > 年
+  >
+  > 年 + 城市
+  >
+  > 年 + 商圈
+  >
+  > 年 + 店铺
+  >
+  > 年 + 品牌
+  >
+  > 年 + 大类
+  >
+  > 年 + 中类
+  >
+  > 年 + 小类
+  >
+  > （对于销售主题 在DM层  分析的维度不变  时间的粒度改变）
+
+  ```sql
+  group by
+  grouping sets (
+      (d.year_code),
+      (d.year_code, city_id, city_name),
+      (d.year_code, city_id, city_name, trade_area_id, trade_area_name),
+      (d.year_code, city_id, city_name, trade_area_id, trade_area_name, store_id, store_name),
+      (d.year_code, brand_id, brand_name),
+      (d.year_code, max_class_id, max_class_name),
+      (d.year_code, max_class_id, max_class_name,mid_class_id, mid_class_name),
+      (d.year_code, max_class_id, max_class_name,mid_class_id, mid_class_name,min_class_id, min_class_name))
+  ;
+  ```
+
+- step2：分组聚合
+
+  ```sql
+  -- 统计值
+      sum(dc.sale_amt) as sale_amt,
+      sum(dc.plat_amt) as plat_amt,
+      sum(dc.deliver_sale_amt) as deliver_sale_amt,
+      sum(dc.mini_app_sale_amt) as mini_app_sale_amt,
+      sum(dc.android_sale_amt) as android_sale_amt,
+      sum(dc.ios_sale_amt) as ios_sale_amt,
+      sum(dc.pcweb_sale_amt) as pcweb_sale_amt,
+      sum(dc.order_cnt) as order_cnt,
+      sum(dc.eva_order_cnt) as eva_order_cnt,
+      sum(dc.bad_eva_order_cnt) as bad_eva_order_cnt,
+      sum(dc.deliver_order_cnt) as deliver_order_cnt,
+      sum(dc.refund_order_cnt) as refund_order_cnt,
+      sum(dc.miniapp_order_cnt) as miniapp_order_cnt,
+      sum(dc.android_order_cnt) as android_order_cnt,
+      sum(dc.ios_order_cnt) as ios_order_cnt,
+      sum(dc.pcweb_order_cnt) as pcweb_order_cnt
+  ```
+
+- step3：返回字段细节处理
+
+  ```sql
+      --统计日期，不是分组的日期 所谓统计就是记录你哪天干的这个活
+      '2022-01-11' date_time,
+      'year' time_type,
+       year_code,
+  --     year_month,
+  --     month_code,
+  --     day_month_num,
+  --     dim_date_id,
+  --     year_week_name_cn,
+  
+      -- 产品维度类型：store，trade_area，city，brand，min_class，mid_class，max_class，all
+     CASE WHEN grouping(dc.city_id, dc.trade_area_id, dc.store_id)=0
+           THEN 'store'
+           WHEN grouping(dc.city_id, dc.trade_area_id)=0
+           THEN 'trade_area'
+           WHEN grouping(dc.city_id)=0
+           THEN 'city'
+           WHEN grouping(dc.brand_id)=0
+           THEN 'brand'
+           WHEN grouping(dc.max_class_id, dc.mid_class_id, dc.min_class_id)=0
+           THEN 'min_class'
+           WHEN grouping(dc.max_class_id, dc.mid_class_id)=0
+           THEN 'mid_class'
+           WHEN grouping(dc.max_class_id)=0
+           THEN 'max_class'
+           ELSE 'all'
+           END as group_type,
+  ```
+
+- step4：最终完整sql
+
+  ```sql
+  --按年统计，销售主题指标
+  select
+      --统计日期，不是分组的日期 所谓统计就是记录你哪天干的这个活
+      '2022-01-11' date_time,
+      'year' time_type,
+       year_code,
+  --     year_month,
+  --     month_code,
+  --     day_month_num,
+  --     dim_date_id,
+  --     year_week_name_cn,
+  
+      -- 产品维度类型：store，trade_area，city，brand，min_class，mid_class，max_class，all
+     CASE WHEN grouping(dc.city_id, dc.trade_area_id, dc.store_id)=0
+           THEN 'store'
+           WHEN grouping(dc.city_id, dc.trade_area_id)=0
+           THEN 'trade_area'
+           WHEN grouping(dc.city_id)=0
+           THEN 'city'
+           WHEN grouping(dc.brand_id)=0
+           THEN 'brand'
+           WHEN grouping(dc.max_class_id, dc.mid_class_id, dc.min_class_id)=0
+           THEN 'min_class'
+           WHEN grouping(dc.max_class_id, dc.mid_class_id)=0
+           THEN 'mid_class'
+           WHEN grouping(dc.max_class_id)=0
+           THEN 'max_class'
+           ELSE 'all'
+           END as group_type,
+      city_id,
+      city_name,
+      trade_area_id,
+      trade_area_name,
+      store_id,
+      store_name,
+      brand_id,
+      brand_name,
+      max_class_id,
+      max_class_name,
+      mid_class_id,
+      mid_class_name,
+      min_class_id,
+      min_class_name,
+      sum(dc.sale_amt) as sale_amt,
+      sum(dc.plat_amt) as plat_amt,
+      sum(dc.deliver_sale_amt) as deliver_sale_amt,
+      sum(dc.mini_app_sale_amt) as mini_app_sale_amt,
+      sum(dc.android_sale_amt) as android_sale_amt,
+      sum(dc.ios_sale_amt) as ios_sale_amt,
+      sum(dc.pcweb_sale_amt) as pcweb_sale_amt,
+      sum(dc.order_cnt) as order_cnt,
+      sum(dc.eva_order_cnt) as eva_order_cnt,
+      sum(dc.bad_eva_order_cnt) as bad_eva_order_cnt,
+      sum(dc.deliver_order_cnt) as deliver_order_cnt,
+      sum(dc.refund_order_cnt) as refund_order_cnt,
+      sum(dc.miniapp_order_cnt) as miniapp_order_cnt,
+      sum(dc.android_order_cnt) as android_order_cnt,
+      sum(dc.ios_order_cnt) as ios_order_cnt,
+      sum(dc.pcweb_order_cnt) as pcweb_order_cnt
+  from yp_dws.dws_sale_daycount dc
+      left join yp_dwd.dim_date d
+      on dc.dt = d.date_code
+  group by
+  grouping sets (
+      (d.year_code),
+      (d.year_code, city_id, city_name),
+      (d.year_code, city_id, city_name, trade_area_id, trade_area_name),
+      (d.year_code, city_id, city_name, trade_area_id, trade_area_name, store_id, store_name),
+      (d.year_code, brand_id, brand_name),
+      (d.year_code, max_class_id, max_class_name),
+      (d.year_code, max_class_id, max_class_name,mid_class_id, mid_class_name),
+      (d.year_code, max_class_id, max_class_name,mid_class_id, mid_class_name,min_class_id, min_class_name))
+  ;
+  ```
 
 #### 1.4. 完整实现
 
