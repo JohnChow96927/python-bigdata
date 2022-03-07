@@ -1351,7 +1351,7 @@ grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_
       if(new.login_count>0,'2019-05-08',old.login_date_last) login_date_last,
       coalesce(old.login_count,0)+if(new.login_count>0,1,0) login_count,
       coalesce(new.login_last_30d_count,0) login_last_30d_count,
-  --         购物车
+  --     购物车
       if(old.cart_date_first is null and new.cart_count>0,'2019-05-08',old.cart_date_first) cart_date_first,
       if(new.cart_count>0,'2019-05-08',old.cart_date_last) cart_date_last,
       coalesce(old.cart_count,0)+if(new.cart_count>0,1,0) cart_count,
