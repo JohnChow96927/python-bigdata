@@ -748,7 +748,149 @@ grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_
 
 #### 2.2. 首次执行
 
+- step1：准备好DWS层==dws_sku_daycount==的统计数据。
 
+  ![image-20211204145543888](assets/image-20211204145543888.png)
+
+- step2：计算总累积值
+
+  ```sql
+  select
+     sku_id,sku_name,
+     sum(order_count) as order_count,
+     sum(order_num) as order_num,
+     sum(order_amount) as order_amount,
+     sum(payment_count) payment_count,
+     sum(payment_num) payment_num,
+     sum(payment_amount) payment_amount,
+     sum(refund_count) refund_count,
+     sum(refund_num) refund_num,
+     sum(refund_amount) refund_amount,
+     sum(cart_count) cart_count,
+     sum(cart_num) cart_num,
+     sum(favor_count) favor_count,
+     sum(evaluation_good_count)   evaluation_good_count,
+     sum(evaluation_mid_count)    evaluation_mid_count,
+     sum(evaluation_bad_count)    evaluation_bad_count
+  from yp_dws.dws_sku_daycount
+  group by sku_id,sku_name;
+  
+  --如果要严谨、成熟一点的话 在处理数字类型字段的时候使用 coalesce()函数 null转为0
+  
+  ```
+
+  ![image-20211204150133486](assets/image-20211204150133486.png)
+
+- step3：计算最近30天累积值
+
+  ```sql
+  --这里需要注意，项目中测试数据的日期范围不是最新的 范围选取不准可能没结果哦
+  select
+      sku_id,sku_name,
+      sum(order_count) order_last_30d_count,
+      sum(order_num) order_last_30d_num,
+      sum(order_amount) as order_last_30d_amount,
+      sum(payment_count) payment_last_30d_count,
+      sum(payment_num) payment_last_30d_num,
+      sum(payment_amount) payment_last_30d_amount,
+      sum(refund_count) refund_last_30d_count,
+      sum(refund_num) refund_last_30d_num,
+      sum(refund_amount) refund_last_30d_amount,
+      sum(cart_count) cart_last_30d_count,
+      sum(cart_num) cart_last_30d_num,
+      sum(favor_count) favor_last_30d_count,
+      sum(evaluation_good_count) evaluation_last_30d_good_count,
+      sum(evaluation_mid_count)  evaluation_last_30d_mid_count,
+      sum(evaluation_bad_count)  evaluation_last_30d_bad_count
+  from yp_dws.dws_sku_daycount
+  where dt>=cast(date_add('day', -30, date '2020-05-08') as varchar)
+  group by sku_id,sku_name;
+  ```
+
+- step4：最终完整sql
+
+  > 使用CTE将上述查询合并，插入到目标表中。
+
+  ```sql
+  insert into yp_dm.dm_sku
+  with all_count as (
+  select
+     sku_id,sku_name,
+     sum(order_count) as order_count,
+     sum(order_num) as order_num,
+     sum(order_amount) as order_amount,
+     sum(payment_count) payment_count,
+     sum(payment_num) payment_num,
+     sum(payment_amount) payment_amount,
+     sum(refund_count) refund_count,
+     sum(refund_num) refund_num,
+     sum(refund_amount) refund_amount,
+     sum(cart_count) cart_count,
+     sum(cart_num) cart_num,
+     sum(favor_count) favor_count,
+     sum(evaluation_good_count)   evaluation_good_count,
+     sum(evaluation_mid_count)    evaluation_mid_count,
+     sum(evaluation_bad_count)    evaluation_bad_count
+  from yp_dws.dws_sku_daycount
+  group by sku_id,sku_name
+  ),
+  last_30d as (
+  select
+      sku_id,sku_name,
+      sum(order_count) order_last_30d_count,
+      sum(order_num) order_last_30d_num,
+      sum(order_amount) as order_last_30d_amount,
+      sum(payment_count) payment_last_30d_count,
+      sum(payment_num) payment_last_30d_num,
+      sum(payment_amount) payment_last_30d_amount,
+      sum(refund_count) refund_last_30d_count,
+      sum(refund_num) refund_last_30d_num,
+      sum(refund_amount) refund_last_30d_amount,
+      sum(cart_count) cart_last_30d_count,
+      sum(cart_num) cart_last_30d_num,
+      sum(favor_count) favor_last_30d_count,
+      sum(evaluation_good_count) evaluation_last_30d_good_count,
+      sum(evaluation_mid_count)  evaluation_last_30d_mid_count,
+      sum(evaluation_bad_count)  evaluation_last_30d_bad_count
+  from yp_dws.dws_sku_daycount
+  where dt>=cast(date_add('day', -30, date '2020-05-08') as varchar)
+  group by sku_id,sku_name
+  )
+  select
+      ac.sku_id,
+      l30.order_last_30d_count,
+      l30.order_last_30d_num,
+      l30.order_last_30d_amount,
+      ac.order_count,
+      ac.order_num,
+      ac.order_amount,
+      l30.payment_last_30d_count,
+      l30.payment_last_30d_num,
+      l30.payment_last_30d_amount,
+      ac.payment_count,
+      ac.payment_num,
+      ac.payment_amount,
+      l30.refund_last_30d_count,
+      l30.refund_last_30d_num,
+      l30.refund_last_30d_amount,
+      ac.refund_count,
+      ac.refund_num,
+      ac.refund_amount,
+      l30.cart_last_30d_count,
+      l30.cart_last_30d_num,
+      ac.cart_count,
+      ac.cart_num,
+      l30.favor_last_30d_count,
+      ac.favor_count,
+      l30.evaluation_last_30d_good_count,
+      l30.evaluation_last_30d_mid_count,
+      l30.evaluation_last_30d_bad_count,
+      ac.evaluation_good_count,
+      ac.evaluation_mid_count,
+      ac.evaluation_bad_count
+  from all_count ac
+      left join last_30d l30 on ac.sku_id=l30.sku_id;
+  ```
 
 #### 2.3. 循环操作
 
