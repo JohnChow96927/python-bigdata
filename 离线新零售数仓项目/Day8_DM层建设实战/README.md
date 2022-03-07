@@ -1578,7 +1578,3 @@ grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_
     在ETL过程中过滤这一部分数据，特殊数据进行数据转换。
     ```
 
-    
-
-
-
