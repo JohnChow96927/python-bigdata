@@ -621,7 +621,49 @@
 
 #### 1.5. grouping精准识别分组
 
-- 
+- ==如何精准的识别该分组中到底有没有包含指定的分组字段，尤其是分组组合很多的时候。==
+
+- 技术：使用强大的grouping方法来精准识别。
+
+- 难点：多位二进制转换十进制的操作 ，可以借助一些工具实现。
+
+  > https://tool.oschina.net/hexconvert/
+
+```sql
+--对于销售额来说，分为8个维度  日期我们设定为周这个粒度
+	--每周总销售额  	 日期
+	--每周每城市销售额  日期+城市
+	--每周每商圈销售额  日期+商圈
+	--每周每店铺销售额  日期+店铺
+	--每周每品牌销售额  日期+品牌
+	--每周每大类销售额  日期+大类
+	--每周每中类销售额  日期+中类
+	--每周每小类销售额  日期+小类
+	
+--如何判断分组中到底是根据谁分组的呢？重要的是如何实现精准判断呢？
+
+把日期、城市、商圈、店铺、品牌、大类、中类、小类8个字段一起使用grouping进行判断
+
+--这里的难点就是8位二进制的数据如何转换为十进制的数据
+	
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --店铺 00001111 = 15
+
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --商圈 00011111 = 31
+
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --城市 00111111 = 63
+ 
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --品牌 01110111 =119
+
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --大类 01111011 = 123
+
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --中类 01111001 = 121
+ 
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --小类 01111000 = 120
+
+grouping(dt1.year_code,city_id,trade_area_id,store_id,brand_id,max_class_id,mid_class_id,min_class_id) --日期  01111111 = 127
+```
+
+### 2. 商品主题统计宽表构建
 
 #### 2.1. 建模
 
