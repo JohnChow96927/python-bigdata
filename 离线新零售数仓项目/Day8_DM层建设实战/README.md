@@ -134,7 +134,30 @@
 
 #### 1.2. 表关系梳理
 
+- 销售主题各种指标的数据支撑
 
+  - ==**dws_sale_daycount**==
+
+  ![image-20211201222625828](assets/image-20211201222625828.png)
+
+- 时间粒度的数据支撑
+
+  - ==**dwd.dim_date  时间维表**==
+
+  > 企业中，时间维表数据是怎么维护的呢?
+  >
+  > 1、维护频率：一次性生成1年或者多年的时间数据。
+  >
+  > 2、使用java、Python代码实现数据的生成。
+
+  ![image-20211017090139866](assets/image-20211017090139866.png)
+
+- 关联条件
+
+  ```sql
+  yp_dws.dws_sale_daycount dc
+      left join yp_dwd.dim_date d on dc.dt = d.dim_date_id
+  ```
 
 #### 1.3. 按年统计
 
