@@ -629,7 +629,105 @@
 
 ### 2. shell基本知识回顾
 
+- date命令
 
+  ```shell
+  #获取今天的日期
+  date
+  date +%Y%m%d
+  
+  #获取指定日期的年月日格式输出
+  date -d "2014-11-12" +%Y%m%d
+  
+  #获取指定日期的星期（周几）格式输出
+  date --date="2014-11-23" +%w
+  
+  #获取上周日期（day,month,year,hour）
+  date -d "-1 week" +%Y%m%d
+  
+  #获取昨天日期
+  date -d '-1 day' "+%Y-%m-%d"
+  date --date="-24 hour" +%Y%m%d
+  ```
+
+- 变量提取、反引号的功能
+
+  ```shell
+  name="allen"
+  echo ${name}
+  
+  date
+  nowTime=date
+  echo ${nowTime}
+  
+  date
+  nowTime=`date` 
+  echo ${nowTime}
+  ```
+
+- 数字运算
+
+  ```shell
+  #双小括号命令是用来执行数学表达式的，可以在其中进行各种逻辑运算、数学运算，也支持更多的运算符（如++、--等）
+  
+  echo $(((5 * 2)))
+  
+  i=5
+  echo $(((i=$i*2))) #10
+  echo $(((i=i*2)))  #20
+  
+  # $((( )))的缩写。
+  echo $(((i*2))) #40
+  echo $((i*2)) #40
+  ```
+
+- 串行与并行
+
+  ```shell
+  #shell脚本默认是按顺序串行执行的，使用&可以将一个命令放在后台运行，从而使shell脚本能够继续往后执行
+  
+  sleep 5 &
+  echo "done"
+  
+  sleep 5
+  echo "done"
+  
+  #上面的脚本执行后会立即打印出"done"，sleep命令被扔给后台执行，不会阻塞脚本执行。
+  
+  #如果想要在进入下个循环前，必须等待上个后台命令执行完毕，可以使用wait命令
+  sleep 5 &
+  wait
+  echo "done"
+  
+  #这样，需要等待5s后才能在屏幕上看到"done"。
+  ```
+
+- shell动态传参
+
+  > $1   $2
+  >
+  > $0
+  >
+  > $#
+  >
+  > $*
+
+  ```shell
+  [root@hadoop02 ~]# vim 4.sh
+  #!/bin/bash
+  echo "$1"
+  echo "$3"
+  echo "$0"
+  echo "$#"
+  echo "$*"
+  
+  [root@hadoop02 ~]# sh 4.sh  11 22 33 44
+  11
+  33
+  4.sh
+  4
+  11 22 33 44
+  ```
 
 ### 3. 脚本实现, 调度实现
 
