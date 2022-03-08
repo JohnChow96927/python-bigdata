@@ -981,6 +981,13 @@
 
 ### 2. Java后端, Vue前端(了解)
 
+> 详细操作见讲义。
 
+- maven配置
+- IDEA使用
+- Nodejs安装
+- WebStorem使用
+- 前后端接口调试
 
 ### 3. FineBI(理解)
+
