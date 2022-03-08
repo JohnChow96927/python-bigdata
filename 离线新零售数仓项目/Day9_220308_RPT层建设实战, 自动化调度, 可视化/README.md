@@ -240,7 +240,151 @@
 
 ### 3. 商品主题报表
 
+- 需求一：商品销量==topN==
 
+  > 统计出某天销量最多的top10商品
+
+- 需求二：商品收藏==topN==
+
+  > 统计出某天收藏量最多的top10商品
+
+- 需求三：商品加入购物车==topN==
+
+  > 统计出某天，购物车最多的top10商品
+
+- 建表
+
+  ```sql
+  --商品销量TOPN
+  drop table if exists yp_rpt.rpt_goods_sale_topN;
+  create table yp_rpt.rpt_goods_sale_topN(
+      `dt` string COMMENT '统计日期',
+      `sku_id` string COMMENT '商品ID',
+      `payment_num` bigint COMMENT '销量'
+  ) COMMENT '商品销量TopN'
+  ROW format delimited fields terminated BY '\t'
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  
+  --商品收藏TOPN
+  drop table if exists yp_rpt.rpt_goods_favor_topN;
+  create table yp_rpt.rpt_goods_favor_topN(
+      `dt` string COMMENT '统计日期',
+      `sku_id` string COMMENT '商品ID',
+      `favor_count` bigint COMMENT '收藏量'
+  ) COMMENT '商品收藏TopN'
+  ROW format delimited fields terminated BY '\t' 
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  
+  --商品加入购物车TOPN
+  drop table if exists yp_rpt.rpt_goods_cart_topN;
+  create table yp_rpt.rpt_goods_cart_topN(
+      `dt` string COMMENT '统计日期',
+      `sku_id` string COMMENT '商品ID',
+      `cart_num` bigint COMMENT '加入购物车数量'
+  ) COMMENT '商品加入购物车TopN'
+  ROW format delimited fields terminated BY '\t' 
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  
+  --商品退款率TOPN
+  drop table if exists yp_rpt.rpt_goods_refund_topN;
+  create table yp_rpt.rpt_goods_refund_topN(
+      `dt` string COMMENT '统计日期',
+      `sku_id` string COMMENT '商品ID',
+      `refund_ratio` decimal(10,2) COMMENT '退款率'
+  ) COMMENT '商品退款率TopN'
+  ROW format delimited fields terminated BY '\t' 
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+  ```sql
+  --统计出某天销量最多的top10商品
+  
+  --方式1 ：简单方式
+  select sku_id,order_count from yp_dm.dm_sku
+  order by order_count desc limit 10;
+  
+  --方式2  ：复杂方式
+  --需求：找出销量最多的前10个  重复的算并列 但是总数只要10个。
+  with tmp as (select
+      sku_id,order_count,
+      rank() over(order by order_count desc) rn1,
+      dense_rank() over(order by order_count desc) rn2,
+      row_number() over(order by order_count desc) rn3
+  from yp_dm.dm_sku)
+  
+  select * from tmp where rn <11;
+  ```
+
+- sql实现
+
+  > 注意，==这里为了最终展示效果，保证有数据，特意在时间dt上做了特殊处理==。
+  >
+  > 本来是需要通过dt指定某一天数据的，这里忽略dt过滤 ，直接使用全部数据。
+  >
+  > ```
+  > select * from yp_dws.dws_sku_daycount order by order_count desc;
+  > 
+  > 
+  > select * from yp_dws.dws_sku_daycount where dt ='2021-08-31' order by order_count desc;
+  > ```
+
+  ```sql
+  --商品销量TOPN
+  insert into yp_rpt.rpt_goods_sale_topN
+  select
+      '2020-08-09' dt,
+      sku_id,
+      payment_count
+  from
+      yp_dws.dws_sku_daycount
+  -- where
+  --     dt='2020-08-09'
+  order by payment_count desc
+  limit 10;
+  
+  
+  --商品收藏TOPN
+  insert into yp_rpt.rpt_goods_favor_topN
+  select
+      '2020-08-09' dt,
+      sku_id,
+      favor_count
+  from
+      yp_dws.dws_sku_daycount 
+  -- where
+  --     dt='2020-08-09'
+  order by favor_count desc
+  limit 10;
+  
+  
+  --商品加入购物车TOPN
+  insert into yp_rpt.rpt_goods_cart_topN
+  select
+      '2020-08-09' dt,
+      sku_id,
+      cart_num
+  from
+      yp_dws.dws_sku_daycount
+  -- where
+  --     dt='2021-08-31'
+  order by cart_num desc
+  limit 10;
+  
+  --商品退款率TOPN
+  insert into yp_rpt.rpt_goods_refund_topN
+  select
+      '2020-08-09',
+      sku_id,
+      cast(
+        cast(refund_last_30d_count as DECIMAL(38,4)) / cast(payment_last_30d_count as DECIMAL(38,4))
+        * 100
+        as DECIMAL(5,2)
+     ) refund_ratio
+  from yp_dm.dm_sku 
+  where payment_last_30d_count!=0
+  order by refund_ratio desc
+  limit 10;
+  ```
 
 ### 4. 用户主题报表
 
