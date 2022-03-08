@@ -731,6 +731,176 @@
 
 ### 3. 脚本实现, 调度实现
 
+- 脚本实现
+
+  > 脚本实现的关键是如何在shell建表中执行sqoop命令、hive sql文件、presto sql文件
+  >
+  > 并且关于==时间==的地方==不能写死==，而是使用shell  ==date命令来动态获取==
+
+  - 例子一：ODS数据导入
+
+    ```shell
+    #! /bin/bash
+    SQOOP_HOME=/usr/bin/sqoop
+    if [[ $1 == "" ]];then
+       TD_DATE=`date -d '1 days ago' "+%Y-%m-%d"`
+    else
+       TD_DATE=$1
+    fi
+    
+    #上述这段shell是什么意思？能否看懂？
+    	如果用户不指定日期 默认采集当前天的前一天的数据。
+    	用户也可以根据自己需求传入指定日期作为参数  就采集指定那一天的数据。
+    ```
+
+    - 首次执行脚本
+
+      ```shell
+      #仅新增
+      /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+      --connect 'jdbc:mysql://172.17.0.202:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+      --username root \
+      --password 123456 \
+      --query "select *, '${TD_DATE}' as dt from t_goods_evaluation where 1=1 \$CONDITIONS" \
+      --hcatalog-database yp_ods \
+      --hcatalog-table t_goods_evaluation \
+      -m 1
+      
+      # 新增和更新同步
+      /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+      --connect 'jdbc:mysql://172.17.0.202:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+      --username root \
+      --password 123456 \
+      --query "select *, '${TD_DATE}' as dt from t_store where 1=1 and \$CONDITIONS" \
+      --hcatalog-database yp_ods \
+      --hcatalog-table t_store \
+      -m 1
+      ```
+
+    - 循环执行脚本
+
+      > 1、通过sqoop的query查询把增量数据查询出来。
+      >
+      > 增量的范围是TD_DATE值的 00：00：00  至  23：59：59
+      >
+      > 2、判断的字段是
+      >
+      > ​	如果是仅新增同步，使用create_time创建时间即可
+      >
+      > ​	如果是新增和更新同步，需要使用create_time 和 update_time两个时间
+      >
+      > 3、这也要求在业务系统数据库设计的时候，需要有意识的增加如下字段
+      >
+      > ​	create_user
+      >
+      > ​	create_time
+      >
+      > ​	update_user
+      >
+      > ​	update_time
+
+      ```shell
+      #仅新增
+      /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+      --connect 'jdbc:mysql://172.17.0.202:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+      --username root \
+      --password 123456 \
+      --query "select *, '${TD_DATE}' as dt from t_goods_evaluation where 1=1 and (create_time between '${TD_DATE} 00:00:00' and '${TD_DATE} 23:59:59') and  \$CONDITIONS" \
+      --hcatalog-database yp_ods \
+      --hcatalog-table t_goods_evaluation \
+      -m 1
+      
+      # 新增和更新同步
+      /usr/bin/sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+      --connect 'jdbc:mysql://172.17.0.202:3306/yipin?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true' \
+      --username root \
+      --password 123456 \
+      --query "select *, '${TD_DATE}' as dt from t_store where 1=1 and ((create_time between '${TD_DATE} 00:00:00' and '${TD_DATE} 23:59:59') or (update_time between '${TD_DATE} 00:00:00' and '${TD_DATE} 23:59:59')) and  \$CONDITIONS" \
+      --hcatalog-database yp_ods \
+      --hcatalog-table t_store \
+      -m 1
+      ```
+
+  - 例子二：DWB层sql脚本执行
+
+    > 在shell中执行hive sql的方式有两种
+    >
+    > ==bin/hive -e ‘sql语句’==
+    >
+    > ==bin/hive -f  xxx.sql文件==
+
+    - 首次执行
+
+      ```shell
+      #! /bin/bash
+      HIVE_HOME=/usr/bin/hive
+      
+      
+      ${HIVE_HOME} -S -e "
+      --分区
+      SET hive.exec.dynamic.partition=true;
+      SET hive.exec.dynamic.partition.mode=nonstrict;
+      set hive.exec.max.dynamic.partitions.pernode=10000;
+      set hive.exec.max.dynamic.partitions=100000;
+      set hive.exec.max.created.files=150000;
+      --=======订单宽表=======
+      insert into yp_dwb.dwb_order_detail partition (dt)
+      select
+      	xxxxxxx
+      ;
+      ```
+
+    - 循环执行
+
+      ```shell
+      #! /bin/bash
+      HIVE_HOME=/usr/bin/hive
+      
+      #上个月1日
+      Last_Month_DATE=$(date -d "-1 month" +%Y-%m-01)
+      
+      
+      ${HIVE_HOME} -S -e "
+      --分区配置
+      SET hive.exec.dynamic.partition=true;
+      SET hive.exec.dynamic.partition.mode=nonstrict;
+      set hive.exec.max.dynamic.partitions.pernode=10000;
+      set hive.exec.max.dynamic.partitions=100000;
+      set hive.exec.max.created.files=150000;
+      
+      --=======订单宽表=======
+      --增量插入
+      insert overwrite table yp_dwb.dwb_order_detail partition (dt)
+      select
+      	xxxxxx
+      -- 读取上个月1日至今的数据
+      SUBSTRING(o.create_date,1,10) >= '${Last_Month_DATE}' and o.start_date >= '${Last_Month_DATE}';
+      ```
+
+  - 例子三：Presto的sql如何在shell中执行
+
+    ```shell
+    #! /bin/bash
+    #昨天
+    if [[ $1 == "" ]];then
+       TD_DATE=`date -d '1 days ago' "+%Y-%m-%d"`
+    else
+       TD_DATE=$1
+    fi
+    
+    PRESTO_HOME=/opt/cloudera/parcels/presto/bin/presto
+    
+    
+    ${PRESTO_HOME} --catalog hive --server 172.17.0.202:8090 --execute "
+    delete from yp_rpt.rpt_sale_store_cnt_month where date_time = '${TD_DATE}';
+    .......
+    "
+    ```
+
+- 调度实现
+
+  > 见./Shell-Scripts
+
 ## IV. 数据报表可视化 Data Visualization
 
 ### 1. 数据报表/可视化
