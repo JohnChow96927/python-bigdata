@@ -41,7 +41,202 @@
 
 ### 2. 销售主题报表
 
+- 需求一：门店月销售单量排行
 
+  > 按月统计，==各个门店==的==月销售单量==。
+
+  - 建表
+
+    ```sql
+    CREATE TABLE yp_rpt.rpt_sale_store_cnt_month(
+       date_time string COMMENT '统计日期,不能用来分组统计',
+       year_code string COMMENT '年code',
+       year_month string COMMENT '年月',
+       
+       city_id string COMMENT '城市id',
+       city_name string COMMENT '城市name',
+       trade_area_id string COMMENT '商圈id',
+       trade_area_name string COMMENT '商圈名称',
+       store_id string COMMENT '店铺的id',
+       store_name string COMMENT '店铺名称',
+       
+       order_store_cnt BIGINT COMMENT '店铺成交单量',
+       miniapp_order_store_cnt BIGINT COMMENT '小程序端店铺成交单量',
+       android_order_store_cnt BIGINT COMMENT '安卓端店铺成交单量',
+       ios_order_store_cnt BIGINT COMMENT 'ios端店铺成交单量',
+       pcweb_order_store_cnt BIGINT COMMENT 'pc页面端店铺成交单量'
+    )
+    COMMENT '门店月销售单量排行' 
+    ROW format delimited fields terminated BY '\t' 
+    stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+    ```
+
+  - 实现
+
+    > 从销售主题统计宽表中，找出分组为store，并且时间粒度为month的进行排序即可。
+
+    ```sql
+    --门店月销售单量排行
+    insert into yp_rpt.rpt_sale_store_cnt_month
+    select 
+       date_time,
+       year_code,
+       year_month,
+       city_id,
+       city_name,
+       trade_area_id,
+       trade_area_name,
+       store_id,
+       store_name,
+       order_cnt,
+       miniapp_order_cnt,
+       android_order_cnt,
+       ios_order_cnt,
+       pcweb_order_cnt
+    from yp_dm.dm_sale 
+    where time_type ='month' and group_type='store' and store_id is not null 
+    order by order_cnt desc;
+    ```
+
+![image-20211204164443670](assets/image-20211204164443670.png)
+
+- 需求二：日销售曲线
+
+  > 按==天==统计，==总销售金额==和==销售单量==。
+
+  - 建表
+
+    ```sql
+    --日销售曲线
+    DROP TABLE IF EXISTS yp_rpt.rpt_sale_day;
+    CREATE TABLE yp_rpt.rpt_sale_day(
+       date_time string COMMENT '统计日期,不能用来分组统计',
+       year_code string COMMENT '年code',
+       month_code string COMMENT '月份编码', 
+       day_month_num string COMMENT '一月第几天', 
+       dim_date_id string COMMENT '日期',
+    
+       sale_amt DECIMAL(38,2) COMMENT '销售收入',
+       order_cnt BIGINT COMMENT '成交单量'
+    )
+    COMMENT '日销售曲线' 
+    ROW format delimited fields terminated BY '\t' 
+    stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+    ```
+
+  - 实现
+
+    ```sql
+    --日销售曲线
+    insert into yp_rpt.rpt_sale_day
+    select 
+       date_time,
+       year_code,
+       month_code,
+       day_month_num,
+       dim_date_id,
+       sale_amt,
+       order_cnt
+    from yp_dm.dm_sale 
+    where time_type ='date' and group_type='all'
+    --按照日期排序显示曲线
+    order by dim_date_id;
+    ```
+
+  ![image-20211207141004223](assets/image-20211207141004223.png)
+
+- 需求三：渠道销售占比
+
+  > 比如每天不同渠道的==订单量占比==。
+  >
+  > 也可以延伸为每周、每月、每个城市、每个品牌等等等。
+
+  - 处理思路
+
+    ```sql
+    --在dm层的dm_sale表中
+    	order_cnt 表示总订单量
+    		miniapp_order_cnt 表示小程序订单量
+    		android_order_cnt 安卓
+    		ios_order_cnt ios订单量
+    		pcweb_order_cnt  网站订单量
+    --所谓的占比就是
+    	每个占order_cnt总订单量的比例 也就是进行除法运算
+    	
+    --最后需要注意的是
+    	上述这几个订单量的字段  存储类型是bigint类型。
+    	如果想要得出90.25这样的占比率  需要使用cast函数将bigInt转换成为decimal类型。
+    ```
+
+  - 建表
+
+    ```sql
+    --渠道销量占比
+    DROP TABLE IF EXISTS yp_rpt.rpt_sale_fromtype_ratio;
+    CREATE TABLE yp_rpt.rpt_sale_fromtype_ratio(
+       date_time string COMMENT '统计日期,不能用来分组统计',
+       time_type string COMMENT '统计时间维度：year、month、day',
+       year_code string COMMENT '年code',
+       year_month string COMMENT '年月',
+       dim_date_id string COMMENT '日期',
+       
+       order_cnt BIGINT COMMENT '成交单量',
+       miniapp_order_cnt BIGINT COMMENT '小程序成交单量',
+       miniapp_order_ratio DECIMAL(5,2) COMMENT '小程序成交量占比',
+       android_order_cnt BIGINT COMMENT '安卓APP订单量',
+       android_order_ratio DECIMAL(5,2) COMMENT '安卓APP订单量占比',
+       ios_order_cnt BIGINT COMMENT '苹果APP订单量',
+       ios_order_ratio DECIMAL(5,2) COMMENT '苹果APP订单量占比',
+       pcweb_order_cnt BIGINT COMMENT 'PC商城成交单量',
+       pcweb_order_ratio DECIMAL(5,2) COMMENT 'PC商城成交单量占比'
+    )
+    COMMENT '渠道销量占比' 
+    ROW format delimited fields terminated BY '\t' 
+    stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+    ```
+
+  - 实现
+
+    ```sql
+    --渠道销量占比
+    insert into yp_rpt.rpt_sale_fromtype_ratio
+    select 
+       date_time,
+       time_type,
+       year_code,
+       year_month,
+       dim_date_id,
+       
+       order_cnt,
+       miniapp_order_cnt,
+       cast(
+          cast(miniapp_order_cnt as DECIMAL(38,4)) / cast(order_cnt as DECIMAL(38,4))
+          * 100
+          as DECIMAL(5,2)
+       ) miniapp_order_ratio,
+       android_order_cnt,
+       cast(
+          cast(android_order_cnt as DECIMAL(38,4)) / cast(order_cnt as DECIMAL(38,4))
+          * 100
+          as DECIMAL(5,2)
+       ) android_order_ratio,
+       ios_order_cnt,
+       cast(
+          cast(ios_order_cnt as DECIMAL(38,4)) / cast(order_cnt as DECIMAL(38,4))
+          * 100
+          as DECIMAL(5,2)
+       ) ios_order_ratio,
+       pcweb_order_cnt,
+       cast(
+          cast(pcweb_order_cnt as DECIMAL(38,4)) / cast(order_cnt as DECIMAL(38,4))
+          * 100
+          as DECIMAL(5,2)
+       ) pcweb_order_ratio
+    from yp_dm.dm_sale
+    where group_type = 'all';
+    ```
+
+  ![image-20211204164818513](assets/image-20211204164818513.png)
 
 ### 3. 商品主题报表
 
