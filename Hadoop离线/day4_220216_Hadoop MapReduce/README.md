@@ -432,7 +432,7 @@ SecondaryNameNode就是来帮助解决上述问题的，它的职责是合并Nam
 
    /export/server/hadoop-3.3.0/share/hadoop/mapreduce
 
-   ![1644996143002](../../../GitHub%20Desktop/ITheima_python_bigdata/Hadoop%E7%A6%BB%E7%BA%BF/assets/1644996143002.png)
+   ![1644996143002](assets/1644996143002.png)
 
    运行该jar包程序，可以传入不同的参数实现不同的处理功能。
 
