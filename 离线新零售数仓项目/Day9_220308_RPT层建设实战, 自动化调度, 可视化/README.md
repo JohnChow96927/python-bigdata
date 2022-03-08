@@ -388,7 +388,101 @@
 
 ### 4. 用户主题报表
 
+- 需求
 
+  > 活跃会员数、新增会员数、新增消费会员数、总付费会员数、总会员数、会员活跃率等。
+
+- 建表
+
+  ```sql
+  --用户数量统计
+  drop table if exists yp_rpt.rpt_user_count;
+  create table yp_rpt.rpt_user_count(
+      dt string COMMENT '统计日期',
+      day_users BIGINT COMMENT '活跃会员数',
+      day_new_users BIGINT COMMENT '新增会员数',
+      day_new_payment_users BIGINT COMMENT '新增消费会员数',
+      payment_users BIGINT COMMENT '总付费会员数',
+      users BIGINT COMMENT '总会员数',
+      day_users2users decimal(38,4) COMMENT '会员活跃率',
+      payment_users2users decimal(38,4) COMMENT '总会员付费率',
+      day_new_users2users decimal(38,4) COMMENT '会员新鲜度'
+  )
+  COMMENT '用户数量统计报表'
+  ROW format delimited fields terminated BY '\t'
+  stored AS orc tblproperties ('orc.compress' = 'SNAPPY');
+  ```
+
+- 实现思路
+
+  > 业务解读
+
+  ```shell
+  #首先，确定干活统计的日期，比如2019-05-08
+  
+  #1、活跃会员数
+  	活跃的业务解读：	
+  		1、在一个月中累积登录次数大于某个值 叫做活跃  比如累积登录次数 >20
+  		2、该用户的末次登陆时间为昨天（今天统计的是昨天的），昨天来过 就表示活跃
+  	
+  	本项目使用2：用户最后一次登录为统计日期之前一天的  表示活跃
+  	
+  #2、新增会员数
+  	第一次登录为统计日期前一天的  表示新增
+  	
+  #3、新增消费会员数	
+  	首次支付时间为统计日期前一天的
+  
+  #4、总付费会员数
+  	支付次数大于0的
+  	
+  #5、总会员数
+  
+  #6、会员活跃率
+  	最后一次登录时间为统计日期前一天的表示这个人很活跃  
+  	除以总会员数即是会员活跃率
+  	
+  #7、总会员付费率
+  	支付次数payment_count大于0次的表示该用户支付过  不管支付几次
+  	除以总会员数即是总会员付费率
+  	
+  #8、会员新鲜度
+  	在统计日期前一天中所有登录用户中，哪些是第一次登录的  占比即是新鲜度
+  	login_date_last最后一次登录的时间
+  	login_date_first 第一次登录的时间
+  ```
+
+  
+
+- sql实现
+
+  ```sql
+  --用户数量统计
+  insert into yp_rpt.rpt_user_count
+  select
+      '2019-05-08',
+      sum(if(login_date_last='2019-05-07',1,0)), --活跃会员数
+      sum(if(login_date_first='2019-05-07',1,0)),--新增会员数
+      sum(if(payment_date_first='2019-05-07',1,0)), --新增消费会员数
+      sum(if(payment_count>0,1,0)), --总付费会员数
+      count(*), --总会员数
+      if(
+          sum(if(login_date_last = '2019-05-07', 1, 0)) = 0,
+          null,
+          cast(sum(if(login_date_last = '2019-05-07', 1, 0)) as DECIMAL(38,4))
+      )/count(*), --会员活跃率
+      if(
+          sum(if(payment_count>0,1,0)) = 0,
+          null,
+          cast(sum(if(payment_count>0,1,0)) as DECIMAL(38,4))
+      )/count(*), --总会员付费率
+      if(
+          sum(if(login_date_first='2019-05-07',1,0)) = 0,
+          null,
+          cast(sum(if(login_date_first='2019-05-07',1,0)) as DECIMAL(38,4))
+      )/sum(if(login_date_last='2019-05-07',1,0)) --会员新鲜度
+  from yp_dm.dm_user;
+  ```
 
 ## II. Presto数据导出
 
