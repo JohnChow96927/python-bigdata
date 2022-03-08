@@ -488,7 +488,74 @@
 
 ### 1. RPT层数据至MySQL
 
+- 新零售数仓架构图
 
+  > 从数仓架构图上，感受为什么最终需要把拼接的数据导出存储在mysql。
+  >
+  > 报表系统直接从hive数仓RPT层中读取数据使用可不可以？  可以但是没必要。
+
+  ![image-20211207145330730](assets/image-20211207145330730.png)
+
+- step1：presto配置连接MySQL
+
+  - 配置mysql Connector
+
+    > 在每台Presto服务的==etc/catalog==目录下，新建文件==mysql.properties==，内容如下
+
+    ```properties
+    vim /export/server/presto/etc/catalog/mysql.properties
+    
+    connector.name=mysql
+    connection-url=jdbc:mysql://192.168.88.80:3306?enabledTLSProtocols=TLSv1.2&useUnicode=true&characterEncoding=utf8
+    connection-user=root
+    connection-password=123456
+    ```
+
+  - 重启presto集群
+
+    > /export/server/presto/bin/launcher restart
+
+  - Datagrip中验证是否可以连接MySQL
+
+    > 在presto中根据自己的需要选择需要刷新的catalog、schema等。
+
+    ![image-20211017150803387](assets/image-20211017150803387.png)
+
+- step2：MySQL中建库
+
+  > 在DataGrip中==选中mysql数据源==,按下F4，在控制台中输入以下sql
+
+  ```sql
+  -- 建库
+  CREATE DATABASE yp_olap DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  ```
+
+  ![image-20211017151233258](assets/image-20211017151233258.png)
+
+- step3：使用==Presto在MySQL中建表==
+
+  > 建表时使用Presto来操作，create语法和hive大体相同，只需要将hive中的string类型改为varchar。
+  >
+  > 另外文件格式、压缩格式这些mysql没有的配置去掉就可以了。
+  >
+  > 注意==presto不能直接删除mysql的表或数据==。
+
+  - 详细sql语句参考课程脚本资料。
+
+  ![image-20211017151441279](assets/image-20211017151441279.png)
+
+- step4：使用Presto将数据导出到MySQL中
+
+  - 语法格式
+
+    ```sql
+    insert into mysql.yp_olap.rpt_sale_store_cnt_month 
+    select  * from hive.yp_rpt.rpt_sale_store_cnt_month;
+    ```
+
+  - 完整版sql可以参考课程资料
+
+    ![image-20211017151915476](assets/image-20211017151915476.png)
 
 ## III. 自动化调度方案
 
