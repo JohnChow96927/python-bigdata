@@ -857,7 +857,6 @@
       this is master version 2
       this is master version 3
       this is vip vserion 3
-      
       ```
 
   - 实现
@@ -880,11 +879,7 @@
 
     ![image-20210517162406125](assets/image-20210517162406125.png)
 
-    
-
-------
-
-#### 知识点20：IDEA、Pycharm等开发工具与Git集成
+## IDEA、Pycharm等开发工具与Git集成
 
 - **创建一个项目工程**
 
