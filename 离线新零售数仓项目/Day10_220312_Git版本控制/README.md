@@ -957,15 +957,11 @@
 
     ![image-20210517171339359](assets/image-20210517171339359.png)
 
-    
-
 - **小结**
 
   - 实现IDEA中使用Git管理
 
-------
-
-#### 知识点22：IDEA关联GitHub
+## IDEA关联GitHub
 
 > 实现IDEA与GitHub的集成
 
