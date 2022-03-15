@@ -902,11 +902,11 @@ hdfs dfs -text /datas/wordcount-output/part-*
 
 ### 高可用HA
 
-> ​		Spark Standalone集群是**Master-Slaves架构**的集群模式，和大部分的Master-Slaves结构集群一样，存在着==Master单点故障（SPOF）==的问题。
+> ​	Spark Standalone集群是**Master-Slaves架构**的集群模式，和大部分的Master-Slaves结构集群一样，存在着==Master单点故障（SPOF）==的问题。
 
 ![1632067178697](assets/1632067178697.png)
 
-> ​			基于`Zookeeper`的Standby Masters机制实现高可用High Available，其中ZooKeeper提供了==一个Leader Election机制==，可以保证虽然**集群存在多个Master，但是只有一个是Active的，其他的都是Standby。当Active的Master出现故障时，另外的一个Standby Master会被选举出来**。
+> ​	基于`Zookeeper`的Standby Masters机制实现高可用High Available，其中ZooKeeper提供了==一个Leader Election机制==，可以保证虽然**集群存在多个Master，但是只有一个是Active的，其他的都是Standby。当Active的Master出现故障时，另外的一个Standby Master会被选举出来**。
 
 ![1632067236308](assets/1632067236308.png)
 
@@ -915,6 +915,6 @@ hdfs dfs -text /datas/wordcount-output/part-*
 	https://spark.apache.org/docs/3.1.2/spark-standalone.html#standby-masters-with-zookeeper
 ```
 
-> ​		Spark提供高可用HA方案：**运行2个或多个Master进程**，其中==一个是Active状态：正常工作，其余的为Standby状态：待命中，一旦Active Master出现问题，立刻接上==。
+> ​	Spark提供高可用HA方案：**运行2个或多个Master进程**，其中==一个是Active状态：正常工作，其余的为Standby状态：待命中，一旦Active Master出现问题，立刻接上==。
 
 ![1632067389146](assets/image-20210420161334636.png)
