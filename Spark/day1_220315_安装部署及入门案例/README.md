@@ -855,6 +855,49 @@ hdfs dfs -text /datas/wordcount-output/part-*
 
 ### ★应用运行架构
 
+> 当将Spark Application运行在集群上时，所有组件组成如下所示，分为2个部分：
+>
+> - 第一部分、集群资源管理框架，比如Standalone 集群
+> - 第二部分、每个应用组成，应用管理者和应用执行者
 
+![1638430744522](assets/1638430744522.png)
+
+> 第一部分、集群资源管理框架，以Standalone 集群为例
+
+- **主节点Master：集群老大，管理节点**
+  - 接受客户端请求、管理从节点Worker节点、资源管理和任务调度
+  - 类似YARN中ResourceManager
+- **从节点Workers：集群小弟，工作节点**
+  - 使用自身节点的资源运行Executor进程：给每个Executor分配一定的资源
+  - 类似YARN中NodeManager
+
+> 第二部分、每个应用组成，应用管理者Driver和应用执行者Executors
+
+- **应用管理者Driver Program**：每个应用老大
+  - 向主节点申请Executor资源，让主节点在从节点上根据需求配置启动对应的Executor
+  - 解析代码逻辑：将代码中的逻辑转换为Task
+  - 将Task分配给Executor去运行
+  - 监控每个Executor运行的Task状态
+
+- **应用执行者Executors：**应用中干活的
+  - 运行在Worker上，使用Worker分配的资源等待运行Task
+  - 所有Executor启动成功以后会向Driver进行注册
+  - Executor收到分配Task任务，运行Task
+  - 可以将RDD数据缓存到Executor内存
+
+> 登录Spark HistoryServer历史服务器WEB UI界面，点击前面运行圆周率PI程序：
+
+```
+历史服务器网址：
+	http://node1.itcast.cn:18080/
+```
+
+![1632068890278](assets/1632068890278.png)
+
+![1632068943086](assets/1632068943086.png)
+
+> 切换到【Executors】Tab页面：
+
+![1632068967612](assets/1632068967612.png)
 
 ### 高可用HA
