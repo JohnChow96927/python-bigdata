@@ -533,13 +533,199 @@ total 8
 
 ### 运行圆周率PI
 
+![1638431437696](assets/1638431437696.png)
 
+> ​	Spark框架自带的案例Example中涵盖圆周率PI计算程序，可以使用【`$SPARK_HOME/bin/spark-submit`】提交应用执行，运行在本地模式localmode。
+
+使用`spark-submit`脚本，提交运行圆周率PI，采用**蒙特卡罗**算法。
+
+```bash
+/export/server/spark-local/bin/spark-submit \
+--master local[2] \
+/export/server/spark-local/examples/src/main/python/pi.py \
+10
+```
+
+![1632064053860](assets/1632064053860.png)
+
+Hadoop MapReduce中运行圆周率PI，本地模式运行，提交命令
+
+------
+
+```bash
+/export/server/hadoop/bin/yarn jar \
+/export/server/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar \
+pi \
+-Dmapreduce.framework.name=local \
+-Dfs.defaultFS=file:/// \
+10 10000
+
+# 第一个参数：10，表示运行10个MapTask任务
+# 第二个参数：10000，表示每个MapTask任务投掷次数
+# -D设置属性参数值：MapReduce运行本地模式local和文件系统为本地文件系统file
+```
 
 ## Standalone集群
 
 ### 架构及安装部署
 
+> ​	Standalone集群使用了分布式计算中的`master-slave模型`，**master是集群中含有Master进程的节点，slave是集群中的Worker节点含有Executor进程。**
 
+[Spark Standalone集群，仅仅只能向其提交运行Spark Application程序，其他应用无法提交运行]()
+
+- 主节点：`Master`，管理整个集群的资源，[类似Hadoop YARN中ResourceManager]()
+- 从节点：`Workers`，管理每台机器的资源（内存和CPU）和执行任务Task，[类似Hadoop YARN中NodeManager]()
+
+![1632066008447](assets/1632066008447.png)
+
+> Spark Standalone集群，类似Hadoop YARN集群，管理集群资源和调度资源：
+
+![1632066070301](assets/1632066070301.png)
+
+> **Standalone 集群**资源配置，使用三台虚拟机，安装CentOS7操作系统。
+
+![1632066209698](assets/1632066209698.png)
+
+> ​		Standalone 集群服务规划，1个Master主节点、3个Workers从节点和1个历史服务节点，==Master主节点和HistoryServer历史服务节点往往在一台机器上。==
+
+![1632066296583](assets/1632066296583.png)
+
+> Standalone集群配置，在`node1.itcast.cn`机器上配置，分发到集群其他机器。
+
+- **1、框架安装包上传解压**
+
+```bash
+# 第一、进入软件安装目录
+(base) [root@node1 ~]# cd /export/server/
+
+# 第二、上传框架软件包
+(base) [root@node1 server]# rz
+
+# 第三、赋予执行权限
+(base) [root@node1 server]# chmod u+x spark-3.1.2-bin-hadoop3.2.tgz 
+
+# 第四、解压软件包
+(base) [root@node1 server]# tar -zxf spark-3.1.2-bin-hadoop3.2.tgz 
+
+# 第五、赋予root用户和组
+(base) [root@node1 server]# chown -R root:root spark-3.1.2-bin-hadoop3.2
+
+# 第六、重命名为spark-local
+(base) [root@node1 server]# mv spark-3.1.2-bin-hadoop3.2 spark-standalone
+```
+
+- **2、配置Master、Workers、HistoryServer**
+
+  在配置文件**`$SPARK_HOME/conf/spark-env.sh`**，添加如下内容：
+
+```bash
+## 第一、进入配置目录
+cd /export/server/spark-standalone/conf
+
+## 第二、修改配置文件名称
+mv spark-env.sh.template spark-env.sh
+
+## 第三、修改配置文件
+vim spark-env.sh
+## 增加如下内容：
+
+## 设置JAVA安装目录
+JAVA_HOME=/export/server/jdk
+
+## HADOOP软件配置文件目录
+HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop
+
+## 指定Master主机名称和端口号
+SPARK_MASTER_HOST=node1.itcast.cn
+SPARK_MASTER_PORT=7077
+SPARK_MASTER_WEBUI_PORT=8080
+
+## 指定Workers资源和端口号
+SPARK_WORKER_CORES=1
+SPARK_WORKER_MEMORY=1g
+SPARK_WORKER_PORT=7078
+SPARK_WORKER_WEBUI_PORT=8081
+
+## 历史日志服务器
+SPARK_DAEMON_MEMORY=1g
+SPARK_HISTORY_OPTS="-Dspark.history.fs.logDirectory=hdfs://node1.itcast.cn:8020/spark/eventLogs/ -Dspark.history.fs.cleaner.enabled=true"
+```
+
+- **3、创建EventLogs存储目录**
+
+  先确定HDFS服务启动，再创建事件日志目录
+
+```bash
+# 第一、在node1.itcast.cn启动服务
+(base) [root@node1 ~]# start-dfs.sh 
+
+# 第二、创建EventLog目录
+(base) [root@node1 ~]# hdfs dfs -mkdir -p /spark/eventLogs/
+```
+
+- **4、Workers节点主机名称**
+
+  将 `$SPARK_HOME/conf/workers.template` 名称命名为【**`workers`**】，填写从节点名称。
+
+```bash
+## 第一、进入配置目录
+cd /export/server/spark-standalone/conf
+
+## 第二、修改配置文件名称
+mv workers.template workers
+
+## 第三、编辑和添加内容
+vim workers
+##内容如下：
+node1.itcast.cn
+node2.itcast.cn
+node3.itcast.cn
+```
+
+- **5、配置Spark应用保存EventLogs**
+
+  将 `$SPARK_HOME/conf/spark-defaults.conf.template` 重命名为**`spark-defaults.conf`**，添加内容：
+
+```bash
+## 第一、进入配置目录
+cd /export/server/spark-standalone/conf
+
+## 第二、修改配置文件名称
+mv spark-defaults.conf.template spark-defaults.conf
+
+## 第三、添加应用运行默认配置
+vim spark-defaults.conf
+## 添加内容如下：
+spark.eventLog.enabled     true
+spark.eventLog.dir         hdfs://node1.itcast.cn:8020/spark/eventLogs
+spark.eventLog.compress    true
+```
+
+- **6、设置日志级别**
+
+  将 `$SPARK_HOME/conf/log4j.properties.template`重命名为 `log4j.properties`，修改日志级别为警告**`WARN`**。
+
+```bash
+## 第一、进入目录
+cd /export/server/spark-standalone/conf
+
+## 第二、修改日志属性配置文件名称
+mv log4j.properties.template log4j.properties
+
+## 第三、改变日志级别
+vim log4j.properties
+## 修改内容： 第19行
+log4j.rootCategory=WARN, console
+```
+
+- **7、分发到其他机器**
+
+  将配置好的将 Spark 安装包分发给集群中其它机器
+
+```bash
+scp -r /export/server/spark-standalone root@node2.itcast.cn:/export/server/
+scp -r /export/server/spark-standalone root@node3.itcast.cn:/export/server/
+```
 
 ### 服务启动及测试
 
