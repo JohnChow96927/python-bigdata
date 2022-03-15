@@ -267,7 +267,98 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 
 ### ★Anaconda软件安装
 
+使用Python编写Spark代码，首先需要安装Python语言包，此时安装Anaconda科学数据分析包。
 
+![PySpark Logo](assets/PySpark-1024x164-1632015673064.png)
+
+> ​	Anaconda是一个**开源的Python发行版本**，其包含了conda、Python等180多个科学包及其依赖项。Anaconda 是跨平台的，有 Windows、MacOS、Linux 版本。
+
+```ini
+# 下载地址：	
+	https://repo.anaconda.com/archive/
+```
+
+> 使用Python编程Spark程序，无论是开发还是运行，需要安装如下基本组件：
+
+![1632095140975](assets/1632095140975.png)
+
+```ini
+# 可以直接安装Spark 软件包
+	包含pyspark库
+	spark-3.1.2-bin-hadoop3.2.tgz
+	
+# 直接安装pyspark库
+	pip install pyspark==3.1.2
+```
+
+> 在CentOS7系统上安装**Anaconda3-2021-05**版本，具体步骤如下，[集群所有集群如下方式安装。]()
+
+1、安装包上传并解压
+
+```bash
+[root@node1 ~]# cd /export/server/
+[root@node1 server]# rz
+
+[root@node1 server]# chmod u+x Anaconda3-2021.05-Linux-x86_64.sh 
+
+[root@node1 server]# sh ./Anaconda3-2021.05-Linux-x86_64.sh 
+第一次：【直接回车】
+    Please, press ENTER to continue
+    >>> 
+第二次：【输入yes】
+	Do you accept the license terms? [yes|no]
+	[no] >>> yes
+第三次：【输入解压路径：/export/server/anaconda3】
+	[/root/anaconda3] >>> /export/server/anaconda3
+第四次：【输入yes，是否在用户的.bashrc文件中初始化Anaconda3的相关内容】
+	Do you wish the installer to initialize Anaconda3
+    by running conda init? [yes|no]
+    [no] >>> yes
+```
+
+2、进入 conda 虚拟环境
+
+​	第一次需要先激活，命令行键入以下命令： `source /root/.bashrc`，进入conda默认虚拟环境(base)
+
+```bash
+[root@node1 ~]# source /root/.bashrc
+
+## 测试python3
+(base) [root@node1 ~]# python3
+Python 3.8.8 (default, Apr 13 2021, 19:58:26) 
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> print("Hello Python")
+Hello Python
+```
+
+3、设置系统环境变量
+
+```bash
+[root@node1 ~]# vim /etc/profile
+```
+
+文件末尾，添加内容：
+
+```ini
+# Anaconda Home
+export ANACONDA_HOME=/export/server/anaconda3
+export PATH=$PATH:$ANACONDA_HOME/bin
+```
+
+设置环境变量生效
+
+```bash
+[root@node1 ~]# source /etc/profile
+```
+
+4、创建软链接
+
+```ini
+[root@node1 ~]# ln -s /export/server/anaconda3/bin/python3 /usr/bin/python3
+```
+
+> **注意**：集群中三台机器node1、node2和node3都需按照上述步骤安装Anconada3，不要使用`scp`命令拷贝。
 
 ### ★Spark Python Shell
 
