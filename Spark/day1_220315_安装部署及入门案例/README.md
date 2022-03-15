@@ -461,7 +461,75 @@ SparkSession available as 'spark'.
 
 ### 词频统计WordCount
 
+> WordCount词频统计**：[加载本地文件系统文本文件数据，进行词频统计WordCount]()
 
+![1632057848952](assets/1632057848952.png)
+
+- 数据文件： `vim /root/words.txt`
+
+```ini
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+```
+
+- 词频统计WordCount
+
+  > - 第一步、从LocalFS读取文件数据，`sc.textFile`方法，将数据封装到RDD中
+  > - 第二步、调用RDD中函数，进行处理转换处理，函数：`flapMap、map和reduceByKey`
+  > - 第三步、将最终处理结果RDD保存到LocalFS或打印控制台，函数：`foreach、saveAsTextFile`
+
+```python
+# 第一、加载本地文件系统文本文件
+>>> input_rdd = sc.textFile("file:///root/words.txt")  
+>>> type(input_rdd)
+<class 'pyspark.rdd.RDD'>
+
+# 第二、每行数据按照空格分词并且进行扁平化
+>>> word_rdd = input_rdd.flatMap(lambda line: line.split(" "))  
+
+# 第三、每个单词转换为二元组
+>>> tuple_rdd = word_rdd.map(lambda word: (word, 1))
+
+# 第四、按照key单词分组，对组内数据求和
+>>> result_rdd = tuple_rdd.reduceByKey(lambda tmp, item: tmp + item)
+
+# 第五、打印RDD集合中每条数据至控制台
+>>> result_rdd.foreach(lambda item: print(item))
+('python', 3)
+('hive', 4)
+('hadoop', 2)
+('hdfs', 1)
+('spark', 7)
+('mapreduce', 2)
+
+# 第六、保存数据至本地文件系统文件中
+result_rdd.saveAsTextFile("file:///root/wordcount-output")
+
+# 查看文件保存数据
+(base) [root@node1 ~]# ll /root/wordcount-output/
+total 8
+-rw-r--r-- 1 root root 52 Sep 18 16:32 part-00000
+-rw-r--r-- 1 root root 30 Sep 18 16:32 part-00001
+-rw-r--r-- 1 root root  0 Sep 18 16:32 _SUCCESS
+
+(base) [root@node1 ~]# more /root/wordcount-output/part-00000 
+('python', 3)
+('hive', 4)
+('hadoop', 2)
+('hdfs', 1)
+
+(base) [root@node1 ~]# more /root/wordcount-output/part-00001
+('spark', 7)
+('mapreduce', 2)
+```
+
+![1634686248681](assets/1634686248681.png)
+
+> 浏览器打开WEB UI监控页面：http://node1.itcast.cn:4040，首页显示运行完成Job：
+
+![1632063157259](assets/1632063157259.png)
 
 ### 运行圆周率PI
 
