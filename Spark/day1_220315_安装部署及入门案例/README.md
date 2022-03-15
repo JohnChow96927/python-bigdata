@@ -355,7 +355,7 @@ export PATH=$PATH:$ANACONDA_HOME/bin
 4、创建软链接
 
 ```ini
-[root@node1 ~]# ln -s /export/server/anaconda3/bin/python3 /usr/bin/python3
+[root@node1 ~]# ln -s /export/server/anaconda3/bin/python3 /usr/bin/python
 ```
 
 > **注意**：集群中三台机器node1、node2和node3都需按照上述步骤安装Anconada3，不要使用`scp`命令拷贝。
