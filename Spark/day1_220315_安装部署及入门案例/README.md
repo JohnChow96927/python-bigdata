@@ -729,7 +729,129 @@ scp -r /export/server/spark-standalone root@node3.itcast.cn:/export/server/
 
 ### 服务启动及测试
 
+> ​		启动Spark Standalone 集群服务，在主节点`node1.itcast.cn`上先启动Master服务，再启动Workers服务，最后启动历史服务HistoryServer。
 
+![1632066949099](assets/1632066949099.png)
+
+[必须配置主节点到所有从节点的SSH无密钥登录，集群各个机器时间同步。]()
+
+- 1、主节点Master服务
+
+```bash
+## 启动Master服务
+/export/server/spark-standalone/sbin/start-master.sh
+
+## 停止Master服务
+/export/server/spark-standalone/sbin/stop-master.sh
+```
+
+- 2、从节点Workers服务
+
+```bash
+## 启动Workers服务
+/export/server/spark-standalone/sbin/start-workers.sh
+
+## 停止Workers服务
+/export/server/spark-standalone/sbin/stop-workers.sh
+```
+
+![1632066517685](assets/1632066517685.png)
+
+- 3、Master监控UI界面
+  - 主节点Master主节点WEB UI服务地址：http://node1.itcast.cn:8080/
+
+![1632066485115](assets/1632066485115.png)
+
+> ​	监控页面可以看出，配置3个Worker进程实例，每个Worker实例为1核1GB内存，总共是3核 3GB 内存。目前显示的Worker资源都是空闲的，当向Spark集群提交应用之后，Spark就会分配相应的资源给程序使用，可以在该页面看到资源的使用情况。
+
+- 4、启动历史服务
+
+```bash
+## 启动HistoryServer服务
+/export/server/spark-standalone/sbin/start-history-server.sh
+
+## 停止HistoryServer服务
+/export/server/spark-standalone/sbin/stop-history-server.sh
+```
+
+![1632066554533](assets/1632066554533.png)
+
+> **案例运行（1）**：[圆周率PI运行]()
+
+​	将圆周率PI程序，提交运行在Standalone集群上，修改【**`--master`**】为Standalone集群地址：**`spark://node1.itcast.cn:7077`**
+
+```bash
+/export/server/spark-standalone/bin/spark-submit \
+--master spark://node1.itcast.cn:7077 \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+/export/server/spark-standalone/examples/src/main/python/pi.py \
+10
+
+## 属性参数：spark.pyspark.driver.python和spark.pyspark.python，指定python解析器位置
+```
+
+> **案例运行（2）**：[词频统计WordCount]()
+
+- 数据文件： `vim /root/words.txt`
+
+```ini
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+```
+
+- 上传HDFS文件系统
+
+```bash
+# 创建目录
+hdfs dfs -mkdir -p /datas/input
+
+# 上传文件
+hdfs dfs -put /root/words.txt /datas/input
+
+# 设置目录权限
+hdfs dfs -chmod 777 /datas/
+```
+
+- 启动`pyspark shell`交互式命令行
+
+```bash
+/export/server/spark-standalone/bin/pyspark \
+--master spark://node1.itcast.cn:7077 \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3"
+```
+
+- 词频统计WordCount：
+
+```python
+# 第一、加载HDFS文件系统文本文件
+input_rdd = sc.textFile("hdfs://node1.itcast.cn:8020/datas/input/words.txt") 
+input_rdd.collect()
+
+"""
+第二、词频统计
+	2-1. 每行数据按照空格分词并且进行扁平化
+	2-2. 每个单词转换为二元组
+	2-3. 按照key单词分组，对组内数据求和
+"""
+word_rdd = input_rdd.flatMap(lambda line: str(line).split(' '))
+tuple_rdd = word_rdd.map(lambda word: (word, 1))
+output_rdd = tuple_rdd.reduceByKey(lambda tmp, item: tmp + item)
+output_rdd.collect()
+
+# 第三、打印RDD集合中每条数据至控制台
+output_rdd.foreach(lambda item: print(item))
+
+# 保存数据至本地文件系统文件中
+output_rdd.saveAsTextFile("hdfs://node1.itcast.cn:8020/datas/wordcount-output")
+
+# 查看文件保存数据
+hdfs dfs -ls /datas/wordcount-output
+hdfs dfs -text /datas/wordcount-output/part-*
+```
 
 ### ★应用运行架构
 
