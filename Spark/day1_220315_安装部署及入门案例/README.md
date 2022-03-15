@@ -362,7 +362,102 @@ export PATH=$PATH:$ANACONDA_HOME/bin
 
 ### ★Spark Python Shell
 
+> ​	在Spark框架中，提供基于Python交互式命令：`pyspark`，以本地模式运行：`启动一个JVM Process进程，执行任务Task，`通过`--master`参数 指定运行模式。
 
+![1632055476715](assets/1632055476715.png)
+
+> 本地模式启动JVM Process进程，示意图：
+
+![1632055573575](assets/1632055573575.png)
+
+- 1、框架安装包上传解压
+
+```bash
+# 第一、进入软件安装目录
+(base) [root@node1 ~]# cd /export/server/
+# 第二、上传框架软件包
+(base) [root@node1 server]# rz
+# 第三、赋予执行权限
+(base) [root@node1 server]# chmod u+x spark-3.1.2-bin-hadoop3.2.tgz 
+
+# 第四、解压软件包
+(base) [root@node1 server]# tar -zxf spark-3.1.2-bin-hadoop3.2.tgz 
+# 第五、赋予root用户和组
+(base) [root@node1 server]# chown -R root:root spark-3.1.2-bin-hadoop3.2
+
+# 第六、重命名为spark-local
+(base) [root@node1 server]# mv spark-3.1.2-bin-hadoop3.2 spark-local
+```
+
+- 2、启动`pyspark shell`命令行
+
+```bash
+# 第一、进入spark框架安装目录
+(base) [root@node1 ~]# cd /export/server/spark-local
+(base) [root@node1 spark-local]# ll
+
+# 查看Spark软件安装包目录结构：
+```
+
+![1632108030104](assets/1632108030104.png)
+
+```bash
+# 第二、启动pyspark shell命令行，设置本地模式运行
+(base) [root@node1 ~]# /export/server/spark-local/bin/pyspark --master local[2]
+
+Python 3.8.8 (default, Apr 13 2021, 19:58:26) 
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+21/09/18 15:08:25 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /__ / .__/\_,_/_/ /_/\_\   version 3.1.2
+      /_/
+
+Using Python version 3.8.8 (default, Apr 13 2021 19:58:26)
+Spark context Web UI available at http://node1.itcast.cn:4040
+Spark context available as 'sc' (master = local[2], app id = local-1631948908036).
+SparkSession available as 'spark'.
+>>> 
+```
+
+其中，==创建SparkContext实例对象：`sc` 和 SparkSession会话实例对象：`spark`==，方便加载数据源数据。
+
+![1632055712959](assets/1632055712959.png)
+
+- ==1、Spark context Web UI available at== http://node1.itcast.cn:4040
+  - 每个Spark应用运行，提供WEB UI监控页面，默认端口号：`4040`
+- ==2、Spark context available as 'sc' (master = local[2], app id = local-1631948908036).==
+  - 创建SparkContext类对象，名称为：`sc`
+  - Spark应用程序入口，读取数据和调度Job执行
+
+- ==3、Spark session available as 'spark'.==
+  - Spark2.0开始，提供新的程序入口：SparkSession，创建对象，名称为：`spark`	
+
+> ​	启动`pyspark shell`命令行后，可以直接书写**pyspark和python代码**， 数据分析处理，如果是pyspark代码，将运行Task任务计算处理数据。
+
+**案例演示**：[并行化列表为RDD，对其中元素进行平方]()。
+
+![1634683439948](assets/1634683439948.png)
+
+```python
+# 第一、创建RDD，并行化列表
+>>> input_rdd = sc.parallelize([1, 2, 3, 4, 5])
+>>> 
+# 第二、对集合中每个元素平方
+>>> result_rdd = input_rdd.map(lambda number: number * number)
+>>> 
+# 第三、将RDD数据转存本地列表List
+>>> result_rdd.collect()
+[1, 4, 9, 16, 25]     
+```
+
+![1632109902466](assets/1632109902466.png)
 
 ### 词频统计WordCount
 
