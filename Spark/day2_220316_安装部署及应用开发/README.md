@@ -31,6 +31,8 @@
 - 2、Windows 系统安装Hadoop
 
 > 直接解压提供的`hadoop-3.3.0-Windows.zip`到指定（建议：英文字符目录）中，比如解压路径：`D:\BigdataUser`
+>
+> 配置java环境变量: 
 
 ![1632237579667](assets/1632237579667.png)
 
