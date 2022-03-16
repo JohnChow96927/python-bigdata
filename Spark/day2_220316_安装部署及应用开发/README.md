@@ -919,7 +919,37 @@ SparkApplication运行在YARN上结束后，截图如下：
 
 ### ★yarn-cluster模式
 
+> YARN `Cluster` 模式：当Spark 运行在YARN集群时，采用`cluster` DeployMode时，表示**应用Driver Program运行在集群从节点某台机器上**，有如下2个进程：
 
+- `Driver Program（AppMaster）`，既进行资源申请，又进行Job调度
+- `Executors`，运行JVM进程，其中执行Task任务和缓存数据
+
+![1632265440118](assets/1632265440118.png)
+
+运行词频统计WordCount程序，采用`cluster`模式，命令如下：
+
+```bash
+/export/server/spark-yarn/bin/spark-submit \
+--master yarn \
+--deploy-mode cluster \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--driver-cores 1 \
+--executor-memory 512m \
+--executor-cores 1 \
+--num-executors 2 \
+--queue default \
+/root/pyspark_wordcount.py
+```
+
+> spark on yarn运行词频统计WordCount程序，采用clusterdeploy mode，jps查看进程：
+
+![1632267264179](assets/1632267264179.png)
+
+> spark on yarn时，词频统计WordCount程序运行结束后，WEB UI监控页面信息：
+
+![1632267188484](assets/1632267188484.png)
 
 ## 配置Anaconda下载镜像源地址
 
