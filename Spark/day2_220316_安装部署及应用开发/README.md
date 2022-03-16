@@ -885,7 +885,37 @@ SparkApplication运行在YARN上结束后，截图如下：
 
 ### ★yarn-client模式
 
+> YARN `Client` 模式：当Spark 运行在YARN集群时，采用`client` DeployMode时，表示**应用Driver Program运行在提交应用Client主机上**，有如下三个进程：
 
+- `AppMaster`，申请资源，运行Executors
+- `Driver Program`，调度Job执行和监控
+- `Executors`，运行JVM进程，其中执行Task任务和缓存数据
+
+![1632265390437](assets/1632265390437.png)
+
+运行词频统计WordCount程序，采用`client`模式，命令如下：
+
+```bash
+/export/server/spark-yarn/bin/spark-submit \
+--master yarn \
+--deploy-mode client \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--executor-memory 512m \
+--executor-cores 1 \
+--num-executors 2 \
+--queue default \
+/root/pyspark_wordcount.py
+```
+
+> spark on yarn运行词频统计WordCount程序，采用client deploy mode，jps查看进程：
+
+![1632266828891](assets/1632266828891.png)
+
+> spark on yarn时，词频统计WordCount程序运行结束后，WEB UI监控页面信息：
+
+![1632266632264](assets/1632266632264.png)
 
 ### ★yarn-cluster模式
 
