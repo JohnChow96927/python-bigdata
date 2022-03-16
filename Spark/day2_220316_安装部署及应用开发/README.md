@@ -130,11 +130,170 @@ if __name__ == '__main__':
 
 ### ★应用入口 - SparkContext
 
+> Spark Application程序入口为：`SparkContext`，任何Spark应用首先需要构建SparkContext对象，构建步骤：
 
+![1632236140837](assets/1632236140837.png)
+
+文档：https://spark.apache.org/docs/3.1.2/rdd-programming-guide.html#initializing-spark
+
+![1632236354192](assets/1632236354192.png)
+
+案例演示代码：`01_test_sparkcontext.py`
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import time
+from pyspark import SparkContext, SparkConf
+
+
+if __name__ == '__main__':
+    """
+    Spark程序入口：SparkContext对象创建
+    """
+
+    # TODO：设置系统环境变量
+    os.environ['JAVA_HOME'] = 'C:/Java/jdk1.8.0_241'
+    os.environ['HADOOP_HOME'] = 'C:/Hadoop/hadoop-3.3.0'
+    os.environ['PYSPARK_PYTHON'] = 'C:/Users/JohnChow/anaconda3/python.exe'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/Users/JohnChow/anaconda3/python.exe'
+
+    # 创建SparkConf实例，设置应用属性，比如名称和master
+    spark_conf = SparkConf().setAppName("SparkContext Test").setMaster("local[2]")
+
+    # 创建SparkContext对象，传递SparkConf实例
+    sc = SparkContext(conf=spark_conf)
+    print(sc)
+
+    time.sleep(100000)
+    # 关闭资源
+    sc.stop()
+
+```
 
 ### ★WordCount编程实现
 
+> 编写Spark 程序分为5个步骤：
 
+```ini
+1. 获取上下文对象-context
+2. 加载数据源-source
+3. 数据转换处理-transformation
+4. 结果数据输出-sink
+5. 关闭上下文对象-close
+```
+
+![1632238607298](assets/1632238607298.png)
+
+> 创建python文件：`02_wordcount.py`，从本地文件系统读取数据：`datas/words.txt`
+
+- 创建文本文件：`words.txt`，内容如下：
+
+```ini
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+```
+
+- 词频统计WordCount代码如下：`02_wordcount.py`
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os, time
+from pyspark import SparkConf, SparkContext
+
+"""
+基于Python语言，编程实现Spark中词频统计WordCount
+"""
+
+if __name__ == '__main__':
+    # 0. 设置系统环境变量
+    os.environ['JAVA_HOME'] = 'D:/BigdataUser/Java/jdk1.8.0_241'
+    os.environ['HADOOP_HOME'] = 'D:/BigdataUser/hadoop-3.3.0'
+    os.environ['PYSPARK_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark WordCount").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('../datas/words.txt')
+
+    # 3. 数据转换处理-transformation
+    """
+        a. 分割单词，扁平化
+        d. 转换二元组，每个单词出现一次
+        c. 按照单词Key分组，并且对组内聚合
+    """
+    output_rdd = input_rdd\
+        .flatMap(lambda line: str(line).split(' '))\
+        .map(lambda word: (word, 1))\
+        .reduceByKey(lambda tmp, item: tmp + item)
+
+    # 4. 结果数据输出-sink
+    output_rdd.foreach(lambda item: print(item))
+    output_rdd.saveAsTextFile('../datas/output-' + str(round(time.time() * 1000)))
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
+
+​		运行pyspark代码，结果如下所示：
+
+![1632238886480](assets/1632238886480.png)
+
+> 修改上述词频统计WordCount代码，**从HDFS文件系统上读取数据，并且将结果保存文件系统中**。
+
+​	复制python代码，重命名为： `03_wordcount_hdfs.py` ，修改input和output文件路径，都是`hdfs`开头
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+
+if __name__ == '__main__':
+    """
+    基于Python语言，编程实现Spark中词频统计WordCount
+    """
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = 'D:/BigdataUser/Java/jdk1.8.0_241'
+    os.environ['HADOOP_HOME'] = 'D:/BigdataUser/hadoop-3.3.0'
+    os.environ['PYSPARK_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark WordCount").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('hdfs://node1.itcast.cn:8020/datas/input/words.txt')
+
+    # 3. 数据转换处理-transformation
+    """
+        a. 分割单词，扁平化
+        d. 转换二元组，每个单词出现一次
+        c. 按照单词Key分组，并且对组内聚合
+    """
+    word_rdd = input_rdd.flatMap(lambda line: str(line).split(' '))
+    tuple_rdd = word_rdd.map(lambda word: (word, 1))
+    output_rdd = tuple_rdd.reduceByKey(lambda tmp, item: tmp + item)
+
+    # 4. 结果数据输出-sink
+    output_rdd.saveAsTextFile('hdfs://node1.itcast.cn:8020/datas/wc-output')
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+```
 
 ### ★远程Python解析器
 
