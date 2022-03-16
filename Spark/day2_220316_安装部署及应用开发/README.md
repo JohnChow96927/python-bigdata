@@ -68,7 +68,63 @@ pip install pyspark==3.1.2 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ### ★构建PyCharm Project
 
+> 本次Spark课程中所有代码，都是基于Python语言开发，使用PyCharm集成开发环境。
 
+![1632267428833](assets/1632267428833.png)
+
+> 在Windows上创建PyCharm Project工程，设置Python解析器Interpreter，如下步骤设置：
+
+- 1、打开PyCharm软件，点击【Create New Project】创建新的工程
+
+![1632234247589](assets/1632234247589.png)
+
+- 2、指定工程的名称（路径）、选择Window系统中安装Anaconda的base基础虚拟环境即可。
+
+![1632234474153](assets/1632234474153.png)
+
+- 3、添加Anaconda中base基础虚拟环境
+
+![1632234764692](assets/1632234764692.png)
+
+点击【OK】以后，为创建新工程Project添加刚刚指定Python Interpreter解释器
+
+![1632234841241](assets/1632234841241.png)
+
+点击【Create】安装，创建新的PyCharm Project。
+
+> ​	**约定规范**：每天Spark课程，创建一个目录，比如第二天课程代码，目录名称：`pyspark-day02`，包含四个子目录：
+>
+> - `main`目录：源码目录，编写python代码存放位置
+> - `resources`目录：资源目录，存储配置文件
+> - `datas`目录：测试数据存储
+> - `test` 目录：编写Python测试代码
+
+![1634766525691](assets/1634766525691.png)
+
+- 代码目录：`main`
+
+![1638759381779](assets/1638759381779.png)
+
+- 资源文件目录：`resources`
+
+![1638759944594](assets/1638759944594.png)
+
+> 编写Python测试代码：**HelloWorld程序**，文件名称：`python_hello_world.py`。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+if __name__ == '__main__':
+    """
+    Python 入门程序：Hello World
+    """
+    print("Hello World.................")
+```
+
+​	执行Python代码，控制台打印：`Hello World`。
+
+![1632236016403](assets/1638773984110.png)
 
 ### ★应用入口 - SparkContext
 
