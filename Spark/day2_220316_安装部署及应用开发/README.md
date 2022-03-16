@@ -513,7 +513,49 @@ Options:
 
 ### ★提交执行WordCount
 
+> 将开发测试完成的WordCount程序，使用【`spark-submit`】分别提交运行在本地模式LocalMode和集群模式Standalone集群。
 
+复制`04_wordcount_remote`代码为：`pyspark_wordcount.py`代码如下所示：
+
+![1641954152500](assets/1641954152500.png)
+
+将PySpark程序对应python文件：`pyspark_wordcount.py`，上传到**node1.itcast.cn**虚拟机：`/root` 目录下。
+
+> - 1）、`spark-submit` 提交运行本地模式**localmode**
+
+```bash
+# 本地模式方式提交运行
+/export/server/spark-local/bin/spark-submit \
+--master local[2] \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+/root/pyspark_wordcount.py 
+```
+
+> - 2）、`spark-submit` 提交运行本地模式**Stanadlone 集群**
+> - 注意修改结果输出目录为新目录, 否则报错
+
+![Spark cluster components](assets/cluster-overview-1634768843928.png)
+
+```bash
+# a. 启动Standalone集群，在 node1机器上执行
+/export/server/spark-standalone/sbin/start-master.sh
+/export/server/spark-standalone/sbin/start-workers.sh
+
+# b. 启动历史服务器
+/export/server/spark-standalone/sbin/start-history-server.sh
+
+# c. 提交脚本
+/export/server/spark-standalone/bin/spark-submit \
+--master spark://node1.itcast.cn:7077 \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--executor-memory 512m \
+--executor-cores 1 \
+--total-executor-cores 2 \
+/root/pyspark_wordcount.py
+```
 
 ### 部署模式DeployMode
 
