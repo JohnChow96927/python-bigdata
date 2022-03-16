@@ -680,7 +680,35 @@ Options:
 
 ### Hadoop YARN
 
+> Hadoop YARN是一个成熟稳定且强大的**资源管理和任务调度**的大数据框架，在企业市场占有率很高，很多公司都在使用，将公司的资源交给Hadoop YARN做统一的管理。
+>
+> 此外，Hadoop YARN支持对任务进行多种模式的调度，如FIFO（先进先出）、Capacity（容量）、Fair（公平）等多种调度模式。在国内，几乎所有Spark Application都是运行Hadoop YARN集群上。
 
+![1639240526616](assets/1639240526616.png)
+
+> 首先回顾Hadoop YARN分布式集群架构组件及功能，示意图如下：
+
+![MapReduce NextGen Architecture](assets/yarn_architecture.gif)
+
+```ini
+Hadoop YARN：分布式集群资源管理和调度框架
+	# 1、主节点
+		ResourceManager，老大，管理集群资源和分配资源
+	# 2、从节点
+		NodeManagers，小弟，管理各个机器资源和干活
+		
+	# 3、AppMaster
+		应用管理者，运行在YARN上任何应用都有一个管理者，管理这个应用执行调度和监控
+		
+	# 4、Container容器
+		封装资源（CPU Core核数和Memory 内存），运行进程，比如AppMaster，MapTask和ReduceTask。
+```
+
+[在YARN中，资源按照队列Queue进行划分，默认队列：`default` 队列，提交应用时，指定具体队列名称]()
+
+> 当将MapReduce和Spark 应用同时运行Hadoop YARN时，示意图如下所示：
+
+![1638779059863](assets/1638779059863.png)
 
 ### ★配置部署及测试
 
