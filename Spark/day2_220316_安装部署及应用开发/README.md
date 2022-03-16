@@ -943,7 +943,7 @@ SparkApplication运行在YARN上结束后，截图如下：
 /root/pyspark_wordcount.py
 ```
 
-> spark on yarn运行词频统计WordCount程序，采用clusterdeploy mode，jps查看进程：
+> spark on yarn运行词频统计WordCount程序，采用cluster deploy mode，jps查看进程：
 
 ![1632267264179](assets/1632267264179.png)
 
@@ -965,7 +965,7 @@ conda config --set show_channel_urls yes
 
 ![1638757430747](assets/1638757430747.png)
 
-​	第2步、编辑文件 `.condarc`，**删除**里面所有内容，替换如下内容
+第2步、编辑文件 `.condarc`，**删除**里面所有内容，替换如下内容
 
 ```ini
 channels:
@@ -986,7 +986,7 @@ custom_channels:
 
 ![1638757552241](assets/1638757552241.png)
 
-- 2）、Linunx系统，配置镜像源地址
+- 2）、Linux系统，配置镜像源地址
 
 step1、切换虚拟环境
 
