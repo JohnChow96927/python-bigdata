@@ -559,7 +559,90 @@ Options:
 
 ### 部署模式DeployMode
 
+> Spark Application提交运行时==部署模式Deploy Mode==，表示的是**Driver Program运行的地方**，要么是提交应用`客户端：client`，要么是集群`从节点`（**Standalone：Worker，YARN：NodeManager**）：`cluster`。
 
+![1632246015043](assets/1632246015043.png)
+
+```ini
+--deploy-mode DEPLOY_MODE   Whether to launch the driver program locally ("client") or
+                              on one of the worker machines inside the cluster ("cluster")
+                              (Default: client).
+    含义：Driver 进程运行在哪里
+    可选值：
+        - client：客户端
+            Driver进程运行在提交应用机器上
+        - cluster：集群
+            Driver进程运行在Standalone集群或YARN集群从节点上；
+            Standalone集群就是Worker，YARN集群就是NodeManager。
+   默认值：client
+```
+
+> 默认DeployMode为`client`，表示应用Driver Program运行在`提交应用Client主机`上（启动JVM Process进程），示意图如下：
+
+![1632246097599](assets/1632246097599.png)
+
+假设运行圆周率PI程序，采用client模式，命令如下：
+
+```bash
+/export/server/spark-standalone/bin/spark-submit \
+--master spark://node1.itcast.cn:7077 \
+--deploy-mode client \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--executor-memory 512m \
+--executor-cores 1 \
+--total-executor-cores 2 \
+/export/server/spark-standalone/examples/src/main/python/pi.py \
+10
+```
+
+程序执行完成，打开历史服务器HistoryServer上记录状态信息。
+
+![1632246618232](assets/1632246618232.png)
+
+> 如果采用`cluster`模式运行应用，==应用Driver Program运行在集群从节点Worker某台机器上==。
+
+![1632246208327](assets/1632246208327.png)
+
+假设运行圆周率PI程序，采用cluster模式，命令如下：
+
+```bash
+/export/server/spark-standalone/bin/spark-submit \
+--master spark://node1.itcast.cn:7077 \
+--deploy-mode cluster \
+--supervise \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--executor-memory 512m \
+--executor-cores 1 \
+--total-executor-cores 2 \
+/export/server/spark-standalone/examples/src/main/python/pi.py \
+10
+```
+
+![1632246806327](assets/1632246806327.png)
+
+运行圆周率PI程序，使用**官方提供jar包（Scala语言**），看一下结果：
+
+```bash
+/export/server/spark-standalone/bin/spark-submit \
+--master spark://node1.itcast.cn:7077 \
+--deploy-mode cluster \
+--class org.apache.spark.examples.SparkPi \
+--supervise \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+--driver-memory 512m \
+--executor-memory 512m \
+--executor-cores 1 \
+--total-executor-cores 2 \
+/export/server/spark-standalone/examples/jars/spark-examples_2.12-3.1.2.jar \
+10
+```
+
+![1632293406391](assets/1632293406391.png)
 
 ### Job作业组成
 
