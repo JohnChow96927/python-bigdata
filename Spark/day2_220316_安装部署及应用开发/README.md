@@ -712,7 +712,176 @@ Hadoop YARN：分布式集群资源管理和调度框架
 
 ### ★配置部署及测试
 
+当Spark Application运行到Hadoop  YARN上时，提交应用**指定master为yarn**即可，同时告知Hadoop YARN集群配置信息（如ResourceManager地址信息），此外需要监控Spark Application，配置历史服务器相关属性。
 
+https://spark.apache.org/docs/3.1.2/running-on-yarn.html
+
+> 如果Spark 应用程序是运行Hadoop YARN上，此时不需要Spark Standalone 集群，**只需要找任意一台机器配置Spark Client客户端，提交应用到Hadoop YARN集群上即可**。
+
+![1632264082188](assets/1632264082188.png)
+
+- **1、修改spark-env.sh**
+
+  设置Hadoop YARN配置文件目录环境变量：`YARN_CONF_DIR`
+
+```bash
+## 解压SPARK软件包，重命名为spark-yarn
+(base) [root@node1 ~]# cd /export/server
+(base) [root@node1 server]# tar -zxf spark-3.1.2-bin-hadoop3.2.tgz
+(base) [root@node1 server]# chown -R root:root spark-3.1.2-bin-hadoop3.2
+(base) [root@node1 server]# mv spark-3.1.2-bin-hadoop3.2 spark-yarn
+
+## 第一、进入配置目录
+cd /export/server/spark-yarn/conf
+## 第二、修改配置文件名称
+mv spark-env.sh.template spark-env.sh
+
+## 第三、编辑配置文件
+vim /export/server/spark-yarn/conf/spark-env.sh
+
+## 添加内容：
+## 设置JAVA安装目录
+JAVA_HOME=/export/server/jdk
+
+## 设置HADOOP和YARN配置文件目录
+HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop
+YARN_CONF_DIR=/export/server/hadoop/etc/hadoop
+
+## 历史日志服务器
+SPARK_DAEMON_MEMORY=1g
+SPARK_HISTORY_OPTS="-Dspark.history.fs.logDirectory=hdfs://node1.itcast.cn:8020/spark/eventLogs/ -Dspark.history.fs.cleaner.enabled=true"
+```
+
+- **2、创建EventLogs存储目录**
+
+  先确定HDFS服务启动，再创建事件日志目录
+
+```bash
+# 第一、在node1.itcast.cn启动服务
+(base) [root@node1 ~]# start-dfs.sh
+
+# 第二、创建EventLog目录
+(base) [root@node1 ~]# hdfs dfs -mkdir -p /spark/eventLogs/
+```
+
+- **3、配置历史服务器MRHistoryServer并关闭资源检查**
+
+  在**`$HADOOP_HOME/etc/hadoop/yarn-site.xml`**配置文件中，指定MRHistoryServer地址信息；
+
+  使用虚拟机运行服务，默认情况下Hadoop YARN检查机器内存，当内存不足时，提交的应用无法运行，可以设置不检查资源。
+
+```bash
+## 第一、编辑文件
+vim /export/server/hadoop/etc/hadoop/yarn-site.xml
+## 添加如下内容
+	<!-- 开启日志聚合功能 -->
+    <property>
+        <name>yarn.log-aggregation-enable</name>
+        <value>true</value>
+    </property>
+    <!-- 设置聚合日志在hdfs上的保存时间 -->
+    <property>
+        <name>yarn.log-aggregation.retain-seconds</name>
+        <value>604800</value>
+    </property>
+
+    <!-- 设置yarn历史服务器地址 -->
+    <property>
+        <name>yarn.log.server.url</name>
+        <value>http://node1.itcast.cn:19888/jobhistory/logs</value>
+    </property>
+
+    <!-- 关闭yarn内存检查 -->
+    <property>
+        <name>yarn.nodemanager.pmem-check-enabled</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+    </property>
+    
+## 第二、同步Hadoop YARN配置文件至集群
+cd /export/server/hadoop/etc/hadoop
+scp -r yarn-site.xml root@node2.itcast.cn:$PWD
+scp -r yarn-site.xml root@node3.itcast.cn:$PWD
+```
+
+- **4、Spark历史服务HistoryServer地址**
+
+  在**`$SPARK_HOME/conf/spark-defaults.conf`**文件增加SparkHistoryServer地址信息
+
+```bash
+## 第一、进入配置目录
+cd /export/server/spark-yarn/conf
+
+## 第二、修改配置文件名称
+mv spark-defaults.conf.template spark-defaults.conf
+
+## 第三、编辑问价
+vim spark-defaults.conf
+## 添加内容：
+spark.eventLog.enabled            true
+spark.eventLog.dir                hdfs://node1.itcast.cn:8020/spark/eventLogs
+spark.eventLog.compress           true
+spark.yarn.historyServer.address  node1.itcast.cn:18080
+```
+
+- **5、配置依赖Spark Jar包**
+
+  当Spark Application应用提交运行在YARN上时，默认情况下，**每次提交应用都需要将依赖Spark相关jar包上传到YARN 集群中**，为了节省提交时间和存储空间，**将Spark相关jar包上传到HDFS目录**中，设置属性告知Spark Application应用。
+
+```bash
+## 第一、HDFS上创建存储spark相关jar包目录
+hdfs dfs -mkdir -p /spark/jars/
+
+## 第二、上传Spark依赖所有jar包至HDFS
+hdfs dfs -put /export/server/spark-yarn/jars/* /spark/jars/
+
+## 第三、在spark-defaults.conf中增加Spark相关jar包位置信息
+vim /export/server/spark-yarn/conf/spark-defaults.conf
+## 添加内容
+spark.yarn.jars    hdfs://node1.itcast.cn:8020/spark/jars/*
+```
+
+> Spark Application运行在YARN上时，上述配置完成，启动服务：**`HDFS、YARN、MRHistoryServer和Spark HistoryServer`**。
+
+![1634769320441](assets/1634769320441.png)
+
+```bash
+## 第一、启动HDFS和YARN服务，在node1.itcast.cn执行命令
+(base) [root@node1 ~]# start-dfs.sh
+# WEB UI：http://node1.itcast.cn:9870/
+
+(base) [root@node1 ~]# start-yarn.sh
+# WEB UI：http://node1.itcast.cn:8088/
+
+## 第二、启动MRHistoryServer服务，在node1执行命令
+mapred --daemon start historyserver
+# WEB UI：http://node1.itcast.cn:19888/
+
+## 第三、启动Spark HistoryServer服务，，在node1执行命令
+/export/server/spark-yarn/sbin/start-history-server.sh
+# WEB UI：http://node1.itcast.cn:18080/
+
+## 释放CentOS7操作系统中内存
+echo 1 > /proc/sys/vm/drop_caches 
+```
+
+将圆周率PI程序提交运行在Hadoop YARN上，命令如下：
+
+```bash
+/export/server/spark-yarn/bin/spark-submit \
+--master yarn \
+--conf "spark.pyspark.driver.python=/export/server/anaconda3/bin/python3" \
+--conf "spark.pyspark.python=/export/server/anaconda3/bin/python3" \
+/export/server/spark-yarn/examples/src/main/python/pi.py \
+10
+```
+
+SparkApplication运行在YARN上结束后，截图如下：
+
+![1632266382377](assets/1632266382377.png)
 
 ### ★yarn-client模式
 
@@ -724,7 +893,7 @@ Hadoop YARN：分布式集群资源管理和调度框架
 
 ## 配置Anaconda下载镜像源地址
 
-> ​	有时候pip install 或conda install 安装一些依赖包，网不好直接超时，或者包死都下不下来，可以配置或指定国内源镜像。
+> 有时候pip install 或conda install 安装一些依赖包，网不好直接超时，或者包死都下不下来，可以配置或指定国内源镜像。
 
 - 1）、Windows 系统，配置镜像源
 
