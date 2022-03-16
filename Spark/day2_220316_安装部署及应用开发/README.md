@@ -646,7 +646,35 @@ Options:
 
 ### Job作业组成
 
+针对MapReduce应用来说，运行时每个Application 就是一个Job，每个Job包含Map 阶段和Reduce阶段，每个阶段有很多Task任务。[在Spark Application应用中Job是如何组成的呢？]()
 
+> 登录Spark HistoryServer历史服务器WEB UI界面，查看运行词频统计Job：http://node1.itcast.cn:18080/
+
+![1632069553838](assets/1632069553838.png)
+
+> 查看应用中运行完成的Job：
+
+![1632069600043](assets/1632069600043.png)
+
+> 查看每个Job组成：多个Stage阶段
+
+![1632069723703](assets/1632069723703.png)
+
+> 在Spark Application应用每个Job有很多Stage组成，类似MapReduce中MapStage和ReduceStage。
+
+![1634688954426](assets/1634688954426.png)
+
+> 每个Stage阶段，由多个Task任务组成，每个Task处理RDD中分区数据。
+
+![1632069853790](assets/1632069853790.png)
+
+> Spark Application程序运行时三个核心概念：`Job、Stage、Task`
+
+![1632069893579](assets/1632069893579.png)
+
+- **Job作业**：由多个 Task 的并行计算部分，一般 Spark 中的 action 操作（如 save、collect，后面进一步说明），会生成一个 Job。[RDD中函数为Action触发函数时，触发一个Job执行。]()
+- **Stage阶段**：Job 的组成单位，一个 Job 会切分成多个 Stage，Stage 彼此之间相互依赖顺序执行，而每个 Stage 是多个 Task 的集合，类似 map 和 reduce stage。
+- **Task任务：**被分配到各个 Executor 的单位工作内容，它是 Spark 中的最小执行单位，一般来说有多少个 Paritition（物理层面的概念，即分支可以理解为将数据划分成不同部分并行处理），就会有多少个 Task，每个 Task 只会处理单一分支上的数据。
 
 ## Spark on YARN
 
