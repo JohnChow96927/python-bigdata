@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/pyspark-day02/resources" />
+            <path value="file://$PROJECT_DIR$/pyspark-day03/resources" />
           </resourceRoots>
         </entryData>
       </entry>
