@@ -502,7 +502,91 @@ if __name__ == '__main__':
 
 ### 4. ★基本触发算子
 
+> RDD 基本触发算子（Operator）：`first、take、collect、reduce`，对RDD中元素进行操作
 
+![1632344519234](assets/1632344519234-1647589709320.png)
+
+> `first`算子：返回RDD集合中第一个元素值。
+
+![1638979909110](assets/1638979909110.png)
+
+> `take`算子：获取RDD中前N个元素，放在列表list中返回。
+
+![1638979948599](assets/1638979948599.png)
+
+> `collect`算子：将RDD中所有数据，放在列表中返回，注意RDD数据不能太多，否则内存不足，直接GG。
+
+![1638979978446](assets/1638979978446.png)
+
+> `reduce`算子：对RDD中数据进行聚合操作，比如累加求和。
+
+![1638980026724](assets/1638980026724.png)
+
+```python
+"""
+	编写Python代码，对列表list中数据累加求和。
+"""
+
+# 定义列表
+list = [1, 2, 3, 4, 5]
+# 定义聚合临时变量，存储聚合中间值
+tmp = 0
+# 对列表数据聚合：累加求和
+for item in list:
+	tmp = tmp + item
+# 获取聚合中间值，就是聚合结果
+print(tmp)
+```
+
+> 案例代码演示 `05_rdd_basic_action.py`：RDD中基本触发算子使用。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD 中基本触发算子：first、take、collect、reduce 案例演示   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], numSlices=2)
+
+    # 3. 数据转换处理-transformation
+    # TODO：first 算子， 获取集合中第一条数据
+    print("first:", input_rdd.first())
+
+    # TODO: take 算子，获取集合中前N条数据，放在列表中
+    take_list = input_rdd.take(3)
+    print(take_list)
+
+    # TODO: collect 算子，将集合数据转换为列表，注意数据不能太大，否则内存不足：OOM
+    collect_list = input_rdd.collect()
+    print(collect_list)
+
+    # TODO: reduce 算子，对集合中数据进行聚合操作，聚合时需要变量存储聚合中间值
+    sum = input_rdd.reduce(lambda tmp, item: tmp + item)
+    print("sum:", sum)
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 5. ★基本转换算子
 
