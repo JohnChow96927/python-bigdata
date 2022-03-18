@@ -105,7 +105,61 @@ if __name__ == '__main__':
 
 ### 3. RDD内部五大特性
 
+> RDD 数据结构内部有五个特性（**摘录RDD 源码**）：前3个特性，必须包含的；后2个特性，可选的。
 
+![1632324418727](assets/1632324418727.png)
+
+- 第一个：`a list of partitions`
+
+  [每个RDD由一系列分区Partitions组成，一个RDD包含多个分区]()
+
+![1632324489740](assets/1632324489740.png)
+
+> 查看RDD中分区数目，调用`getNumPartitios` 方法，返回值int类型，RDD分区数目
+
+![1638953141047](assets/1638953141047.png)
+
+- 第二个：`A function for computing each split`
+
+  [对RDD中数据处理时，每个分区（分片）数据应用函数进行处理，1个分区数据被1个Task处理]()
+
+![1632324543490](assets/1632324543490.png)
+
+- 第三个：`A list of dependencies on other RDDs`
+
+  1. [一个RDD依赖于一些列RDD]()
+
+     ![1638864698926](assets/1638864698926.png)
+
+  2. RDD的每次转换都会生成一个新的RDD，所以RDD之间就会形成类似于流水线一样的前后依赖关系。
+
+  3. 在部分分区数据丢失时，Spark可以通过这个依赖关系重新计算丢失的分区数据，而不是对RDD的所有分区进行重新计算（Spark的容错机制）；
+
+![1632324808355](assets/1632324808355.png)
+
+- 第四个：`Optionally, a Partitioner for key-value RDDs`
+
+  1. [当RDD中数据类型为Key/Value（二元组），可以设置分区器`Partitioner`]()
+
+     ![1638866052921](assets/1638866052921.png)
+
+  2. Partitioner函数不但决定了RDD本身的分片数量，也决定了parent RDD Shuffle输出时的
+     分片数量。
+
+![1632324896140](assets/1632324896140.png)
+
+- 第五个：`Optionally, a list of preferred locations to compute each split on`
+
+  ![1632324951442](assets/1632324951442.png)
+
+  1. [对RDD中每个分区数据进行计算时，找到`最佳位置`列表]()
+  2. 对数据计算时，考虑数据本地性，**数据在哪里，尽量将Task放在哪里，快速读取数据进行处理**
+
+![1638869013100](assets/1638869013100.png)
+
+> 再次回顾：RDD是什么呢？
+>
+> [RDD是Spark 计算引擎中，对数据抽象封装，是一个不可变的、分区的和并行计算集合，方便管理数据和对数据处理分析。]()
 
 ## II. RDD创建
 
