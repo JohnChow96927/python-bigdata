@@ -590,7 +590,170 @@ if __name__ == '__main__':
 
 ### 5. ★基本转换算子
 
+> RDD 基本转换算子（Operator）：`union、distinct、groupByKey和reduceByKey`。
 
+![1632344502947](assets/1632344502947-1647591483537.png)
+
+> `union`算子：类似SQL语句中union，将2个相同数据类型RDD合并为一个RDD。
+
+![1638980907948](assets/1638980907948.png)
+
+> `distinct`算子：类似SQL语句中distinct，对RDD中数据进行去重。
+
+![1638980923051](assets/1638980923051.png)
+
+> `groupByKey`算子：要求RDD中数据类型为Key/Value对，按照Key分组，相同Key的Value放在集合中。
+
+![1638980953992](assets/1638980953992.png)
+
+应用案例：
+
+![1638981485270](assets/1638981485270.png)
+
+> `reduceByKey`算子：要求RDD中数据类型为Key/Value对，按照Key分组，将相同Key的Value值进行聚合。
+
+![1638980981685](assets/1638980981685.png)
+
+应用案例：
+
+![1638981499685](assets/1638981499685.png)
+
+> 案例代码演示 `06_rdd_basic_transformation.py`：RDD中基本转换算子使用。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD 中基本转换算子：union、distinct、groupByKey和reduceByKey案例演示   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    rdd_1 = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8], numSlices=2)
+    rdd_2 = sc.parallelize([6, 7, 8, 9], numSlices=2)
+
+    rdd_3 = sc.parallelize(
+        [
+            ("北京", 20), ("上海", 15), ("北京", 30), ("上海", 25), ("北京", 50), ("深圳", 90)
+        ]
+    )
+
+    # 3. 数据转换处理-transformation
+    # TODO: union算子，将2个数据类型相同的RDD进行合并，不去重，类似SQL中 union all
+    union_rdd = rdd_1.union(rdd_2)
+    print(union_rdd.collect())
+
+    # TODO: distinct 算子，对RDD集合中数据进行去重，类似SQL中distinct
+    distinct_rdd = union_rdd.distinct()
+    print(distinct_rdd.collect())
+
+    # TODO: groupByKey 算子，将集合中数据，按照Key分组，相同key的value放在集合中
+    group_rdd = rdd_3.groupByKey()
+    group_rdd.foreach(lambda tuple: print(tuple[0], list(tuple[1])))
+    """
+    深圳 -> [90]
+    北京 -> [20, 30, 50]
+    上海 -> [15, 25]
+    """
+
+    # TODO: reduceByKey 算子，将集合中数据，先按照Key分组，再使用定义reduce函数进行组内聚合
+    reduce_rdd = rdd_3.reduceByKey(lambda tmp, item: tmp + item)
+    reduce_rdd.foreach(lambda item: print(item))
+    """
+    ('深圳', 90)
+    ('北京', 100)
+    ('上海', 40)
+    """
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
+
+![1632384230838](assets/1632384230838.png)
+
+> 编程实现词频统计WordCount：将文本文件数据读取封装到RDD集合，调用Transformation转换算子处理，最后调用Action算子输出。
+
+- 转换算子：map、flatMap、reduceByKey
+- 触发算子：collect、foreach、saveAsTextFile
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    使用PySpark实现词频统计WordCount：加载文本文件数据为RDD集合，调用转换算子处理数据，最后数据触发算子输出数据   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('../datas/words.data', minPartitions=2)
+    print(input_rdd.collect())
+
+    # 3. 数据转换处理-transformation
+    """
+        a. 过滤脏数据，空行
+            filter
+        b. 分割每行数据，转换为单词 -> 使用正则分割
+            flatMap
+        c. 将每个单词转换为二元组，表示每个单词出现一次
+            map
+        d. 按照单词分组，再组内求和
+            reduceByKey
+    """
+    # a. 过滤脏数据，空行
+    line_rdd = input_rdd.filter(lambda line: len(str(line).strip()) > 0)
+    print(line_rdd.collect())
+
+    # b. 分割每行数据，转换为单词 -> 使用正则分割
+    word_rdd = line_rdd.flatMap(lambda line: re.split('\\s+', line))
+    print(word_rdd.collect())
+
+    # c. 将每个单词转换为二元组，表示每个单词出现一次
+    tuple_rdd = word_rdd.map(lambda word:  (word, 1))
+    print(tuple_rdd.collect())
+
+    # d.按照单词分组，再组内求和
+    output_rdd = tuple_rdd.reduceByKey(lambda tmp, item: tmp + item)
+    print(output_rdd)
+
+    # 4. 处理结果输出-sink
+    output_rdd.foreach(lambda tuple: print(tuple))
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 6. ★数据排序算子
 
