@@ -290,7 +290,47 @@ if __name__ == '__main__':
 
 ### 1. 算子分类
 
+> RDD 的操作主要可以分为 `Transformation` 和 `Action` 两种。
 
+![1632341959683](assets/1632341959683.png)
+
+```
+文档：
+	https://spark.apache.org/docs/3.1.2/rdd-programming-guide.html#rdd-operations
+```
+
+> 1、转换算子：`Transformation` ，[当RDD调用算子，对数据进行处理，产生一个新的RDD ；]()
+
+![1632344502947](assets/1632344502947.png)
+
+```ini
+# 特点：
+	属于lazy懒执行，不会立即将1个RDD转换另外1个RDD
+	
+# 常用算子：
+	map、flatMap、filter、reduceByKey等等
+```
+
+> 2、触发算子：`Action`，[当RDD调用算子，触发一个Job执行]()
+
+![1632344519234](assets/1632344519234.png)
+
+```ini
+# 特点：
+	RDD调用Action算子，要么没有返回值，要么非RDD类型
+	立即执行Job，对RDD数据进行转换，最后输出或获取值
+
+# 常用算子：
+	count、collect、foreach、saveAsTextFile等等
+```
+
+> RDD 中2类算子（函数）：转换transformation和触发action。
+
+![1632342068178](assets/1632342068178.png)
+
+> RDD 中常用基本算子，包含转换算子和触发算子。
+
+![1639411372920](assets/1639411372920.png)
 
 ### 2. 常用转换算子
 
