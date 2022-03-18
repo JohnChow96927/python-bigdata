@@ -165,7 +165,73 @@ if __name__ == '__main__':
 
 ### 1. 两种创建方式
 
+> 如何将数据封装到RDD集合，主要有两种方式：`并行化本地集合`（Driver Program中）和`引用加载外部存储系统`（如HDFS、Hive、HBase、Kafka、Elasticsearch等）数据集。
 
+![1632325662251](assets/1632325662251.png)
+
+> **方式一：并行化集合**，将一个 Python 中集合（比如列表list）转为RDD集合
+
+- 方法：`parallelize`，将一个集合转换为RDD
+
+![](assets/1632340440934.png)
+
+> **方式二：外部存储**，加载外部存储系统的数据集创建RDD
+
+- 方法：`textFile`，读取HDFS或LocalFS上文本文件，指**定文件路径和RDD分区数目**
+
+![1632340850292](assets/1632340850292.png)
+
+```ini
+# 1、如果是HDFS文件，必须使用绝对路径
+	hdfs://namenode-host:8020/xxxxx
+
+# 2、如果是LocalFS文件，可以使用相对路径，也可以使用绝对路径
+	Windows 系统：file:///D:/datas/words.txt
+	Linunx 系统：file:///root/words.txt
+```
+
+> 案例代码演示 `01_create_rdd`：并行列表为RDD和加载本地文件系统文件数据为RDD
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+
+if __name__ == '__main__':
+    """
+    采用2种方式，创建RDD：并行化Python集合和加载文件系统文本文件数据   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    # TODO: 2-1. 并行化本地集合
+    rdd_1 = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], numSlices=2)
+    print(rdd_1.getNumPartitions())
+
+    # TODO: 2-2. 读取本地文件系统文本文件数据
+    rdd_2 = sc.textFile('../datas/words.txt', minPartitions=2)
+    print(rdd_2.getNumPartitions())
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 2. 小文件数据处理
 
