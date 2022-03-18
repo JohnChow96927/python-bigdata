@@ -26,6 +26,7 @@ if __name__ == '__main__':
     # TODO: 2-2. 读取本地文件系统文本文件数据
     rdd_2 = sc.textFile('../datas/words.txt', minPartitions=2)
     print(rdd_2.getNumPartitions())
+    print(rdd_2.collect())
 
     # 3. 数据转换处理-transformation
 
