@@ -235,7 +235,56 @@ if __name__ == '__main__':
 
 ### 2. 小文件数据处理
 
+> 在实际项目中，有时往往处理的数据文件属于**小文件（每个文件数据数据量很小，比如KB，几十MB等），文件数量又很大**，如果一个个文件读取为RDD的一个个分区，计算数据时很耗时性能低下，使用SparkContext中提供：**`wholeTextFiles`**方法，专门读取小文件数据。
 
+![1632341478314](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day03_20220318%EF%BC%88%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99%EF%BC%89/pyspark_day03_20220318/03_%E7%AC%94%E8%AE%B0/assets/1632341478314.png)
+
+- 将每个文件作为一条KV存储在RDD中，[K：文件名的绝对路径，V：文件的内容]()
+- 用于解决小文件的问题，可以将多个小文件变成多个KV，自由指定分区个数
+
+> 案例代码演示 `02_create_rdd_wholefile.py`：从LocalFS加载文本文件数据，全部为小文件。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    Spark 中加载小文件数据，使用方法：wholeTextFiles，指定RDD集合分区数目 
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    # TODO: 指定目录，加载小文件文本数据
+    input_rdd = sc.wholeTextFiles('../datas/ratings100', minPartitions=2)
+
+    # 分区数目和条目数
+    print("Partitions:", input_rdd.getNumPartitions())
+    print("count:", input_rdd.count())
+
+    # 获取第一条数据
+    print(input_rdd.first())
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ## III. RDD算子
 
