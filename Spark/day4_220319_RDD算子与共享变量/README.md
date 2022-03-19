@@ -384,7 +384,54 @@ if __name__ == '__main__':
 
 ### 2. Jieba中文分词
 
+> [jieba](https://github.com/fxsjy/jieba) 是目前最好的 Python 中文分词组件，首先安装jieba分词库，命令：`pip install jieba`，再使用库对中文语句进行分词。官方网站：<https://github.com/fxsjy/jieba>
 
+![1632524761819](assets/1632524761819.png)
+
+[Jieba分词库，支持 3 种分词模式：精确模式、全模式、搜索引擎模式。]()
+
+> 案例代码演示 `test_jieba.py`：使用jieba分词库，对中文分词，采用不同模式。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import jieba
+
+if __name__ == '__main__':
+    """
+    Jieba中文分词使用   
+    """
+
+    # 定义一个字符串
+    line = '我来到北京清华大学'
+
+    # TODO：全模式分词
+    seg_list = jieba.cut(line, cut_all=True)
+    print(",".join(seg_list))
+
+    # TODO: 精确模式
+    seg_list_2 = jieba.cut(line, cut_all=False)
+    print(",".join(seg_list_2))
+
+    # TODO: 搜索引擎模式
+    seg_list_3 = jieba.cut_for_search(line)
+    print(",".join(seg_list_3))
+
+```
+
+运行结果如下所示：
+
+```ini
+# 全模式分词：
+	我,来到,北京,清华,清华大学,华大,大学
+	
+# 精确模式：
+	我,来到,北京,清华大学
+	
+# 搜索引擎模式：
+	我,来到,北京,清华,华大,大学,清华大学
+```
 
 ### 3. 数据加载解析
 
