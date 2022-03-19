@@ -528,7 +528,47 @@ if __name__ == '__main__':
 
 ### 4. 搜索关键词统计
 
+> 获取用户【查询词】，使用Jieba进行分词，按照单词分组聚合统计出现次数，类似WordCount程序，具体代码如下：
 
+- 第一步、获取每条日志数据中【查询词`queryWords`】字段数据
+- 第二步、使用Jieba对查询词进行中文分词
+- 第三步、按照分词中单词进行词频统计，类似WordCount
+
+> 定义方法 `query_keyword_count`：对每条数据中搜索词进行分词，再分组统计各个搜索关键词次数。
+
+```python
+def query_keyword_count(rdd):
+    """
+    搜索关键词统计：首先对查询词进行中文分词，然后对分词单词进行分组聚合，类似WordCount词频统计
+        ('00:00:00', '2982199073774412', '360安全卫士', 8, 3, 'download.it.com.cn/softweb/software/firewall/antivirus/20067/17938.html')
+        TODO:
+            WITH tmp AS (
+                SELECT explode(split_search(search_words)) AS keyword FROM tbl_logs
+            )
+            SELECT keyword, COUNT(1) AS total FROM tmp GROUP BY keyword
+    """
+    output_rdd = rdd\
+        .flatMap(lambda tuple: list(jieba.cut(tuple[2], cut_all=False)))\
+        .map(lambda keyword: (keyword, 1))\
+        .reduceByKey(lambda tmp, item: tmp + item)
+    return output_rdd
+
+```
+
+main方法中添加代码：
+
+```python
+    # 3-2. 搜索关键词统计
+    query_keyword_rdd = query_keyword_count(sougo_rdd)
+    top_10_keyword = query_keyword_rdd.top(10, key=lambda tuple: tuple[1])
+    print(top_10_keyword)
+```
+
+运行程序结果：
+
+```ini
+[('+', 1442), ('地震', 605), ('.', 575), ('的', 492), ('汶川', 430), ('原因', 360), ('哄抢', 321), ('救灾物资', 321), ('com', 278), ('图片', 260)]
+```
 
 ### 5. 用户搜索点击统计
 
