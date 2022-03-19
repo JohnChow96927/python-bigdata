@@ -435,7 +435,96 @@ if __name__ == '__main__':
 
 ### 3. 数据加载解析
 
+> 加载搜索日志数据，对每行日志数据解析封装到元组中，方便后续处理分析
 
+```ini
+00:00:04	6943214457930995	[秦始皇陵墓]	1 16	www.vekee.com/b51126/
+00:00:04	0554004435565833	[青海湖水怪]	3 2	www.mifang.org/do/bs/p55.html
+00:00:04	9975666857142764	[电脑创业]	3 3	ks.cn.yahoo.com/question/1407041904210.html
+```
+
+> 创建Python文件 `06_sogou_analysis.py`：加载搜索日志数据，对每行数据进行解析。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+import jieba
+from pyspark import SparkConf, SparkContext
+
+
+def parse_data(rdd):
+    """
+    数据格式：
+        00:00:00	2982199073774412	[360安全卫士]	8 3	download.it.com.cn/softweb/software/firewall/antivirus/20067/17938.html
+        step1、简单过滤脏数据
+        step2、解析数据，使用正则 \\s+
+        step3、封装到元组中
+    """
+    output_rdd = rdd\
+        .map(lambda line: re.split('\\s+', line))\
+        .filter(lambda list: len(list) == 6)\
+        .map(lambda list: (
+            list[0], list[1], str(list[2])[1:-1], int(list[3]), int(list[4]), list[5]
+        ))
+    return output_rdd
+
+
+if __name__ == '__main__':
+    """
+    Sogou搜索日志统计分析，先加载文件数据，再封装解析，最后依据业务统计。   
+    """
+
+       # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[4]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    log_rdd = sc.textFile('../datas/SogouQ.reduced', minPartitions=4)
+    # print('count:', log_rdd.count())
+    # print(log_rdd.first())
+
+    # 3. 数据转换处理-transformation
+    """
+        3-1. 解析转换数据
+        3-2. 依据业务分析数据
+    """
+    # 3-1. 解析转换数据
+    sougo_rdd = parse_data(log_rdd)
+    # print("count:", sougo_rdd.count())
+    print(sougo_rdd.first())
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+
+```
+
+> **补充知识点**：[详解 "\\s+"]()
+
+```ini
+# 正则表达式中\s匹配任何空白字符，包括空格、制表符、换页符等等, 等价于[ \f\n\r\t\v]
+    \f -> 匹配一个换页
+    \n -> 匹配一个换行符
+    \r -> 匹配一个回车符
+    \t -> 匹配一个制表符
+    \v -> 匹配一个垂直制表符
+而“\s+”则表示匹配任意多个上面的字符。另因为反斜杠在Java里是转义字符，所以在Java里，我们要这么用“\\s+”.
+
+注:
+    [\s]表示，只要出现空白就匹配
+    [\S]表示，非空白就匹配
+```
 
 ### 4. 搜索关键词统计
 
