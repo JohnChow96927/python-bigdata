@@ -618,5 +618,64 @@ avg click count: 2.0963357823142448
 
 ### 6. 搜索时间段统计
 
+> 按照==【访问时间】==字段获取**【小时】**，分组**统计各个小时段用户查询搜索的数**量，进一步观察用户喜欢在哪些时间段上网，使用搜狗引擎搜索。
 
+定义方法 `query_hour_count`：实现各个用户搜索点击统计，代码如下：
+
+```python
+def query_hour_count(rdd):
+    """
+    各个时间段用户使用搜狗搜索引擎使用量
+        TODO:
+            WITH tmp AS (
+                SELECT substring(access_time, 0, 2) AS hour_str FROM tbl_logs
+            )
+            SELECT hour_str, COUNT(1) AS total FROM tmp GROUP BY hour_str ORDER BY total DESC
+    """
+    output_rdd = rdd\
+        .map(lambda tuple: tuple[0])\
+        .map(lambda time_str: time_str[0:2])\
+        .map(lambda hour_str: (hour_str, 1))\
+        .reduceByKey(lambda tmp, item: tmp + item)\
+        .coalesce(1)\
+        .sortBy(keyfunc=lambda tuple: tuple[1], ascending=False)
+    return output_rdd
+```
+
+main方法中添加代码：
+
+```python
+    # 3-4. 搜索时间段统计
+    query_hour_rdd = query_hour_count(sougo_rdd)
+    query_hour_rdd.foreach(lambda item: print(item))
+```
+
+运行程序结果：
+
+```ini
+('16', 116540)
+('21', 115126)
+('20', 110863)
+('15', 109086)
+('10', 104694)
+('17', 104639)
+('14', 101295)
+('22', 99977)
+('11', 97991)
+('19', 97129)
+('13', 94970)
+('18', 91697)
+('12', 88140)
+('09', 86079)
+('23', 65879)
+('08', 55966)
+('00', 51735)
+('01', 30476)
+('07', 28854)
+('02', 19775)
+('06', 16692)
+('03', 13191)
+('05', 10822)
+('04', 10092)
+```
 
