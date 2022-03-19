@@ -564,3 +564,5 @@ Pandas/day6_220125_常见业务指标计算案例/data/门店信息表.XLSX
 .DS_Store
 .DS_Store
 .DS_Store
+Spark/pyspark-lecture/pyspark-day04/datas/SogouQ.reduced
+Spark/pyspark-lecture/pyspark-day04/datas/SogouQ.sample
