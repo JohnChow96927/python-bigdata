@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
+
 from pyspark import SparkConf, SparkContext
 
 if __name__ == '__main__':
@@ -30,8 +32,10 @@ if __name__ == '__main__':
     """
 
     # 3. 数据转换处理-transformation
-    # TODO: 使用flatMap算子扁平化分割单词, 分隔符" "
-    word_rdd = raw_dataset_rdd.flatMap(lambda str_line: str(str_line).split(' '))
+    # TODO: 使用filter算子过滤脏数据
+    line_rdd = raw_dataset_rdd.filter(lambda line: len(str(line).strip()) > 0)
+    # TODO: 使用flatMap算子搭配正则表达式扁平化分割单词
+    word_rdd = line_rdd.flatMap(lambda str_line: re.split('\\s+', str(str_line).strip()))
     print(word_rdd.collect())
     """
     ['spark', 'python', 'spark', 'hive', 
@@ -60,7 +64,7 @@ if __name__ == '__main__':
 
     # 4. 处理结果输出-sink
     # TODO: 使用saveAsTextFile算子将结果rdd按分区保存为文本文件至本地文件系统
-    word_count_rdd.saveAsTextFile('../datas/output_wordCount_John')
+    word_count_rdd.saveAsTextFile('../datas/output_wordCount_John_re')
 
     # 5. 关闭上下文对象-close
     sc.stop()
