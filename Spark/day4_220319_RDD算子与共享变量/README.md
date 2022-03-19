@@ -572,7 +572,49 @@ main方法中添加代码：
 
 ### 5. 用户搜索点击统计
 
+> 统计出==每个用户每个搜索词点击网页的次数==，可以作为搜索引擎搜索效果评价指标。[先按照用户ID分组，再按照【查询词】分组，最后统计次数，求取最大次数、最小次数及平均次数。]()
 
+定义方法 `query_click_count`：实现各个用户搜索点击统计，代码如下：
+
+```python
+def query_click_count(rdd):
+    """
+    用户搜索点击统计：先按照用户id分组，再按照搜索词分组，聚合操作
+        ((u1001, x1), 4)
+        ((u1002, x2,  5)
+        TODO:
+            SELECT user_id, search_words, COUNT(1) AS total FROM tbl_logs GROUP user_id, search_words
+    """
+    output_rdd = rdd\
+        .map(lambda tuple: ((tuple[1], tuple[2]), 1))\
+        .reduceByKey(lambda tmp, item: tmp + item)
+    return output_rdd
+```
+
+> 获取计算结果RDD后，对其中值求取max、min和mean值。
+
+```python
+    # 3-3. 用户搜索点击统计
+    query_click_rdd = query_click_count(sougo_rdd)
+    # print(query_click_rdd.take(10))
+    """
+        计算每个用户的每个搜索词点击次数平均值、最小值和最大值
+    """
+    click_total_rdd = query_click_rdd.map(lambda tuple: tuple[1])
+    click_total_rdd.persist(StorageLevel.MEMORY_AND_DISK)
+    print("max:", click_total_rdd.max())
+    print("min:", click_total_rdd.min())
+    print("mean:", click_total_rdd.mean())
+    click_total_rdd.unpersist()
+```
+
+运行程序结果：
+
+```ini
+max click count: 274
+min click count: 1
+avg click count: 2.0963357823142448
+```
 
 ### 6. 搜索时间段统计
 
