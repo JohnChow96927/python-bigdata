@@ -347,7 +347,40 @@ if __name__ == '__main__':
 
 ### 1. 业务需求分析
 
+> 基于搜狗实验室提供【**用户查询日志(SogouQ)**】数据，使用Spark框架，将数据封装到RDD中进行业务数据处理分析。
 
+- 1）、数据介绍：
+
+> 搜索引擎查询日志库设计为包括约1个月(2008年6月)Sogou搜索引擎部分网页查询需求及用户点击情况的网页查询日志数据集合。数据网址：http://www.sogou.com/labs/resource/q.php
+
+- 2）、数据格式
+
+```ini
+访问时间\t用户ID\t[查询词]\t该URL在返回结果中的排名\t用户点击的顺序号\t用户点击的URL
+```
+
+![1632523810278](assets/1632523810278.png)
+
+- 3）、数据下载：分为三个数据集，大小不一样
+
+```ini
+    # 迷你版(样例数据, 376KB)：
+        http://download.labs.sogou.com/dl/sogoulabdown/SogouQ/SogouQ.mini.zip
+
+    # 精简版(1天数据，63MB)：
+        http://download.labs.sogou.com/dl/sogoulabdown/SogouQ/SogouQ.reduced.zip
+
+    # 完整版(1.9GB)：
+        http://www.sogou.com/labs/resource/ftp.php?dir=/Data/SogouQ/SogouQ.zip
+```
+
+> 针对SougouQ查询日志数据，分析业务需求：
+
+![1632523888485](assets/1632523888485.png)
+
+> 编写实现，按照数仓分层方式管理数据，加载原数据，进行转换处理，最后实现业务需求。
+
+![1642046869211](assets/1642046869211.png)
 
 ### 2. Jieba中文分词
 
