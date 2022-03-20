@@ -86,6 +86,7 @@ if __name__ == '__main__':
     top_10_keyword = query_keyword_rdd.top(10, key=lambda tuple: tuple[1])
     print(top_10_keyword)
 
+
     # 3-3. 统计用户搜索点击次数
     def query_click_count(rdd):
         """
@@ -102,6 +103,7 @@ if __name__ == '__main__':
             .reduceByKey(lambda tmp, item: tmp + item)
         return output_rdd
 
+
     query_click_rdd = query_click_count(sogou_rdd)
     """
     计算每个用户的每个搜索词点击次数的平均值, 最小值和最大值
@@ -113,7 +115,35 @@ if __name__ == '__main__':
     print('mean: ', click_total_rdd.mean())
     click_total_rdd.unpersist()
 
-    # 3-
+
+    # 3-4. 搜索时间段统计
+    def query_hour_count(rdd):
+        """
+        各个时间段用户使用搜狗搜索引擎使用量
+        TODO:
+            WITH tmp AS (
+                SELECT substring(access_time, 0, 2) AS hour_str
+                FROM tbl_logs
+            )
+            SELECT hour_str, COUNT(1) AS total
+            FROM tmp
+            GROUP BY hour_str
+            ORDER BY total DESC
+        :param rdd: 数据集rdd: sogou_rdd
+        :return: (时, 点击次数)(rdd类)
+        """
+        output_rdd = rdd \
+            .map(lambda tup: tup[0]) \
+            .map(lambda time_str: time_str[0:2]) \
+            .map(lambda hour_str: (hour_str, 1)) \
+            .reduceByKey(lambda tmp, item: tmp + item) \
+            .coalesce(1) \
+            .sortBy(keyfunc=lambda tup: tup[1], ascending=False)
+        return output_rdd
+
+
+    query_hour_rdd = query_hour_count(sogou_rdd)
+    query_hour_rdd.foreach(lambda item: print(item))
 
     # 4. 处理结果输出-sink
 
