@@ -385,7 +385,77 @@ if __name__ == '__main__':
 
 ### 3. KeyValue类型算子
 
+> 在Spark数据处理分析中，往往数据类型为==Key/Value对（二元组）==，RDD中提供很多转换算子和触发算子，方便数据转换操作，常用算子：`keys/values、mapValues、collectAsMap`。
 
+![1639104487032](assets/1639104487032.png)
+
+- 算子：`keys/values`，获取RDD中所有key或者所有value。
+
+![1639103812035](assets/1639103812035.png)
+
+![1639103827306](assets/1639103827306.png)
+
+- 算子：`mapValues`，对RDD中每个元素value值进行转换操作
+
+![1639103875827](assets/1639103875827.png)
+
+- 算子：`collectAsMap`，将RDD数据存储为Map字典
+
+![1639103915360](assets/1639103915360.png)
+
+> 案例代码演示 `03_rdd_keyvalue.py`：KeyValue类型RDD中常用算子使用。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    针对KeyValue类型RDD算子使用：keys/values/mapValues/collectAsMap   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.parallelize(
+        [("spark", 10), ("mapreduce", 3), ("hive", 6), ("flink", 4)],
+        numSlices=2
+    )
+
+    # 3. 数据转换处理-transformation
+    # TODO: keys 算子，转换算子，返回值RDD
+    key_rdd = input_rdd.keys()
+    print(key_rdd.collect())
+
+    # TODO: values 算子
+    value_rdd = input_rdd.values()
+    print(value_rdd.collect())
+
+    # TODO: mapValues算子，表示对Value值进行处理
+    map_rdd = input_rdd.mapValues(lambda value: value * value)
+    print(map_rdd.collect())
+
+    # TODO: collectAsMap，将RDD转换为字典Dic
+    dic = input_rdd.collectAsMap()
+    print(dic.items())
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 4. Join关联算子
 
