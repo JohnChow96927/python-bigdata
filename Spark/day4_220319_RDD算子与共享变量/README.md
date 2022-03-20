@@ -766,6 +766,8 @@ if __name__ == '__main__':
     """
         3-1. 解析转换数据
         3-2. 依据业务分析数据
+        3-3. 用户搜索点击统计
+        3-4. 搜索时间段统计
     """
     # 3-1. 解析转换数据
     sougo_rdd = parse_data(log_rdd)
@@ -851,7 +853,7 @@ def query_click_count(rdd):
     """
     用户搜索点击统计：先按照用户id分组，再按照搜索词分组，聚合操作
         ((u1001, x1), 4)
-        ((u1002, x2,  5)
+        ((u1002, x2), 5)
         TODO:
             SELECT user_id, search_words, COUNT(1) AS total FROM tbl_logs GROUP user_id, search_words
     """
@@ -865,7 +867,7 @@ def query_click_count(rdd):
 
 ```python
     # 3-3. 用户搜索点击统计
-    query_click_rdd = query_click_count(sougo_rdd)
+    query_click_rdd = query_click_count(sogou_rdd)
     # print(query_click_rdd.take(10))
     """
         计算每个用户的每个搜索词点击次数平均值、最小值和最大值
@@ -916,7 +918,7 @@ main方法中添加代码：
 
 ```python
     # 3-4. 搜索时间段统计
-    query_hour_rdd = query_hour_count(sougo_rdd)
+    query_hour_rdd = query_hour_count(sogou_rdd)
     query_hour_rdd.foreach(lambda item: print(item))
 ```
 

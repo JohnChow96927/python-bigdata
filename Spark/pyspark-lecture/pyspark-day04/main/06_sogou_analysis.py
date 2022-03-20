@@ -5,7 +5,7 @@ import os
 import re
 
 import jieba
-from pyspark import SparkConf, SparkContext
+from pyspark import SparkConf, SparkContext, StorageLevel
 
 
 def parse_data(rdd):
@@ -75,6 +75,8 @@ if __name__ == '__main__':
     """
     3-1. 解析转换数据
     3-2. 依据业务分析数据
+    3-3. 用户搜索点击统计
+    3-4. 搜索时间段统计
     """
     # 3-1. 解析转换数据
     sogou_rdd = parse_data(log_rdd)
@@ -83,6 +85,35 @@ if __name__ == '__main__':
     query_keyword_rdd = query_keyword_count(sogou_rdd)
     top_10_keyword = query_keyword_rdd.top(10, key=lambda tuple: tuple[1])
     print(top_10_keyword)
+
+    # 3-3. 统计用户搜索点击次数
+    def query_click_count(rdd):
+        """
+        用户搜索点击统计: 先按照用户id分组, 再按照搜索词分组, 聚合操作
+        ((u1001, x1), 4)
+        ((u1002, x2), 5)
+        TODO:
+            SELECT user_id, search_words, COUNT(1) AS total
+            FROM tbl_logs
+            GROUP user_id, search_words
+        """
+        output_rdd = rdd \
+            .map(lambda tup: ((tup[1], tup[2]), 1)) \
+            .reduceByKey(lambda tmp, item: tmp + item)
+        return output_rdd
+
+    query_click_rdd = query_click_count(sogou_rdd)
+    """
+    计算每个用户的每个搜索词点击次数的平均值, 最小值和最大值
+    """
+    click_total_rdd = query_click_rdd.map(lambda tup: tup[1])
+    click_total_rdd.persist(StorageLevel.MEMORY_AND_DISK)
+    print("max: ", click_total_rdd.max())
+    print('min: ', click_total_rdd.min())
+    print('mean: ', click_total_rdd.mean())
+    click_total_rdd.unpersist()
+
+    # 3-
 
     # 4. 处理结果输出-sink
 
