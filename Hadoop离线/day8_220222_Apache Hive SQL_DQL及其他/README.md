@@ -206,7 +206,7 @@ having后面可以使用聚合函数
 
 where后面不可以使用聚合
 
-#### 1.9 limit
+#### 1.9. limit
 
 LIMIT子句可用于约束SELECT语句返回的行数。
 
@@ -351,11 +351,6 @@ select * from student cluster by num;
 
   ![1645502191881](assets/1645502191881.png)
 
-- distribute by(字段)根据指定字段将数据分到不同的reducer，分发算法是hash散列。
-
-- 
-
-  
 
 #### 2.2. union联合查询
 
