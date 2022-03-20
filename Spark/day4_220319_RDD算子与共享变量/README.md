@@ -459,7 +459,63 @@ if __name__ == '__main__':
 
 ### 4. Join关联算子
 
+> 在Hive中分析数据，往往需要将2个表数据，依据某个字段进行关联JOIN。
 
+```SQL
+-- HiveSQL 表关联JOIN
+	SELECT a.*, b.* FROM a JOIN b ON a.x1 = b.y1  ;
+```
+
+> 当两个RDD的数据类型为**二元组Key/Value**对时，可以==依据Key进行关联Join==。
+
+![1639105567065](assets/1639105567065.png)
+
+> RDD中关联JOIN函数：**等值JOIN、左外JOIN、右外JOIN和全外JOIN**
+
+![1632353514512](assets/1632353514512.png)
+
+> 案例代码演示 `04_rdd_join.py`：对类型为KeyValue的RDD，按照Key进行关联连接。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    针对KeyValue类型RDD，依据Key将2个RDD进行关联JOIN，等值JOIN   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    emp_rdd = sc.parallelize(
+        [(1001, "zhangsan"), (1002, "lisi"), (1003, "wangwu"), (1004, "zhaoliu")]
+    )
+    dept_rdd = sc.parallelize(
+        [(1001, "sales"), (1002, "tech")]
+    )
+
+    # 3. 数据转换处理-transformation
+    join_rdd = emp_rdd.join(dept_rdd)
+    join_rdd.foreach(lambda item: print(item))
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 5. 分区处理算子
 
