@@ -383,7 +383,7 @@ if __name__ == '__main__':
 
 ```
 
-### 3. KeyValue类型算子
+### 3. Key/Value类型算子
 
 > 在Spark数据处理分析中，往往数据类型为==Key/Value对（二元组）==，RDD中提供很多转换算子和触发算子，方便数据转换操作，常用算子：`keys/values、mapValues、collectAsMap`。
 
