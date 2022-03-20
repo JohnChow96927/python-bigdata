@@ -374,7 +374,7 @@ if __name__ == '__main__':
 
     # TODO: aggregate 算子，先指定聚合临时变量初始值、分区数据聚合函数和分区间数据聚合函数
     agg_value = input_rdd.aggregate(0, lambda tmp, item: tmp + item, lambda tmp, item: tmp + item)
-    print("foldValue:", agg_value)
+    print("aggValue:", agg_value)
 
     # 4. 处理结果输出-sink
 
