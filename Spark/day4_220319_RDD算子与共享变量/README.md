@@ -254,7 +254,59 @@ uv_rdd.foreach(lambda item: print(item))
 
 ### 1. reduce聚合原理
 
+> 调用RDD中触发函数（算子）：`reduce`，对集合RDD中元素进行聚合操作，分为2步聚合：
+>
+> - 第一步、**局部聚合**操作，[RDD中各个分区数据聚合]()
+> - 第二步、**全局聚合**操作，[将RDD各个分区聚合结果再次聚合]()
 
+![1639042202924](assets/1639042202924.png)
+
+> 案例代码演示 `01_rdd_reduce_principle`：RDD中reduce算子聚合原理。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext, TaskContext
+
+if __name__ == '__main__':
+    """
+    RDD 中reduce 聚合算子原理：局部聚合和全局聚合   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[1]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], numSlices=2)
+    input_rdd.foreach(lambda item: print('p-', TaskContext().partitionId(), ': item = ', item, sep=''))
+
+    # 3. 数据转换处理-transformation
+    # input_rdd.reduce(lambda tmp, item: tmp + item)
+
+    def reduce_func(tmp, item):
+        print('p-', TaskContext().partitionId(), ': tmp = ', tmp , ', item = ', item,  sep='')
+        return tmp + item
+
+    reduce_value = input_rdd.reduce(reduce_func)
+    print(reduce_value)
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
+
+![](assets/image-20210422162324117.png)
 
 ### 2. 数据聚合算子
 
