@@ -519,7 +519,99 @@ if __name__ == '__main__':
 
 ### 5. 分区处理算子
 
+每个RDD由多分区组成的，实际开发建议对每个分区数据的进行操作，`map函数使用mapPartitions代替`、`foreach函数使用foreachPartition代替`。
 
+> **场景一**：分析网站日志流量数据，封装到RDD中，需要**解析每条日志数据中IP地址为省份**，使用第三方提供库Ip2Region（==先创建DbSearch对象，再解析IP地址==），使用map算子示意图如下：
+
+![1642037997167](assets/1642037997167.png)
+
+上述伪代码可以发现，**每条数据中IP地址解析为省份时，都需要创建DBSearch对象，如果几十亿条数据，就需要创建几十亿个对象，严重浪费内存**。
+
+[由于RDD是多个分区组成的，可以每个分区数据处理时，创建一个对象，节省内存开销，示意图如下：]()
+
+![1642038196724](assets/1642038196724.png)
+
+上述伪代码中，使用`RDD#mapPartitions`算子代替`RDD#map`算子，处理每个分区数据，减少对象创建。
+
+> **场景二**：将词频统计WordCount**结果数据RDD，保存到MySQL数据库表**中，使用foreach算子时，==每条数据保存时，都需要创建连接和关闭连接==，示意图如下：
+
+![1642039011464](assets/1642039011464.png)
+
+上述伪代码，可以看出：RDD中每条数据保存都需要获取数据库连接和关闭连接，如果是几百条数据，需要几百次反复获取连接和关闭，影响数据库性能和保存时效率（获取连接需要时间）。
+
+[在RDD算子中，提供针对分区输出算子：`foreachPartition`，与`mapPartitions`算子类似，操作分区中数据，每个分区数据创建数据库连接和关闭连接，节省内存开销和降低对数据库性能影响。]()
+
+![1642038733812](assets/1642038733812.png)
+
+> 接下来，首先看一看map算子和mapPartitions算子，函数声明：
+
+- `map` 算子：传递函数类型参数**f**，声明为：`f: (T) -> U`，[接收一个参数，返回一个值]()。
+
+![1639106093536](assets/1639106093536.png)
+
+示意图：
+
+![1639106941824](assets/1639106941824.png)
+
+- `mapPartitions` 算子：传递函数类型的参数==f==，声明为：`f: (Iterable[T]) -> Iterable[U]`，[接收一个迭代器类型参数，返回值也是迭代器。]()
+
+![1639106117038](assets/1639106117038.png)
+
+示意图：
+
+![1639107214548](assets/1639107214548.png)
+
+> 案例代码演示 `05_rdd_iter.py`：对RDD数据分别使用map和MapPartitions算子进行转换处理。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD中提供专门针对分区操作处理算子：mapPartitions和foreachPartition案例演示    
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.parallelize(list(range(1, 11)), numSlices=2)
+
+    # 3. 数据转换处理-transformation
+    # TODO：map 算子，表示对集合中每条数据进行调用处理
+    rdd_1 = input_rdd.map(lambda item: item * item)
+    print(rdd_1.collect())
+
+    # TODO: mapPartitions 算子，表示对RDD集合中每个分区数据处理，可以认为时每个分区数据放在集合中，然后调用函数处理
+    def func(iter):
+        for item in iter:
+            yield item * item
+    rdd_2 = input_rdd.mapPartitions(func)
+    print(rdd_2.collect())
+
+    # TODO：foreachPartition 算子，表示对RDD集合中每个分区数据输出
+    def for_func(iter):
+        for item in iter:
+            print(item)
+    input_rdd.foreachPartition(for_func)
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ## III. SogouQ日志分析
 
