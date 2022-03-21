@@ -499,3 +499,36 @@ if __name__ == '__main__':
 
 ![1632895555254](assets/1632895555254.png)
 
+Spark Application应用提交集群(如Hadoop YARN集群)执行Job整体流程:
+
+1. 启动集群资源服务
+
+   - 启动ResourceManager和NodeManagers
+
+2. 使用spark-submit提交应用到YARN上运行, 采用yarn-cluster
+
+   1. 提交应用到ResourceManager, 分配资源, 在NodeManager上启动容器运行AppMaster(DriverProgram)
+   2. AppMaster向RM申请资源, 在NM上启动容器运行Executors
+   3. 每个Executor运行后, 向AppMaster进行反向注册, 等待Task任务执行
+   4. 当AppMaster接收到所有Executor注册以后, 开始执行main方法中代码
+
+3. 当执行到RDD调用Action算子时, 触发1个Job执行(将Job转换为Task任务, 到Executor执行)
+
+   1. 首先依据RDD依赖关系, 构建Job对应DAG图
+
+      从调用Action算子RDD开始, 采用回溯法, 依据RDD以来关系, 构建DAG图
+
+   2. 将DAG图划分为Stage阶段, 依据RDD之间依赖为宽依赖时划为
+
+      从调用Action算子RDD开始, 采用回溯法, 当相邻2个RDD之间以来为宽依赖时, 划分后面为Stage, 以此类推
+
+   3. 对Job中所有Stage, 从前向后开始调度: 确定Stage中Task任务数目, 打包为TaskSet, 发送到Executor执行
+
+      每个Stage中Task数目 = Stage中最后一个RDD的分区数目
+
+      Stage执行时从前向后, 彼此之间有依赖关系, 后面的Stage处理的数据依赖于前面Stage输出的数据
+
+   **如果有多个Job执行, 都是按照第3步进行调度执行**
+
+4. 当应用中所有Job执行完成, 整个应用也就执行结束, 此时执行sc.stop()终止程序
+
