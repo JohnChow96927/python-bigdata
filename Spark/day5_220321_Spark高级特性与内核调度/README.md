@@ -346,7 +346,7 @@ if __name__ == '__main__':
 
 ![1635027406252](assets/1635027406252.png)
 
-> 2、启动运行Driver Program进程，执行MAIN方法代码，先创建SparkContext对象，申请资源，运行Executors
+> 2、启动运行Driver Program进程，执行main方法代码，先创建SparkContext对象，申请资源，运行Executors
 
 ![1635025559972](assets/1635025559972.png)
 
@@ -369,7 +369,7 @@ if __name__ == '__main__':
   2. 执行应用中各个Job生成Task任务
   3. 缓存RDD中数据
 
-> 4、继续执行MAIN方法代码，比如创建RDD、调用RDD转换算子和触发算子，当**RDD调用`foreach`触发函数**，触发Job执行，生成DAG图，划分Stage阶段，计算Task任务，调度到Executors中执行。
+> 4、继续执行main方法代码，比如创建RDD、调用RDD转换算子和触发算子，当**RDD调用`foreach`触发函数**，触发Job执行，生成DAG图，划分Stage阶段，计算Task任务，调度到Executors中执行。
 
 ![1639130727465](assets/1639130727465.png)
 
@@ -382,7 +382,7 @@ if __name__ == '__main__':
 > 从DAG图上来看，RDD之间依赖关系存在2种类型：
 >
 > - **窄依赖**，[2个RDD之间依赖，使用有向箭头表示]()
-> - 宽依赖，又叫Shuffle 依赖，[2个RDD之间依赖，使用S曲线有向箭头表示]()
+> - 宽依赖，又叫Shuffle依赖，[2个RDD之间依赖，使用S曲线有向箭头表示]()
 
 ![](assets/1632895012903.png)
 
@@ -414,7 +414,7 @@ if __name__ == '__main__':
 
 ![1639119917010](assets/1639119917010.png)
 
-### 3. Spark Shuttle
+### 3. Spark Shuffle
 
 > 在Spark中RDD之间依赖为宽依赖时，也叫Shuffle 依赖，此时2个RDD之间数据传输称之为Spark Shuffle，类似MapReduce Shuffle。
 
@@ -484,7 +484,7 @@ if __name__ == '__main__':
 
 ![1639133174761](assets/1639133174761.png)
 
-> 当启动Spark Application的时候，运行MAIN函数，首先创建SparkContext对象，此时构建DAG调度器`DAGScheduler`和Task任务调度器`TaskScheduler`实例对象。
+> 当启动Spark Application的时候，运行main函数，首先创建SparkContext对象，此时构建DAG调度器`DAGScheduler`和Task任务调度器`TaskScheduler`实例对象。
 
 1. `DAGScheduler`实例对象
    - 将每个Job的DAG图划分为Stage，依据RDD之间依赖为宽依赖（产生Shuffle）
