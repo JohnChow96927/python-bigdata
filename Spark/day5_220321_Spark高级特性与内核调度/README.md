@@ -247,7 +247,89 @@ if __name__ == '__main__':
 
 ### 4. Spark广播变量
 
+> **场景**：先对RDD中数据进行处理，依据cityId，查询字典dic数据，获取cityName，示意图如下所示：
 
+```python
+ # 字典信息
+dic = {1: "北京", 2: "上海", 3: "深圳"}
+    
+# 模拟数据集RDD
+input_rdd = sc.parallelize([
+	("张三", 1), ("李四", 2), ("王五", 3), ("赵六", 1), ("田七", 2)
+])    
+
+# 调用map算子，处理每条数据
+map_rdd = input_rdd.map(lambda tuple: (tuple[0], dic[tuple[1]]))
+```
+
+![1642044493194](assets/1642044493194.png)
+
+> 广播变量（==Broadcast Variables==）允许开发人员`在每个节点（Worker or Executor）缓存只读变量`，而`不是在Task之间传递这些变量`。
+
+```python
+ # TODO：step1、将小表数据（变量）进行广播
+broadcast_dic = sc.broadcast(dic)
+```
+
+![1642044455524](assets/1642044455524.png)
+
+> 调用`sc.broadcast(v)`创建一个广播变量，该广播变量的值封装在v变量中，可使用获取该变量`value`的方法进行访问。
+
+![1632527952917](assets/1632527952917.png)
+
+> 案例代码演示 `10_rdd_broadcast.py`：创建数据集RDD，广播维度数据，对RDD中数据进行关联。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD 中广播变量：将Driver中变量（可以是列表，或字典）广播到Executor中，所有Task可以共享变量的值，节省内存。   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 字典信息
+    dic = {1: "北京", 2: "上海", 3: "深圳"}
+    # TODO：step1、将小表数据（变量）进行广播
+    broadcast_dic = sc.broadcast(dic)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.parallelize([
+        ("张三", 1), ("李四", 2), ("王五", 3), ("赵六", 1), ("田七", 2)
+    ])
+
+    # 3. 数据转换处理-transformation
+    def map_func(tuple):
+        # TODO: step2、使用广播变量
+        city_dic = broadcast_dic.value
+        # 依据城市ID获取城市名称
+        city_id = tuple[1]
+        city_name = city_dic[city_id]
+        # 返回
+        return (tuple[0], city_name)
+
+    output_rdd = input_rdd.map(map_func)
+
+    # 4. 处理结果输出-sink
+    print(output_rdd.collect())
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ## II. Spark内核调度
 
