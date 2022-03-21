@@ -4,7 +4,110 @@
 
 ### 1. RDD持久化
 
+> 在实际开发中**某些RDD的计算或转换可能会比较耗费时间，如果这些RDD后续还会频繁的被使用到**，那么可以将这些RDD进行持久化/缓存，这样下次再使用到的时候就不用再重新计算了，提高了程序运行的效率。
 
+![1632350775962](assets/1632350775962.png)
+
+[将RDD数据进行缓存时，本质上就是将RDD各个分区数据进行缓存]()
+
+> - **第一点：缓存函数**，可以将RDD数据直接缓存到内存中，函数声明如下：
+
+![](assets/1632452820803.png)
+
+但是实际项目中，直接使用上述的缓存函数，**RDD数据量往往很多，内存放不下的**。在实际的项目中缓存RDD数据时，依据具体的业务和数据量，指定缓存的级别：
+
+![1632452856940](assets/1632452856940.png)
+
+> - **第二点：**在Spark框架中==对数据缓存可以指定不同的级别==，对于开发来说至关重要，如下所示：
+
+![1632452905235](assets/1632452905235.png)
+
+实际项目中缓存数据时，往往选择如下两种级别：
+
+![1632452917747](assets/1632452917747.png)
+
+缓存函数与Transformation函数一样，都是`Lazy`操作，**需要Action函数触发，通常使用`count`函数触发**。
+
+> 案例代码演示 `07_rdd_persist.py`：将RDD中数据保存到文件中（LocalFS或HDFS）。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import time
+from pyspark import SparkConf, SparkContext, StorageLevel
+
+if __name__ == '__main__':
+    """
+    RDD 数据持久化，使用persist函数，指定缓存级别   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('../datas/words.txt', minPartitions=2)
+
+    # 3. 数据转换处理-transformation
+    # TODO: 可以直接将数据放到内存中
+    # input_rdd.cache()
+    # input_rdd.persist()
+
+    # TODO: 缓存RDD数据，指定存储级别，先放内存，不足放磁盘
+    input_rdd.persist(storageLevel=StorageLevel.MEMORY_AND_DISK)
+    # 使用触发函数触发，使用count
+    input_rdd.count()
+
+    # 当再次使用缓存数据时，直接从缓存读取
+    print(input_rdd.count())
+
+    # TODO: 当缓存RDD数据不在被使用时，一定记住需要释放资源
+    input_rdd.unpersist()
+
+    # 4. 处理结果输出-sink
+
+
+    time.sleep(1000000)
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
+
+> 在实际项目开发中，==什么时候缓存RDD数据==最好呢？
+
+- **第一点**：==当某个RDD被使用多次的时候，建议缓存此RDD数据==
+
+  [比如，从HDFS上读取网站行为日志数据，进行多维度的分析，最好缓存数据]()
+
+```python
+log_rdd = sc.textFile("")
+
+# 将RDD数据进行缓存
+log_rdd.cache()
+
+# pv 计算
+pv_rdd = log_rdd.xx
+# uv 计算
+uv_rdd = log_rdd.yy
+# ip
+ip_rdd = log_rdd.zz
+# ....
+
+# 释放缓存资源
+log_rdd.unpersist()
+```
+
+- **第二点**：==当某个RDD来之不易，并且使用不止一次，建议缓存此RDD数据==
+
+  ![1634904839917](assets/1634904839917.png)
 
 ### 2. RDD Checkpoint
 
