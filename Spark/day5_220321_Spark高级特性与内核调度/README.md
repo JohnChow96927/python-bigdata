@@ -111,7 +111,67 @@ log_rdd.unpersist()
 
 ### 2. RDD Checkpoint
 
+> **RDD Checkpoint**：[将RDD数据保存到可靠文件系统（比如HDFS），防止数据丢失]()。适合于复杂计算（机器学习、迭代计算等），避免计算中间结果丢失，需要再次重复计算，确保中间数据安全。
 
+![1642046046780](assets/1642046046780.png)
+
+> RDD 数据可以持久化/缓存，但是**持久化/缓存可以把数据放在内存**中，虽然是快速的，但是也是==最不可靠==的；也可以把数据放在磁盘上，也不是完全可靠的，例如磁盘会损坏等。
+
+- Checkpoint 产生：为了更加可靠的数据持久化，在Checkpoint的时候一般`把数据放在在HDFS上`，这就天然的借助了HDFS天生的高容错、高可靠来实现数据最大程度上的安全，实现了RDD的容错和高可用。
+- 当RDD数据checkpoint，切断checkpoint RDD的依赖关系，原因：保存到可靠存储（如HDFS）以便数据恢复；
+
+![1632453049167](assets/1632453049167.png)
+
+> 案例代码演示 `08_rdd_checkpoint.py`：将RDD中数据进行Checkpoint检查点保存。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import time
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD Checkpoint：将RDD数据保存到可以文件系统，比如HDFS系统   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+    # TODO: step1、设置Checkpoint保存目录
+    sc.setCheckpointDir('../datas/ckpt')
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('../datas/words.txt', minPartitions=2)
+
+    # TODO: step2、将RDD进行Checkpoint
+    input_rdd.checkpoint()
+    input_rdd.count()
+
+    # TODO: 当RDD进行Checkpoint以后，再次使用RDD数据时，直接从Checkpoint读取数据
+    print(input_rdd.count())
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+
+    time.sleep(100000)
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
+
+> RDD 持久化Persist和RDD Checkpoint检查点区别：
+
+![1632486026253](assets/1632486026253.png)
 
 ### 3. Spark累加器
 
