@@ -159,5 +159,30 @@
 
 ### 4. Job调度流程
 
+> 在Spark程序代码中，**当RDD调用Action 触发算子时，触发1个Job执行，首先构建Job对应DAG图，然后划分DAG图为Stage，最后将Stage中Task任务发送Executors执行**。
 
+- 第一步、构建Job对应DAG图
+  - [从调用Action函数RDD开始，依据RDD依赖关系，向前倒推，构建Job中所有RDD依赖关系图]()
+  - DAG图展示RDD之间依赖关系
+- 第二步、划分DAG图为Stage
+  - [从调用Action函数RDD开始，判断相邻2个RDD依赖关系，如果是宽依赖，将后面RDD划分到1个Stage中]()
+  - 1个Job中，Stage之间是相互依赖的，每个Stage中有很多RDD，相互转换
+  - 1个Stage中Task数目等于最后1个RDD分区数目
+
+![1639133174761](assets/1639133174761.png)
+
+> 当启动Spark Application的时候，运行MAIN函数，首先创建SparkContext对象，此时构建DAG调度器`DAGScheduler`和Task任务调度器`TaskScheduler`实例对象。
+
+1. `DAGScheduler`实例对象
+   - 将每个Job的DAG图划分为Stage，依据RDD之间依赖为宽依赖（产生Shuffle）
+2. `TaskScheduler`实例对象
+   - 调度每个Stage中所有Task：`TaskSet`，发送到Executor上执行
+   - 每个Stage中会有多个Task，所有Task处理数据不一样（每个分区数据被1个Task处理），但是处理逻辑一样的。
+   - 将每个Stage中所有Task任务，放在一起称为`TaskSet`。
+
+![1632895535636](assets/1632895535636.png)
+
+> Spark的任务调度总体来说分两路进行，一路是Stage级的调度，一路是Task级的调度。
+
+![1632895555254](assets/1632895555254.png)
 
