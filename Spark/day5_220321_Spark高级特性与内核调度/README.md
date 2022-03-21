@@ -177,8 +177,8 @@ if __name__ == '__main__':
 
 > Spark提供两种类型的共享变量（`Shared Variables`）：广播变量（`Broadcast Variables`）和累加器（`Accumulators`）：
 
-- 1）、广播变量Broadcast Variables：将变量在所有节点的内存之间进行共享，在每个机器上缓存一个只读的变量，而不是为机器上每个任务都生成一个副本。
-- 2）累加器 Accamulators：支持在所有不同节点之间进行累加计算（比如技术或者求和）
+- 1）广播变量Broadcast Variables：将变量在所有节点的内存之间进行共享，在每个机器上缓存一个只读的变量，而不是为机器上每个任务都生成一个副本。
+- 2）累加器Accumulators：支持在所有不同节点之间进行累加计算（比如技术或者求和）
 
 文档：https://spark.apache.org/docs/3.1.2/rdd-programming-guide.html#shared-variables
 
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
 ![1642042101173](assets/1642042101173.png)
 
-> Spark内置三种类型Accumulator：`LongAccumulator`累加整数型，`DoubleAccumulator`累加浮点型，`CollectionAccumulator`累加集合元素。[SparkCore提供接口，允许用户自定义累加器Accamulator]()
+> Spark内置三种类型Accumulator：`LongAccumulator`累加整数型，`DoubleAccumulator`累加浮点型，`CollectionAccumulator`累加集合元素。[SparkCore提供接口，允许用户自定义累加器Accumulator]()
 
 ![1632528657802](assets/1632528657802.png)
 
@@ -207,7 +207,7 @@ from pyspark import SparkConf, SparkContext
 
 if __name__ == '__main__':
     """
-    RDD 中累加器Accamulator：使用累加器统计处理文件中有多少条数据   
+    RDD中累加器Accumulator：使用累加器统计处理文件中有多少条数据   
     """
 
     # 设置系统环境变量
