@@ -175,7 +175,75 @@ if __name__ == '__main__':
 
 ### 3. Spark累加器
 
+> Spark提供两种类型的共享变量（`Shared Variables`）：广播变量（`Broadcast Variables`）和累加器（`Accumulators`）：
 
+- 1）、广播变量Broadcast Variables：将变量在所有节点的内存之间进行共享，在每个机器上缓存一个只读的变量，而不是为机器上每个任务都生成一个副本。
+- 2）累加器 Accamulators：支持在所有不同节点之间进行累加计算（比如技术或者求和）
+
+文档：https://spark.apache.org/docs/3.1.2/rdd-programming-guide.html#shared-variables
+
+> **累加器Accumulator**只提供**累加**的功能，多个task对一个变量并行操作的功能。但是`task`只能对累加器Accumulator进行累加操作，不能读取Accumulator的值，只有`Driver`程序可以读取Accumulator的值。
+
+**案例场景**：将数据封装到RDD中，调用map算子处理每条数据时，想要统计RDD中数据条目数，定义1个变量counter，累加统计数目，[先每个分区统计数目，最后合并分区统计数目即可]()。
+
+![1642042101173](assets/1642042101173.png)
+
+> Spark内置三种类型Accumulator：`LongAccumulator`累加整数型，`DoubleAccumulator`累加浮点型，`CollectionAccumulator`累加集合元素。[SparkCore提供接口，允许用户自定义累加器Accamulator]()
+
+![1632528657802](assets/1632528657802.png)
+
+> [创建的Accumulator变量的值能够在Spark Web UI上看到，在创建时应该尽量为其命名。]()
+
+![1632528025212](assets/1632528025212.png)
+
+> 案例代码演示 `09_rdd_accamulator.py`：创建RDD数据集，使用累加器计数处理数据量
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark import SparkConf, SparkContext
+
+if __name__ == '__main__':
+    """
+    RDD 中累加器Accamulator：使用累加器统计处理文件中有多少条数据   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取上下文对象-context
+    spark_conf = SparkConf().setAppName("PySpark Example").setMaster("local[2]")
+    sc = SparkContext(conf=spark_conf)
+
+    # TODO: 第1步、定义累加器
+    counter = sc.accumulator(0)
+
+    # 2. 加载数据源-source
+    input_rdd = sc.textFile('../datas/words.txt', minPartitions=2)
+
+    # 3. 数据转换处理-transformation
+    def map_func(line):
+        # TODO：第2步、使用累加器
+        counter.add(1)
+        return line
+
+    output_rdd = input_rdd.map(map_func)
+
+    # 4. 处理结果输出-sink
+    print(output_rdd.count())
+
+    # TODO: 第3步、获取累加器值
+    print("counter =", counter.value)
+
+    # 5. 关闭上下文对象-close
+    sc.stop()
+
+```
 
 ### 4. Spark广播变量
 
