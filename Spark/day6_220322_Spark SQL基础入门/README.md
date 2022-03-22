@@ -730,7 +730,7 @@ from pyspark.sql import SparkSession
 
 if __name__ == '__main__':
     """
-    RDD 数据集转换DataFrame，采用toDF函数，要求RDD数据类型必须时元组，指定列名称即可。  
+    RDD 数据集转换DataFrame，采用toDF函数，要求RDD数据类型必须是元组，指定列名称即可。  
     """
 
     # 设置系统环境变量
