@@ -774,11 +774,65 @@ if __name__ == '__main__':
 
 ### 1. 业务需求分析
 
+[对电影评分数据统计分析：获取Top10电影（电影评分平均值最高，并且每个电影被评分的次数大于2000）]()
 
+> 数据集`ratings.dat`总共100万条数据，数据格式如下，每行数据各个字段之间使用双冒号分开：
+
+![1632613362519](assets/1632613362519.png)
+
+> 最终分析的结果数据：
+
+![1642128710145](assets/1642128710145.png)
+
+> 数据处理分析步骤如下：
+
+![1632613418615](assets/1632613418615.png)
+
+> 加载电影评分数据：`datas/ratings.dat`，采用`toDF`指定列名称的方式，将数据封装到DataFrame中。
+
+**案例代码演示**： `07_movies_analysis_rdd.py`：从本地文件系统加载数据，封装至RDD数据集中。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    Top10 电影分析（电影评分最高10个，并且每个电影评分人数大于2000）  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[4]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    rating_rdd = spark.sparkContext.textFile("../datas/ml-1m/ratings.dat")
+    print('count:', rating_rdd.count())
+    print(rating_rdd.first())
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 2. 封装数据DataFrame
 
-
+> 
 
 ### 3. 基于SQL分析
 
