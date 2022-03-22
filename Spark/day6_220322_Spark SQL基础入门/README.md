@@ -942,3 +942,24 @@ if __name__ == '__main__':
 运行上述代码，最后结果如下：
 
 ![1632808010837](assets/1632808010837.png)
+
+
+
+一部电影平均分(partition movie_id) = 用户评分之和(sum)除以评分人数(count)
+
+top10
+
+```sql
+with temp_1 as (
+with temp as (
+    select movie_id, 
+    count(*) as count_rating 
+    from tbl_ratings 
+    group by movie_id)
+select movie_id, 
+    sum(rating) / count_rating as average_rating 
+    from tbl_ratings a left join temp t on a.movie_id = t.movie_id where count_rating > 2000)
+select movie_id, average_rating from temp_1 order by average_rating desc limit 10
+;
+```
+
