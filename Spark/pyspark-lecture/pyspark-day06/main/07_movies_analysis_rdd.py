@@ -23,6 +23,9 @@ if __name__ == '__main__':
         .getOrCreate()
 
     # 2. 加载数据源-source
+    rating_rdd = spark.sparkContext.textFile("../datas/ml-1m/ratings.dat")
+    print("count: ", rating_rdd.count())
+    print(rating_rdd.first())
 
     # 3. 数据转换处理-transformation
 
