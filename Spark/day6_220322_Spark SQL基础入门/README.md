@@ -376,7 +376,7 @@ if __name__ == '__main__':
 # 4、Spark 1.6版本，SparkSQL数据结构Dataset
 	坊间流传，参考Flink中DataSet数据结构而来，Dataset = RDD + schema
 	
-# 5、Spark 2.0版本，DataFrame和Dataset何为一体
+# 5、Spark 2.0版本，DataFrame和Dataset合为一体
 	Dataset = RDD + schema，DataFrame = Dataset[Row]
 ```
 
@@ -499,7 +499,7 @@ StructType(List(StructField(name,StringType,true),StructField(salary,LongType,tr
 
 ![1632608087986](assets/1632608087986.png)
 
-> Schema封装类：`StructType`结构化类型，里存储的每个字段封装的类型：`StructField`结构化字段。
+> Schema封装类：`StructType`结构化类型里存储的每个字段封装的类型：`StructField`结构化字段。
 
 - 其一、`StructType` 定义，属性为`StructField`的数组
 
