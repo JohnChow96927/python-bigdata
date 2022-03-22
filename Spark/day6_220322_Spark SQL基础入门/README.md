@@ -632,7 +632,83 @@ if __name__ == '__main__':
 
 ### 3. 自定义Schema转换DataFrame
 
+`DataFrame = RDD[Row] + Schema`
 
+> 依据RDD中数据自定义Schema，类型为`StructType`，每个字段的约束使用`StructField`定义，步骤如下：
+
+- 第一步、**Create an RDD of tuples or lists from the original RDD**
+  - RDD中数据类型为元组或列表，比如[RDD[list] 或  RDD[tuple]]()
+- 第二步、**Create the schema represented by a `StructType`**
+  - 创建Schema，定义列名称和列类型，与第一步中RDD匹配
+- 第三步、Apply the schema to the RDD via `createDataFrame` method provided by `SparkSession`.
+  - 使用SparkSession组合RDD和Schema，转换为DataFrame
+
+![1639668230213](assets/1639668230213.png)
+
+> **案例代码演示**： `05_create_dataframe_schema.py`：加载文本文件数据，解析封装到元组中，再自定义Schema，最后应用到RDD转换为DataFrame。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, LongType
+
+if __name__ == '__main__':
+    """
+    将RDD数据转换为DataFrame，采用自定义Schema方式：RDD[list/tuple]、StructType、组合RDD和Schema=DataFrame  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    rating_rdd = spark.sparkContext.textFile('../datas/ml-100k/u.data')
+
+    # 3. 数据转换处理-transformation
+    """
+        3-1. RDD[list]
+        3-2. schema： StructType
+        3-3. createDataFrame
+    """
+    # 3-1. RDD[list]
+    list_rdd = rating_rdd\
+        .map(lambda line: re.split('\\s+', line))\
+        .map(lambda list: [list[0], list[1], float(list[2]), int(list[3])])
+
+    # 3-2. schema： StructType
+    list_schema = StructType(
+        [
+            StructField("user_id", StringType(), True),
+            StructField("movie_id", StringType(), True),
+            StructField("rating", DoubleType(), True),
+            StructField("timestamp", LongType(), True)
+        ]
+    )
+
+    # 3-3. createDataFrame
+    rating_df = spark.createDataFrame(list_rdd, schema=list_schema)
+
+    # 4. 处理结果输出-sink
+    rating_df.printSchema()
+    rating_df.show(n=10, truncate=False)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+
+```
 
 ### 4. 指定列名称toDF转换DataFrame
 
