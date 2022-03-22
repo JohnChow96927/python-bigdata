@@ -712,7 +712,63 @@ if __name__ == '__main__':
 
 ### 4. 指定列名称toDF转换DataFrame
 
+> SparkSQL中提供一个函数：`toDF`，通过**指定列名称**，将`数据类型为元组`的RDD转换为DataFrame，实际开发中也常常使用。
 
+![1632612689007](assets/1632612689007.png)
+
+> **案例代码演示**： `06_create_dataframe_todf.py`：并行化方式创建RDD，数据类型为元组，调用toDF函数指定列名称。
+
+![1639668302327](assets/1639668302327.png)
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    RDD 数据集转换DataFrame，采用toDF函数，要求RDD数据类型必须时元组，指定列名称即可。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    rating_rdd = spark.sparkContext.textFile('../datas/ml-100k/u.data')
+
+    # 3. 数据转换处理-transformation
+    """
+        3-1. RDD[tuple]
+        3-2. toDF()
+    """
+    # 3-1. RDD[tuple]
+    tuple_rdd = rating_rdd\
+        .map(lambda line: re.split('\\s+', line))\
+        .map(lambda list: (list[0], list[1], float(list[2]), int(list[3])))
+
+    # 3-2. toDF()
+    rating_df = tuple_rdd.toDF(['user_id', 'movie_id', 'rating', 'timestamp'])
+
+    # 4. 处理结果输出-sink
+    rating_df.printSchema()
+    rating_df.show(n=10, truncate=False)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ## III. Top10电影分析
 
