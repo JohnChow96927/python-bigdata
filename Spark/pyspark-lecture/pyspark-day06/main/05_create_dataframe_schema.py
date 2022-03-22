@@ -20,7 +20,7 @@ if __name__ == '__main__':
     os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
     os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
 
-    # 1. 获取上下文对象-context
+    # 1. 获取会话实例对象-session
     spark = SparkSession.builder \
         .appName("Python SparkSQL Example") \
         .master("local[*]") \
