@@ -832,7 +832,27 @@ if __name__ == '__main__':
 
 ### 2. 封装数据DataFrame
 
-> 
+> 读取电影评分数据，转换为`DataFrame`，使用指定列名方式定义Schema信息，采用`toDF`函数，代码下：
+
+![1632634497114](assets/1632634497114-1647935647544.png)
+
+> **案例代码演示**： `08_movies_analysis_df.py`，采用toDF函数方式，将RDD转换为DataFrame。
+
+```python
+    # 3-1. 将RDD数据封装转换为DataFrame数据集
+    rating_df = rating_rdd\
+        .map(lambda line: str(line).split('::'))\
+        .map(lambda list: (list[0], list[1], float(list[2]), int(list[3])))\
+        .toDF(['user_id', 'item_id', 'rating', 'timestamp'])
+        
+    # 4. 处理结果输出-sink
+    rating_df.printSchema()
+    rating_df.show(n=10, truncate=False) 
+```
+
+![1632635061257](assets/1632635061257-1647935639113.png)
+
+> 将RDD转换为DataFrame数据集，方便采用DSL或SQL分析数据。
 
 ### 3. 基于SQL分析
 
