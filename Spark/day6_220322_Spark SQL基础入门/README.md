@@ -205,7 +205,81 @@ if __name__ == '__main__':
 
 ### 3. 基于DSL词频统计
 
+> 以WordCount程序为例编程实现，体验DataFrame使用。**使用SparkSession加载文本数据，封装到DataFrame中，调用API函数处理分析数据**，编程步骤：
 
+- 第一步、构建SparkSession实例对象，设置应用名称和运行本地模式；
+- 第二步、读取HDFS上文本文件数据；
+- 第三步、使用DSL（Dataset API），类似RDD API处理分析数据；
+- 第四步、控制台打印结果数据和关闭SparkSession；
+
+> 案例代码演示 `03_wordcount_dsl.py`：加载文本文件数据，封装到DataFrame中，直接调用SQL函数处理
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+
+if __name__ == '__main__':
+    """
+    使用SparkSQL分析词频统计WordCount，基于DSL实现。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    input_df = spark.read.text('../datas/words.txt')
+    """
+    root
+        |-- value: string (nullable = true)
+
+    +----------------------------------------+
+    |value                                   |
+    +----------------------------------------+
+    |spark python spark hive spark hive      |
+    |python spark hive spark python          |
+    |mapreduce spark hadoop hdfs hadoop spark|
+    |hive mapreduce                          |
+    +----------------------------------------+
+    """
+
+    # 3. 数据转换处理-transformation
+    """
+        a. 分割单词，进行扁平化（使用explode）
+        b. 按照单词分组，使用count函数统计个数
+        c. 按照词频降序排序，获取前10个
+    """
+    output_df = input_df\
+        .select(
+            explode(split(col('value'), ' ')).alias('word')
+        )\
+        .groupBy(col('word'))\
+        .agg(
+            count(col('word')).alias('total')
+        )\
+        .orderBy(col('total').desc())\
+        .limit(10)
+
+    # 4. 处理结果输出-sink
+    output_df.printSchema()
+    output_df.show(n=10, truncate=False)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 4. SparkSQL模块概述
 
