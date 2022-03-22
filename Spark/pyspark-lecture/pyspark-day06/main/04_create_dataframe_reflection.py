@@ -25,7 +25,7 @@ if __name__ == '__main__':
         .getOrCreate()
 
     # 2. 加载数据源-source
-    rating_rdd = spark.sparkContext.textFile('../datas/m1-100k/u.data')
+    rating_rdd = spark.sparkContext.textFile('../datas/ml-100k/u.data')
     # 3. 数据转换处理-transformation
     """
     3-1. 将RDD中每条数据string, 封装转换为Row对象
