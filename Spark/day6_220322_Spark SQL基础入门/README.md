@@ -2,7 +2,79 @@
 
 ## Hive SQL实现词频统计
 
+> Hive 数据仓库框架，建立在HADOOP之上的框架，为用户提供SQL语句，将其转换为MapReduce程序，提交运行到YARN集群，处理存储在HDFS上数据。
 
+![1642132083495](assets/1642132083495.png)
+
+> Hive 本地模式，基本属性设置：
+
+```ini
+# 开启Hive的本地模式：
+	 set hive.exec.mode.local.auto=true;
+	 
+# 当一个job满足如下条件才能真正使用本地模式：
+    1.job的输入数据大小必须小于参数：
+    	hive.exec.mode.local.auto.inputbytes.max=134217728; 
+    	默认128MB
+    2.处理文件个数
+    	hive.exec.mode.local.auto.input.files.max=4;
+
+```
+
+> 词频统计WordCount，将文本数据加载至Hive表中，编写SQL语句实现：
+
+![1632576812902](assets/1632576812902.png)
+
+```SQL
+-- 1、启动服务
+[root@node1 ~]# hadoop-daemon.sh start namenode 
+[root@node1 ~]# hadoop-daemons.sh start datanode     
+
+[root@node1 ~]# start-metastore.sh
+[root@node1 ~]# start-hiveserver2.sh
+
+
+-- 2、数据文件：vim /root/words.txt
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+
+-- 3、beeline 连接
+(base) [root@node1 ~]# beeline
+    !connect jdbc:hive2://node1.itcast.cn:10000/default
+    root
+    123456
+
+-- 4、创建Hive表和加载数据
+CREATE DATABASE db_test ;
+CREATE TABLE db_test.tbl_lines(line string);
+
+LOAD DATA LOCAL INPATH '/root/words.txt' INTO TABLE db_test.tbl_lines;
+SELECT * FROM db_test.tbl_lines; 
+
+-- 5、SQL 分析
+SELECT SPLIT(line, "\\s+") AS words FROM db_test.tbl_lines;
+
+-- Hive 中查看内置函数
+show functions ;
+-- Hive中查看具体函数使用帮助
+desc function SPLIT ;
+
+SELECT EXPLODE(SPLIT(line,"\\s+")) AS word FROM db_test.tbl_lines;
+
+-- 查询	
+SELECT t.word, COUNT(1) AS total FROM(
+  SELECT EXPLODE(SPLIT(line, "\\s+")) AS word FROM db_test.tbl_lines
+) t 
+GROUP BY t.word ORDER BY total DESC LIMIT 10;
+
+-- 查询
+WITH tmp AS (
+  SELECT EXPLODE(SPLIT(line, "\\s+")) AS word FROM db_test.tbl_lines
+)
+SELECT t.word, COUNT(1) AS total FROM tmp t GROUP BY t.word ORDER BY total DESC LIMIT 10 ;
+```
 
 ## I. 快速入门
 
@@ -357,7 +429,134 @@ DataFrame = RDD[Row] + Schema（字段名称和字段类型）
 
 ### 1. DataFrame是什么
 
+> 在SparkSQL中，**DataFrame**是一种==以RDD为基础的分布式数据集==，类似于**传统数据库中的二维表格**。
 
+[DataFrame与RDD的主要区别在于，前者`带有schema元信息`，即DataFrame所表示的二维表`数据集的每一列都带有名称和类型`。]()
+
+> ==DataFrame = RDD[Row] + Schema==
+
+![1632607448232](assets/1632607448232.png)
+
+> schema使得Spark SQL得以洞察更多的结构信息，从而对藏于DataFrame背后的数据源以及作用DataFrame之上的变换进行针对性的优化，最终达到大幅提升运行时效率。
+
+![1639667248712](assets/1639667716579.png)
+
+```ini
+第一点：
+	DataFrame = RDD[Row] + Schema 
+
+第二点：
+	DataFrame是特殊RDD分布式集合
+	
+第三点：
+	DataFrame是分布式表，类似MySQL数据库中表table、Pandas库中dataframe
+```
+
+> **范例演示**：本地模式启动`pyspark`交互式命令行，`加载json格式数据`，封装DataFrame
+
+- 第一步、启动HDFS服务，创建目录和上传测试数据
+
+  [上传官方测试数据`$SPARK_HOME/examples/src/main/resources`至HDFS目录`/datas`]()
+
+  ![1632607762711](assets/1632607762711.png)
+
+  [查看HDFS上数据文件，其中雇员信息数据【employees.json】]()
+
+  ![1632607784979](assets/1632607784979.png)
+
+- 第二步、启动`pyspark`命令行，采用本地模式
+
+```ini
+(base) [root@node1 ~]# cd /export/server/spark-local
+
+(base) [root@node1 spark-local]# bin/pyspark --master local[2]
+
+>>> emp_df = spark.read.json("hdfs://node1.itcast.cn:8020/datas/resources/employees.json") 
+>>> emp_df.printSchema()
+root
+ |-- name: string (nullable = true)
+ |-- salary: long (nullable = true)
+
+>>> emp_df.show()
++-------+------+
+|   name|salary|
++-------+------+
+|Michael|  3000|
+|   Andy|  4500|
+| Justin|  3500|
+|  Berta|  4000|
++-------+------+
+
+>>> emp_df.rdd
+MapPartitionsRDD[12] at javaToPython at NativeMethodAccessorImpl.java:0
+
+>>> emp_df.schema
+StructType(List(StructField(name,StringType,true),StructField(salary,LongType,true)))
+
+```
+
+> 查看DataFrame中Schema是什么，执行如下命令：
+
+![1632608087986](assets/1632608087986.png)
+
+> Schema封装类：`StructType`结构化类型，里存储的每个字段封装的类型：`StructField`结构化字段。
+
+- 其一、`StructType` 定义，属性为`StructField`的数组
+
+![1632608227952](assets/1632608227952.png)
+
+- 其二、`StructField` 定义，有四个属性，其中字段名称和类型为必填
+
+![1632608270399](assets/1632608270399.png)
+
+> 自定义Schema结构，官方提供实例代码：
+
+![1632608560139](assets/1632608560139.png)
+
+> DataFrame中每条数据封装在`Row`中，Row表示每行数据，具体哪些字段未知，获取DataFrame中第一条数据
+
+![1632608642351](assets/1632608642351.png)
+
+> 如何获取Row中每个字段的值
+
+- 方式一：**下标获取**，从0开始，类似数组下标获取
+
+![1632608858778](assets/1632608858778.png)
+
+- 方式二：**指定属性名称，获取对应的值， 此种方式开发中使用最多**
+
+![1632609097663](assets/1632609097663.png)
+
+- 方式三：**指定属性名称，通过 `.` 方式获取值**
+
+![1632609156000](assets/1632609156000.png)
+
+> 如何创建Row对象
+
+![1632609561165](assets/1632609561165.png)
+
+> 在SparkSQL模块中，将结构化数据封装到DataFrame中后，提供两种方式分析处理数据，正如前面案例【词频统计WordCount】两种方式：
+
+- 第一种：`DSL（domain-specific language）`编程
+  - 调用DataFrame  API （SQL 函数），类似SQL语句中关键字；
+  - DSL编程中，调用函数更多是类似SQL语句关键词函数，比如select、groupBy，同时要使用函数处理
+  - 函数库：`from pyspark.sql.functions import *` 
+
+![1632612866014](assets/1632612866014.png)
+
+```python
+# 导入函数库，别名：F，使用内置函数
+import pyspark.sql.functions as F
+
+F.split()
+F.explode()
+```
+
+- 第二种：**`SQL` 编程**
+  - [将DataFrame/Dataset注册为临时视图或表，编写SQL语句，类似HiveQL]()
+  - 分为2步操作，先将DataFrame注册为临时视图，然后再编写SQL
+
+![1632612926956](assets/1632612926956.png)
 
 ### 2. 自动推断类型转换DataFrame
 
