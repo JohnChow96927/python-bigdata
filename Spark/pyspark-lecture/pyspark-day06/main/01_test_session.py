@@ -26,6 +26,8 @@ if __name__ == '__main__':
     # 2. 加载数据源-source
     dataframe = spark.read.text('../datas/words.txt')
 
+    print("count:", dataframe.count())
+
     # 3. 数据转换处理-transformation
 
     # 4. 处理结果输出-sink
