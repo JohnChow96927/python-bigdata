@@ -903,3 +903,42 @@ if __name__ == '__main__':
 
 ### 4. 关联电影数据
 
+> 将前面电影评分数据分析中，分析结果数据与电影基本信息数据，依据电影ID关联，获取电影名称。
+
+![1632807617925](assets/1632807617925.png)
+
+> 加载电影信息数据：`movies.dat`，封装为DataFrame（先RDD，再转换DataFrame）。
+
+```python
+    # 3-3. 加载电影基本信息数据
+    movie_df = spark.sparkContext\
+        .textFile('../datas/ml-1m/movies.dat')\
+        .map(lambda line: str(line).split('::'))\
+        .toDF(['movie_id', 'title', 'genres'])
+    movie_df.printSchema()
+    movie_df.show(n=10, truncate=False)
+```
+
+> 将Top10电影评分数据与电影数据进行关联Join，采用SQL语句分析，需要将DataFrame注册为临时视图。
+
+```python
+    # 3-4. 将Top10电影与电影基本信息数据进行JOIN，采用SQL
+    # 注册DataFrame为临时视图
+    top10_movie_df.createOrReplaceTempView("view_tmp_top_movies")
+    movie_df.createOrReplaceTempView("view_tmp_movies")
+    # 编写SQL，进行JOIN
+    result_df = spark.sql("""
+        SELECT 
+          t2.title, t1.rating_avg , t1.rating_total
+        FROM 
+          view_tmp_top_movies t1 JOIN view_tmp_movies t2 ON t1.item_id = t2.movie_id
+    """)
+
+    # 4. 处理结果输出-sink
+    result_df.printSchema()
+    result_df.show(n=10, truncate=False)
+```
+
+运行上述代码，最后结果如下：
+
+![1632808010837](assets/1632808010837.png)
