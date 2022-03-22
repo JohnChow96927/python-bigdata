@@ -283,7 +283,75 @@ if __name__ == '__main__':
 
 ### 4. SparkSQL模块概述
 
+> SparkSQL模块一直到Spark 2.0版本才算真正稳定，发挥其巨大功能，发展经历如下几个阶段。
 
+![1632579591546](assets/1632579591546.png)
+
+```ini
+# 1、Spark 1.0之前
+	Shark = Hive + Spark
+	将Hive框架源码，修改其中转换SQL为MapReduce，变为转换RDD操作，称为Shark
+	问题：维护成本太高，没有更多精力在于框架性能提升
+		
+# 2、Spark 1.0开始提出SparkSQL模块
+	重新编写引擎Catalyst，将SQL解析为优化逻辑计划Logical Plan
+	此时数据结构：SchemaRDD
+	
+# 3、Spark 1.3版本，SparkSQL成为Release版本
+	数据结构：DataFrame，借鉴于Python和R中dataframe，DataFrame = RDD[Row] + Schema
+	提供外部数据源接口：方便可以从任意外部数据源加载load和保存save数据
+
+# 4、Spark 1.6版本，SparkSQL数据结构Dataset
+	坊间流传，参考Flink中DataSet数据结构而来，Dataset = RDD + schema
+	
+# 5、Spark 2.0版本，DataFrame和Dataset何为一体
+	Dataset = RDD + schema，DataFrame = Dataset[Row]
+```
+
+> Spark 2.x发布时，将Dataset和DataFrame统一为一套API，以Dataset数据结构为主（==Dataset= RDD + Schema==），其中`DataFrame = Dataset[Row]`。
+
+![1632579573194](assets/1632579573194.png)
+
+```ini
+# Spark 2.0版本中2个重要特性：
+	第一、SparkSession新程序入口
+	第二、数据结构统一：Dataset
+		其中DataFrame = Dataset[Row]
+```
+
+> SparkSQL模块官方定义：`针对结构化数据处理Spark Module模块`，数据封装在DataFrame数据结构。
+
+![1632579630270](assets/1632579630270.png)
+
+> 主要包含三层含义：
+
+![1632579648677](assets/1632579648677.png)
+
+- 第一、针对结构化数据处理，属于Spark框架一个部分
+
+![1632579676222](assets/1632579676222.png)
+
+- 第二、抽象数据结构：DataFrame
+
+```ini
+DataFrame = RDD[Row] + Schema（字段名称和字段类型）
+```
+
+
+
+- 第三、分布式SQL引擎，类似Hive框架
+
+```ini
+从Hive框架继承而来，Hive中提供bin/hive交互式SQL命令行及HiveServer2服务，SparkSQL都可以；
+```
+
+> Spark SQL是Spark用来处理结构化数据的一个模块，主要4个特性：
+
+![1632579728609](assets/1632579728609.png)
+
+> 官方文档：https://spark.apache.org/docs/3.1.2/sql-programming-guide.html
+
+![1632579770163](assets/1632579770163.png)
 
 ## II. DataFrame
 
