@@ -856,7 +856,50 @@ if __name__ == '__main__':
 
 ### 3. 基于SQL分析
 
+> **案例代码演示**： `09_movies_analysis_sql.py`，将DataFrame注册为临时视图，再编写SQL语句。
 
+```python
+    # 3-2. 编写SQL分析数据
+    # step1、注册DataFrame为临时视图
+    rating_df.createOrReplaceTempView('tmp_view_ratings')
+
+    # step2、编写SQL语句
+    """
+        a. 每个电影平均评分和评分人数
+            group by item_id
+            avg(rating)、round
+            count(item_id)
+        b. top10电影
+            rating_total > 2000
+            rating_avg DESC
+            limit 10
+    """
+    top10_movie_df = spark.sql("""
+        SELECT
+          item_id, COUNT(item_id) AS rating_total, ROUND(AVG(rating), 2) AS rating_avg
+        FROM tmp_view_ratings
+        GROUP BY item_id
+        HAVING rating_total > 2000
+        ORDER BY rating_avg DESC, rating_total DESC 
+        LIMIT 10
+    """)
+
+    # 4. 处理结果输出-sink
+    top10_movie_df.printSchema()
+    top10_movie_df.show(n=10, truncate=False)
+```
+
+运行程序，结果如下图所示：
+
+![1632635570276](assets/1632635570276.png)
+
+> 运行上述程序时，查看WEB UI监控页面发现，**某个Stage中有200个Task任务**，也就是说**RDD有200分区Partition。**
+
+![1632635736317](assets/1632635736317.png)
+
+> 原因：在SparkSQL中当Job中产生Shuffle时，默认的分区数（`spark.sql.shuffle.partitions` ）为`200`，在`实际项目中要合理的设置`。在构建SparkSession实例对象时，设置参数的值。
+
+![1632635818729](assets/1632635818729.png)
 
 ### 4. 关联电影数据
 
