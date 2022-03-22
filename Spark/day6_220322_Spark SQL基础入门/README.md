@@ -560,7 +560,75 @@ F.explode()
 
 ### 2. 自动推断类型转换DataFrame
 
+> 实际项目开发中，往往需要将RDD数据集转换为DataFrame，本质上就是**给RDD加上Schema信息**，官方提供两种方式：`类型推断和自定义Schema`。
 
+文档：https://spark.apache.org/docs/3.1.2/sql-getting-started.html#inferring-the-schema-using-reflection
+
+![1632609617044](assets/1632609617044.png)
+
+> **范例演示说明**：使用经典数据集【电影评分数据u.data】，==先读取为RDD，再转换为DataFrame==。
+
+![1632609693637](assets/1632609693637.png)
+
+字段信息：`user id 、 item id、 rating 、 timestamp`。
+
+> 将每行电影评分数据，解析封装到Row对象中，并且指定字段名称，如下示意图：
+
+![1639667867510](assets/1639667867510.png)
+
+> **案例代码演示**： `04_create_dataframe_reflection.py`：加载文本文件数据封装为RDD，将每条数据转换为Row对象，指定列名称。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import re
+from pyspark.sql import SparkSession, Row
+
+if __name__ == '__main__':
+    """
+    RDD数据集转换为DataFrame，通过自动推断类型方式，要求RDD中数据为Row，并且指定列名称。
+        RDD[Row(id=1001, name=zhangsan, age=24, ....)]  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    rating_rdd = spark.sparkContext.textFile('../datas/ml-100k/u.data')
+    """
+        每条数据：196	242	3	881250949
+    """
+
+    # 3. 数据转换处理-transformation
+    """
+        3-1. 将RDD中每条数据string，封装转换为Row对象
+        3-2. 直接将Row RDD 转换为DataFrame
+    """
+    row_rdd = rating_rdd\
+        .map(lambda line: re.split('\\s+', line))\
+        .map(lambda list: Row(user_id=list[0], movie_id=list[1], rating=float(list[2]), timestamp=int(list[3])))
+
+    rating_df = spark.createDataFrame(row_rdd)
+
+    # 4. 处理结果输出-sink
+    rating_df.printSchema()
+    rating_df.show(n=10, truncate=False)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 3. 自定义Schema转换DataFrame
 
