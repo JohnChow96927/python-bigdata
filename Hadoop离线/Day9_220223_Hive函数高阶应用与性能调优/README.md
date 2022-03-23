@@ -738,7 +738,8 @@ from website_pv_info;
    sum(pv) over(partition by cookieid order by createtime) as current_total_pv
    from website_pv_info;
    select cookieid,createtime,pv,
-   sum(pv) over(partition by cookieid order by pv) as current_total_pvfrom website_pv_info;
+   sum(pv) over(partition by cookieid order by pv) as current_total_pv
+   from website_pv_info;
    ```
 
    ![1645670620685](assets/1645670620685.png)
