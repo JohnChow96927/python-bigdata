@@ -382,7 +382,90 @@ explain SELECT * FROM bd_hive.emp WHERE sal > 2000 ;
 
 ### 1. 加载load和保存save
 
+> 在SparkSQL模块，提供一套完成API接口，用于方便读写外部数据源的的数据（从`Spark 1.3`版本提供），框架本身内置外部数据源：
 
+![1632777839563](assets/1632777839563-1648108821011.png)
+
+> 从MySQL表中既可以`加载读取数据：load/read`，又可以`保存写入数据：save/write`。
+
+![1632777992079](assets/1632777992079-1648108817614.png)
+
+- **load** 加载数据
+
+> 在SparkSQL中读取数据使用`SparkSession`读取，并且封装到数据结构`DataFrame`中，基本格式如下：
+
+![1642132151763](assets/1642132151763-1648108814581.png)
+
+> SparkSQL模块本身自带支持读取外部数据源的数据：
+
+![1632778253324](assets/1632778253324-1648108812543.png)
+
+- **save** 保存数据
+
+> SparkSQL模块中可以从某个外部数据源读取数据，就能向其保存数据，提供相应接口，基本格式如下：
+
+![1642132166152](assets/1642132166152-1648108809003.png)
+
+> SparkSQL模块内部支持保存数据源如下：
+
+![1632778423773](assets/1632778423773-1648108806650.png)
+
+> DataFrame数据保存时有一个`mode`方法，指定保存模式：
+
+![1632779609603](assets/1632779609603-1648108798454.png)
+
+- 1、Append 追加模式，当数据存在时，继续追加；
+- 2、Overwrite 覆写模式，当数据存在时，覆写以前数据，存储当前最新数据；
+- 3、ErrorIfExists 存在及报错；
+- 4、Ignore 忽略，数据存在时不做任何操作；
+
+> **案例代码演示**`04_datasource_basic.py`：从本地文件系统加载JSON格式数据，保存为Parquet格式
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL 提供一套外部数据源接口，方便用户读取数据和写入数据，采用一定格式。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    # TODO： 第1、加载JSON格式数据
+    json_df = spark.read\
+        .format('json')\
+        .option('path', '../datas/resources/employees.json')\
+        .load()
+    # json_df.printSchema()
+    # json_df.show()
+
+    # 4. 处理结果输出-sink
+    # TODO: 第2、保存Parquet格式数据
+    json_df.write\
+        .mode('overwrite')\
+        .format('parquet')\
+        .option('path', '../datas/resources/emp-parquet')\
+        .save()
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 2. text文本文件
 
@@ -847,4 +930,3 @@ if __name__ == '__main__':
     spark.stop()
 
 ```
-
