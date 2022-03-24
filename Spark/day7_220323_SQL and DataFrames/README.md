@@ -220,7 +220,7 @@ if __name__ == '__main__':
 	def withColumn(self, colName: str, col: Column) -> DataFrame
 ```
 
-> ​		上述SQL函数调用时，通常**指定某个列名称，传递`Column`对象**，使用`col`或`column`内置函数，转换String字符串为Column对象。
+> 上述SQL函数调用时，通常**指定某个列名称，传递`Column`对象**，使用`col`或`column`内置函数，转换String字符串为Column对象。
 
 ```python
 # 导入库
