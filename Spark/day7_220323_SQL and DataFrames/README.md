@@ -522,7 +522,56 @@ if __name__ == '__main__':
 
 ### 3. json文本文件
 
+> SparkSQL模块内置：加载json文本数据和保存数据为json格式。
 
+- **load**：加载数据，`spark.read.json()`
+
+![1632780313114](assets/1632780313114-1648109059086.png)
+
+- **save**：保存数据，`dataframe.write.json()`
+
+![1632780380236](assets/1632780380236-1648109055620.png)
+
+> **案例代码演示**： `06_datasource_json.py`：加载文本JSON格式数据，并保存
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL内置数据源，加载json数据和保存数据为json格式。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    json_df = spark.read.json('../datas/resources/people.json')
+    # json_df.printSchema()
+    # json_df.show()
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+    json_df.coalesce(1).write.mode('overwrite').json('../datas/save-json')
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 4. parquet列式存储
 
