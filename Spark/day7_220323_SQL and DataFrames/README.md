@@ -334,7 +334,49 @@ if __name__ == '__main__':
 
 ### 4. Catalyst优化器
 
+> 在前面案例【电影数据分析】中，运行应用程序代码，通过WEB UI界面监控可以看出，无论使用DSL还是SQL，构建Job的DAG图一样的，性能是一样的，原因在于SparkSQL中引擎：
+> ​[Catalyst：将SQL和DSL转换为相同逻辑计划(LogicalPlan)]()
 
+![1639757265630](assets/1639757265630-1648107970417.png)
+
+> Spark SQL的核心是**Catalyst优化器**，==对 SQL 或者DSL 代码解析生成逻辑计划，对逻辑计划进行优化==的查询优化器。
+
+![1632864886001](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day07_20220324/03_%E7%AC%94%E8%AE%B0/assets/1632864886001.png)
+
+```ini
+# 上述图中，可以看出SparkSQL模块：
+	第一、【紫色部分】Catalyst 引擎（优化器）
+		将SQL或DSL转换逻辑计划Logical Plan
+	
+	第二、【红色部分】代码生成器CodeGenarator
+		将逻辑计划转换为物理计划（Physical Plan）-> RDD Transformations转换操作
+```
+
+> 大数据中SQL工具框架：Hive、Presto、SparkSQL等等，执行SQL时，流程如下所示：
+
+![1642131281044](assets/1642131281044-1648107965433.png)
+
+> `SparkSQL Catalyst` 运作原理：**对 SQL 或者DSL 代码解析生成逻辑计划，对逻辑计划进行优化**。
+
+![1632865006436](assets/1632865006436-1648107961803.png)
+
+- 1）、SQL语句首先通过**Parser**模块被解析为语法树，此棵树称为`Unresolved Logical Plan`；
+- 2）、`Unresolved Logical Plan`通过**Analyzer**模块借助于数据元数据解析为`Logical Plan`；
+- 3）、此时再通过各种基于规则Rule的**Optimizer**进行深入优化，得到`Optimized Logical Plan`；
+- 4）、优化后的逻辑执行计划依然是逻辑的，需要将逻辑计划转化为`Physical Plan`。
+
+```SQL
+explain SELECT * FROM bd_hive.emp WHERE sal > 2000 ;
+```
+
+![1642143422788](assets/1642143422788-1648107956768.png)
+
+> SparkSQL 内部底层核心，有2种优化：RBO 优化和CBO优化。
+>
+> - 基于规则优化/Rule Based Optimizer/`RBO`；
+> - 基于代价优化/Cost Based Optimizer/`CBO`；
+
+![1632865060574](assets/1632865060574-1648107954573.png)
 
 ## II. 外部数据源
 
