@@ -33,7 +33,6 @@ if __name__ == '__main__':
     jdbc_df.printSchema()
     jdbc_df.show(20, False)
 
-
     # 3. 数据转换处理-transformation
 
     # 4. 处理结果输出-sink
