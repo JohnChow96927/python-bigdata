@@ -596,7 +596,7 @@ from pyspark.sql import SparkSession
 
 if __name__ == '__main__':
     """
-    SparkSQL内置数据源：parquet列式存，默认加载文件格式就是parquet。  
+    SparkSQL内置数据源：parquet列式存储，默认加载文件格式就是parquet。  
     """
 
     # 设置系统环境变量
