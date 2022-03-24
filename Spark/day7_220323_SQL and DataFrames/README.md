@@ -722,7 +722,40 @@ spark-sql> select * from db_hive.emp ;
 
 ### 3. DataGrip JDBC连接
 
+> 使用DataGrip或者PyCharm连接Spark Thrift JDBC/ODBC Server服务，创建步骤如下所示：
 
+- 第1步、创建DataSource，选择【Apache Hive】。
+
+![1632835439150](assets/1632835439150-1648108249688.png)
+
+- 第2步、填写Server服务连接信息
+
+![1632835705709](assets/1632835705709-1648108247860.png)
+
+- 第3步、打开连接，SQL编写界面
+
+![1632835849571](assets/1632835849571-1648108245696.png)
+
+> 至此，配置完成，DataGrip或PyCharm（企业版）远程通过JDBC/ODBC方式连接Spark Thrift JDBC/ODC Server服务，可以编写SQL分析数据。
+
+- 基本查询：`SELECT deptno, round(avg(sal), 2) AS avg_sal FROM db_hive.emp GROUP BY deptno ;`
+
+![1632836195743](assets/1632836195743-1648108241329.png)
+
+- 各个部门工资最高人员信息：
+
+```SQL
+with tmp AS (
+    SELECT empno, ename, sal, deptno,
+           row_number() over (partition by deptno order by sal desc) AS rnk
+    FROM db_hive.emp
+)
+SELECT t.empno, t.ename, t.sal, t.deptno FROM tmp t WHERE t.rnk = 1 ;
+```
+
+执行结果：
+
+![1632836231303](assets/1632836231303-1648108238648.png)
 
 ## 拓展内容
 
