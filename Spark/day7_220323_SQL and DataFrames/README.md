@@ -4,7 +4,97 @@
 
 ### 1. SQL分析
 
+> 基于SQL数据分析，将DataFrame注册为临时视图，编写SQL执行分析，分为两个步骤：
 
+- **第一步、注册为临时视图**：`df.createOrReplaceTempView(view_name)`
+
+![1632748271537](assets/1632748271537-1648106749522.png)
+
+- **第二步、编写SQL，执行分析**：`df = spark.sql()`
+
+![1632748231127](assets/1632748231127-1648106747296.png)
+
+> 其中SQL语句类似Hive中SQL语句，查看Hive官方文档，SQL查询分析语句语法
+
+![1632748620717](assets/1632748620717-1648106744934.png)
+
+官方文档：https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select
+
+> **Iris 鸢尾花数据**集是一个经典数据集，在统计学习和机器学习领域都经常被用作示例。**数据集内包含 3 类共 150 条记录，每类各 50 个数据**，每条记录都有 4 项特征：==花萼（sepals）长度和宽度、花瓣（petals）长度和宽度==，可通过4个特征预测鸢尾花卉属于（**iris-setosa、iris-versicolour、iris-virginica**）中的哪一品种。
+
+![img](assets/v2-4764beb445a0132d4fa220239c28c6b0_720w-1648106738284.jpg)
+
+> [数据下载：http://archive.ics.uci.edu/ml/datasets/Iris]()
+
+![img](assets/6533825-61d6b7f8b885ee5f-1648106734150.webp)
+
+> **案例代码演示**： `01_dataframe_sql.py`：注册DataFrame为临时视图，编写SQL分析数据。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    加载鸢尾花数据集，使用SQL分析，基本聚合统计操作
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    iris_rdd = spark.sparkContext.textFile('../datas/iris/iris.data')
+
+    # 3. 数据转换处理-transformation
+    """
+        采用toDF函数方式，转换RDD为DataFrame，此时要求RDD中数据类型：元组Tuple
+    """
+    tuple_rdd = iris_rdd\
+        .map(lambda line: str(line).split(','))\
+        .map(lambda list: (float(list[0]), float(list[1]), float(list[2]), float(list[3]), list[4]))
+    # 调用toDF函数，指定列名称
+    iris_df = tuple_rdd.toDF(['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'category'])
+    # iris_df.printSchema()
+    # iris_df.show(n=10, truncate=False)
+
+    # 第1步、注册DataFrame为临时视图
+    iris_df.createOrReplaceTempView('view_tmp_iris')
+    # 第2步、编写SQL语句并执行
+    result_df = spark.sql("""
+        SELECT   
+          category,
+          COUNT(1) AS total,
+          ROUND(AVG(sepal_length), 2) AS sepal_length_avg,
+          ROUND(AVG(sepal_width), 2) AS sepal_width_avg,
+          ROUND(AVG(petal_length), 2) AS petal_length_avg,
+          ROUND(AVG(petal_width), 2) AS petal_width_avg
+        FROM view_tmp_iris GROUP BY category
+    """)
+
+    # 4. 处理结果输出-sink
+    result_df.printSchema()
+    result_df.show()
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
+
+程序运行结果：
+
+![1632754797497](assets/1632754797497-1648106726399.png)
 
 ### 2. DSL分析之API函数
 
