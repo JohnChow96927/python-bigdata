@@ -34,8 +34,14 @@ if __name__ == '__main__':
     jdbc_df.show(20, False)
 
     # 3. 数据转换处理-transformation
+    dataframe = jdbc_df.select('empno', 'ename', 'job', 'sal', 'deptno')
 
     # 4. 处理结果输出-sink
+    dataframe.coalesce(1).write.mode('append').jdbc(
+        'jdbc:mysql://node1.itcast.cn:3306/?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true',
+        'db_company.emp_v2',
+        properties=props
+    )
 
     # 5. 关闭上下文对象-close
     spark.stop()
