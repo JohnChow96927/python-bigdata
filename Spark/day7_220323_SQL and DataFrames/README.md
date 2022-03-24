@@ -20,11 +20,11 @@
 
 官方文档：https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select
 
-> **Iris 鸢尾花数据**集是一个经典数据集，在统计学习和机器学习领域都经常被用作示例。**数据集内包含 3 类共 150 条记录，每类各 50 个数据**，每条记录都有 4 项特征：==花萼（sepals）长度和宽度、花瓣（petals）长度和宽度==，可通过4个特征预测鸢尾花卉属于（**iris-setosa、iris-versicolour、iris-virginica**）中的哪一品种。
+> **Iris鸢尾花数据**集是一个经典数据集，在统计学习和机器学习领域都经常被用作示例。**数据集内包含 3 类共 150 条记录，每类各 50 个数据**，每条记录都有 4 项特征：==花萼（sepals）长度和宽度、花瓣（petals）长度和宽度==，可通过4个特征预测鸢尾花卉属于（**iris-setosa、iris-versicolour、iris-virginica**）中的哪一品种。
 
 ![img](assets/v2-4764beb445a0132d4fa220239c28c6b0_720w-1648106738284.jpg)
 
-> [数据下载：http://archive.ics.uci.edu/ml/datasets/Iris]()
+> [数据下载：http://archive.ics.uci.edu/ml/datasets/Iris](http://archive.ics.uci.edu/ml/datasets/Iris)
 
 ![img](assets/6533825-61d6b7f8b885ee5f-1648106734150.webp)
 
