@@ -575,7 +575,60 @@ if __name__ == '__main__':
 
 ### 4. parquet列式存储
 
+> SparkSQL模块中，默认读取数据文件格式就是`parquet`列式存储数据，通过参数【`spark.sql.sources.default`】设置，默认值为【`parquet`】。
 
+- **load**：加载数据，`spark.read.parquet()`
+
+![1632781006707](assets/1632781006707-1648109091394.png)
+
+- **save**：保存数据，`dataframe.write.parquet()`
+
+![1632781058377](assets/1632781058377-1648109089426.png)
+
+> **案例代码演示**： `07_datasource_parquet.py`：加载Parquet格式数据包保存数据为Parquet存储
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL内置数据源：parquet列式存，默认加载文件格式就是parquet。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    parquet_df = spark.read.parquet('../datas/resources/users.parquet')
+    # parquet_df.printSchema()
+    # parquet_df.show()
+
+    # TODO: 不指定数据格式，加载parquet 数据
+    df = spark.read.load('../datas/resources/users.parquet')
+    # df.printSchema()
+    # df.show()
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+    parquet_df.coalesce(1).write.mode('overwrite').parquet('../datas/save-parquet')
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+```
 
 ### 5. csv文本文件
 
