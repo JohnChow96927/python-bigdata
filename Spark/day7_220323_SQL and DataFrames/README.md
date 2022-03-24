@@ -787,3 +787,64 @@ SELECT t.empno, t.ename, t.sal, t.deptno FROM tmp t WHERE t.rnk = 1 ;
 
 ### 2. Top10电影分析升级版
 
+> 基于MoviesLens电影评分数据，统计分析【每个电影**评分次数**、**平均评分**和**各个分值占比**】。
+
+![1635130056597](assets/1635130056597-1648108340497.png)
+
+> 按照上述需求对电影评分数据分析处理，最终获取Top10电影，结果如下如所示：
+
+![1635202613241](assets/1635202613241-1648108337827.png)
+
+> 基于SparkSQL中SQL方式实现，具体思路如下：
+
+1. 加载csv文本数据，指定schema信息
+2. 按照电影分组：`movie_id`
+3. 组内聚合：`count`、`avg`、`sum`、 `if或case when`
+4. 计算各个评分占比：`stars1_rating_people` / `rating_people`        
+5. 过滤评分次数大于2000
+6. 依据评分降序，获取前10
+
+> 在PyCharm中创建Python Script脚本文件：`movies_top10_sql.py`，编写代码。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+
+
+if __name__ == '__main__':
+    """
+    对电影评分数据进行统计分析，获取Top10电影:
+        a. 每个电影被评分的次数大于2000
+        b. 电影评分平均值最高
+        c. 每个电影各个评分占比
+        ["user_id", "movie_id", "rating", "timestamp"]
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例-session
+    spark = SparkSession.builder \
+        .appName("Python SparkSQL Example") \
+        .master("local[4]") \
+        .config("spark.sql.shuffle.partitions", "4")\
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+   
+    # 3. 数据转换处理-transformation
+    
+    # 4. 数据接收器-sink
+
+    # 5. 关闭会话对象-close
+    spark.stop()
+
+```
+
