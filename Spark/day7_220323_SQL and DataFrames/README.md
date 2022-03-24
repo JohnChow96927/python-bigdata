@@ -670,7 +670,55 @@ spark-sql> select * from db_hive.emp ;
 
 ### 2. Thrift Server服务
 
+> **Spark Thrift  JDBC/ODBC Server**将==Spark Applicaiton当做一个服务运行==，提供Beeline客户端和JDBC方式访问，==与HiveServer2服务一样==的。
 
+![1632834551291](assets/1632834551291-1648108180070.png)
+
+> 在实际项目中，往往使用**SparkSQL集成Hive**开发报表分析，使用==Hive管理元数据==，启动Spark Thrift JDBC/ODBC Server服务（运行在YARN集群上），通过beeline和BI 工具连接，发送SQL请求。
+
+![1635129498400](assets/1635129498400-1648108176139.png)
+
+> [Spark Thrift JDBC/ODBC Server 依赖于HiveServer2服务（依赖JAR包]()），所以要想使用此功能，在编译Spark源码时，支持Hive ThriftServer。
+
+![1632834622392](assets/1632834622392-1648108171865.png)
+
+> 在`$SPARK_HOME`目录下的`sbin`目录，Thrift JDBC/ODBC Sever服务启动命令:
+
+```bash
+/export/server/spark-local/sbin/start-thriftserver.sh \
+--hiveconf hive.server2.thrift.port=10000 \
+--hiveconf hive.server2.thrift.bind.host=node1.itcast.cn \
+--master local[2] \
+--conf spark.sql.shuffle.partitions=2
+```
+
+> 监控WEB UI界面：http://node1.itcast.cn:4040/
+
+![1632834909871](assets/1632834909871-1648108168396.png)
+
+> SparkSQL类似Hive提供`beeline`客户端命令行连接ThriftServer，启动命令如下：
+
+```ini
+(base) [root@node1 ~]# /export/server/spark-local/bin/beeline
+	!connect jdbc:hive2://node1.itcast.cn:10000
+	root
+	123456
+```
+
+![1632835029534](assets/1632835029534-1648108164429.png)
+
+> 客户端beeline命令行，编写SQL语句执行，与Hive中beeline客户端完全一致，企业中常用一种方式。
+
+```SQL
+0: jdbc:hive2://node1.itcast.cn:10000> show databases ;
+
+0: jdbc:hive2://node1.itcast.cn:10000> use db_hive ;
+
+0: jdbc:hive2://node1.itcast.cn:10000> show tables ;
+
+0: jdbc:hive2://node1.itcast.cn:10000> select * from emp ;
+
+```
 
 ### 3. DataGrip JDBC连接
 
