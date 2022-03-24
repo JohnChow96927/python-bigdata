@@ -10,6 +10,7 @@
             <path value="file://$PROJECT_DIR$/pyspark-day04/resources" />
             <path value="file://$PROJECT_DIR$/pyspark-day05/resources" />
             <path value="file://$PROJECT_DIR$/pyspark-day06/resources" />
+            <path value="file://$PROJECT_DIR$/pyspark-day07/resources" />
           </resourceRoots>
         </entryData>
       </entry>
