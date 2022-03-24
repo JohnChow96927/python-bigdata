@@ -629,7 +629,44 @@ if __name__ == '__main__':
 
 ### 1. spark-sql命令行
 
+> 回顾一下，==如何使用Hive进行数据分析的，提供哪些方式交互分析？==
 
+![1632833056426](assets/1632833056426-1648108118381.png)
+
+> 在Hive实际项目使用中，启动`HiveMetaStore`服务，用于连接数据库，加载元数据；此外，启动`HiveServer2`服务，提供beeline和JDBC/ODBC方式连接，接收SQL，并行转换提交执行。
+
+![1635129988479](assets/1635129988479-1648108111732.png)
+
+SparkSQL模块从Hive框架衍生发展而来，所以Hive提供的所有功能（数据分析交互式方式）都支持，官方文档：https://spark.apache.org/docs/3.1.2/sql-distributed-sql-engine.html。
+
+> SparkSQL提供`spark-sql`命令，类似Hive中`bin/hive`命令，专门编写SQL分析，按照如下步骤演示。
+
+```bash
+# 1、启动HDFS服务：NameNode和DataNodes
+(base) [root@node1 ~]# start-dfs.sh
+
+# 2、启动HiveMetaStore 服务
+(base) [root@node1 ~]# start-metastore.sh 
+
+# 3、设置Spark日志级别
+(base) [root@node1 ~]# cd /export/server/spark-local/conf/
+(base) [root@node1 conf]# mv log4j.properties.template log4j.properties
+(base) [root@node1 conf]# vim log4j.properties 
+	修改INFO为WARN
+		log4j.rootCategory=WARN, console
+
+# 4、启动spark-sql命令行
+(base) [root@node1 ~]# /export/server/spark-local/bin/spark-sql --master local[2] --conf spark.sql.shuffle.partitions=2
+Spark master: local[2], Application Id: local-1632833742325
+spark-sql> show databases ;
+spark-sql> use db_hive ;
+spark-sql> show tables ;
+spark-sql> select * from db_hive.emp ;
+```
+
+![1632833865074](assets/1632833865074-1648108105725.png)
+
+> 此种方式，目前使用较少，主要使用`Spark Thrift JDBC/ODBC Server`服务，通过Beeline连接执行SQL。
 
 ### 2. Thrift Server服务
 
