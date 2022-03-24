@@ -469,7 +469,56 @@ if __name__ == '__main__':
 
 ### 2. text文本文件
 
+> SparkSQL模块内置：文本文件text数据的加载load和保存save，方便用户使用。
 
+- **load**：加载数据， `spark.read.text()`
+
+![1632779952571](assets/1632779952571-1648108909968.png)
+
+- **save**：保存数据，`dataframe.write.text()`
+
+![1632780061818](assets/1632780061818-1648108908212.png)
+
+> **案例代码演示**： `05_datasource_text.py`：加载文本数据和保存数据到文本文件中
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL内置外部数据源：text，加载load和保存save案例演示  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    dataframe = spark.read.text('../datas/resources/people.txt')
+    dataframe.printSchema()
+    dataframe.show(truncate=False)
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+    dataframe.write.mode('overwrite').text('../datas/save-text')
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 3. json文本文件
 
