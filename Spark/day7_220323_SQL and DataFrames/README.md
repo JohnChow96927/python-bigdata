@@ -632,7 +632,66 @@ if __name__ == '__main__':
 
 ### 5. csv文本文件
 
+> 关于**CSV/TSV格式**数据说明：
 
+![1632780927642](assets/1632780927642-1648109156099.png)
+
+> SparkSQL模块内置：加载csv文本数据和保存数据为csv格式。
+
+- **load**：加载数据，`spark.read.csv()`
+
+![1632781297410](assets/1632781297410-1648109153868.png)
+
+[SparkSQL中读取CSV格式数据，可以设置一些选项，重点选项：]()
+
+![1632780969130](assets/1632780969130-1648109151713.png)
+
+- **save**：保存数据，`dataframe.write.csv()`
+
+![1632781815072](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day07_20220324/03_%E7%AC%94%E8%AE%B0/assets/1632781815072.png)
+
+> **案例代码演示**： `08_datasource_csv.py`：加载csv文件和保存数据到csv文件
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL内置数据源CSV：加载数据和保存数据  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    csv_df = spark.read.csv(
+        '../datas/resources/people.csv', sep=';', header=True, inferSchema=True
+    )
+    csv_df.printSchema()
+    csv_df.show()
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+    csv_df.coalesce(1).write.mode('overwrite').csv('../datas/save-csv', sep=',', header=True)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 6. jdbc数据库
 
