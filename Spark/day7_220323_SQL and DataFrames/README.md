@@ -98,7 +98,88 @@ if __name__ == '__main__':
 
 ### 2. DSL分析之API函数
 
+> 调用==DataFrame API（函数）==分析数据，其中函数包含**RDD 函数**和类似**SQL函数**。
 
+- 第一、**类似RDD 算子**，比如count、cache、foreach、collect等，但是**没有map和mapPartitions算子**
+
+![1639748046534](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day07_20220324/03_%E7%AC%94%E8%AE%B0/assets/1639748046534.png)
+
+[其中，可以从DataFrame数据集中获取列名称：`columns`、Schema信息：`schema`和RDD数据：`rdd`]()
+
+> DataFrame中函数使用演示，说明如下：
+
+- 第一、在PyCharm中开发，方便查看函数的使用说明
+- 第二、启动`pyspark shell` 命令行，即使执行命令，查看结果
+
+```bash
+(base) [root@node1 ~]# /export/server/spark-local/bin/pyspark \
+--master local[2] \
+--conf spark.sql.shuffle.partitions=2
+```
+
+> **案例代码演示**： `02_dataframe_dsl.py`：加载json格式数据，调用类似RDD算子函数。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark import StorageLevel
+
+if __name__ == '__main__':
+    """
+    加载JSON格式数据，封装到DataFrame中，使用DataFrame API进行操作（类似RDD 算子）  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    emp_df = spark.read.json('hdfs://node1.itcast.cn:8020/datas/resources/employees.json')
+    emp_df.printSchema()
+    emp_df.show(n=10, truncate=False)
+
+    # 3. 数据转换处理-transformation
+    # TODO：count/collect/take/first/head/tail/
+    emp_df.count()
+    emp_df.collect()
+    emp_df.take(2)
+    emp_df.head()
+    emp_df.first()
+    emp_df.tail(2)
+
+    # TODO: foreach/foreachPartition
+    emp_df.foreach(lambda row: print(row))
+
+    # TODO：coalesce/repartition
+    emp_df.rdd.getNumPartitions()
+    emp_df.coalesce(1).rdd.getNumPartitions()
+    emp_df.repartition(3).rdd.getNumPartitions()
+
+    # TODO：cache/persist
+    emp_df.cache()
+    emp_df.unpersist()
+    emp_df.persist(storageLevel=StorageLevel.MEMORY_AND_DISK)
+
+    # TODO: columns/schema/rdd/printSchema
+    emp_df.columns
+    emp_df.schema
+    emp_df.printSchema()
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 3. DSL分析之SQL函数
 
