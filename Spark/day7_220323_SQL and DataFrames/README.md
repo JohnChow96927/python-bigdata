@@ -416,7 +416,7 @@ explain SELECT * FROM bd_hive.emp WHERE sal > 2000 ;
 
 - 1、Append 追加模式，当数据存在时，继续追加；
 - 2、Overwrite 覆写模式，当数据存在时，覆写以前数据，存储当前最新数据；
-- 3、ErrorIfExists 存在及报错；
+- 3、ErrorIfExists 存在即报错；
 - 4、Ignore 忽略，数据存在时不做任何操作；
 
 > **案例代码演示**`04_datasource_basic.py`：从本地文件系统加载JSON格式数据，保存为Parquet格式
