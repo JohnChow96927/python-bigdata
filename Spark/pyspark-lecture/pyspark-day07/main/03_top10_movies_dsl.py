@@ -81,7 +81,8 @@ if __name__ == '__main__':
         F.col('title'),
         F.col('rating_avg').alias('rating'),
         F.col('rating_total').alias('total')
-    )
+    )\
+        .orderBy(F.col('rating').desc())
 
     # 4. 处理结果输出-sink
     result_df.printSchema()
