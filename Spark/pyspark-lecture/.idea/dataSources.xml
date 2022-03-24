@@ -4,9 +4,11 @@
     <data-source source="LOCAL" name="Hive.PySpark@node1.itcast.cn" uuid="ec94d8ef-8aa5-4df9-8c44-4e6acb3cae21">
       <driver-ref>hive</driver-ref>
       <synchronize>true</synchronize>
-      <remarks>PySpark阶段Hive连接</remarks>
       <jdbc-driver>org.apache.hive.jdbc.HiveDriver</jdbc-driver>
       <jdbc-url>jdbc:hive2://node1.itcast.cn:10000</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="APPROVED_DRIVER" value="hive" />
+      </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="MySQL.PySpark@node1.itcast.cn" uuid="aaeff64d-1c36-4db1-8fb2-43431f0bd575">
