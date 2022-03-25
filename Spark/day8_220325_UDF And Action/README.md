@@ -1003,9 +1003,34 @@ if __name__ == '__main__':
 
 ```
 
-### 2. 需求一
+### 2. 需求一: 各科目热点题分析
 
+> 需求：各科目热点题分析
+>
+> [找到Top50热点题对应科目，然后统计这些科目中，包含热点题的条目数]()
 
+![1635466165048](assets/1635466165048.png)
+
+> 编写代码：`edu_analysis.py` ，基于SQL实现上述功能：
+
+```python
+    # 3-1. 注册DataFrame为临时视图
+    edu_df.createOrReplaceTempView('view_tmp_edu')
+
+    # 3-2. 需求一：找到Top50热点题 对应科目,  然后统计这些科目中，分别包含这几道热点题的条目数
+    output_df = spark.sql("""
+        WITH tmp AS (
+            SELECT question_id FROM view_tmp_edu GROUP BY question_id ORDER BY sum(score) DESC LIMIT 50
+        )
+        SELECT 
+          t2.subject_id, COUNT(1) AS total
+        FROM tmp t1 JOIN view_tmp_edu t2 
+        ON t1.question_id = t2.question_id
+        GROUP BY t2.subject_id
+    """)
+    output_df.printSchema()
+    output_df.show(n=50, truncate=False)
+```
 
 ### 3. 需求二
 
