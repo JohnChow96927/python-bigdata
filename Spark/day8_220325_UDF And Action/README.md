@@ -517,7 +517,61 @@ root
 
 ### 3. Top3省份数据
 
+> 分析可知，需求二、需求三和需求四，都是针对**销售金额Top3省份的数据进行处理**，所以先提取出Top3省份数据，再按照需求编写DSL或SQL分析。
 
+![1632874211360](assets/1632874211360.png)
+
+```python
+    """
+        3-3. 分析可知，需求2、3和4 处理业务数据都是top3省份数据，所以首先过滤出top3省份业务数据
+    """
+    # 第1、top3省份
+    top3_province_list = province_total_df\
+        .orderBy(
+            F.col('total_money').desc()
+        )\
+        .limit(3) \
+        .select('store_province') \
+        .rdd\
+        .map(lambda row: row.store_province)\
+        .collect()
+    print(top3_province_list)
+
+    # 第2、过滤获取top3省份业务数据
+    top3_retail_df = retail_df.filter(
+        F.col('store_province').isin(top3_province_list)
+    )
+    top3_retail_df.printSchema()
+    top3_retail_df.show(10, truncate=False)
+```
+
+执行程序，结果如下：
+
+```ini
+['广东省', '湖南省', '广西壮族自治区']
+
+root
+ |-- store_province: string (nullable = true)
+ |-- store_id: long (nullable = true)
+ |-- pay_type: string (nullable = true)
+ |-- day: string (nullable = true)
+ |-- receivable_money: decimal(10,2) (nullable = true)
+
++--------------+--------+--------+----------+----------------+
+|store_province|store_id|pay_type|day       |receivable_money|
++--------------+--------+--------+----------+----------------+
+|湖南省        |4064    |alipay  |2019-07-22|22.50           |
+|湖南省        |718     |alipay  |2019-01-06|7.00            |
+|湖南省        |1786    |cash    |2019-01-03|10.00           |
+|广东省        |3702    |wechat  |2019-05-29|10.50           |
+|广西壮族自治区|1156    |cash    |2019-01-27|10.00           |
+|广东省        |318     |wechat  |2019-01-24|3.00            |
+|湖南省        |1699    |cash    |2018-12-21|6.50            |
+|湖南省        |1167    |alipay  |2019-01-12|17.00           |
+|湖南省        |3466    |cash    |2019-07-23|19.00           |
+|广东省        |333     |wechat  |2019-05-07|4.00            |
++--------------+--------+--------+----------+----------------+
+```
 
 ### 4. 业务指标二
 
