@@ -128,7 +128,70 @@ if __name__ == '__main__':
 
 ### 3. udf注册定义
 
+> SparkSQL中函数库`pyspark.sql.functions`中提供函数：`udf`，用来用户自定义函数。
 
+![1632846563332](assets/1632846563332.png)
+
+> **案例代码演示**： `02_udf_function.py`：自定义UDF函数，将字符串名称name，全部转换为大写。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+import pyspark.sql.functions as F
+
+if __name__ == '__main__':
+    """
+    SparkSQL自定义UDF函数，采用udf函数方式注册定义，仅仅只能在DSL中使用。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    people_df = spark.read.json('../datas/resources/people.json')
+    # people_df.printSchema()
+    # people_df.show(n=10, truncate=False)
+
+    # 3. 数据转换处理-transformation
+    """
+        将DataFrame数据集中name字段值转换为大写UpperCase
+    """
+    # TODO: 注册定义函数，采用编程：封装函数
+    upper_udf = F.udf(
+        f=lambda name: str(name).upper(),
+        returnType=StringType()
+    )
+
+    # 在DSL中使用
+    people_df\
+        .select(
+            'name', upper_udf('name').alias('name_new')
+        )\
+        .show()
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
+
+运行程序，执行UDF函数，结果如下：
+
+![1642246483172](assets/1642246483172.png)
 
 ### 4. pandas_udf注册定义
 
