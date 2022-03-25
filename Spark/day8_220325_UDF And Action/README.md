@@ -793,7 +793,6 @@ if __name__ == '__main__':
 
     # 5. 关闭会话实例对象-close
     spark.stop()
-
 ```
 
 ### 2. Jupyter Notebook开发PySpark
