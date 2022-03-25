@@ -638,66 +638,35 @@ root
 
 ### 5. 业务指标三
 
-> **需求四**：[各个省份的支付类型比例]()，注册DataFrame临时视图，编写SQL完成，此处使用开窗函数。
+
+
+> **需求三：** [TOP3 省份中 各个省份的平均单价]()，按照省份分组，计算金额平均值。
 
 ```python
     """
-        3-6. 需求四：各个省份的支付类型比例
-            a. 各个省份各种支付类型总数
-                江苏省 alipay  40
-                江苏省 wechat  20
-                江苏省 cash  25
-                江苏省 card  15
-            b. 同一个省份数据，添加一行：各种类型总的支付次数
-                江苏省 alipay  40      100
-                江苏省 wechat  20      100
-                江苏省 cash    25      100
-                江苏省 card    15      100
-            c. 每行数据，计算占比
-                江苏省 alipay  40/100 = 0.4
-                江苏省 wechat  20/100 = 0.2 
-                江苏省 cash    25/100 = 0.25
-                江苏省 card    15/100 = 0.15
+        3-5. 需求三： TOP3 省份中 各个省份的平均单价    
+            先按照省份分组，使用avg函数求取所有订单金额平均值
     """
-    top3_province_pay_df = spark.sql("""
-        WITH tmp AS ( 
-            SELECT
-              store_province, pay_type, COUNT(1) AS total
-            FROM view_tmp_top3_retail
-            GROUP BY store_province, pay_type       
-        ), tmp_1 AS ( 
-            SELECT 
-                t1.*, SUM(total) OVER (PARTITION BY store_province) AS all_total 
-            FROM tmp t1
-        )
+    top3_province_avg_df = spark.sql("""
         SELECT 
-            t2.store_province, t2.pay_type, 
-            ROUND(t2.total / (t2.all_total * 1.0), 2) AS rate 
-        FROM tmp_1 t2
+            store_province, ROUND(AVG(receivable_money), 2) AS avg_money
+        FROM view_tmp_top3_retail 
+        GROUP BY store_province
     """)
-    top3_province_pay_df.printSchema()
-    top3_province_pay_df.show(n=50, truncate=False)
+    top3_province_avg_df.printSchema()
+    top3_province_avg_df.show(n=3, truncate=False)
 ```
 
 执行程序，结果如下：
 
 ```ini
-+--------------+--------+----+
-|store_province|pay_type|rate|
-+--------------+--------+----+
-|广东省        |wechat  |0.39|
-|广东省        |cash    |0.53|
-|广东省        |bankcard|0.01|
-|广东省        |alipay  |0.07|
-|广西壮族自治区|wechat  |0.22|
-|广西壮族自治区|cash    |0.73|
-|广西壮族自治区|bankcard|0.01|
-|广西壮族自治区|alipay  |0.04|
-|湖南省        |cash    |0.71|
-|湖南省        |bankcard|0.00|
-|湖南省        |alipay  |0.04|
-|湖南省        |wechat  |0.25|
-+--------------+--------+----+
++--------------+---------+
+|store_province|avg_money|
++--------------+---------+
+|广东省        |32.81    |
+|湖南省        |36.86    |
+|广西壮族自治区|40.03    |
++--------------+---------+
 ```
 
 ### 6. 业务指标四
