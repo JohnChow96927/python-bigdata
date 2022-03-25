@@ -195,7 +195,85 @@ if __name__ == '__main__':
 
 ### 4. pandas_udf注册定义
 
+> 在Spark 2.3中提供函数：`pandas_udf()`，用于定义和注册UDF函数，底层使用**列存储和零复制技术**提高**数据传输效率**，在PySpark SQL中建议使用。
 
+![1635457668316](assets/1635457668316.png)
+
+> 使用pandas_udf定义UDF函数，需要安装arrow库和启动Arrow技术。
+
+- 第1步、安装arrow库
+
+```ini
+pip install pyspark[sql]==3.1.2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+- 第2步、设置属性参数，启动Arrow技术
+
+```ini
+spark.sql.execution.arrow.pyspark.enabled = true
+```
+
+> 函数：`pandas_udf` ，要求传递处理数据函数function中参数类型：`Series`，表示`某列数据`。
+
+![1642249501213](assets/1642249501213.png)
+
+> 案例演示 `03_udf_pandas.py`：实现字符串类型name，转换为大写字面upper。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+import pyspark.sql.functions as F
+import pandas as pd
+
+if __name__ == '__main__':
+    """
+    SparkSQL自定义UDF函数，采用pandas_udf函数方式注册定义，仅仅只能在DSL中使用，底层技术：列存储和零拷贝技术。
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .config('spark.sql.execution.arrow.pyspark.enabled', 'true')\
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    people_df = spark.read.json('../datas/resources/people.json')
+    # people_df.printSchema()
+    people_df.show(n=10, truncate=False)
+
+    # 3. 数据转换处理-transformation
+    """
+        将DataFrame数据集中name字段值转换为大写UpperCase
+    """
+    # TODO: 注册定义函数，装饰器方式
+    @F.pandas_udf(StringType())
+    def func_upper(name: pd.Series) -> pd.Series:
+        return name.str.upper()
+
+    # 在DSL中使用
+    people_df\
+        .select(
+            'name', func_upper('name').alias('upper_name')
+        )\
+        .show()
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ## II. 零售数据分析
 
