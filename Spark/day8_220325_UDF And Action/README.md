@@ -575,8 +575,6 @@ root
 
 ### 4. 业务指标二
 
-
-
 > **需求二**：[Top3 省份中，日均销售金额1000+，店铺总数统计]()，分析思路如下：
 
 - a. 按照省份、店铺和日期分组，统计每天销售额
@@ -704,7 +702,67 @@ root
 
 ### 6. 业务指标四
 
+> **需求四**：[各个省份的支付类型比例]()，注册DataFrame临时视图，编写SQL完成，此处使用开窗函数。
 
+```python
+    """
+        3-6. 需求四：各个省份的支付类型比例
+            a. 各个省份各种支付类型总数
+                江苏省 alipay  40
+                江苏省 wechat  20
+                江苏省 cash  25
+                江苏省 card  15
+            b. 同一个省份数据，添加一行：各种类型总的支付次数
+                江苏省 alipay  40      100
+                江苏省 wechat  20      100
+                江苏省 cash    25      100
+                江苏省 card    15      100
+            c. 每行数据，计算占比
+                江苏省 alipay  40/100 = 0.4
+                江苏省 wechat  20/100 = 0.2 
+                江苏省 cash    25/100 = 0.25
+                江苏省 card    15/100 = 0.15
+    """
+    top3_province_pay_df = spark.sql("""
+        WITH tmp AS ( 
+            SELECT
+              store_province, pay_type, COUNT(1) AS total
+            FROM view_tmp_top3_retail
+            GROUP BY store_province, pay_type       
+        ), tmp_1 AS ( 
+            SELECT 
+                t1.*, SUM(total) OVER (PARTITION BY store_province) AS all_total 
+            FROM tmp t1
+        )
+        SELECT 
+            t2.store_province, t2.pay_type, 
+            ROUND(t2.total / (t2.all_total * 1.0), 2) AS rate 
+        FROM tmp_1 t2
+    """)
+    top3_province_pay_df.printSchema()
+    top3_province_pay_df.show(n=50, truncate=False)
+```
+
+执行程序，结果如下：
+
+```ini
++--------------+--------+----+
+|store_province|pay_type|rate|
++--------------+--------+----+
+|广东省        |wechat  |0.39|
+|广东省        |cash    |0.53|
+|广东省        |bankcard|0.01|
+|广东省        |alipay  |0.07|
+|广西壮族自治区|wechat  |0.22|
+|广西壮族自治区|cash    |0.73|
+|广西壮族自治区|bankcard|0.01|
+|广西壮族自治区|alipay  |0.04|
+|湖南省        |cash    |0.71|
+|湖南省        |bankcard|0.00|
+|湖南省        |alipay  |0.04|
+|湖南省        |wechat  |0.25|
++--------------+--------+----+
+```
 
 ### III. 其他知识
 
