@@ -279,7 +279,201 @@ if __name__ == '__main__':
 
 ### 1. 业务需求分析
 
+> 某公司是做**零售**相关业务， 旗下==出品各类收银机==。目前公司的**收银机已经在全国铺开，在各个省份均有店铺使用**。机器是联网的，==每一次使用都会将售卖商品数据上传到公司后台==。
 
+- 零售业务数据，JSON格式
+
+```JSON
+{
+    "discountRate":1,
+    "dayOrderSeq":8,
+    "storeDistrict":"雨花区",
+    "isSigned":0,
+    "storeProvince":"湖南省",
+    "origin":0,
+    "storeGPSLongitude":"113.01567856440359",
+    "discount":0,
+    "storeID":4064,
+    "productCount":4,
+    "operatorName":"OperatorName",
+    "operator":"NameStr",
+    "storeStatus":"open",
+    "storeOwnUserTel":12345678910,
+    "corporator":"hnzy",
+    "serverSaved":true,
+    "payType":"alipay",
+    "discountType":2,
+    "storeName":"杨光峰南食店",
+    "storeOwnUserName":"OwnUserNameStr",
+    "dateTS":1563758583000,
+    "smallChange":0,
+    "storeGPSName":"",
+    "erase":0,
+    "product":[
+        {
+            "count":1,
+            "name":"百事可乐可乐型汽水",
+            "unitID":0,
+            "barcode":"6940159410029",
+            "pricePer":3,
+            "retailPrice":3,
+            "tradePrice":0,
+            "categoryID":1
+        },
+        {
+            "count":1,
+            "name":"馋大嘴盐焗鸡筋110g",
+            "unitID":0,
+            "barcode":"6951027300076",
+            "pricePer":2.5,
+            "retailPrice":2.5,
+            "tradePrice":0,
+            "categoryID":1
+        },
+        {
+            "count":2,
+            "name":"糯米锅巴",
+            "unitID":0,
+            "barcode":"6970362690000",
+            "pricePer":2.5,
+            "retailPrice":2.5,
+            "tradePrice":0,
+            "categoryID":1
+        },
+        {
+            "count":1,
+            "name":"南京包装",
+            "unitID":0,
+            "barcode":"6901028300056",
+            "pricePer":12,
+            "retailPrice":12,
+            "tradePrice":0,
+            "categoryID":1
+        }
+    ],
+    "storeGPSAddress":"",
+    "orderID":"156375858240940641230",
+    "moneyBeforeWholeDiscount":22.5,
+    "storeCategory":"normal",
+    "receivable":22.5,
+    "faceID":"",
+    "storeOwnUserId":4082,
+    "paymentChannel":0,
+    "paymentScenarios":"PASV",
+    "storeAddress":"StoreAddress",
+    "totalNoDiscount":22.5,
+    "payedTotal":22.5,
+    "storeGPSLatitude":"28.121213726311993",
+    "storeCreateDateTS":1557733046000,
+    "payStatus":-1,
+    "storeCity":"长沙市",
+    "memberID":"0"
+}
+```
+
+- 需求：零售业务数据，**按照省份维度进行不同指标统计分析**。
+
+![1632867996195](assets/1632867996195.png)
+
+- 业务指标分析相关字段
+
+![1632872872068](assets/1632872872068.png)
+
+> 首先数据过滤提取：加载业务数据，过滤掉异常数据，提取业务指标计算时相关字段（数据转换处理）。
+
+![1632873525005](assets/1632873525005.png)
+
+> **案例代码演示**： `retail_analysis.py`：加载业务数据，按照需要过滤数据，提取相关业务字段。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.types import DecimalType
+import pyspark.sql.functions as F
+
+
+if __name__ == '__main__':
+    """
+    零售数据分析，JSON格式业务数据，加载数据封装DataFrame中，再进行转换处理分析。  
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .config('spark.sql.shuffle.partitions', '4')\
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    dataframe = spark.read.json('../datas/retail.json')
+    # print("count:", retail_df.count())
+    # dataframe.printSchema()
+    # dataframe.show(10, truncate=False)
+
+    # 3. 数据转换处理-transformation
+    """
+        3-1. 过滤测试数据和提取字段与转换值，此外字段名称重命名
+    """
+    retail_df = dataframe\
+        .filter(
+            (F.col('receivable') < 10000) &
+            (F.col('storeProvince').isNotNull()) &
+            (F.col('storeProvince') != 'null')
+        )\
+        .select(
+            F.col('storeProvince').alias('store_province'),
+            F.col('storeID').alias('store_id'),
+            F.col('payType').alias('pay_type'),
+            F.from_unixtime(
+                F.substring(F.col('dateTS'), 0, 10), 'yyyy-MM-dd'
+            ).alias('day'),
+            F.col('receivable').cast(DecimalType(10, 2)).alias('receivable_money')
+        )
+    retail_df.printSchema()
+    retail_df.show(n=20, truncate=False)
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
+
+执行程序，结果如下：
+
+```ini
+Count: 99968
+root
+ |-- store_province: string (nullable = true)
+ |-- store_id: long (nullable = true)
+ |-- pay_type: string (nullable = true)
+ |-- day: string (nullable = true)
+ |-- receivable_money: decimal(10,2) (nullable = true)
+
++--------------+--------+--------+----------+----------------+
+|store_province|store_id|pay_type|day       |receivable_money|
++--------------+--------+--------+----------+----------------+
+|湖南省        |4064    |alipay  |2019-07-22|22.50           |
+|湖南省        |718     |alipay  |2019-01-06|7.00            |
+|湖南省        |1786    |cash    |2019-01-03|10.00           |
+|广东省        |3702    |wechat  |2019-05-29|10.50           |
+|广西壮族自治区|1156    |cash    |2019-01-27|10.00           |
+|广东省        |318     |wechat  |2019-01-24|3.00            |
+|湖南省        |1699    |cash    |2018-12-21|6.50            |
+|湖南省        |1167    |alipay  |2019-01-12|17.00           |
+|湖南省        |3466    |cash    |2019-07-23|19.00           |
+|广东省        |333     |wechat  |2019-05-07|4.00            |
+|湖南省        |3354    |cash    |2019-06-16|22.00           |
+```
 
 ### 2.  业务指标一
 
