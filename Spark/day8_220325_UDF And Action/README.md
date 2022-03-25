@@ -216,7 +216,7 @@ spark.sql.execution.arrow.pyspark.enabled = true
 
 ![1642249501213](assets/1642249501213.png)
 
-> 案例演示 `03_udf_pandas.py`：实现字符串类型name，转换为大写字面upper。
+> 案例演示 `03_udf_pandas.py`：实现字符串类型name，转换为大写字母upper。
 
 ```python
 #!/usr/bin/env python
