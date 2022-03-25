@@ -798,7 +798,83 @@ if __name__ == '__main__':
 
 ### 2. Jupyter Notebook开发PySpark
 
+![img](assets/src=jupyter-notebook.jpg)
 
+> 启动Jupyter Notebook，创建SparkSession实例对象，不同方式创建PySpark DataFrame。
+
+```ini
+# 1. 打开终端，切换Anaconda Base 基础环境
+(base) C:\Users\Administrator>
+
+# 2. 切换到 notebook 工作目录，比如：【D:/PySparkV1.8/pyspark-notebook】
+(base) C:\Users\Administrator>D:
+(base) D:\>cd PySparkV1.8
+(base) D:\PySparkV1.8>cd pyspark-notebook
+
+# 3. 启动notebook
+(base) D:\PySparkV1.8\pyspark-notebook>jupyter notebook
+
+# 4. 启动完成后，自动跳转more浏览器
+http://localhost:8888/tree
+
+```
+
+![1635401338104](assets/1635401338104.png)
+
+> 创建文件：`01_pyspark_demo.ipynb`，编程代码，读取JSON数据，创建DataFrame，使用SQL和DSL分析
+
+- 设置环境变量和创建SparkSession实例对象
+
+```python
+import os
+
+# 设置系统环境变量
+os.environ['JAVA_HOME'] = 'D:/BigdataUser/Java/jdk1.8.0_241'
+os.environ['HADOOP_HOME'] = 'D:/BigdataUser/hadoop-3.3.0'
+os.environ['PYSPARK_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+
+# 创建SparkSession实例对象
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+
+spark = SparkSession.builder \
+    .appName("Python SparkSQL Example") \
+    .master("local[2]") \
+    .config('spark.sql.shuffle.partitions', '2') \
+    .getOrCreate()
+    
+print(spark)    
+```
+
+- 加载JSON数据，封装DataFrame
+
+```ini
+people_df = spark.read.json('./datas/people.json')
+
+people_df.printSchema()
+people_df.show()
+```
+
+- 基于SQL查询分析
+
+```ini
+people_df.createOrReplaceTempView('view_tmp_people')
+
+df = spark.sql('SELECT * FROM view_tmp_people')
+
+df.printSchema()
+df.show()
+```
+
+- 基于DSL查询分析
+
+```ini
+df2= people_df.select('name', 'age'))
+
+df2.printSchema()
+df2.show()
+```
 
 ### 3. PySpark应用运行架构
 
