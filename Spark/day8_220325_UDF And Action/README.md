@@ -477,7 +477,43 @@ root
 
 ### 2.  业务指标一
 
+> **需求一**：[各省份销售统计]()，按照省份字段分组，进行累加金额。
 
+```python
+    """
+        3-2. 需求一：各个省份销售额统计，按照省份分组，统计销售额
+    """
+    province_total_df = retail_df\
+        .groupBy('store_province')\
+        .agg(
+            F.sum('receivable_money').alias('total_money')
+        )
+    province_total_df.printSchema()
+    province_total_df.show(n=34, truncate=False)
+```
+
+执行程序，结果如下：
+
+```ini
+root
+ |-- store_province: string (nullable = true)
+ |-- total: decimal(20,2) (nullable = true)
+
++--------------+-----------+
+|store_province|total_money|
++--------------+-----------+
+|广东省        |1713207.92 |
+|北京市        |10926.91   |
+|浙江省        |4568.10    |
+|湖南省        |1701303.53 |
+|广西壮族自治区|37828.22   |
+|江苏省        |6357.90    |
+|上海市        |7358.50    |
+|江西省        |553.50     |
+|山东省        |664.00     |
++--------------+-----------+
+
+```
 
 ### 3. Top3省份数据
 
