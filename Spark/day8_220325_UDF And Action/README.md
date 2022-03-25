@@ -920,7 +920,88 @@ Spark应用程序运行在Driver上(某种程度上说：用户的程序就是Sp
 
 ### 1. 业务需求分析
 
+> 在互联网、移动互联网的带动下，教育逐渐从线下走向线上，在线教育近几年一直处于行业的风口浪尖，那随着基础设施的不断完善，用户需求也发生不少变化，因此传统教育机构、新兴互联网企业都在探索在线教育的最佳模式。
+>
+> 随着在线教育的发展和普及，越来越多的选择在线教育，越来越多的公司也加入的竞争行列中。但是学生个人情况不同，影响学习效果/考试成绩的因素也众多，那么如何充分利用现有数据，**对数据进行价值挖掘，找出影响学生学习效果/考试成绩的关键因素，并加以提升或改进，以提高教学效果，改善教学品质，提升学生考试成绩**，这一需求已经成为各大在线教育企业亟需解决的问题也是广大学子的共同诉求。	
 
+![1635464622962](assets/1635464622962.png)
+
+> 业务数据：`eduxxx.csv`，文件首行为列名称，每行数据各个字段之间使用制表符\t 分割。
+
+![1635484205612](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day08_20220325/03_%E7%AC%94%E8%AE%B0/assets/1635484205612.png)
+
+```ini
+学生ID_20 	题目ID_1656,题目ID_759,题目ID_67	教材ID_2	年级ID_6	科目ID_1_数学	章节ID_chapter_3	题目ID_2022	7	2020-12-08 19:43:02	2020-12-08 19:43:02
+学生ID_31	题目ID_1824,题目ID_660,题目ID_2066,题目ID_932	教材ID_1	年级ID_1	科目ID_1_数学	章节ID_chapter_3	题目ID_58	0	2020-12-08 19:43:03	2020-12-08 19:43:03
+```
+
+> 业务分析需求：
+
+- **需求一：各科目热点题分析**
+
+  找到Top50热点题对应科目，然后统计这些科目中，分别包含这几道热点题的条目数
+
+- **需求二：各科目推荐题分析**
+
+  找到Top20热点题对应的推荐题目，然后找到推荐题目对应的科目，并统计每个科目分别包含推荐题目的条数
+
+> 编写Python 代码 ：`edu_analysis.py` ，加载数据。
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+
+if __name__ == '__main__':
+    """
+    在线教育用户行为日志分析：将数据封装到DataFrame，注册为临时视图，编写SQL。   
+    """
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = 'D:/BigdataUser/Java/jdk1.8.0_241'
+    os.environ['HADOOP_HOME'] = 'D:/BigdataUser/hadoop-3.3.0'
+    os.environ['PYSPARK_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+
+    # 1. 获取会话实例-session
+    spark = SparkSession.builder \
+        .appName("Python SparkSQL Example") \
+        .master("local[2]") \
+        .config("spark.sql.shuffle.partitions", 2) \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    # 2-1. 定义Schema信息
+    edu_schema = StructType()\
+        .add('student_id',StringType())\
+        .add('recommendations',StringType())\
+        .add('textbook_id',StringType())\
+        .add('grade_id',StringType()) \
+        .add('subject_id',StringType()) \
+        .add('chapter_id',StringType()) \
+        .add('question_id',StringType()) \
+        .add('score',IntegerType()) \
+        .add('answer_time',StringType()) \
+        .add('ts',TimestampType())
+    # 2-2.
+    edu_df = spark.read.format("csv")\
+        .option("sep", '\t')\
+        .option("header", True)\
+        .schema(edu_schema)\
+        .load("../datas/eduxxx.csv")
+    edu_df.printSchema()
+    edu_df.show()
+
+    # 3. 数据转换处理-transformation
+
+    # 4. 处理结果输出-sink
+
+    # 5. 关闭会话对象-close
+    spark.stop()
+
+```
 
 ### 2. 需求一
 
