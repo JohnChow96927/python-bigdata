@@ -878,7 +878,43 @@ df2.show()
 
 ### 3. PySpark应用运行架构
 
+```ini
+# Spark Application 应用执行
+    1、申请资源，运行Driver和Executor（JVM 进程）
+        yarn-cluster
 
+    2、调度Job执行
+        RDD#Action函数触发执行
+        2-1. 构建DAG图
+            依据调用Action函数RDD开始，采用回溯法，RDD依赖关系
+        2-2. DAG图划分Stage
+            DAGScheduler
+            采用回溯法，从Job最后一个RDD开始，RDD依赖关系，如果是宽依赖，后面划分为1个Stage
+        2-3. 调度Stage中Task执行
+            TaskScheduler
+            将Stage中Task打包为TaskSet，发送给Exeuctors执行
+```
+
+> 先回顾下Spark Application运行时架构，如下图，其中**橙色部分表示为JVM**，Spark应用程序运行时主要分为==Driver和Executor==：**Driver负载总体调度及UI展示，Executor负责Task运行**。
+
+Spark应用程序运行在Driver上(某种程度上说：用户的程序就是Spark Driver程序)，经过Spark调度封装成一个个Task，再将Task信息发给Executor执行，Task信息包括代码逻辑以及数据信息，Executor不直接运行用户代码。
+
+![img](assets/202708-20180402171045950-689303489.png)
+
+> PySpark运行时架构：为了不破坏Spark已有的运行时架构，**Spark在外围包装一层Python API**，借助`Py4j`==实现Python和Java的交互==，进而实现通过Python编写Spark应用程序，其运行时架构如下图所示。
+
+![img](assets/202708-20180402171321568-1992707288.png)
+
+- 白色部分是新增的**Python进程**；
+- 在`Driver`端，通过**Py4j实现在Python中调用Java的方法**，即将用户写的PySpark程序”映射”到JVM中；
+  - 例如，用户在PySpark中实例化一个Python的SparkContext对象，最终会在JVM中实例化Scala的SparkContext对象；
+- 在`Executor`端，直接**为每个Task单独启一个Python进程**，通过`socket`通信方式将Python函数或Lambda表达式发给Python进程执行。
+
+> 语言层面的交互总体流程如下图所示：**实线表示方法调用，虚线表示结果返回**。
+
+![img](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/PySpark/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/pyspark_day08_20220325/03_%E7%AC%94%E8%AE%B0/assets/202708-20180402171728390-354505679.png)
+
+> 总体上来说，**PySpark是借助Py4j实现Python调用Java，来驱动Spark应用程序，本质上主要还是JVM runtime，Java到Python的结果返回是通过本地Socket完成。**
 
 ## III. 在线教育数据分析
 
