@@ -30,6 +30,12 @@ if __name__ == '__main__':
     """
     将DataFrame数据集中name字段值转换为大写UpperCase
     """
+    # 使用装饰器形式定义函数
+    @F.udf(returnType=StringType())
+    def to_upper(s):
+        if s is not None:
+            return str(s).upper()
+
     # TODO: 注册定义函数, 采用编程: 封装函数
     upper_udf = F.udf(
         f=lambda name: str(name).upper(),
@@ -40,7 +46,13 @@ if __name__ == '__main__':
     people_df.select(
         'name', upper_udf('name').alias('name_upper')
     ) \
-        .show()
+        .show(10, False)
+
+    # 在DSL中使用(装饰器函数)
+    people_df.select(
+        'name',
+        to_upper('name').alias('name_upper')
+    ).show(10, False)
 
     # 4. 处理结果输出-sink
 
