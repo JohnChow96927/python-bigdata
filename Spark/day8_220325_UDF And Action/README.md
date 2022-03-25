@@ -1032,9 +1032,99 @@ if __name__ == '__main__':
     output_df.show(n=50, truncate=False)
 ```
 
-### 3. 需求二
+### 3. 需求二: 各科目推荐题分析
 
+> 需求二：**各科目推荐题分析**
+>
+> [找到Top20热点题对应的推荐题目，然后找到推荐题目对应的科目，并统计每个科目分别包含推荐题目的条数]()
 
+![1635485224644](assets/1635485224644.png)
+
+> 编写代码：`edu_analysis.py` ，基于DSL实现上述功能：
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+if __name__ == '__main__':
+    """
+    在线教育用户行为日志分析：将数据封装到DataFrame，注册为临时视图，编写SQL。   
+    """
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = 'D:/BigdataUser/Java/jdk1.8.0_241'
+    os.environ['HADOOP_HOME'] = 'D:/BigdataUser/hadoop-3.3.0'
+    os.environ['PYSPARK_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = 'C:/programfiles/Anaconda3/python.exe'
+
+    # 1. 获取会话实例-session
+    spark = SparkSession.builder \
+        .appName("Python SparkSQL Example") \
+        .master("local[2]") \
+        .config("spark.sql.shuffle.partitions", 2) \
+        .getOrCreate()
+
+    # 2. 加载数据源-source
+    # 2-1. 定义Schema信息
+    edu_schema = StructType()\
+        .add('student_id',StringType())\
+        .add('recommendations',StringType())\
+        .add('textbook_id',StringType())\
+        .add('grade_id',StringType()) \
+        .add('subject_id',StringType()) \
+        .add('chapter_id',StringType()) \
+        .add('question_id',StringType()) \
+        .add('score',IntegerType()) \
+        .add('answer_time',StringType()) \
+        .add('ts',TimestampType())
+    # 2-2.
+    edu_df = spark.read.format("csv")\
+        .option("sep", '\t')\
+        .option("header", True)\
+        .schema(edu_schema)\
+        .load("../datas/eduxxx.csv")
+    # edu_df.printSchema()
+    # edu_df.show()
+
+    # 3. 数据转换处理-transformation
+    # 需求二：找到Top20热点题对应的推荐题目，然后找到推荐题目对应的科目，并统计每个科目分别包含推荐题目的条数。
+    # 3-1. 找到Top20热点题对应的推荐题目
+    top20_question_df = edu_df\
+        .groupBy(col('question_id'))\
+        .agg(sum(col('score')).alias('score_total'))\
+        .orderBy(col('score_total').desc())\
+        .limit(20)
+    # top20_question_df.printSchema()
+    # top20_question_df.show(n=20, truncate=False)
+
+    # 3-2. Top20热点题关联原数据，获取推荐题目
+    question_df = top20_question_df\
+        .join(edu_df, on='question_id', how='inner')\
+        .select(
+            explode(split(col('recommendations'), ',')).alias('question_id')
+        )\
+        .distinct()
+    # question_df.printSchema()
+    # question_df.show()
+
+    # 3-3. 关联原始数据，获取科目，分组统计推荐题条目数
+    result_df = question_df\
+        .join(edu_df.dropDuplicates(['question_id']), on='question_id', how='inner')\
+        .groupBy(col('subject_id'))\
+        .agg(count(col('subject_id')).alias('total'))
+
+    # 4. 处理结果输出-sink
+    result_df.printSchema()
+    result_df.show()
+
+    # 5. 关闭会话对象-close
+    spark.stop()
+
+```
 
 ## 附录: Jupyter Notebook启动配置
 
