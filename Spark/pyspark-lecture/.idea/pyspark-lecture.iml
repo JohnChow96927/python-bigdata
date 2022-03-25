@@ -10,7 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/pyspark-day07/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/pyspark-day08/main" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.8.8 (sftp://root@node1.itcast.cn:22/export/server/anaconda3/bin/python3)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
