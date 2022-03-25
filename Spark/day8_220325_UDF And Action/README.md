@@ -638,8 +638,6 @@ root
 
 ### 5. 业务指标三
 
-
-
 > **需求三：** [TOP3 省份中 各个省份的平均单价]()，按照省份分组，计算金额平均值。
 
 ```python
@@ -737,7 +735,66 @@ root
 
 ### 1. 与Pandas DataFrame相互转换
 
+![1642252955886](assets/1642252955886.png)
 
+> SparkSQL中`DataFrame`和pandas `DataFrame`，两者区别如下：
+
+![1632863299045](assets/1632863299045.png)
+
+> - pandas DataFrame转换为SparkSQL中DataFrame，调用方法：`SparkSession#createDataFrame`
+
+![1635402050762](assets/1635402050762.png)
+
+> - 将SparkSQL中DataFrame转换为pandas DataFrame，调用方法：`DataFrame#toPandas`
+
+![1632863387115](assets/1632863387115.png)
+
+> **案例代码演示**： `04_dataframe_pandas.py`：SparkSQL中DataFrame与pandas DataFrame相互转换
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import pandas as pd
+from pyspark.sql import SparkSession
+
+if __name__ == '__main__':
+    """
+    SparkSQL DataFrame 与 pandas DataFrame 相互转换案例演示。   
+    """
+
+    # 设置系统环境变量
+    os.environ['JAVA_HOME'] = '/export/server/jdk'
+    os.environ['HADOOP_HOME'] = '/export/server/hadoop'
+    os.environ['PYSPARK_PYTHON'] = '/export/server/anaconda3/bin/python3'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/export/server/anaconda3/bin/python3'
+
+    # 1. 获取会话实例对象-session
+    spark = SparkSession.builder \
+        .appName('SparkSession Test') \
+        .master('local[2]') \
+        .getOrCreate()
+
+    # step1、使用pandas加载JSON数据
+    pandas_df = pd.read_csv('../datas/resources/people.csv', sep=';')
+    print(pandas_df)
+
+    print('*' * 40)
+    # TODO: step2、转换pandas DataFrame为 SparkSQL DataFrame
+    spark_df = spark.createDataFrame(pandas_df)
+    spark_df.printSchema()
+    spark_df.show()
+
+    print('*' * 40)
+    # TODO: step3、转换SparkSQL DataFrame为 pandas DataFrame
+    data_frame = spark_df.toPandas()
+    print(data_frame)
+
+    # 5. 关闭会话实例对象-close
+    spark.stop()
+
+```
 
 ### 2. Jupyter Notebook开发PySpark
 
