@@ -575,7 +575,34 @@ root
 
 ### 4. 业务指标二
 
+> **需求三：** [TOP3 省份中 各个省份的平均单价]()，按照省份分组，计算金额平均值。
 
+```python
+    """
+        3-5. 需求三： TOP3 省份中 各个省份的平均单价    
+            先按照省份分组，使用avg函数求取所有订单金额平均值
+    """
+    top3_province_avg_df = spark.sql("""
+        SELECT 
+            store_province, ROUND(AVG(receivable_money), 2) AS avg_money
+        FROM view_tmp_top3_retail 
+        GROUP BY store_province
+    """)
+    top3_province_avg_df.printSchema()
+    top3_province_avg_df.show(n=3, truncate=False)
+```
+
+执行程序，结果如下：
+
+```ini
++--------------+---------+
+|store_province|avg_money|
++--------------+---------+
+|广东省        |32.81    |
+|湖南省        |36.86    |
+|广西壮族自治区|40.03    |
++--------------+---------+
+```
 
 ### 5. 业务指标三
 
