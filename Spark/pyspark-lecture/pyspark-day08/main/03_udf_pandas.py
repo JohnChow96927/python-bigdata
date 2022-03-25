@@ -3,7 +3,7 @@
 
 import os
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
+import pyspark.sql.functions as F
 import pandas as pd
 from pyspark.sql.types import StringType
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
 
     # TODO: 注册定义函数, 装饰器方式
-    @pandas_udf(StringType())
+    @F.pandas_udf(StringType())
     def func_upper(name: pd.Series) -> pd.Series:
         return name.str.upper()
 
