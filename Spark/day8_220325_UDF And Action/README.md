@@ -1128,3 +1128,68 @@ if __name__ == '__main__':
 
 ## 附录: Jupyter Notebook启动配置
 
+> Jupyter Notebook 的本质是一个 Web 应用程序，便于创建和共享文学化程序文档，支持实时代码，数学方程，可视化和 markdown。网址：https://jupyter.org/
+
+![1635391963916](assets/1635391963916.png)
+
+> 通过终端启动 Jupyter Notebook，这种方式**先启动cmd，通过切换虚拟环境和磁盘位置，再启动Jupyter notebook**。
+
+- 1、Jupyter notebook的功能扩展安装
+
+```bash
+# 进入到虚拟环境中
+conda activate base
+
+# 安装 jupyter_contrib_nbextensions
+pip install jupyter_contrib_nbextensions
+
+# jupyter notebook安装插件
+jupyter contrib nbextension install --user --skip-running-check
+
+# 安装 pep8 扩展包
+pip install autopep8 -i https://pypi.tuna.tsinghua.edu.cn/simple/
+```
+
+- 2、在启动Anaconda提供的CMD后，输入命令如下：
+
+```bash
+# 可选操作，切换虚拟环境，使用不同的python解释器和包
+conda activate base 
+
+# 切换磁盘位置，可选操作
+D:
+cd pyspark-notebook # code目录需要自己在D盘下创建
+
+# 启动jupyter notebook
+jupyter notebook
+```
+
+- 3、配置扩展功能
+
+安装结束后启动jupyter notebook
+
+![img](assets/chapter01-28.png)
+
+在原来的基础上勾选： "Table of Contents" 以及 "Hinterland"
+
+![img](assets/chapter01-29.png)
+
+> Jupyter Notebook中分为两种模式：**命令模式和编辑模式**.
+
+- 1）两种模式通用快捷键：
+  - Shift+Enter：执行本单元代码，并跳转到下一单元
+  - Ctrl+Enter：执行本单元代码，留在本单元
+
+- 2）**命令模式**：编辑模式下按ESC进入即可进入命令模式
+  - Y：cell切换到Code模式
+  - M：cell切换到Markdown模式
+  - A：在当前cell的上面添加cell
+  - B：在当前cell的下面添加cell
+  - 双击D：删除当前cell
+
+- 3）**编辑模式**：命令模式下按Enter进入，或鼠标点击代码编辑框体的输入区域
+  - 多光标操作：`Ctrl键点击鼠标`（Mac:CMD+点击鼠标）
+  - 回退：`Ctrl+Z`（Mac:CMD+Z）
+  - 重做：`Ctrl+Y`（Mac:CMD+Y)
+  - 补全代码：变量、方法后跟`Tab键`
+  - 为一行或多行代码添加/取消注释：`Ctrl+/`（Mac:CMD+/）
