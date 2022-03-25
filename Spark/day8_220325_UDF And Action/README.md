@@ -575,33 +575,67 @@ root
 
 ### 4. 业务指标二
 
-> **需求三：** [TOP3 省份中 各个省份的平均单价]()，按照省份分组，计算金额平均值。
+
+
+> **需求二**：[Top3 省份中，日均销售金额1000+，店铺总数统计]()，分析思路如下：
+
+- a. 按照省份、店铺和日期分组，统计每天销售额
+- b. 过滤日销售额大于1000 数据
+- c. 一个店铺多天销售额大于1000，进行数据去重
+- d. 按照省份分组，统计店铺总数
+
+
 
 ```python
+    # TODO：需求2、3、4使用SQL分析，先注册DataFrame为临时视图
+    top3_retail_df.createOrReplaceTempView("view_tmp_top3_retail")
+    # 缓存数据，被使用多次
+    spark.catalog.cacheTable('view_tmp_top3_retail')
+
     """
-        3-5. 需求三： TOP3 省份中 各个省份的平均单价    
-            先按照省份分组，使用avg函数求取所有订单金额平均值
+        3-4. Top3 省份中，日均销售金额1000+，店铺总数统计
+            a. 分组统计每个省份，每个商铺，每天总销售额
+            b. 过滤获取大于1000+数据
+                浙江省, 商铺1, 20211201, 1100
+                浙江省, 商铺1, 20211202, 1000
+                浙江省, 商铺1, 20211203, 1500
+                浙江省, 商铺2, 20211203, 1050
+            c. 去重，由于商铺可能多天销售额大于1000
+            d. 按照省份分组，统计商铺总数
     """
-    top3_province_avg_df = spark.sql("""
+    top3_province_count_df = spark.sql("""
+        WITH tmp AS ( 
+            SELECT 
+              store_province, store_id, day, SUM(receivable_money) AS total_money
+            FROM view_tmp_top3_retail
+            GROUP BY store_province, store_id, day
+            HAVING total_money > 1000
+        )
         SELECT 
-            store_province, ROUND(AVG(receivable_money), 2) AS avg_money
-        FROM view_tmp_top3_retail 
-        GROUP BY store_province
+            store_province, COUNT(DISTINCT store_id) as total 
+        FROM tmp GROUP BY store_province
     """)
-    top3_province_avg_df.printSchema()
-    top3_province_avg_df.show(n=3, truncate=False)
+    top3_province_count_df.printSchema()
+    top3_province_count_df.show(n=3, truncate=False)
+
+    # 当数据不再被使用时，记住需要释放资源
+    spark.catalog.uncacheTable('view_tmp_top3_retail')
 ```
 
 执行程序，结果如下：
 
 ```ini
-+--------------+---------+
-|store_province|avg_money|
-+--------------+---------+
-|广东省        |32.81    |
-|湖南省        |36.86    |
-|广西壮族自治区|40.03    |
-+--------------+---------+
+root
+ |-- store_province: string (nullable = true)
+ |-- total: long (nullable = false)
+
++--------------+-----+
+|store_province|total|
++--------------+-----+
+|广东省        |105  |
+|湖南省        |97   |
+|广西壮族自治区|3    |
++--------------+-----+
 ```
 
 ### 5. 业务指标三
