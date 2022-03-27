@@ -342,7 +342,118 @@
 
 ### 3. Docker的使用
 
+- **目标**：**掌握docker的基本使用**
 
+- **路径**
+
+  - step1：docker管理
+  - step2：image管理
+  - **step3：container管理**
+
+- **实施**
+
+  - docker管理
+
+    - 默认开机自启
+
+    - 了解即可，不用操作
+
+    - 启动服务
+
+      ```shell
+      systemctl start docker
+      ```
+
+    - 查看状态
+
+      ```shell
+      systemctl status docker
+      ```
+
+    - 关闭服务
+
+      ```shell
+      systemctl stop docker
+      ```
+
+  - image管理
+
+    - 了解即可，不用操作
+
+    - 添加镜像
+
+      ```shell
+      docker pull registry.cn-hangzhou.aliyuncs.com/helowin/oracle_11g
+      
+      ```
+
+    - 列举镜像
+
+      ```shell
+      docker images
+      ```
+
+    - 移除镜像
+
+      ```shell
+      docker rmi ……
+      ```
+
+  - **container管理**
+
+    - **熟悉常用操作**
+
+    - 创建并启动container：不用做
+
+      ```shell
+      docker run --net docker-bd0 --ip 172.33.0.100 -d -p 1521:1521 --name oracle 3fa112fd3642
+      ```
+
+      - run = create + start
+
+    - **列举container**
+
+      ```shell
+      #列举所有的
+      docker ps -a
+      #列举正在运行的
+      docker ps
+      ```
+
+    - **启动container**
+
+      ```
+      docker start 容器名称
+      ```
+
+    - **关闭container**
+
+      ```
+      docker stop 容器名称
+      ```
+
+    - **进入container**
+
+      ```shell
+      docker exec -it 容器名称 bash
+      ```
+
+    - **退出container**
+
+      ```shell
+      exit
+      
+      ```
+
+    - 删除container
+
+      ```shell
+      docker rm ……
+      ```
+
+- **小结**
+
+  - 了解docker的基本使用
 
 ## Oracle
 
