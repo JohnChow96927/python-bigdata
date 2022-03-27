@@ -125,7 +125,75 @@
 
 ## 技术选型
 
+- **目标**：**掌握加油站服务商数据运营平台的技术选型**
 
+- **实施**
+
+  - 新零售项目：基于CDH+CM实现的
+
+  - **数据生成**：Oracle数据库
+
+  - **数据采集**：Sqoop
+
+  - **数据存储**：Hive数据仓库
+
+  - **数据计算**：Spark分布式计算【SparkSQL】
+
+    - SparkCore：基于RDD的代码编程
+
+    - SparkSQL：基于DataFrame的代码编程【Spark统一的编程模块】
+
+      - 离线+SparkSQL，实时+StructStreaming
+
+      - DSL：类似于使用SparkCore进行开发
+
+      - SQL：类似于使用HiveSQL进行开发
+
+      - 使用方式
+
+        - Python文件中开发：DSL或者SQL
+
+          ```
+          df = sparkSession.sql("SQL语句")
+          ```
+
+          - 提交到集群运行：spark-submit  python|jar包
+
+        - 提交运行SQL脚本：SQL
+
+          ```
+          spark-sql -f xxxxx.sql
+          ```
+
+        - **基于ThriftServer来实现运行：SQL**
+
+          - 类似于HiveServer2
+          - 类似于Python操作MySQL数据库
+
+  - **数据应用**：FineBI + MySQL
+
+  - **监控工具**：Prometheus + Grafana
+
+  - **调度工具**：Airflow
+
+  - 容器工具：Docker
+
+  - **技术架构**：Lambda架构
+
+    ![image-20210819163301868](assets/image-20210819163301868.png)
+
+    
+
+- **小结**
+
+  - 项目中用到了哪些技术？
+    - 数据来源：Oracle
+    - 数据采集：Sqoop
+    - 数据存储：Hive
+    - 数据计算：SparkSQL
+    - 数据应用：FineBI
+    - 集群监控：Prometheus + Grafana
+    - 集群调度：Airflow
 
 ## Docker
 
