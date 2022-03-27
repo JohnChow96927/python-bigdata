@@ -280,7 +280,65 @@
 
 ### 2. Docker的网络
 
+- **目标**：**了解Docker的网络管理设计**
 
+- **路径**
+
+  - step1：问题
+  - step2：模式
+  - step3：选型
+
+- **实施**
+
+  - **问题**：Docker的本质在一个操作上虚拟了多个操作系统出来，那每个操作之间如何进行网络通信呢？
+
+  - **模式**
+
+    - **host模式**：每个虚拟系统与主机共享网络，IP一致，用不同端口区分不同虚拟系统
+
+      <img src="./assets/image-20210820125842299.png" alt="image-20210820125842299" style="zoom: 80%;" />
+
+    - **container模式**：第一个容器构建一个独立的虚拟网络，其他的容器与第一个容器共享网络
+
+      <img src="./assets/image-20210820125921926.png" alt="image-20210820125921926" style="zoom:67%;" />
+
+      
+
+    - **none模式**：允许自定义每个容器的网络配置及网卡信息，每个容器独立一个网络
+
+      <img src="./assets/image-20210820130000207.png" alt="image-20210820130000207" style="zoom:67%;" />
+
+    - **bridge模式**：构建虚拟网络桥，所有容器都可以基于网络桥来构建自己的网络配置
+
+      <img src="./assets/image-20210820130011944.png" alt="image-20210820130011944" style="zoom:67%;" />
+
+      
+
+  - **选型**：本次项目中使用bridge模式，类似于VM中的NAT模式使用
+
+  - **管理**：了解即可，不用操作
+
+    - 创建
+
+      ```shell
+      docker network create --subnet=172.33.0.0/24 docker-bd0
+      ```
+
+    - 查看模式
+
+      ```shell
+      docker network ls
+      ```
+
+    - 删除
+
+      ```shell
+      docker network rm ……
+      ```
+
+- **小结**
+
+  - 了解Docker的网络管理设计
 
 ### 3. Docker的使用
 
