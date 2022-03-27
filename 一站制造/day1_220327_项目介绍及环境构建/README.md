@@ -516,3 +516,35 @@
   - 了解Oracle工具的基本功能和应用场景
 
 ## 集群软件规划
+
+- **目标**：了解项目的集群软件规划
+
+- **实施**
+
+  - 一台机器基于Docker构建不同工具的容器
+
+  ![image-20210819235429756](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E4%BB%8A%E6%97%A5%E7%AC%94%E8%AE%B0(1)/2.%E7%AC%94%E8%AE%B0/Day01_%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%9E%84%E5%BB%BA.assets/image-20210819235429756.png)
+
+  ```
+  172.33.0.100    oracle.bigdata.cn
+  172.33.0.110    sqoop.bigdata.cn
+  172.33.0.121    hadoop.bigdata.cn
+  172.33.0.131    hive.bigdata.cn
+  172.33.0.133    spark.bigdata.cn
+  ```
+
+  - **重点记住每个工具的端口**
+    - Oracle：1521
+    - Hadoop
+      - HDFS：http-9870/50070、RPC-8020/9000
+      - YARN：http-8088，RPC-8032
+      - JobHistoryServer：http-19888，RPC-10020
+    - Hive
+      - metastore：9083
+      - Hiveserver：10000
+    - Spark
+      - ThriftServer：默认10000端口，项目中需要单独指定10001
+
+- **小结**
+
+  - 了解项目的集群软件规划
