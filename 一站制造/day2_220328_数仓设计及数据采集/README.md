@@ -419,3 +419,50 @@
 - **小结**
 
   - 实现YARN的资源调度配置
+
+### 4. MR的Uber模式
+
+- **目标**：了解MR的Uber模式的配置及应用
+
+- **实施**
+
+  - **问题**：MR程序运行在YARN上时，有一些轻量级的作业要频繁的申请资源再运行，性能比较差怎么办？
+
+    - Uber模式
+
+    - 类似于Hive的本地模式，程序不提交给YARN，直接在本地运行
+
+      ```
+      set hive.exec.mode.local.auto=true;
+      ```
+
+      - 满足条件：MapTask不允许超过4个，ReduceTask不允许超过1个，输入数据量不允许超过128M
+
+  - **功能**：Uber模式下，程序只申请一个AM Container：所有Map Task和Reduce Task，均在这个Container中顺序执行
+
+    ![image-20210822091155998](assets/image-20210822091155998.png)
+
+    - 默认不开启
+
+  - **配置**：${HADOOP_HOME}/etc/hadoop/mapred-site.xml
+
+    ```properties
+    mapreduce.job.ubertask.enable=true
+    #必须满足以下条件
+    mapreduce.job.ubertask.maxmaps=9
+    mapreduce.job.ubertask.maxreduces=1
+    mapreduce.job.ubertask.maxbytes=128M
+    yarn.app.mapreduce.am.resource.cpu-vcores=1
+    yarn.app.mapreduce.am.resource.mb=1536M
+    ```
+
+  - **特点**
+
+    - Uber模式的进程为AM，所有资源的使用必须小于AM进程的资源
+    - Uber模式条件不满足，不执行Uber模式
+    - Uber模式，会禁用推测执行机制
+
+- **小结**
+
+  - 了解MR的Uber模式的配置及应用
+
