@@ -873,3 +873,63 @@
 - **小结**
 
   - 实现自动化脚本开发的设计思路分析
+
+### 9. 全量及增量采集脚本运行
+
+- **目标**：实现全量采集脚本的运行
+
+- **实施**
+
+  - **全量目标**：将所有需要将实现全量采集的表进行全量采集存储到HDFS上
+
+    - 44张表
+
+    - Oracle表：组织机构信息、地区信息、服务商信息、数据字典等
+
+    - HDFS路径
+
+      ```
+      /data/dw/ods/one_make/full_imp/表名/日期
+      ```
+
+  - **增量目标**：将所有需要将实现全量采集的表进行增量采集存储到HDFS上
+
+    - 57张表
+
+    - 工单数据信息、呼叫中心信息、物料仓储信息、报销费用信息等
+
+    - HDFS路径
+
+      ```
+      /data/dw/ods/one_make/incr_imp/表名/日期
+      ```
+
+  - **运行脚本**：进入Sqoop容器操作
+
+    - 全量采集
+
+      ```
+      cd /opt/sqoop/one_make
+      sh -x full_import_tables.sh 
+      ```
+
+      - 脚本中特殊的一些参数
+      - --outdir：Sqoop解析出来的MR的Java程序等输出文件输出的文件
+
+    - 增量采集
+
+      ```
+      cd /opt/sqoop/one_make
+      sh -x incr_import_tables.sh 
+      ```
+
+  - **查看结果**
+
+    - /data/dw/ods/one_make/full_imp：44张表
+    - /data/dw/ods/one_make/incr_imp：57张表
+
+    ![image-20211025234005808](assets/image-20211025234005808.png)
+
+- **小结**
+
+  - 实现全量采集脚本的运行
