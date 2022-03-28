@@ -1,0 +1,3 @@
+from auto_create_hive_table.cn.itcast.datatohive import LoadData2DWD
+from auto_create_hive_table.cn.itcast.datatohive.CHiveTableFromOracleTable import CHiveTableFromOracleTable
+from auto_create_hive_table.cn.itcast.datatohive.CreateHiveTablePartition import CreateHiveTablePartition
