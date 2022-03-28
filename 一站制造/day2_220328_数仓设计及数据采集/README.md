@@ -555,3 +555,111 @@
 - **小结**
 
   - 掌握Sqoop采集数据时的问题
+
+### 6. Avro格式
+
+- **目标**：掌握使用Avro格式解决采集换行问题
+
+- **路径**
+
+  - step1：常见格式介绍
+  - step2：Avro格式特点
+  - step3：Sqoop使用Avro格式
+  - step4：使用测试
+
+- **实施**
+
+  - **常见格式介绍**
+
+    | 类型         | 介绍                                                         |
+    | ------------ | ------------------------------------------------------------ |
+    | TextFile     | Hive默认的文件格式，最简单的数据格式，便于查看和编辑，耗费存储空间，I/O性能较低 |
+    | SequenceFile | 含有键值对的二进制文件，优化磁盘利用率和I/O，并行操作数据，查询效率高，但存储空间消耗最大 |
+    | AvroFile     | 特殊的二进制文件，设计的主要目标是为了满足schema evolution，Schema和数据保存在一起 |
+    | OrcFile      | 列式存储，Schema存储在footer中，不支持schema evolution，高度压缩比并包含索引，查询速度非常快 |
+    | ParquetFile  | 列式存储，与Orc类似，压缩比不如Orc，但是查询性能接近，支持的工具更多，通用性更强 |
+
+  - **Avro格式特点**
+
+    - 优点
+      - 二进制数据存储，性能好、效率高
+      - 使用JSON描述模式，支持场景更丰富
+      - **Schema和数据统一存储，消息自描述**：把Avro格式的文件当做表来看
+      - 模式定义允许定义数据的排序
+    - 缺点
+      - 只支持Avro自己的序列化格式
+      - 少量列的读取性能比较差，压缩比较低
+    - 场景：基于行的大规模结构化数据写入、列的读取非常多或者Schema变更操作比较频繁的场景
+
+  - **项目中使用原因**
+
+    - 解决换行符的问题：将Oracle中一行作为文本中的一行
+    - 保留Schema：保留每张表有哪些列，每一列是什么类型这些信息，实现自动化建表
+
+  - **Sqoop使用Avro格式**
+
+    - 选项：Sqoop生成的数据为avro格式
+
+      ```
+      --as-avrodatafile                                     Imports data to Avro datafiles
+      ```
+
+    - 注意：如果使用了MR的Uber模式，必须在程序中加上以下参数避免类冲突问题
+
+      ```
+      -Dmapreduce.job.user.classpath.first=true
+      ```
+
+  - **使用测试**
+
+    ```shell
+    sqoop import \
+    -Dmapreduce.job.user.classpath.first=true \
+    --connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin \
+    --username ciss \
+    --password 123456 \
+    --table CISS4.CISS_SERVICE_WORKORDER \
+    --delete-target-dir \
+    --target-dir /test/full_imp/ciss4.ciss_service_workorder \
+    --as-avrodatafile \
+    --fields-terminated-by "\001" \
+    -m 1
+    ```
+
+    - Hive中建表
+
+      - 进入Hive容器
+
+        ```
+        docker exec -it hive bash
+        ```
+
+      - 连接HiveServer
+
+        ```
+        beeline -u jdbc:hive2://hive.bigdata.cn:10000 -n root -p 123456
+        ```
+
+      - 创建测试表
+
+        ```sql
+        create external table test_avro(
+        line string
+        )
+        stored as avro
+        location '/test/full_imp/ciss4.ciss_service_workorder';
+        ```
+
+      - 统计行数
+
+        ```
+        select count(*) from test_avro;
+        ```
+
+        ![image-20220214155304433](assets/image-20220214155304433.png)
+
+- **小结**
+
+  - 掌握如何使用Avro格式解决采集换行问题
+
+### 7.
