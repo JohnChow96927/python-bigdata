@@ -341,3 +341,81 @@
 - **小结**
 
   - 掌握Sqoop常用命令的使用
+
+### 3. YARN资源调度及配置
+
+- **目标**：**实现YARN的资源调度配置**
+
+- **实施**
+
+  - **问题1：程序已提交YARN，但是无法运行，报错：Application is added to the scheduler and is not activated. User’s AM resource limit exceeded.**
+
+    ```properties
+    yarn.scheduler.capacity.maximum-am-resource-percent=0.8
+    ```
+
+    - 配置文件：${HADOOP_HOME}/etc/hadoop/capacity-scheduler.xml
+    - 属性功能：指定队列最大可使用的资源容量大小百分比，默认为0.2，指定越大，AM能使用的资源越多
+
+  - **问题2：程序提交，运行失败，报错：无法申请Container**
+
+    ```properties
+    yarn.scheduler.minimum-allocation-mb=512
+    ```
+
+    - 配置文件：${HADOOP_HOME}/etc/hadoop/yarn-site.xml
+    - 属性功能：指定AM为每个Container申请的最小内存，默认为1G，申请不足1G，默认分配1G，值过大，会导致资源不足，程序失败，该值越小，能够运行的程序就越多
+
+  - **问题3：怎么提高YARN集群的并发度？**
+
+    - 物理资源、YARN资源、Container资源、进程资源
+
+    - YARN资源配置：由NodeManager决定
+
+      ```properties
+      yarn.nodemanager.resource.cpu-vcores=8
+      yarn.nodemanager.resource.memory-mb=8192
+      ```
+
+    - Container资源
+
+      ```properties
+      yarn.scheduler.minimum-allocation-vcores=1
+      yarn.scheduler.maximum-allocation-vcores=32
+      yarn.scheduler.minimum-allocation-mb=1024
+      yarn.scheduler.maximum-allocation-mb=8192
+      ```
+
+    - MR Task资源
+
+      ```properties
+      mapreduce.map.cpu.vcores=1
+      mapreduce.map.memory.mb=1024
+      mapreduce.reduce.cpu.vcores=1
+      mapreduce.reduce.memory.mb=1024
+      ```
+
+    - Spark Executor资源
+
+      ```shell
+      --driver-memory  #分配给Driver的内存，默认分配1GB
+      --driver-cores   #分配给Driver运行的CPU核数，默认分配1核
+      --executor-memory #分配给每个Executor的内存数，默认为1G，所有集群模式都通用的选项
+      --executor-cores  #分配给每个Executor的核心数，YARN集合和Standalone集群通用的选项
+      --total-executor-cores NUM  #Standalone模式下用于指定所有Executor所用的总CPU核数
+      --num-executors NUM #YARN模式下用于指定Executor的个数，默认启动2个
+      ```
+
+  - **实现：修改问题1中的配置属性【不用做】**
+
+    - 注意：修改完成，要重启YARN
+
+      ![image-20210928200550336](assets/image-20210928200550336.png)
+
+    ![image-20210822085238536](assets/image-20210822085238536.png)
+
+    
+
+- **小结**
+
+  - 实现YARN的资源调度配置
