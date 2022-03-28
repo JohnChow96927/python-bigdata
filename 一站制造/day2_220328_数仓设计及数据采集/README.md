@@ -662,4 +662,91 @@
 
   - 掌握如何使用Avro格式解决采集换行问题
 
-### 7.
+### 7. Sqoop增量采集方案回顾
+
+- **目标**：回顾Sqoop增量采集方案
+
+- **路径**
+
+  - step1：Append
+  - step2：Lastmodified
+  - step3：特殊方式
+
+- **实施**
+
+  - **Append**
+
+    - 要求：必须有一列自增的值，按照自增的int值进行判断
+
+    - 特点：只能导入增加的数据，无法导入更新的数据
+
+    - 场景：数据只会发生新增，不会发生更新的场景
+
+    - 代码
+
+      ```shell
+      sqoop import \
+      --connect jdbc:mysql://node3:3306/sqoopTest \
+      --username root \
+      --password 123456 \
+      --table tb_tohdfs \
+      --target-dir /sqoop/import/test02 \
+      --fields-terminated-by '\t' \
+      --check-column id \
+      --incremental append \
+      --last-value 0 \
+      -m 1
+      ```
+
+  - **Lastmodified**
+
+    - 要求：必须包含动态时间变化这一列，按照数据变化的时间进行判断
+
+    - 特点：既导入新增的数据也导入更新的数据
+
+    - 场景：一般无法满足要求，所以不用
+
+    - 代码
+
+      ```shell
+      sqoop import \
+      --connect jdbc:mysql://node3:3306/sqoopTest \
+      --username root \
+      --password 123456 \
+      --table tb_lastmode \
+      --target-dir /sqoop/import/test03 \
+      --fields-terminated-by '\t' \
+      --incremental lastmodified \
+      --check-column lastmode \
+      --last-value '2021-06-06 16:09:32' \
+      -m 1
+      ```
+
+      
+
+  - **条件过滤方式**
+
+    - 要求：每次运行的输出目录不能相同
+
+    - 特点：自己实现增量的数据过滤，可以实现新增和更新数据的采集
+
+    - 场景：一般用于自定义增量采集每天的分区数据到Hive
+
+    - 代码
+
+      ```shell
+      sqoop  import \
+      --connect jdbc:mysql://node3:3306/db_order \
+      --username root \
+      --password-file file:///export/data/sqoop.passwd \
+      --query "select * from tb_order where substring(create_time,1,10) = '昨天的日期' or substring(update_time,1,10) = '昨天的日期' and \$CONDITIONS " \
+      --delete-target-dir \
+      --target-dir /nginx/logs/tb_order/daystr=2021-10-31 \
+      --fields-terminated-by '\t' \
+      -m 1
+      ```
+
+- **小结**
+
+  - 回顾Sqoop增量采集方案
+
