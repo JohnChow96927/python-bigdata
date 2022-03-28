@@ -292,3 +292,52 @@
 
   - 了解全量表与增量表数据采集需求
 
+### 2. Sqoop命令回顾
+
+- **目标**：**掌握Sqoop常用命令的使用**
+
+- **实施**
+
+  - **基本语法**
+
+  - **数据库参数**
+
+  - **导入参数**
+
+  - **导出参数**
+
+  - **连接Oracle语法**
+
+    ```shell
+    --connect jdbc:oracle:thin:@OracleServer:OraclePort:OracleSID
+    --connect jdbc:oracle:thin:@机器地址:端口:提供SID
+    ```
+
+  - **测试采集Oracle数据**
+
+    - 进入
+
+      ```shell
+      docker exec -it sqoop bash
+      ```
+
+    - 测试
+
+      ```shell
+      sqoop import \
+      --connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin \
+      --username ciss \
+      --password 123456 \
+      --table CISS4.CISS_BASE_AREAS \
+      --target-dir /test/full_imp/ciss4.ciss_base_areas \
+      --fields-terminated-by "\t" \
+      -m 1
+      ```
+
+    - 查看结果
+
+      ![image-20210822094343047](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20210822094343047.png)
+
+- **小结**
+
+  - 掌握Sqoop常用命令的使用
