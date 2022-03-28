@@ -750,3 +750,126 @@
 
   - 回顾Sqoop增量采集方案
 
+### 8. 脚本开发思路
+
+- **目标**：掌握自动化脚本开发的设计思路分析
+
+- **路径**
+
+  - step1：脚本目标
+  - step2：实现流程
+  - step3：脚本选型
+  - step4：单个测试
+
+- **实施**
+
+  - **脚本目标**：实现自动化将多张Oracle中的数据表全量或者增量采集同步到HDFS中
+
+    ```shell
+    sqoop import \
+    -Dmapreduce.job.user.classpath.first=true \
+    --connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin \
+    --username ciss \
+    --password 123456 \
+    --table CISS4.CISS_SERVICE_WORKORDER \
+    --delete-target-dir \
+    --target-dir /test/full_imp/ciss4.ciss_service_workorder \
+    --as-avrodatafile \
+    --fields-terminated-by "\001" \
+    -m 1
+    ```
+
+  - **实现流程**
+
+    - a. 获取表名
+    - b.构建Sqoop命令
+    - c.执行Sqoop命令
+    - d.验证结果
+
+  - **脚本选型**
+
+    - Shell：Linux原生脚本类型，直接运行Linux中，轻量级脚本编程语言
+    - Python：必须基于Python环境，Python中必须支持对应的操作，高级语言
+    - 判断：100行
+
+  - **单个测试**
+
+    - 创建一个文件，存放要采集的表的名称
+
+      ```shell
+      #创建测试目录
+      mkdir -p /opt/datas/shell
+      cd /opt/datas/shell/
+      #创建存放表名的文件
+      vim test_full_table.txt
+      ```
+
+      ```
+      ciss4.ciss_base_areas
+      ciss4.ciss_base_baseinfo
+      ciss4.ciss_base_csp
+      ciss4.ciss_base_customer
+      ciss4.ciss_base_device
+      ```
+
+    - 创建脚本
+
+      ```
+      vim test_full_import_table.sh
+      ```
+
+    - 构建采集的Sqoop命令
+
+      ```shell
+      sqoop import \
+      -Dmapreduce.job.user.classpath.first=true \
+      --connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin \
+      --username ciss \
+      --password 123456 \
+      --table CISS4.CISS_SERVICE_WORKORDER \
+      --delete-target-dir \
+      --target-dir /test/full_imp/ciss4.ciss_service_workorder \
+      --as-avrodatafile \
+      --fields-terminated-by "\001" \
+      -m 1
+      ```
+
+    - 封装脚本
+
+      ```shell
+      #!/bin/bash
+      #export path
+      source /etc/profile
+      #export the tbname files
+      TB_NAME=/opt/datas/shell/test_full_table.txt
+      #export the import opt
+      IMP_OPT="sqoop import -Dmapreduce.job.user.classpath.first=true"
+      #export the jdbc opt
+      JDBC_OPT="--connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin --username ciss --password 123456"
+      
+      #read tbname and exec sqoop
+      while read tbname
+      do
+        ${IMP_OPT} ${JDBC_OPT} --table ${tbname^^} --delete-target-dir --target-dir /test/full_imp/${tbname^^} --as-avrodatafile --fields-terminated-by "\001" -m 1
+      done < ${TB_NAME}
+      ```
+
+    - 添加执行权限
+
+      ```
+      chmod u+x test_full_import_table.sh
+      ```
+
+    - 测试执行
+
+      ```
+      sh -x test_full_import_table.sh
+      ```
+
+    - 检查结果
+
+      ![image-20211007155258985](assets/image-20211007155258985.png)
+
+- **小结**
+
+  - 实现自动化脚本开发的设计思路分析
