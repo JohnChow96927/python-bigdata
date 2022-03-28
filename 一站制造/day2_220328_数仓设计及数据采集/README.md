@@ -989,3 +989,56 @@
 
   - 了解如何实现采集数据备份
 
+### 11. Python脚本实现采集
+
+- **目标**：了解如果使用Python脚本如何实现
+
+- **实施**
+
+  - Python文件运行：python xxxx.py
+
+  - **原理本质**
+
+    - 问题：所有的操作是Sqoop、HDFS等命令操作，如何能通过Python代码控制？
+
+    - 解决：**本质上是使用Python执行了Linux的Shell命令来实现的**
+
+    - 导包
+
+      ```python
+      # 用于实现执行系统操作的包
+      import os
+      # 用于实现执行Linux的命令的包
+      import subprocess
+      # 用于实现日期获取解析的包
+      import datetime
+      # 用于执行时间操作的包
+      import time
+      # 用于做日志记录的包
+      import logging
+      ```
+
+  - **核心代码解析**
+
+    - subprocess
+
+      ```
+      call（String：LinuxCommand）：用于提交Linux命令的方法
+      ```
+
+    - logging
+
+      ```
+      basicConfig(level,filename,filemode,format)：用于配置日志记录的方式
+      info(Messege)：用于记录具体的日志内容
+      ```
+
+    - time
+
+      ```python
+      sleep(15) ：休眠15s
+      ```
+
+- **小结**
+
+  - 了解如果使用Python脚本如何实现
