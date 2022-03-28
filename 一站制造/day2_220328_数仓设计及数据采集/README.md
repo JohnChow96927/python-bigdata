@@ -466,3 +466,92 @@
 
   - 了解MR的Uber模式的配置及应用
 
+### 5. Sqoop采集数据格式问题
+
+- **目标**：**掌握Sqoop采集数据时的问题**
+
+- **路径**
+
+  - step1：现象
+  - step2：问题
+  - step3：原因
+  - step4：解决
+
+- **实施**
+
+  - **现象**
+
+    - step1：查看Oracle中CISS_SERVICE_WORKORDER表的数据条数
+
+      ```sql
+      select count(1) as cnt from ciss4.CISS_SERVICE_WORKORDER;
+      ```
+
+      ![image-20211222150755372](assets/image-20211222150755372.png)
+
+    - step2：采集CISS_SERVICE_WORKORDER的数据到HDFS上
+
+      ```shell
+      sqoop import \
+      --connect jdbc:oracle:thin:@oracle.bigdata.cn:1521:helowin \
+      --username ciss \
+      --password 123456 \
+      --table CISS4.CISS_SERVICE_WORKORDER \
+      --delete-target-dir \
+      --target-dir /test/full_imp/ciss4.ciss_service_workorder \
+      --fields-terminated-by "\001" \
+      -m 1
+      ```
+
+    - step3：Hive中建表查看数据条数
+
+      - 进入Hive容器
+
+        ```
+        docker exec -it hive bash
+        ```
+
+      - 连接HiveServer
+
+        ```
+        beeline -u jdbc:hive2://hive.bigdata.cn:10000 -n root -p 123456
+        ```
+
+      - 创建测试表
+
+        ```sql
+        create external table test_text(
+        line string
+        )
+        location '/test/full_imp/ciss4.ciss_service_workorder';
+        ```
+
+      - 统计行数
+
+        ```
+        select count(*) from test_text;
+        ```
+
+        ![image-20211222151718899](assets/image-20211222151718899.png)
+
+  - **问题**：Sqoop采集完成后导致HDFS数据与Oracle数据量不符
+
+  - **原因**
+
+    - sqoop以**文本格式**导入数据时，默认的换行符是特殊字符
+    - Oracle中的数据列中如果出现了**\n、\r、\t**等特殊字符，就会被划分为多行
+    - Oracle：表
+    - HDFS：文件
+
+  - **解决**
+
+    - 方案一：删除或者替换数据中的换行符
+      - --hive-drop-import-delims：删除换行符
+      - --hive-delims-replacement  char：替换换行符
+    - 方案二：使用特殊文件格式：AVRO格式
+      - 用其他的文件类型例如orc等是否可以？
+      - 为什么选择Avro？
+
+- **小结**
+
+  - 掌握Sqoop采集数据时的问题
