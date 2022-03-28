@@ -933,3 +933,59 @@
 - **小结**
 
   - 实现全量采集脚本的运行
+
+### 10. Schema备份及上传
+
+- **目标**：实现采集数据备份
+
+- **实施**
+
+  - **需求：将每张表的Schema进行上传到HDFS上，归档并且备份**
+
+  - **Avro文件本地存储**
+
+    ```shell
+    workhome=/opt/sqoop/one_make
+    --outdir ${workhome}/java_code
+    ```
+
+  - **Avro文件HDFS存储**
+
+    ```shell
+    hdfs_schema_dir=/data/dw/ods/one_make/avsc
+    hdfs dfs -put ${workhome}/java_code/*.avsc ${hdfs_schema_dir}
+    ```
+
+  - **Avro文件本地打包**
+
+    ```shell
+    local_schema_backup_filename=schema_${biz_date}.tar.gz
+    tar -czf ${local_schema_backup_filename} ./java_code/*.avsc
+    ```
+
+  - **Avro文件HDFS备份**
+
+    ```shell
+    hdfs_schema_backup_filename=${hdfs_schema_dir}/avro_schema_${biz_date}.tar.gz
+    hdfs dfs -put ${local_schema_backup_filename} ${hdfs_schema_backup_filename}
+    ```
+
+  - 运行测试
+
+    ```
+    cd /opt/sqoop/one_make/
+    ./upload_avro_schema.sh 
+    ```
+
+  - 验证结果
+
+    ```
+    /data/dw/ods/one_make/avsc/
+    ```
+
+    ![image-20211025234005808](assets/image-20211025234005808-1648440203383.png)
+
+- **小结**
+
+  - 了解如何实现采集数据备份
+
