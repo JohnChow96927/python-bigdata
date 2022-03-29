@@ -377,7 +377,68 @@
 
 ### 3. 代码导入
 
+- **目标**：**实现Python项目代码的导入及配置**
 
+- **实施**
+
+  - **Oracle本地驱动目录**：将提供的**instantclient_12_2**目录放入D盘的根目录下
+
+    ![image-20210930153737086](assets/image-20210930153737086-1648541786622.png)
+
+  - **PyHive本地连接配置**：将提供的CMU目录放入C盘的根目录下
+
+    ![image-20210930153652800](assets/image-20210930153652800-1648541784345.png)
+
+  - **auto_create_hive_table包**
+
+    - **创建路径包**
+
+      ![image-20210930153142799](assets/image-20210930153142799-1648541782332.png)
+
+      ```
+      auto_create_hive_table.cn.itcast.datatohive
+      ```
+
+      ![image-20210930154056029](assets/image-20210930154056029-1648541778762.png)
+
+      - 在datatohive的init文件中放入如下代码
+
+        ```python
+        from auto_create_hive_table.cn.itcast.datatohive import LoadData2DWD
+        from auto_create_hive_table.cn.itcast.datatohive.CHiveTableFromOracleTable import CHiveTableFromOracleTable
+        from auto_create_hive_table.cn.itcast.datatohive.CreateHiveTablePartition import CreateHiveTablePartition
+        ```
+
+      - 其他包的init都放入如下内容
+
+        ```python
+        #!/usr/bin/env python
+        # @desc :
+        __coding__ = "utf-8"
+        __author__ = "itcast"
+        ```
+
+    - **将对应的代码文件放入对应的包或者目录中**
+
+      - step1：从提供的代码中复制config、log、resource这三个目录直接粘贴到**auto_create_hive_table**包下
+
+        ![image-20210930155013278](assets/image-20210930155013278-1648541773599.png)
+
+      - step2：从提供的代码中复制entity、utils、EntranceApp.py这三个直接粘贴到**itcast**包下
+
+        ![image-20210930155111676](assets/image-20210930155111676-1648541771440.png)
+
+      - step3：从提供的代码中复制fileformat等文件直接粘贴到**datatohive**包下
+
+        ![image-20210930155239773](assets/image-20210930155239773-1648541769728.png)
+
+  - **DW归档目录**：将提供的代码中的dw目录直接粘贴到项目中
+
+    ![image-20210930155529688](assets/image-20210930155529688-1648541767078.png)
+
+- **小结**
+
+  - 实现Python项目代码的导入及配置
 
 ### 4. 代码结构
 
