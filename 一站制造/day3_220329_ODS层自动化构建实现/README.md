@@ -290,7 +290,90 @@
 
 ### 2. 创建项目环境
 
+- **目标**：**实现Pycharm中工程结构的构建**
 
+- **实施**
+
+  - **安装Python3.7环境**
+
+    ![image-20211102182605596](assets/image-20211102182605596.png)
+
+    - 项目使用的Python3.7的环境代码，所以需要在Windows中安装Python3.7，与原先的Python高版本不冲突，正常安装即可
+
+  - **创建Python工程**
+
+    <img src="./assets/image-20210930150438112.png" alt="image-20210930150438112" style="zoom:80%;" />
+
+  - **安装PyHive、cx_Oracle库**
+
+    - step1：在Windows的用户家目录下创建pip.ini文件
+
+      - 例如：**C:\Users\Frank\pip\pip.ini**
+
+      - 内容：指定pip安装从阿里云下载
+
+        ```properties
+        [global]
+        
+        index-url=http://mirrors.aliyun.com/pypi/simple/
+        
+        [install]
+        
+        trusted-host=mirrors.aliyun.com
+        ```
+
+    - step2：将文件添加到Windows的**Path环境变量**中
+
+      ![image-20210930150905946](assets/image-20210930150905946.png)
+
+    - step3：进入项目环境目录
+
+      - 例如我的项目路径是：**D:\PythonProject\OneMake_Spark\venv\Scripts**
+
+        ![image-20210930151306714](assets/image-20210930151306714.png)
+
+      - 将提供的**sasl-0.2.1-cp37-cp37m-win_amd64.whl**文件放入Scripts目录下
+
+        ![image-20210930151549478](assets/image-20210930151549478.png)
+
+      - 在CMD中执行以下命令，切换到Scripts目录下
+
+        ```shell
+        #切换到D盘
+        D:
+        #切换到项目环境的Scripts目录下
+        cd D:\PythonProject\OneMake_Spark\venv\Scripts
+        ```
+
+        ![image-20210930151448348](assets/image-20210930151448348.png)
+
+  - step4：CMD中依次执行以下安装命令
+
+    ```python
+      # 安装sasl包 -> 使用pycharm安装，会存在下载失败情况，因此提前下载好，对应python3.7版本
+      pip install sasl-0.2.1-cp37-cp37m-win_amd64.whl
+      
+      # 安装thrift包
+      pip install thrift
+      
+      # 安装thrift sasl包
+      pip install thrift-sasl
+      
+      # 安装python操作oracle包
+      pip install cx-Oracle
+      
+      # 安装python操作hive包，也可以操作sparksql
+      pip install pyhive
+    ```
+
+      ![image-20210930152134126](assets/image-20210930152134126.png)
+
+- step5：验证安装结果
+
+<img src="./assets/image-20210930152732079.png" alt="image-20210930152732079" style="zoom:80%;" />
+
+- **小结**
+  - 实现Pycharm中工程结构的构建
 
 ### 3. 代码导入
 
