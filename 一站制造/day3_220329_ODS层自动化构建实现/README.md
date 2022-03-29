@@ -821,9 +821,9 @@
 
   - step3：释放资源
 
-    ```python
-    cursor.close()
-    conn.close()
-    ```
+    > ```python
+    > cursor.close()
+    > conn.close()
+    > ```
 
     
