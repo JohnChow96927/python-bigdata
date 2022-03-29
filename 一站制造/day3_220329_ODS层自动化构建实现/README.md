@@ -537,7 +537,26 @@
 
 ### 5. 代码修改
 
+- **目标**：**实现配置修改**
 
+- **实施**
+
+  - 修改1：auto_create_hive_table.cn.itcast.EntranceApp.py
+
+    ```python
+    # 46行：修改为你实际的项目路径对应的表名文件
+    tableList = FileUtil.readFileContent("D:\\PythonProject\\OneMake_Spark\\dw\\ods\\meta_data\\tablenames.txt")
+    ```
+
+  - 修改2：auto_create_hive_table.cn.itcast.utils.ConfigLoader
+
+    ```python
+    # 10行：修改为实际的连接属性配置文件的地址
+    config.read('D:\\PythonProject\\OneMake_Spark\\auto_create_hive_table\\resources\\config.txt')
+    ```
+
+- **小结**
+  - 实现配置修改
 
 ### 6. 连接代码及测试
 
