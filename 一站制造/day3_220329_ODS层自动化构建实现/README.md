@@ -442,7 +442,98 @@
 
 ### 4. 代码结构
 
+- **目标**：了解整个自动化代码的项目结构及实现配置修改
 
+- **路径**
+
+  - step1：工程代码结构
+  - step2：代码模块功能
+
+- **实施**
+
+  - **工程代码结构**
+
+    ![image-20211009173309532](assets/image-20211009173309532.png)
+
+  - **代码模块功能**
+
+    - `auto_create_hive_table`：用于实现ODS层与DWD层的建库建表的代码
+
+      - `cn.itcast`
+
+        - `datatohive`
+
+          ```properties
+          CHiveTableFromOracleTable.py: 用于创建Hive数据库、以及获取Oracle表的信息创建Hive表等
+          CreateMetaCommon.py: 定义了建表时固定的一些字符串数据，数据库名称、分层名称、文件类型属性等
+          CreateHiveTablePartition.py: 用于手动申明ODS层表的分区元数据
+          LoadData2DWD.py: 用于实现将ODS层的数据insert到DWD层表中
+          ```
+
+        - `fileformat`
+
+          ```properties
+          AvroTableProperties.py: Avro文件格式对象，用于封装Avro建表时的字符串
+          OrcTableProperties.py: Orc文件格式对象，用于封装Orc建表时的字符串
+          OrcSnappyTableProperties.py: Orc文件格式加Snappy压缩的对象
+          TableProperties.py: 用于获取表的属性的类
+          ```
+
+      - `entity`
+
+        ```properties
+        TableMeta.py: Oracle表的信息对象：用于将表的名称、列的信息、表的注释进行封装
+        ColumnMeta.py: Oracle列的信息对象：用于将列的名称、类型、注释进行封装
+        ```
+
+      - `utils`
+
+        ```properties
+        OracleHiveUtil.py: 用于获取Oracle连接、Hive连接
+        FileUtil.py: 用于读写文件，获取所有Oracle表的名称
+        TableNameUtil.py: 用于将全量表和增量表的名称放入不同的列表中
+        ConfigLoader.py: 用于加载配置文件，获取配置文件信息
+        OracleMetaUtil.py: 用于获取Oracle中表的信息：表名、字段名、类型、注释等
+        ```
+
+        - **EntranceApp.py**：程序运行入口，核心调度运行的程序
+
+          ```python
+          # todo:1-获取Oracle、Hive连接，获取所有表名
+          # todo:2-创建ODS层数据库
+          # todo:3-创建ODS层数据表
+          # todo:4-手动申明ODS层分区数据
+          # todo:5-创建DWD层数据库以及数据表
+          # todo:6-加载ODS层数据到DWD层
+          # todo:7-关闭连接，释放资源
+          ```
+
+    - `resource`
+
+      ```properties
+      config.txt: Oracle、Hive、SparkSQL的地址、端口、用户名、密码配置文件
+      ```
+
+    - `config`
+
+      ```properties
+      common.py: 用于获取日志的类
+      settings.py: 用于配置日志记录方式的类
+      ```
+
+    - `log`
+
+      ```properties
+      itcast.log: 日志文件
+      ```
+
+  - `dw`：用于存储每一层构建的核心配置文件等
+
+    - 重点关注：**dw.ods.meta_data.tablenames.txt**：存储了整个ODS层的表的名称
+
+- **小结**
+
+  - 了解整个自动化代码的项目结构
 
 ### 5. 代码修改
 
