@@ -2,11 +2,69 @@
 
 ## I. 数仓分层回顾
 
+- **目标**：**回顾一站制造项目分层设计**
 
+- **实施**
+
+  ![image-20210821102418366](assets/image-20210821102418366-1648541362548.png)
+
+  - ODS层：原始数据层，所有从Oracle中同步过来的数据
+  - 实现：101张表的数据和Schema信息已经存储在HDFS上
+  - 目标
+    - step1：建库建表
+    - step2：申明分区
+
+- **小结**
+
+  - 回顾一站制造项目分层设计
 
 ## II. Hive建表语法
 
+- **目标**：**掌握Hive建表语法**
 
+- **实施**
+
+  ```sql
+  CREATE [TEMPORARY] [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.]table_name
+  (
+      col1Name col1Type [COMMENT col_comment],
+      co21Name col2Type [COMMENT col_comment],
+      co31Name col3Type [COMMENT col_comment],
+      co41Name col4Type [COMMENT col_comment],
+      co51Name col5Type [COMMENT col_comment],
+      ……
+      coN1Name colNType [COMMENT col_comment]
+  
+  )
+  [COMMENT table_comment]
+  [PARTITIONED BY (col_name data_type ...)]
+  [CLUSTERED BY (col_name...) [SORTED BY (col_name ...)] INTO N BUCKETS]
+  [ROW FORMAT row_format]
+  	row format delimited fields terminated by 
+  	lines terminated by
+  [STORED AS file_format]
+  [LOCATION hdfs_path]
+  TBLPROPERTIES
+  ```
+
+  - **语法**
+
+  - **注意**：能在Hive中运行，通常都可以在SparkSQL中执行，但是Spark中语法有两个细节需要注意
+
+    - Hive语法：支持数据类型比较少，建表语法严格要求顺序
+
+      ```
+      Spark：Integer
+      Hive：int
+      ```
+
+    - SparkSQL语法：支持数据类型兼容Hive类型，顺序有些位置可以互换
+
+    - 本次所有SQL：SparkSQL
+
+- **小结**
+
+  - 掌握Hive建表语法
 
 ## III. Avro建表语法
 
