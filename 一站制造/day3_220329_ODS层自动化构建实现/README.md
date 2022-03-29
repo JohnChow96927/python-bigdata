@@ -68,7 +68,115 @@
 
 ## III. Avro建表语法
 
+- **目标**：**掌握Hive中Avro建表方式及语法**
 
+- **路径**
+
+  - step1：指定文件类型
+  - step2：指定Schema
+  - step3：建表方式
+
+- **实施**
+
+  - Hive官网：https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL#LanguageManualDDL-CreateTable
+
+  - DataBrics官网：https://docs.databricks.com/spark/2.x/spark-sql/language-manual/create-table.html
+
+  - Avro用法：https://cwiki.apache.org/confluence/display/Hive/AvroSerDe
+
+  - **指定文件类型**
+
+    - 方式一：指定类型
+
+      ```sql
+      stored as avro
+      ```
+
+    - 方式二：指定解析类
+
+      ```sql
+      --解析表的文件的时候，用哪个类来解析
+      ROW FORMAT SERDE
+        'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+      --读取这张表的数据用哪个类来读取
+      STORED AS INPUTFORMAT
+        'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+      --写入这张表的数据用哪个类来写入
+      OUTPUTFORMAT
+        'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+      ```
+
+  - **指定Schema**
+
+    - 方式一：手动定义Schema
+
+      ```sql
+        CREATE TABLE embedded
+      COMMENT "这是表的注释"
+        ROW FORMAT SERDE
+          'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+        STORED AS INPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+        OUTPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+        TBLPROPERTIES (
+          'avro.schema.literal'='{
+            "namespace": "com.howdy",
+            "name": "some_schema",
+            "type": "record",
+            "fields": [ { "name":"string1","type":"string"}]
+          }'
+        );
+      ```
+
+      - 方式二：加载Schema文件
+
+      ```sql
+      CREATE TABLE embedded
+      COMMENT "这是表的注释"
+        ROW FORMAT SERDE
+        'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+        STORED as INPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+        OUTPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+        TBLPROPERTIES (
+         'avro.schema.url'='file:///path/to/the/schema/embedded.avsc'
+        );
+      ```
+
+  - **建表语法**
+
+    - 方式一：指定类型和加载Schema文件
+
+      ```sql
+        create external table one_make_ods_test.ciss_base_areas
+      comment '行政地理区域表'
+        PARTITIONED BY (dt string)
+      stored as avro
+        location '/data/dw/ods/one_make/full_imp/ciss4.ciss_base_areas'
+        TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
+      ```
+
+    - 方式二：**指定解析类和加载Schema文件**
+
+      ```sql
+        create external table one_make_ods_test.ciss_base_areas
+      comment '行政地理区域表'
+        PARTITIONED BY (dt string)
+      ROW FORMAT SERDE
+          'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+        STORED AS INPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+        OUTPUTFORMAT
+          'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+        location '/data/dw/ods/one_make/full_imp/ciss4.ciss_base_areas'
+        TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
+      ```
+
+- **小结**
+
+  - 掌握Hive中Avro建表方式及语法
 
 ## IV. ODS层自动化构建
 
