@@ -25,6 +25,15 @@
       - 把复杂问题简单化：一个复杂的任务分解成多个步骤来完成，每一层只处理单一的步骤，比较简单和容易理解。
       - 屏蔽原始数据的异常对业务的影响：不必改一次业务就需要重新接入数据
     - **怎么分层？**
+      - ODS：原始数据层
+      - DW：数据仓库层
+        - DWD：明细数据层
+        - DWB/DWM：基础数据层/中间数据层
+        - DWS：服务数据层
+      - APP：数据应用层
+      - DIM：维度数据层
+      - DM：数据集市层
+      - TMP：临时数据层
 
   - **建模**：决定了数据仓库中表的设计
 
@@ -98,7 +107,7 @@
       - 值的分类
         - 可累加事实：在任何维度下指标的值都可以进行累加
         - 半可累加事实：在一定维度下指标的值都可以进行累加
-      - 不可累加事实：在任何维度下指标的值都不可以进行累加
+        - 不可累加事实：在任何维度下指标的值都不可以进行累加
 
     - **维度表**
 
@@ -110,14 +119,18 @@
         - 下钻：从大维度到一个小的维度，颗粒度从粗到细
       - 拉链表
         - **渐变维度的处理方案**
+
         - 功能：解决事实中渐变维度发生变化的问题，通过时间来标记维度的每一种状态，存储所有状态
+
         - 实现
           - startTime：状态开始时间，数据产生时间
-            - endTime：状态结束时间，默认为9999-12-31，用于表示最新状态
-          - 流程
-            - step1：先采集所有增量【新增和更新】数据到ODS层的分区中
-            - step2：将更新分区的数据与老的拉链表的数据进行合并写入一张临时表
-            - step3：将临时表的结果覆盖到拉链表中
+          - endTime：状态结束时间，默认为9999-12-31，用于表示最新状态
+
+          流程
+
+          - step1：先采集所有增量【新增和更新】数据到ODS层的分区中
+          - step2：将更新分区的数据与老的拉链表的数据进行合并写入一张临时表
+          - step3：将临时表的结果覆盖到拉链表中
 
 - **小结**
 
@@ -148,34 +161,147 @@
 - **实施**
   - **ODS**
     - 数据内容：存储所有原始业务数据，基本与Oracle数据库中的业务数据保持一致
+
     - 数据来源：使用Sqoop从Oracle中同步采集
-    - 存储设计：Hive分区表，avro文件格式存储，保留3个月
+
+    - 存储设计：Hive分区表，==**avro文件格式存储**==，保留3个月
+
     - 数据表：事务事实表 + 维度表
+
+    - 举个栗子
+
+      ```
+      -- 订单信息表
+      oid		pid		uid		price    state
+      o001	p001	u001	100万	已发货
+      o002	p002	u002	200万	已提交
+        		p002	u002	200万	已退款
+      o004
+      ……
+      
+      ```
+
+    -- 用户信息表
+      uid		uname		gender		date		addr
+    u001	春宇			male	2022-01-01		sh
+      u002	锁哥			male	2022-01-02		sh
+    ……
+
+    -- 商品信息表
+      pid		pname		price		color
+    p001	火箭筒		  100万		  绿色
+      p002	坦克		   200万		   红色
+    ……
+
   - **DWD**
     - 数据内容：存储所有业务数据的明细数据
+
     - 数据来源：对ODS层的数据进行ETL扁平化处理得到，保证数据质量
+
     - 存储设计：Hive分区表，orc文件格式存储，保留所有数据
+
     - 数据表：事务事实表 + 维度表，对ODS做了清洗
+
+    - 举个栗子：对不合法的数据进行过滤
+
+      ```
+      -- 订单信息表
+      oid		pid		uid		price
+      o001	p001	u001	100万	已发货
+      o002	p002	u002	200万	已提交
+      ……
+      
+      ```
+
+    -- 用户信息表
+      uid		uname		gender		date		addr
+      u001	n 春宇			male	2022-01-01		sh
+      u002	   锁哥			male	2022-01-02		sh
+      ……
+
+    -- 商品信息表
+      pid		pname		price		color
+      p001	火箭筒		  100万		  绿色
+      p002	坦克		   200万		   红色
+      ……
+
   - **DWB**
+
     - 数据内容：存储所有事实与维度的基本关联、基本事实指标等数据
+
     - 数据来源：对DWD层的数据进行清洗过滤、**轻度聚合**以后的数据
+
     - 存储设计：Hive分区表，orc文件格式存储，保留所有数据
+
     - 数据表：主题事务事实表
+
+    - 举个栗子
+
+      - 未来的需求ST层：每天的提交的订单个数、退款的订单个数、发货的订单个数
+
+      - **构建宽表**：维度退化【不是所有维度都能退化，只退化一些简单维度，减少维度表的数量】
+
+        ```
+        -- 订单主题事务事实表
+        oid		pid		pname	uid		price   state
+        o001	p001	火箭筒	  u001	  100万	  已发货
+        o002	p002	坦克     u002	   200万	   已提交
+        ```
+
+      - **轻度聚合**：提前构建一些基础指标【打标签】
+
+        ```
+        -- 订单主题事务事实表
+        oid		pid		pname	uid		price   state		提交的个数	发货的个数	退款的个数
+        o001	p001	火箭筒	  u001	  100万	  已发货		0			1			0
+        o002	p002	坦克     u002	   200万	   已提交		 1			 0			 0
+        ```
+
   - **DWS**
     - 数据内容：存储所有业务的维度数据：日期、地区、油站、呼叫中心、仓库等维度表
+
     - 数据来源：对DWD的明细数据中抽取维度数据，通过工具生成维度数据
+
     - 存储设计：Hive普通表，orc文件 + Snappy压缩
+
     - 数据表：维度表
+
+    - 举个栗子
+
+      ```
+      -- 用户维度表：dim_user
+      uid		uname		gender		date		addr
+      u001	春宇			male	2022-01-01		sh
+      u002	锁哥			male	2022-01-02		sh
+      ……
+      ```
+
   - **ST**
     - 数据内容：存储所有报表分析的事实数据
     - 数据来源：基于DWB和DWS层，通过对不同维度的统计聚合得到所有报表事实的指标
     - 数据表：周期快照事实表
+
   - **DM**
     - 数据内容：存储不同部门所需要的不同主题的数据
     - 数据来源：对DW层的数据进行聚合统计按照不同部门划分
     - 数据表：每个部门需要的数据宽表
 - **小结**
+
   - 掌握油站分析的每层的具体功能
+  - 怎么区分一张表是事实表还是维度表？
+  - 通常情况下：各自特征
+    - 事实表：更新或者新增比较快，每天都会新增和更新大量的数据
+      - 订单表、用户登录日志、用于浏览信息、支付信息表
+    - 维度表：更新或者新增比较慢，基本上很少或者不会发生更新或者新增
+      - 地区维度表、时间维度表
+  - 真正严格讨论：需求
+    - 规律：用于分组的表就是维度表，用于计算指标的表就是事实表
+    - 需求一：统计每个国家的每个城市的订单个数
+      - 维度：国家、城市
+      - 指标：订单个数
+    - 需求二：统计每个国家的城市的个数
+      - 维度：国家，国家信息表
+      - 指标：城市，城市信息表
 
 ## II. 业务系统
 
@@ -187,7 +313,7 @@
 
   - **数据来源**：业务系统
 
-    <img src="E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20210821104106361.png" alt="image-20210821104106361" style="zoom:67%;" />
+    ![1648649539494](assets/1648649539494.png)
 
     - **ERP系统**：企业资源管理系统，存储整个公司所有资源的信息
       - 员工部门信息、仓库信息、设备信息
@@ -211,7 +337,7 @@
 
   - **业务流程**
 
-    ![image-20210821152108191](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/1.png)
+    ![image-20210821152108191](assets/1.png)
 
     
 
@@ -227,7 +353,7 @@
 
   - **切换查看数据库**
 
-    ![image-20210821121346141](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20210821121346141.png)
+    ![image-20210821121346141](assets/image-20210821121346141.png)
 
   - **查看数据表**
 
@@ -244,11 +370,21 @@
 
   - **核心数据表**
 
-    ![image-20210821134859278](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20210821134859278.png)
+    ![image-20210821134859278](assets/image-20210821134859278.png)
 
     - 运营分析：工单分析、来电分析
+      - 来电受理信息表
+      - 工单数据
+      - 服务单数据表
+      - 安装单数据表
+      - 维修单数据表
+      - 巡检单数据表
+      - 改造单数据表
+      - 设备信息数据表
     - 提高服务质量：回访分析
+      - 回访信息表
     - 运营成本核算：费用分析
+      - 差旅费用信息表, 费用明细信息表
 
 - **小结**
 
@@ -272,7 +408,7 @@
 
     - 表名：参考文件《full_import_tables.txt》
 
-      ![image-20211101114104721](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20211101114104721.png)
+      ![image-20211101114104721](assets/image-20211101114104721.png)
 
   - **增量表**
 
@@ -284,7 +420,7 @@
 
     - 表名：参考文件《incr_import_tables.txt》
 
-      ![image-20211101114131787](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20211101114131787.png)
+      ![image-20211101114131787](assets/image-20211101114131787.png)
 
   - 整体需求：将Oracle中101张表的数据通过全量或者增量同步到Hive的ODS层中
 
@@ -300,11 +436,56 @@
 
   - **基本语法**
 
+    导入：从RDBMS导入到HDFS/Hive
+
+    ```
+    sqoop import [数据库选项] [HDFS/Hive选项]
+    ```
+
+    导出：从HDFS/Hive导出到RDBMS
+
+    ```
+    sqoop export [数据库选项] [HDFS/Hive选项]
+    ```
+
   - **数据库参数**
+
+    ```properties
+    --connect : 指定连接的数据库地址
+    --username : 指定连接的数据库的用户名
+    --password/--password-file : 指定连接数据库的密码
+    --table : 指定连接数据库的表
+    --column : 指定读取哪些列
+    --where : 指定读取哪些行
+    --query/-e : 对数据库执行一条SQL语句
+    ```
+
+    
 
   - **导入参数**
 
+    ```properties
+    # HDFS
+    --delete-target-dir : 提前删除输出目录
+    --target-dir : 指定导入到HDFS的地址
+    --fields-terminated-by : 指定导入的HDFS的文件中的分隔符
+    
+    # Hive
+    --hcatalog-database : 指定导入Hive的哪个数据库中
+    --hcatalog-table : 指定导入Hive的哪张表中
+    ```
+
   - **导出参数**
+
+    ```properties
+    # HDFS
+    --export-dir : 导出哪个HDFS目录中的文件
+    --input-fields-terminated-by : 指定导出的HDFS文件的分隔符
+    
+    # Hive
+    --hcatalog-database : 指定导出Hive的哪个数据库pro
+    --hcatalog-table : 指定导出Hive的哪张表
+    ```
 
   - **连接Oracle语法**
 
@@ -336,7 +517,7 @@
 
     - 查看结果
 
-      ![image-20210822094343047](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20210822094343047.png)
+      ![image-20210822094343047](assets/image-20210822094343047.png)
 
 - **小结**
 
@@ -414,8 +595,6 @@
 
     ![image-20210822085238536](assets/image-20210822085238536.png)
 
-    
-
 - **小结**
 
   - 实现YARN的资源调度配置
@@ -427,6 +606,8 @@
 - **实施**
 
   - **问题**：MR程序运行在YARN上时，有一些轻量级的作业要频繁的申请资源再运行，性能比较差怎么办？
+
+    - 正常: MR ==> ApplicationMaster MapTask ReduceTask
 
     - Uber模式
 
@@ -539,17 +720,32 @@
   - **原因**
 
     - sqoop以**文本格式**导入数据时，默认的换行符是特殊字符
+
     - Oracle中的数据列中如果出现了**\n、\r、\t**等特殊字符，就会被Sqoop划分为多行
+
     - Oracle：表
+
+      ```
+      id		name		age
+      1		lao da		18
+      2		lao\ner		20
+      ```
+
     - HDFS：文件
+
+      ```
+      1		lao da		18
+      2		lao
+      er		20
+      ```
 
   - **解决**
 
     - 方案一：删除或者替换数据中的换行符
       - --hive-drop-import-delims：删除换行符
       - --hive-delims-replacement  char：替换换行符
-    - 方案二：使用特殊文件格式：AVRO格式
-      - 用其他的文件类型例如orc等是否可以？
+    - 方案二：使用特殊文件格式：==AVRO格式==
+      - 用其他的文件类型例如orc等是否可以？ 可以
       - 为什么选择Avro？
 
 - **小结**
@@ -1042,3 +1238,124 @@
 - **小结**
 
   - 了解如果使用Python脚本如何实现
+
+
+
+
+
+## 附
+
+- Hive中的解析过程：提交Select
+
+  - step1：先根据元数据来找到Select语句对应的表或者分区的文件目录
+
+    - 在元数据中，先判断是否是分区表
+
+    - 如果不是分区表，直接从TBLS表中根据表名或者这张表的SD_ID
+
+      ![image-20220328181250707](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/Day02_20220328_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%95%B4%E7%AC%94%E8%AE%B0/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20220328181250707.png)
+
+    - 下一步会根据这个SD_ID到SDS元数据表中获取这张表对应的HDFS地址
+
+      ![image-20220328181436363](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/Day02_20220328_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%95%B4%E7%AC%94%E8%AE%B0/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20220328181436363.png)
+
+  - step2：将这个目录作为底层MR处理的数据目录
+
+    - 直接读取这个目录的数据
+
+  - step3：如果是分区表，并且对分区做了过滤，先获取表的id
+
+    ![image-20220328182455646](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/Day02_20220328_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%95%B4%E7%AC%94%E8%AE%B0/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20220328182455646.png)
+
+  - 根据表的Id去Partitions表中查找你要过滤的这个分区对应的SD_ID
+
+    ![image-20220328182616551](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/Day02_20220328_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%95%B4%E7%AC%94%E8%AE%B0/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20220328182616551.png)
+
+  - 根据这个分区的SD_ID读取这个分区的目录
+
+    ![image-20220328182653675](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/Day02_20220328_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%95%B4%E7%AC%94%E8%AE%B0/2.%E7%AC%94%E8%AE%B0/Day02_%E6%95%B0%E4%BB%93%E8%AE%BE%E8%AE%A1%E5%8F%8A%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86.assets/image-20220328182653675.png)
+
+  - 直接对分区的目录的数据进行处理
+
+- 问题1：有一张Hive表db_test.tb_test1，不是分区表也不是分桶表，表在HDFS中的目录
+
+  ```
+  /user/hive/warehouse/db_test.db/tb_test1
+  ```
+
+  - 问题：如果我通过hdfs命令手动往这个表的目录中放一个文件，请问表中select是否能读到这个文件的数据？
+
+    ```
+    hdfs dfs -put 1.txt /user/hive/warehouse/db_test.db/tb_test1
+    ```
+
+  - 测试
+
+    ```sql
+    --创建数据库
+    create database db_emp;
+    use db_emp;
+    --创建普通员工表
+    create table tb_emp(
+    empno string,
+    ename string,
+    job string,
+    managerid string,
+    hiredate string,
+    salary double,
+    jiangjin double,
+    deptno string
+    ) row format delimited fields terminated by '\t';
+    --加载数据
+    load data local inpath '/emp.txt' into table tb_emp;
+    
+    ```
+
+  - 答案：可以读到的
+
+- 问题2：有一张Hive表db_test.tb_test2，是分区表，表在HDFS中的目录结构
+
+  ```
+  /user/hive/warehouse/db_test.db/tb_test2/daystr=2022-01-01/20220101.txt
+                                          /daystr=2022-01-02/20220102.txt 
+                                          ……
+  ```
+
+  - 问题：如果手动在HDFS的这个目录中创建一个分区的目录，然后将数据放入这个分区目录中，请问Hive中能否读到这个分区？
+
+    ```
+    hdfs dfs -mkdir /user/hive/warehouse/db_test.db/tb_test2/daystr=2022-03-28
+    hdfs dfs -put 20220328.txt /user/hive/warehouse/db_test.db/tb_test2/daystr=2022-03-28
+    ```
+
+  - 测试
+
+    ```
+    use db_emp;
+    --创建普通员工表
+    create table tb_emp_part(
+    empno string,
+    ename string,
+    job string,
+    managerid string,
+    hiredate string,
+    salary double,
+    jiangjin double,
+    deptno string
+    ) 
+    partitioned by (dept string)
+    row format delimited fields terminated by '\t';
+    --加载数据
+    load data local inpath '/emp10.txt' into table tb_emp_part partition (dept='10');
+    load data local inpath '/emp20.txt' into table tb_emp_part partition (dept='20');
+    
+    show partitions tb_emp_part;
+    
+    select * from tb_emp_part where dept='30';
+    ```
+
+  - 答案：读不到，没有这个分区的元数据
+
+    ```
+    alter table tb_emp_part add partition (dept='30');
+    ```
