@@ -7,7 +7,7 @@ import configparser
 
 # load and read config.ini
 config = configparser.ConfigParser()
-config.read('D:\\PythonProject\\OneMake_Spark\\auto_create_hive_table\\resources\\config.txt')
+config.read('C:\\GitHub Desktop\\ITheima_python_bigdata\\OneMake_Spark\\auto_create_hive_table\\resources\\config.txt')
 
 
 # 根据key获得value

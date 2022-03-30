@@ -9,10 +9,37 @@
   ![image-20210821102418366](assets/image-20210821102418366-1648541362548.png)
 
   - ODS层：原始数据层，所有从Oracle中同步过来的数据
+
   - 实现：101张表的数据和Schema信息已经存储在HDFS上
+
+    - full_impl: 44张全量
+    - incr_impl: 57张增量
+    - avsc: 101张表的Schema[列的信息]文件
+
   - 目标
     - step1：建库建表
+
+      - 建库
+
+        ```sql
+        create database if not exists 数据库名称;
+        ```
+
+      - 建表
+
+        ```sql
+        create table if not exists 数据库名.表名(
+        	列名 列的类型 列的注释
+            ......
+        )
+        location '表在HDFS上的地址';
+        ```
+
     - step2：申明分区
+
+      ```sql
+      alter table add partition
+      ```
 
 - **小结**
 
@@ -49,6 +76,15 @@
 
   - **语法**
 
+    - TEMPORARY：临时表
+    - EXTERNAL：外部表
+    - PARTITIONED：分区表
+    - CLUSTERED：分桶表
+    - ROW FORMAT：指定列【\001】或者行的分隔符【\n】
+    - STORED AS：存储的文件类型，默认是TextFile
+    - LOCATION：指定表对应的HDFS地址，默认地址/user/hive/warehouse/数据库目录/表的目录
+    - TBLPROPERTIES：配置表的一些属性，例如压缩等等
+
   - **注意**：能在Hive中运行，通常都可以在SparkSQL中执行，但是Spark中语法有两个细节需要注意
 
     - Hive语法：支持数据类型比较少，建表语法严格要求顺序
@@ -60,7 +96,7 @@
 
     - SparkSQL语法：支持数据类型兼容Hive类型，顺序有些位置可以互换
 
-    - 本次所有SQL：SparkSQL
+    - 本次所有SQL[DDL+DML+DQL]：SparkSQL, 不要放在Hive中执行
 
 - **小结**
 
@@ -129,7 +165,7 @@
         );
       ```
 
-      - 方式二：加载Schema文件
+      - ==方式二：加载Schema文件==
 
       ```sql
       CREATE TABLE embedded
@@ -158,7 +194,7 @@
         TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
       ```
 
-    - 方式二：**指定解析类和加载Schema文件**
+    - ==方式二：**指定解析类和加载Schema文件**==
 
       ```sql
         create external table one_make_ods_test.ciss_base_areas
@@ -173,6 +209,25 @@
         location '/data/dw/ods/one_make/full_imp/ciss4.ciss_base_areas'
         TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
       ```
+
+    - 与普通建表语法的区别
+
+      1. 指定文件的格式为AVRO格式
+
+         ```
+         ROW FORMAT SERDE
+             'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+           STORED AS INPUTFORMAT
+             'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+           OUTPUTFORMAT
+             'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+         ```
+
+      2. 不用申明表的字段信息, 直接加载Schema文件
+
+         ```
+         TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
+         ```
 
 - **小结**
 
@@ -199,6 +254,9 @@
 
     - 难点1：表太多，如何构建每张表？
 
+      - 表比较少: 从业务系统中将每张表的建表语句导出来, 改成Hive语法, 封装成SQL脚本
+      - 表比较多: 实现自动化建表
+
     - 难点2：自动化建表时，哪些是动态变化的？
 
       ```sql
@@ -215,9 +273,21 @@
       TBLPROPERTIES ('avro.schema.url'='/data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc');
       ```
 
+      - 表名
+      - 表的注释
+      - 表对应的HDFS目录
+      - 表对应的Schema文件
+
     - 难点3：如果使用自动建表，如何获取每张表的字段信息？
 
+      - 直接加载表对应的Schema文件
+
     - 难点4：表的注释怎么得到？
+
+      - Oracle中有: 从Oracle中根据表名获取这张表的源数据信息
+        - 表的名称
+        - 表的注释
+        - 字段信息: 字段名称, 字段类型, 字段长度, 字段精度, 字段注释
 
   - **需求**：加载Sqoop生成的Avro的Schema文件，实现自动化建表
 
@@ -248,13 +318,24 @@
 
       - 读取全量表表名
 
+        - 文件: 包含了表名
+        - 读取: 放入一个变量中: List
+
       - 获取表的注释
+
+        - 根据表名从Oracle中获取
 
       - 获取表的目录：/data/dw/ods/one_make/full_imp/表名
 
       - 获取表的Schema：/data/dw/ods/one_make/avsc/表名.avsc
 
       - 拼接建表字符串
+
+        - 拼接建表字符串
+
+          ```
+          sql = "create external table if not exists" + dbname + "." + tabname......
+          ```
 
         - 简单拼接：str3 = str1+str2
 
@@ -281,8 +362,17 @@
 
       - 读取增量表表名：**不同的列表中**
       - 获取表的目录：/data/dw/ods/one_make/**incr**_imp/表名
+      - 获取表的Schema: /data/dw/ods/one_make/avsc/表名.avsc
 
     - 要想实现上面这个功能，推断一些类和方法？
+
+      1. 一定要读取表名的文件
+         - 工具类: 读文件中的表名放入一个列表中
+      2. 需要连接SparkSQL和Oracle
+         - 工具类: 获取数据库的连接
+         - 工具类: 从Oracle中根据表名获取表的元数据
+
+      ......
 
 - **小结**
 
@@ -545,17 +635,18 @@
 
     ```python
     # 46行：修改为你实际的项目路径对应的表名文件
-    tableList = FileUtil.readFileContent("D:\\PythonProject\\OneMake_Spark\\dw\\ods\\meta_data\\tablenames.txt")
+    tableList = FileUtil.readFileContent("C:\\GitHub Desktop\\ITheima_python_bigdata\\OneMake_Spark\\dw\\ods\\meta_data\\tablenames.txt")
     ```
 
   - 修改2：auto_create_hive_table.cn.itcast.utils.ConfigLoader
 
     ```python
     # 10行：修改为实际的连接属性配置文件的地址
-    config.read('D:\\PythonProject\\OneMake_Spark\\auto_create_hive_table\\resources\\config.txt')
+    config.read('C:\\GitHub Desktop\\ITheima_python_bigdata\\OneMake_Spark\\auto_create_hive_table\\resources\\config.txt')
     ```
 
 - **小结**
+
   - 实现配置修改
 
 ### 6. 连接代码及测试
@@ -578,10 +669,18 @@
   - **连接代码讲解**
 
     - step1：怎么获取连接？
+      - Oracle: 安装cx_Oracle
+      - SparkSQL, Hive: 安装PyHive
     - step2：连接时需要哪些参数？
+      - Oracle：hostname/port/username/password/sid
+      - SparkSQL、Hive：hostname/port/username/password
     - step3：如果有100个代码都需要构建Hive连接，怎么解决呢？
+      - 把连接的参数放在配置文件中, 通过工具类读取配置文件
     - step4：在ODS层建101张表，表名怎么动态获取呢？
+      - 表名存储在文件中, 通过工具类, 将表名读取放入一个列表中
     - step5：ODS层的表分为全量表与增量表，怎么区分呢？
+      - 全量表的表名放在一个列表中: tableNameList[0]
+      - 增量表的表名放在一个列表中: tableNameList[1]
 
   - **连接代码测试**
 
@@ -615,7 +714,16 @@
   - **代码讲解**
 
     - step1：ODS层的数据库名称叫什么？
+
+      ```sql
+      create database if not exists one_make_ods;
+      ```
+
     - step2：如何使用PyHive创建数据库？
+
+      - 先获取连接
+      - 再获取游标, 利用游标执行SQL语句
+      - 关闭资源
 
   - **代码测试**
 
@@ -747,18 +855,88 @@
 1. **常见编程语言**
 
    - C语言：面向过程，实现一个功能，细化到每一步都要自己实现
-   - Java：面向对象，万物皆对象，用人的思维去编程，高级语言
-   - Python：面向对象 + 面向函数，所有功能都封装成函数
+     - 特点：更接近于底层
+     - 缺点：编程十分麻烦
+     - 应用：硬件开发
+   - Java：面向对象【强】，万物皆对象，用人的思维去编程，高级语言
+     - 特点：软件设计非常方便
+     - 缺点：做数据处理不方便
+     - 应用：软件开发
+   - Python：面向对象【弱】 + 面向函数，所有功能都封装成函数
+     - 特点：简洁，适合做数据处理
+     - 缺点：过于灵活，没有很多规则
 
 2. **面向对象：实体【Entity】类**
 
-   - 功能：用于封装一个类型，**存储数据**
+   - 功能：用于封装一个类型，代表一个对象，**存储对象的数据**
 
    - 包含：属性和方法
 
+     ```
+     class Name：
+     	// 类的属性
+     	// 类的方法
+     ```
+
    - 举例：张三吃莴笋
 
-     
+     - 几个实体？
+
+       - 人
+       - 蔬菜
+
+     - 构建两个实体类
+
+       ```python
+       class Person:
+       	#属性
+       	id = None
+       	name = None
+       	age = None
+       	gender = None
+           
+       	# 方法
+           # 读写属性的方法
+           def __init__(self,id,name,age,gender):
+               self.id = id
+               self.name = name
+               ……
+           
+           def setId(self,newId):
+               self.id = newId
+               
+           def getId(self):
+               return self.id
+           ……
+           # 其他动作方法
+           def eat(self,anything):
+               print(self.name + " eating " + anything.name)
+               
+       class Veg:
+           #属性
+           name = None
+           color = None
+           ……
+           
+           #方法
+           def __init__(self,name,color):
+               self.name = name
+               self.color = color
+           # 读写属性方法
+           ……
+           # 其他动作：光合作用
+       ```
+
+     - 实现需求
+
+       ```python
+       # 构建类的实例对象
+       p1 = Person("1","zhangsan"……)
+       wosun = Veg("莴笋","green")
+       # 行程实体关系
+       if (wosun.color == "green"):
+       	p1.eat(wosun)
+       ```
 
 3. **面向对象：工具类**：xxxxUtils
 
@@ -776,29 +954,95 @@
 
      - 实现：将吃这个方法封装到一个工具类中
 
-       
+       ```python
+       # 实体类
+       class Person
+       class Animal
+       # 工具类
+       class GeneralUtil:
+       	# 吃的方法
+       	def eat(A,B):
+               print(A +" eating " + B)
+             
+           
+       class EntranceRun:
+           p1 = Person(张三)
+           p2 = Person(李四)
+           a1 = Animal(狗)
+           v1 = Veg(柳树)
+           GeneralUtil.eat(p1,p2)
+           GeneralUtil.eat(a1,p2)
+           GeneralUtil.eat(p2,v1)
+           GeneralUtil.eat(a1,v1)
+       ```
 
-4. **面向对象：常量类**
+4. **面向对象：常量类**:xxxxCommon
 
    - 功能：一般用于提供一些**公共的固定不变的变量 = 常量**
+
    - 包含：属性
+
    - 举个栗子
+
      - 代码1.py：将每天的UV写入MySQL：tb1中
+
+       ```
+       df1.write.jdbc("jdbc:mysql://node1:3306/db_rs","tb_uv","root","123456")
+       ```
+
      - 代码2.py：将每天的PV写入MySQL：tb2中
-     - ……
-     - 代码100.py
-     - 问题
-       - 写很多遍，容易写错
-       - 数据库配置如果发生改变，需要挨个修改
-     - 解决：将数据库的配置信息，放到一个公共的地方，用到的时候调用这个公共的地方
+
+       ```
+       df2.write.jdbc("jdbc:mysql://node1:3306/db_rs","tb_pv","root","123456")
+       ```
+
+- ……
+
+- 代码100.py
+
+  - 问题
+
+    - 写很多遍，容易写错
+    - 数据库配置如果发生改变，需要挨个修改
+
+  - 解决：将数据库的配置信息，放到一个公共的地方，用到的时候调用这个公共的地方
+
+  - 常量类
+
+    ```
+    class JDBCCommon:
+    	jdbc_url = "jdbc:mysql://node1:3306/db_rs"
+    	username = "root"
+    	password = "123456"
+    ```
+
+  - 代码1.py：将每天的UV写入MySQL：tb1中
+
+    ```
+    df1.write.jdbc(JDBCCommon.jdbc_url,"tb_uv",JDBCCommon.username,JDBCCommon.password)
+    ```
+
+  - 代码2.py：将每天的PV写入MySQL：tb2中
+
+    ```
+    df2.write.jdbc(JDBCCommon.jdbc_url,"tb_pv",JDBCCommon.username,JDBCCommon.password)
+    ```
+
+  - ……
+
+  - 代码100.py
 
 ## 附二: 代码操作数据库
 
 - **规律**：所有数据库，都有一个服务端，代码中构建一个服务端连接，提交SQL给这个服务端
 
+  
+
 - **步骤**
 
   - step1：构建连接：指定数据库地址+认证
+
+    
 
     ```python
     #  MySQL
@@ -821,9 +1065,9 @@
 
   - step3：释放资源
 
-    > ```python
-    > cursor.close()
-    > conn.close()
-    > ```
+    ```python
+    cursor.close()
+    conn.close()
+    ```
 
     

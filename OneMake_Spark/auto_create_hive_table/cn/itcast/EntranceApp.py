@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # 调用工具类获取Hive连接
     hiveConn = OracleHiveUtil.getSparkHiveConn()
     # 读取文件，获取所有表的名字，放入一个列表中
-    tableList = FileUtil.readFileContent("D:\\PythonProject\\OneMake_Spark\\dw\\ods\\meta_data\\tablenames.txt")
+    tableList = FileUtil.readFileContent("C:\\GitHub Desktop\\ITheima_python_bigdata\\OneMake_Spark\\dw\\ods\\meta_data\\tablenames.txt")
     # 获取所有ODS层的表名，区分全量表与增量表：List[全量表名List，增量表名List]
     tableNameList = TableNameUtil.getODSTableNameList(tableList)
     # ------------------测试：输出获取到的连接以及所有表名
@@ -96,34 +96,34 @@ if __name__ == '__main__':
     for tblName in incrTableList:
         createHiveTablePartition.executeCPartition(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.INCR_IMP, partitionVal)
 
-    # =================================todo: 5-DWD层建库建表=============================================#
-    # 5.1 建库记录日志
-    recordLog('DWD层创建数据库')
-    # 创建DWD层数据库
-    cHiveTableFromOracleTable.executeCreateDbHQL(CreateMetaCommon.DWD_NAME)
-
-    # 5.2 建表记录日志
-    recordLog('DWD层创建表...')
-    # dwd层创建表是不需要分全量和增量，需求：把全量和增量表名合并为一个集合
-    allTableName = [i for j in tableNameList for i in j]
-    # 取出每张表的表名
-    for tblName in allTableName:
-        # 在DWD层创建每张表
-        cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.DWD_NAME, tblName, None)
-
-    # =================================todo: 6-DWD层数据抽取=============================================#
-    # 记录日志
-    recordWarnLog('DWD层加载数据，此操作将启动Spark JOB执行，请稍后...')
-    # 取出每张表名
-    for tblName in allTableName:
-        recordLog(f'加载dwd层数据到{tblName}表...')
-        try:
-            # 抽取ODS层表的数据到DWD层
-            LoadData2DWD.loadTable(oracleConn, hiveConn, tblName, partitionVal)
-        #异常处理
-        except Exception as error:
-            print(error)
-        recordLog('完成!!!')
+    # # =================================todo: 5-DWD层建库建表=============================================#
+    # # 5.1 建库记录日志
+    # recordLog('DWD层创建数据库')
+    # # 创建DWD层数据库
+    # cHiveTableFromOracleTable.executeCreateDbHQL(CreateMetaCommon.DWD_NAME)
+    #
+    # # 5.2 建表记录日志
+    # recordLog('DWD层创建表...')
+    # # dwd层创建表是不需要分全量和增量，需求：把全量和增量表名合并为一个集合
+    # allTableName = [i for j in tableNameList for i in j]
+    # # 取出每张表的表名
+    # for tblName in allTableName:
+    #     # 在DWD层创建每张表
+    #     cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.DWD_NAME, tblName, None)
+    #
+    # # =================================todo: 6-DWD层数据抽取=============================================#
+    # # 记录日志
+    # recordWarnLog('DWD层加载数据，此操作将启动Spark JOB执行，请稍后...')
+    # # 取出每张表名
+    # for tblName in allTableName:
+    #     recordLog(f'加载dwd层数据到{tblName}表...')
+    #     try:
+    #         # 抽取ODS层表的数据到DWD层
+    #         LoadData2DWD.loadTable(oracleConn, hiveConn, tblName, partitionVal)
+    #     #异常处理
+    #     except Exception as error:
+    #         print(error)
+    #     recordLog('完成!!!')
 
 # =================================todo: 7-程序结束，释放资源=============================================#
 oracleConn.close()
