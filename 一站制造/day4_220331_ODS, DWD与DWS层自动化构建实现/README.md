@@ -47,7 +47,43 @@
 
 ### 2. 获取Oracle表元数据
 
+- **目标**：**理解ODS层获取Oracle元数据**
 
+- **实施**
+
+  - 从Oracle中获取：从系统表中获取某张表的信息和列的信息
+
+    ```sql
+    select
+           columnName, dataType, dataScale, dataPercision, columnComment, tableComment
+    from
+    (
+        select
+               column_name columnName,
+               data_type dataType,
+               DATA_SCALE dataScale,
+               DATA_PRECISION dataPercision,
+               TABLE_NAME
+        from all_tab_cols where 'CISS_CSP_WORKORDER' = table_name) t1
+        left join (
+            select
+                   comments tableComment,TABLE_NAME
+            from all_tab_comments WHERE 'CISS_CSP_WORKORDER' = TABLE_NAME) t2
+            on t1.TABLE_NAME = t2.TABLE_NAME
+        left join (
+            select comments columnComment, COLUMN_NAME
+            from all_col_comments WHERE TABLE_NAME='CISS_CSP_WORKORDER') t3
+            on t1.columnName = t3.COLUMN_NAME;
+    ```
+
+    ![image-20211009154553669](assets/image-20211009154553669-1648601853379.png)
+
+    - 如何获取元数据？
+    - 将查询的结果进行保存？
+
+- **小结**
+
+  - 理解ODS层获取Oracle元数据
 
 ### 3. 申明分区代码及测试
 
