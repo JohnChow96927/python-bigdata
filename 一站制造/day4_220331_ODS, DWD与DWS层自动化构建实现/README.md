@@ -261,7 +261,37 @@
 
 ### 4. 数据抽取分析
 
+- **目标**：**实现DWD层的构建思路分析**
 
+- **路径**
+
+  - step1：抽取目标
+  - step2：抽取语法
+
+- **实施**
+
+  - **抽取目标**：将ODS层中每张表的数据抽取到DWD层对应的数据表中
+
+  - **抽取语法**
+
+    - 行级事务：insert into tbname values（columnValue1……）
+    - 写入数据表：insert into|overwrite tbname [partition ] select ……
+    - 保存到文件：insert overwrite [local] directory ‘路径’ select ……
+
+    ```sql
+    insert overwrite table dwd.tbname partition(dt = '20210101')
+    select
+    	字段1,
+    	字段2,
+    	字段3,
+    	……
+    from ods.tbname
+    where dt = '20210101';
+    ```
+
+- **小结**
+
+  - 实现DWD层的构建思路分析
 
 ### 5. 数据抽取测试
 
