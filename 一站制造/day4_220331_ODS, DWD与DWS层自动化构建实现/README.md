@@ -115,7 +115,66 @@
 
 ### 4. ODS层与DWD层区别
 
+- **目标**：理解ODS层与DWD层的区别
 
+- **路径**
+
+  - step1：内容区别
+  - step2：设计区别
+  - step3：实现区别
+
+- **实施**
+
+  - **内容区别**
+
+    - ODS：原始数据
+    - DWD：对ODS层ETL以后的数据，保证数据质量
+    - 本次数据来源于Oracle数据库，没有具体的ETL的需求，可以直接将ODS层的数据写入DWD层
+    - DWD层与ODS层的数据是一致的
+
+  - **设计区别**
+
+    - ODS层：Avro格式分区数据表
+    - DWD层：Orc格式分区数据表
+
+  - **实现区别**
+
+    - ODS层建表：基于avsc文件指定Schema建表
+
+      ```sql
+      create external table if not exists one_make_ods.ciss_base_areas 
+      partitioned by (dt string) 
+      ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+      STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+      OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+      tblproperties ('avro.schema.url'='hdfs:///data/dw/ods/one_make/avsc/CISS4_CISS_BASE_AREAS.avsc')
+      location '/data/dw/ods/one_make/full_imp/ciss4.ciss_base_areas'
+      ```
+
+    - DWD层建表：自己指定每个字段的Schema建表
+
+      ```sql
+      create external table if not exists one_make_dwd.ciss_base_areas(
+      	ID string comment '列的注释',
+      	AREANAME string,
+          PARENTID string,
+      	SHORTNAME string,
+          LNG string,
+      	LAT string,
+      	RANK bigint,
+      	POSITION string,
+      	SORT bigint
+      ) partitioned by (dt string) 
+      stored as orc
+      location '/data/dw/dwd/one_make/ciss_base_areas';
+      ```
+
+      - 难点1：字段信息怎么获取？
+      - 难点2：Oracle中字段类型与SparkSQL字段可能不一致？
+
+- **小结**
+
+  - 理解ODS层与DWD层的区别
 
 ## II. DWD层
 
