@@ -12,7 +12,7 @@ from auto_create_hive_table.cn.itcast.utils import OracleHiveUtil, FileUtil, Tab
 from auto_create_hive_table.config import common
 
 # 根据不同功能接口记录不同的日志
-admin_logger = common.get_logger('itcast')
+admin_logger = common.get_logger('itcast')  # 创建日志记录员logger
 
 
 def recordLog(modelName):
@@ -21,7 +21,7 @@ def recordLog(modelName):
     :param modelName: 模块名称
     :return: 日志信息
     """
-    msg = f'{modelName}'
+    msg = f'{modelName}'    # 日志信息
     admin_logger.info(msg)
     return msg
 
@@ -63,42 +63,42 @@ if __name__ == '__main__':
     # =================================todo: 2-ODS层建库=============================================#
     # 使用Oracle连接以及Hive的连接，构建一个HiveSQL的操作对象
     cHiveTableFromOracleTable = CHiveTableFromOracleTable(oracleConn, hiveConn)
-    # # 打印日志
-    # recordLog('ODS层创建数据库')
-    # # 调用Hive操作对象的方法，实现创建ODS层数据
-    # cHiveTableFromOracleTable.executeCreateDbHQL(CreateMetaCommon.ODS_NAME)
-    #
-    # # =================================todo: 3-ODS层建表=============================================#
-    # # 打印日志
-    # recordLog('ODS层创建全量表...')
-    # # 获取所有全量表的表名列表
-    # fullTableList = tableNameList[0]
-    # # 取出每个全量表的表名
-    # for tblName in fullTableList:
-    #     # Hive中创建这张全量表：数据库名称、表名、表的类型
-    #     cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.FULL_IMP)
-    # # 打印日志
-    # recordLog('ODS层创建增量表...')
-    # # 获取所有增量表的表名列表
-    # incrTableList = tableNameList[1]
-    # # 取出每个增量表的表名
-    # for tblName in incrTableList:
-    #     # Hive中创建这张增量表：数据库名称、表名、表的类型
-    #     cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.INCR_IMP)
-    #
-    # # =================================todo: 4-ODS层申明分区=============================================#
-    # recordLog('创建ods层全量表分区...')
-    # createHiveTablePartition = CreateHiveTablePartition(hiveConn)
-    # # 全量表执行44次创建分区操作
-    # for tblName in fullTableList:
-    #     createHiveTablePartition.executeCPartition(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.FULL_IMP,
-    #                                                partitionVal)
-    #
-    # recordLog('创建ods层增量表分区...')
-    # # 增量表执行57次创建分区操作
-    # for tblName in incrTableList:
-    #     createHiveTablePartition.executeCPartition(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.INCR_IMP,
-    #                                                partitionVal)
+    # 打印日志
+    recordLog('ODS层创建数据库')
+    # 调用Hive操作对象的方法，实现创建ODS层数据
+    cHiveTableFromOracleTable.executeCreateDbHQL(CreateMetaCommon.ODS_NAME)
+
+    # =================================todo: 3-ODS层建表=============================================#
+    # 打印日志
+    recordLog('ODS层创建全量表...')
+    # 获取所有全量表的表名列表
+    fullTableList = tableNameList[0]
+    # 取出每个全量表的表名
+    for tblName in fullTableList:
+        # Hive中创建这张全量表：数据库名称、表名、表的类型
+        cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.FULL_IMP)
+    # 打印日志
+    recordLog('ODS层创建增量表...')
+    # 获取所有增量表的表名列表
+    incrTableList = tableNameList[1]
+    # 取出每个增量表的表名
+    for tblName in incrTableList:
+        # Hive中创建这张增量表：数据库名称、表名、表的类型
+        cHiveTableFromOracleTable.executeCreateTableHQL(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.INCR_IMP)
+
+    # =================================todo: 4-ODS层申明分区=============================================#
+    recordLog('创建ods层全量表分区...')
+    createHiveTablePartition = CreateHiveTablePartition(hiveConn)
+    # 全量表执行44次创建分区操作
+    for tblName in fullTableList:
+        createHiveTablePartition.executeCPartition(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.FULL_IMP,
+                                                   partitionVal)
+
+    recordLog('创建ods层增量表分区...')
+    # 增量表执行57次创建分区操作
+    for tblName in incrTableList:
+        createHiveTablePartition.executeCPartition(CreateMetaCommon.ODS_NAME, tblName, CreateMetaCommon.INCR_IMP,
+                                                   partitionVal)
 
     # =================================todo: 5-DWD层建库建表=============================================#
     # 5.1 建库记录日志

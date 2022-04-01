@@ -4,10 +4,10 @@ __coding__ = "utf-8"
 __author__ = "itcast"
 
 # 导包
-from pyhive import hive                                                         # 导入Hive操作包
-from auto_create_hive_table.cn.itcast.datatohive import CreateMetaCommon        # 导入常量数据包
-from auto_create_hive_table.cn.itcast.utils import OracleMetaUtil               # 导入Oracle表信息的工具类
-import logging                                                                  # 导入日志记录包
+from pyhive import hive  # 导入Hive操作包
+from auto_create_hive_table.cn.itcast.datatohive import CreateMetaCommon  # 导入常量数据包
+from auto_create_hive_table.cn.itcast.utils import OracleMetaUtil  # 导入Oracle表信息的工具类
+import logging  # 导入日志记录包
 
 
 class CHiveTableFromOracleTable:
@@ -56,13 +56,13 @@ class CHiveTableFromOracleTable:
             # 从Oracle中获取这张表的Schema：表的信息【表名、注释】、列的信息【列名、类型、注释】
             tableMeta = OracleMetaUtil.getTableMeta(self.oracleConn, tableName.upper())
             # 通过Oracle中获取的表的信息，拼接HiveSQL的建表语句
-            buffer.append("create external table if not exists " + dbName + ".")    # 指定基本语法和数据库名称
-            buffer.append(tableName.lower())                                        # 将表名转换为小写
+            buffer.append("create external table if not exists " + dbName + ".")  # 指定基本语法和数据库名称
+            buffer.append(tableName.lower())  # 将表名转换为小写
             # 添加列的信息：只有DWD层才有列的信息，ODS层通过avsc文件加载
             buffer = getODSStringBuffer(buffer, dbName, tableMeta)
-            if tableMeta.tableComment:                                              # 如果表的注释不为空
-                buffer.append(" comment '" + tableMeta.tableComment + "' \n")       # 添加表的注释
-            buffer.append(' partitioned by (dt string) ')                           # 添加分区字段为dt，String类型
+            if tableMeta.tableComment:  # 如果表的注释不为空
+                buffer.append(" comment '" + tableMeta.tableComment + "' \n")  # 添加表的注释
+            buffer.append(' partitioned by (dt string) ')  # 添加分区字段为dt，String类型
             # 根据数据库名称和表名获取表的配置属性：ODS=>AVRO或者DWD=>ORC的配置
             buffer.append(CreateMetaCommon.getTableProperties(dbName, tableName))
             # 根据数据库名称，指定这张表属于ODS层还是DWD层
@@ -70,7 +70,8 @@ class CHiveTableFromOracleTable:
             # 根据数据库名称，获取Oracle数据库名称
             userName = CreateMetaCommon.getUserNameByDBName(dbName)
             # 指定该表在HDFS上的映射地址:/data/dw/层次/one_make/全量/用户名表名
-            buffer.append(" location '/data/dw/" + dbFolderName + "/one_make/" + CreateMetaCommon.getDynamicDir(dbName,dynamicDir) + "/" + userName + tableName + "'")
+            buffer.append(" location '/data/dw/" + dbFolderName + "/one_make/" + CreateMetaCommon.getDynamicDir(dbName,
+                                                                                                                dynamicDir) + "/" + userName + tableName + "'")
             # 获取HiveSQL执行的游标
             cursor = self.hiveConn.cursor()
             # 把拼接的列表转换为一个字符串，然后执行该SQL

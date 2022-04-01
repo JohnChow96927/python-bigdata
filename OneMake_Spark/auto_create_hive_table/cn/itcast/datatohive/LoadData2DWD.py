@@ -8,7 +8,6 @@ from auto_create_hive_table.cn.itcast.datatohive import CreateMetaCommon
 from auto_create_hive_table.cn.itcast.utils import OracleMetaUtil
 
 
-
 def loadTable(orclConn, hiveConn, tableName, partitionValue):
     """
     加载ODS层表的数据到DWD层

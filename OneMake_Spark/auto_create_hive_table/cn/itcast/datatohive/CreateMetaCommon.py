@@ -3,7 +3,6 @@
 __coding__ = "utf-8"
 __author__ = "itcast"
 
-
 from auto_create_hive_table.cn.itcast.datatohive.fileformat.AvroTableProperties import AvroTableProperties
 from auto_create_hive_table.cn.itcast.datatohive.fileformat.OrcSnappyTableProperties import OrcSnappyTableProperties
 from auto_create_hive_table.cn.itcast.datatohive.fileformat.OrcTableProperties import OrcTableProperties

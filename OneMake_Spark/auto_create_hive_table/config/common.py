@@ -5,7 +5,7 @@ import logging.config
 # 添加日志功能（日志功能在接口层使用）
 def get_logger(log_type):
     """
-    log_type:传入的日志类型(admin,company,user等)
+    log_type: 传入的日志类型(admin, company, user等)
     """
     # 1.加载日志配置信息
     logging.config.dictConfig(settings.LOGGING_DIC)

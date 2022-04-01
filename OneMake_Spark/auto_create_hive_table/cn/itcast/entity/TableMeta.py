@@ -48,15 +48,13 @@ class TableMeta(object):
 
     # 初始化列集合信息
     def __init__(self, tableName, tableComment):
-        self._tableName = tableName
+        self._tableName = tableName  # 半私有变量
         self._tableComment = tableComment
         self._columnMetaList: [ColumnMeta] = list()
 
     # overwrite toString
     def __str__(self) -> str:
-        # cmList = '\n'
-        # for cm in self.columnMetaList:
-        #     cmList += str(cm) + '\n'
-        # [] -> 把中括号中的内容变成集合 ；for cm in self.columnMetaList -> 得到一个个ColumnMeta对象； str(cm) -> 把ColumnMeta对象，调用ColumnMeta对象__str__方法，转换成一个字符串
+        # cmList = '\n' for cm in self.columnMetaList: cmList += str(cm) + '\n' [] -> 把中括号中的内容变成集合 ；for cm in
+        # self.columnMetaList -> 得到一个个ColumnMeta对象； str(cm) -> 把ColumnMeta对象，调用ColumnMeta对象__str__方法，转换成一个字符串
         return f'TableMeta:\n tableName: {self.tableName}, tableComment: {self.tableComment}, \n' \
                f'columnMetaList:\n {[str(cm) for cm in self.columnMetaList]}'

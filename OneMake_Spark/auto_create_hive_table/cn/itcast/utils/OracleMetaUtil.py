@@ -10,6 +10,7 @@ from auto_create_hive_table.cn.itcast.entity.ColumnMeta import ColumnMeta
 # 表的信息对象
 from auto_create_hive_table.cn.itcast.entity.TableMeta import TableMeta
 
+
 def getTableMeta(oracleConn, tableName) -> TableMeta:
     """
     用于读取Oracle中表的信息【表名、列的信息、表的注释】封装成TableMeta
@@ -37,15 +38,15 @@ left join (select comments columnComment, COLUMN_NAME from all_col_comments WHER
         tableMeta = TableMeta(f'{tableName}', '')
         for line in resultSet:
             # 获取每一列的信息
-            columnName = line[0]        # 获取列的名称
-            dataType = line[1]          # 获取列的类型
-            dataScale = line[2]         # 获取列值长度
-            dataScope = line[3]         # 获取列值精度
-            columnComment = line[4]     # 获取列的注释
-            tableComment = line[5]      # 获取表的注释
-            if dataScale is None:       # 如果列值的长度为空，则设置为0
+            columnName = line[0]  # 获取列的名称
+            dataType = line[1]  # 获取列的类型
+            dataScale = line[2]  # 获取列值长度
+            dataScope = line[3]  # 获取列值精度
+            columnComment = line[4]  # 获取列的注释
+            tableComment = line[5]  # 获取表的注释
+            if dataScale is None:  # 如果列值的长度为空，则设置为0
                 dataScale = 0
-            if dataScope is None:       # 如果列值的精度为空，则设置为0
+            if dataScope is None:  # 如果列值的精度为空，则设置为0
                 dataScope = 0
             # 将每条数据封装成一个列的信息对象【列名 + 类型 + 长度 + 精度 + 注释】
             columnMeta = ColumnMeta(columnName, dataType, columnComment, dataScope, dataScale)
