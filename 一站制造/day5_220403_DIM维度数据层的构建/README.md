@@ -558,7 +558,163 @@
 
 ### 7. 油站维度设计
 
+- **目标**：掌握油站维度的需求与设计
 
+- **路径**
+
+  - step1：需求
+  - step2：设计
+
+- **实施**
+
+  - **需求**：构建油站维度表，得到油站id、油站名称、油站所属的地理区域、所属公司、油站状态等
+
+    ![image-20211003095335316](assets/image-20211003095335316-1636160297884-1645086557358.png)
+
+    
+
+  - **设计**
+
+    - **数据来源**
+
+      - ciss_base_oilstation：油站信息表
+
+        ```sql
+        select
+            id, --油站id
+            name, --油站名称
+            code, --油站编号
+            customer_id, --客户id
+            customer_name, --客户名称
+            province, --油站所属省份id
+            city, --油站所属城市id
+            region, --油站所属县区id
+            township, --油站所属乡镇id
+            status, --油站状态id
+            customer_classify, --客户类型id
+            dt --日期
+        from one_make_dwd.ciss_base_oilstation
+        where id != '' and name is not null and name != 'null' and customer_id is not null;
+        ```
+
+      - 油站状态字典表获取
+
+        ```sql
+        select
+             dictid, --状态id
+             dictname  --状态名称
+        from one_make_dwd.eos_dict_entry a
+        join one_make_dwd.eos_dict_type b on a.dicttypeid = b.dicttypeid
+        where b.dicttypename = '油站状态';
+        ```
+
+      - 客户分类字典表获取
+
+        ```sql
+          select
+                 dictid, --类型id
+                 dictname  --客户类型名称
+          from one_make_dwd.eos_dict_entry a
+          join one_make_dwd.eos_dict_type b on a.dicttypeid = b.dicttypeid
+          where b.dicttypename = '客户类型';
+        ```
+
+      - ciss_base_customer：客户信息表【客户id、客户省份名称、所属公司ID】
+
+        ```sql
+          select
+                 code,  --客户id
+                 company,  --客户所属公司id
+                 province  --客户所属省份名称
+          from one_make_dwd.ciss_base_customer
+          where province is not null;
+        ```
+
+      - ciss_base_baseinfo：客户公司信息表【公司ID、公司名称】
+
+        ```sql
+          select
+            distinct companycode, --公司id
+              companyname --公司名称
+        from one_make_dwd.ciss_base_baseinfo where companycode is not null;
+        ```
+
+      - ciss_base_areas：行政地区信息表
+
+        - 通过具体的id关联所有地区信息
+
+    - **实现设计**【不能运行】
+
+      - 所有表按照对应字段关联，获取对应的属性字段
+
+        ```sql
+        select
+            id, --油站id
+            name, --油站名称
+            code, --油站编号
+            customer_id, --客户id
+            customer_name, --客户名称
+            province, --油站所属省份id
+            b.provincename
+            city, --油站所属城市id
+            c.cityname,
+            region, --油站所属县区id
+            d.countyname,
+            township, --油站所属乡镇id
+            e.townname,
+            status, --油站状态id
+            g.dictname as oid_sta_name,
+            customer_classify, --客户类型id
+            f.dictname as custom_classify_name,
+            h.company, --公司id
+            i.companyname, --公司名称
+            h.provinceid, --客户的省份id
+            h.province as provincename, --客户省份名称
+            dt --日期
+        from one_make_dwd.ciss_base_oilstation a
+        join (select id provinceid , areaname provincename from one_make_dwd.ciss_base_areas where rank = 1) b
+        on a.province = b.provinceid
+        join (select id cityid , areaname cityname from one_make_dwd.ciss_base_areas where rank = 2) c
+        on a.city = c.cityid
+        join (select id countyid , areaname countyname from one_make_dwd.ciss_base_areas where rank = 3) d
+        on a.region = d.countyid
+        join (select id townid , areaname townname from one_make_dwd.ciss_base_areas where rank = 4) e
+        on a.township = e.townid
+        join (select
+                 dictid, --类型id
+                 dictname  --客户类型名称
+            from one_make_dwd.eos_dict_entry a
+            join one_make_dwd.eos_dict_type b on a.dicttypeid = b.dicttypeid
+            where b.dicttypename = '客户类型') f
+        on a.customer_classify = f.dictid
+        join (select
+                 dictid, --状态id
+                 dictname  --状态名称
+            from one_make_dwd.eos_dict_entry a
+            join one_make_dwd.eos_dict_type b on a.dicttypeid = b.dicttypeid
+            where b.dicttypename = '油站状态') g
+        on a.status = g.dictid
+        join (select
+                 code,  --客户id
+                 company,  --客户所属公司id
+                 provinceid,--客户所属省份id
+                 province  --客户所属省份名称
+            from one_make_dwd.ciss_base_customer customer
+            join (select id provinceid , areaname provincename from one_make_dwd.ciss_base_areas where rank = 1) province
+            on customer.province = province.provincename
+        where province is not null) h
+        on h.code = a.customer_id
+        join (select
+              distinct companycode, --公司id
+              companyname --公司名称
+            from one_make_dwd.ciss_base_baseinfo where companycode is not null) i
+        on h.company = i.companycode
+        where id != '' and name is not null and name != 'null' and customer_id is not null;
+        ```
+
+- **小结**
+
+  - 掌握油站维度的需求与设计
 
 ### 8. 油站维度构建
 
