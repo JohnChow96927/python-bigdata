@@ -910,7 +910,103 @@
 
 ### 10. 仓库, 物流
 
+- **目标**：**实现仓库维度、物流维度的构建**
 
+- **路径**
+
+  - step1：仓库维度
+  - step2：物流维度
+
+- **实施**
+
+  - **仓库维度**
+
+    - 建表
+
+      ```sql
+      -- 仓库维度表
+      create external table if not exists one_make_dws.dim_warehouse(
+          code string comment '仓库编码'
+          , name string comment '仓库名称'
+          , company_id string comment '所属公司'
+          , company string comment '公司名称'
+          , srv_station_id string comment '所属服务网点ID'
+          , srv_station_name string comment '所属服务网点名称'
+      )comment '仓库维度表'
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dws/one_make/dim_warehouse';
+      ```
+
+    - 加载
+
+      ```sql
+      insert overwrite table one_make_dws.dim_warehouse partition(dt='20210101')
+      select
+          warehouse.code as code
+          , warehouse.name as name
+          , warehouse.company as company_id
+          , cmp.compmay as compmay
+          , station.id as srv_station_id
+          , station.name as srv_station_name
+      --仓库信息表
+      from
+          one_make_dwd.ciss_base_warehouse warehouse
+      -- 关联公司信息表
+      left join (
+           select
+                 ygcode as company_id, max(companyname) as compmay
+           from one_make_dwd.ciss_base_baseinfo where dt='20210101'
+           -- 需要对company信息进行分组去重，里面有一些重复数据
+           group by ygcode) cmp
+           on warehouse.dt = '20210101' and cmp.company_id = warehouse.company
+      -- 关联服务网点和仓库关系表
+      left join one_make_dwd.ciss_r_serstation_warehouse station_r_warehouse
+           on station_r_warehouse.dt = '20210101' and station_r_warehouse.warehouse_code = warehouse.code
+      -- 关联服务网点表
+      left join one_make_dwd.ciss_base_servicestation station
+           on station.dt = '20210101' and station.id = station_r_warehouse.service_station_id;
+      ```
+
+  - **物流维度**
+
+    - 建表
+
+      ```sql
+      -- 物流维度表(和服务属性表类似)
+      create external table if not exists one_make_dws.dim_logistics(
+          prop_name string comment '字典名称'
+          , type_id string comment '属性id'
+          , type_name string comment '属性名称'
+      )comment '物流维度表'
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dws/one_make/dim_logistics';
+      ```
+
+    - 加载
+
+      ```sql
+      insert overwrite table one_make_dws.dim_logistics partition(dt = '20210101')
+      select
+          dict_t.dicttypename as prop_name
+          , dict_e.dictid as type_id
+          , dict_e.dictname as type_name
+      from  one_make_dwd.eos_dict_type dict_t
+      inner join one_make_dwd.eos_dict_entry dict_e
+          on dict_t.dt = '20210101'
+              and dict_e.dt = '20210101'
+              and dict_t.dicttypeid = dict_e.dicttypeid
+              and dict_t.dicttypename in (
+                  '物流公司'
+                  , '物流类型'
+              )
+      order by dict_t.dicttypename, dict_e.dictid;
+      ```
+
+- **小结**
+
+  - 实现仓库维度、物流维度的构建
 
 ## 附: 常见问题
 
