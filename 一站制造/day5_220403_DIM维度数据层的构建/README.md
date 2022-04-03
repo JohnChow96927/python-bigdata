@@ -143,7 +143,119 @@
 
 ### 2. 行政地区维度构建
 
+- **目标**：**实现行政地区维度表的构建**
 
+- **实施**
+
+  - **建维度库**
+
+    ```sql
+    create database if not exists one_make_dws;
+    ```
+
+  - **建维度表**
+
+    - 区域粒度【乡镇】
+
+      ```sql
+      create external table if not exists one_make_dws.dim_location_areas(
+          id string comment 'id'
+          , province_id string comment '省份ID'
+          , province string comment '省份名称'
+          , province_short_name string comment '省份短名称'
+          , city_id string comment '城市ID'
+          , city string comment '城市'
+          , city_short_name string comment '城市短名称'
+          , county_id string comment '县城ID'
+          , county string comment '县城'
+          , county_short_name string comment '县城短名称'
+          , area_id string comment '区域ID'
+          , area string comment '区域名称'
+          , area_short_name string comment '区域短名称'
+      ) comment '区域维度区域级别表'
+      stored as orc
+      tblproperties ("orc.compress"="SNAPPY")
+      location '/data/dw/dws/one_make/dim_location_areas';
+      ```
+
+    - 县区粒度
+
+      ```sql
+      create external table if not exists one_make_dws.dim_location_county(
+          id string comment 'id'
+          , province_id string comment '省份ID'
+          , province string comment '省份名称'
+          , province_short_name string comment '省份短名称'
+          , city_id string comment '城市ID'
+          , city string comment '城市'
+          , city_short_name string comment '城市短名称'
+          , county_id string comment '县城ID'
+          , county string comment '县城'
+          , county_short_name string comment '县城短名称'
+      ) comment '区域维度表（县城粒度）'
+      stored as orc
+      tblproperties ("orc.compress"="SNAPPY")
+      location '/data/dw/dws/one_make/dim_location_county';
+      ```
+
+  - **抽取数据**
+
+    - 区域粒度
+
+      ```sql
+      insert overwrite table one_make_dws.dim_location_areas
+      select
+        /*+repartition(1) */
+          t_area.id as id,
+          t_province.id as province_id,
+          t_province.areaname as province,
+          t_province.shortname as province_short_name,
+          t_city.id as city_id,
+          t_city.areaname as city,
+          t_city.shortname as city_short_name,
+          t_county.id as county_id,
+          t_county.areaname as county,
+          t_county.shortname as county_short_name,
+          t_area.id as area_id,
+          t_area.areaname as area,
+          t_area.shortname area_short_name
+      from
+          one_make_dwd.ciss_base_areas t_area
+          inner join one_make_dwd.ciss_base_areas t_county on t_area.rank = 4 and t_area.parentid = t_county.id
+          inner join one_make_dwd.ciss_base_areas t_city on t_county.parentid = t_city.id
+          inner join one_make_dwd.ciss_base_areas t_province on t_city.parentid = t_province.id
+          inner join one_make_dwd.ciss_base_areas t_nation on t_province.parentid = t_nation.id
+      ;
+      ```
+
+    - 县区粒度
+
+      ```sql
+      insert overwrite table one_make_dws.dim_location_county
+      select
+        /*+repartition(1) */
+          t_county.id as id,
+          t_province.id as province_id,
+          t_province.areaname as province,
+          t_province.shortname as province_short_name,
+          t_city.id as city_id,
+          t_city.areaname as city,
+          t_city.shortname as city_short_name,
+          t_county.id as county_id,
+          t_county.areaname as county,
+          t_county.shortname as county_short_name
+      from
+          one_make_dwd.ciss_base_areas t_county
+          inner join one_make_dwd.ciss_base_areas t_city on t_county.rank =3 and t_county.parentid = t_city.id
+          inner join one_make_dwd.ciss_base_areas t_province on t_city.parentid = t_province.id
+          inner join one_make_dwd.ciss_base_areas t_nation on t_province.parentid = t_nation.id
+      ;
+      ```
+
+- **小结**
+
+  - 实现行政地区维度表的构建
+  - **自行完善城市粒度、省份粒度**
 
 ### 3. 日期时间维度设计
 
