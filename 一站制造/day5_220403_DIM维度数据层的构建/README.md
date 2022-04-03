@@ -489,7 +489,72 @@
 
 ### 6. 服务网点维度构建
 
+- **目标**：**实现服务网点维度的构建**
 
+- **实施**
+
+  - **建维度表**
+
+    ```sql
+    -- 服务网点维度表
+    create external table if not exists one_make_dws.dim_srv_station(
+        id string comment '服务网点id'
+        , name string comment '服务网点名称'
+        ,code string comment '网点编号'
+        ,province_id string comment '省份id'
+        ,province string comment '省份名称'
+        ,city_id string comment '城市id'
+        ,city string comment '城市'
+        ,county_id string comment '县城id'
+        ,county string comment '县城'
+        ,status string comment '服务网点状态'
+        ,status_name string comment '状态中文名'
+        ,org_id string comment '所属组织机构id'
+        ,org_name string comment '所属组件机构名称'
+    )comment '服务网点维度表'
+    partitioned by (dt string)
+    stored as orc
+    location '/data/dw/dws/one_make/dim_srv_station';
+    ```
+
+  - **加载数据**
+
+    ```sql
+    insert overwrite table one_make_dws.dim_srv_station partition(dt='20210101')
+    select
+        station.id
+        , station.name
+        , station.code
+        , province.id as province_id
+        , province.areaname as province
+        , city.id as city_id
+        , city.areaname as city
+        , county.id as county_id
+        , county.areaname as county
+        , station.status as status
+        , dict_e.dictname as status_name
+        , station.org_id as org_id
+        , station.org_name as org_name
+    from one_make_dwd.ciss_base_servicestation station
+    -- 关联省份RANK为1
+    left join one_make_dwd.ciss_base_areas province on station.dt = '20210101' and station.province = province.id and province.rank = 1   
+    -- 关联城市RANK为2
+    left join one_make_dwd.ciss_base_areas city on station.city = city.id and city.rank = 2 
+    -- 关联城市RANK为3
+    left join one_make_dwd.ciss_base_areas county on station.region = county.id and county.rank = 3
+    -- 关联字典父表（dict_t）
+    cross join one_make_dwd.eos_dict_type dict_t  on dict_t.dt = '20210101' and dict_t.dicttypename = '服务网点使用状态'
+    -- 关联字典子表（dict_e）
+    left join one_make_dwd.eos_dict_entry dict_e on dict_e.dt = '20210101' and dict_t.dicttypeid = dict_e.dicttypeid and station.status = dict_e.dictid;
+    ```
+
+    - 查看结果
+
+      ![image-20211010143556867](assets/image-20211010143556867.png)
+
+- **小结**
+
+  - 实现服务网点维度的构建
 
 ### 7. 油站维度设计
 
