@@ -8,17 +8,17 @@
 
   ![image-20210821102418366](assets/image-20210821102418366.png)
 
-  - **ODS层** ：原始数据层
-  - **DWD层**：明细数据层
-  - **DIM层**：维度数据层
-  - **DWB层**：轻度汇总层
-  - **ST层**：数据应用层
+  - **ODS层** ：原始数据层, 存储从Oracle中同步过来的原始数据, 自动化构建
+  - **DWD层**：明细数据层, 功能是实现对ODS层数据进行数据倾斜, 保证数据质量, 自动化构建
+  - **DIM层**：维度数据层, 功能是存储维度数据表
+  - **DWB层**：轻度汇总层, 功能是存储不同的主题事实表
+  - **ST层**：数据应用层, 功能是将DWB层的是是关联DIM层的维度进行维度聚合得到不同主题每个维度的结果
 
 - **小结**
 
   - 回顾一站制造项目分层设计
 
-## II. DIM层构建
+## II. DIM(DWS)层构建
 
 ### 1. 行政地区维度设计
 
@@ -32,6 +32,10 @@
 - **实施**
 
   - **需求**：构建行政地区维度表，得到所有省份、城市、县区及乡镇维度信息
+
+    - 每个省份的订单个数, 订单金额
+
+    - 每个省份的每个城市订单个数, 订单金额
 
     - 省份维度表
 
@@ -60,6 +64,10 @@
 
     - 统计不同地区维度下的网点个数、工单个数、报销金额等
 
+    - 问题：为什么这里面地区维度表要构建多张呢？按照内容来讲，只要一张乡镇维度表不就有所有信息了？
+    - 现象：高冗余
+    - 设计：通过高冗余来避免对大量数据进行Join，直接关联对应的维度表，减少关联数据量，提高性能
+
   - **设计**
 
     - **数据来源**：one_make_dwd.ciss_base_areas
@@ -68,7 +76,22 @@
       select * from one_make_dwd.ciss_base_areas;
       ```
 
-      - 举例
+      - - id：当前这个地区对应的唯一id
+        - areaname：当前这个地区对应的名称
+        - shortname：当前这个地区对应的别名
+        - parentid：当前这个地区对应父级行政区域的id
+        - rank：标记当前这个地区对应的行政级别
+          - 0：国家：country
+
+      - 1：省份：province
+
+        - 2：城市：city
+
+      - 3：县区：county
+
+        - 4：乡镇：town
+
+        - 举例
 
         - 清华园街道：4
 
@@ -76,9 +99,7 @@
 
         - 海淀区：3
 
-          ​							![image-20211002231236132](assets/image-20211002231236132.png)
-
-          
+          ![image-20211002231236132](assets/image-20211002231236132.png)
 
         - 北京市【市级】2
 
@@ -102,7 +123,7 @@
         select id county_id,areaname county,parentid from one_make_dwd.ciss_base_areas where rank = 3;
         ```
 
-      - 获取所有省份的信息
+      - 获取所有城市的信息
 
         ```sql
         select id city_id,areaname city,parentid from one_make_dwd.ciss_base_areas where rank = 2;
@@ -252,6 +273,89 @@
       ;
       ```
 
+  - - 问题1：小文件比较多
+
+      - 原因：分区多，每个分区的数据比较少
+
+      - 解决：计算过程中数据如果经过了过滤或者聚合，要适当降低分区个数
+
+      - 实现
+
+        - SparkCore、SparkSQL：代码中repartition/coalesce实现分区个数调整
+
+          ```
+          rdd.coalesce(1)
+          dataframe.coalesce(1)
+          ```
+
+    - 问题2：如果不是代码中，而是在SQL语句中怎么调整分区个数？
+
+      - 解决：SQL语句隐式申明计算的分区数：/*+repartition(1) */
+
+    - 问题3：repartition和coalesce区别和各自特点是什么？
+
+      - repartition
+
+        - 功能：调节分区个数
+
+        - 场景：一般用于增大分区个数
+
+        - 本质：调用的还是coalesce
+
+        - 特点：一定会经过shuffle
+
+        - 定义
+
+          ```scala
+          def repartition(numPartitions: Int) = coalesce(numPartitions, shuffle = true)
+          ```
+
+      - coalesce
+
+        - 功能：调节分区个数
+
+        - 场景：一般用于减少分区个数
+
+        - 特点：可以自己选择是否经过shuffle，来调整分区数，默认不经过shuffle
+
+        - 定义
+
+          ```scala
+          def coalesce(numPartitions: Int, shuffle: Boolean = false)
+          
+          // 示例
+          rdd.coalesce(2) //将RDD的分区调整为2个分区
+          rdd.coalesce(2,shuffle = true) //将RDD的分区数调整为2个分区，并且走shuffle过程
+          ```
+
+      - 问题4：为什么必须经过shuffle才能增大分区个数，而不经过shuffle就可以降低分区个数？
+
+        - 重新分区
+
+        - RDD1：3个分区
+
+          ```
+          part0：1 2 3
+          part1：4 5 6
+          part2：7 8 9
+          ```
+
+        - RDD2 = RDD1.repartition(4) => 宽依赖过程，通过Shuffle过程中的分区来实现
+
+          ```
+          part0：0 8
+          part1：1 5 9
+          part2：2 6
+          part3：3 7
+          ```
+
+        - RDD3 = RDD2.coalesce(2) => 窄依赖过程，直接合并分区的数据即可
+
+          ```
+          part0：0 8 1 5 9
+          part1：2 6 3 7
+          ```
+
 - **小结**
 
   - 实现行政地区维度表的构建
@@ -267,6 +371,14 @@
   - step2：设计
 
 - **实施**
+
+  - **特点**：时间维度表与其他维度表都不一样
+    - 维度特征：一般很少或者不会发生变化
+  - 实现同步：全量覆盖
+    - 特殊情况：时间维度表一般不做全量覆盖，也不是从DWD层中抽取的，因为时间不可变
+      - 2022 ~ 9999年每天的时间的信息都能知道
+      - 时间维度一般是定期更新时间维度表：时间维度表一把会做分区，每一年做一个分区
+      - 今年会把下一年的每一天对应的时间维度的信息放入对应的年分区中
 
   - **需求**：构建日期时间维度表，得到所有年、季度、月、周、日的维度信息
 
