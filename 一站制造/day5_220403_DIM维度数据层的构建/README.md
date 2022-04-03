@@ -390,7 +390,102 @@
 
 ### 5. 服务网点维度设计
 
+- **目标**：掌握服务网点维度的需求与设计
 
+- **路径**
+
+  - step1：需求
+  - step2：设计
+
+- **实施**
+
+  - **需求**：构建服务网点维度表，得到服务网点id、网点名称、网点所属的地理区域、服务网点状态等
+
+    ![image-20211003085815855](assets/image-20211003085815855.png)
+
+    - 统计不同服务网点的服务人员数、工单数、核销数等
+
+  - **设计**
+
+    - **数据来源**
+
+      - ciss_base_servicestation：服务网点信息表
+
+        ```sql
+        select
+            id, --网点id
+            name, --网点名称
+            code, --网点编号
+            province, --所在省份id
+            city, --所在城市id
+            region, --所在地区id
+            status, --网点状态
+            org_id, --部门id
+            org_name --部门名称
+        from one_make_dwd.ciss_base_servicestation;
+        ```
+
+      - eos_dict_type：字典状态类别表，记录所有需要使用字典标记的表
+
+        ```sql
+        --字典类别表：字典类型id和字典类型名称
+        select
+               dicttypeid,dicttypename
+        from one_make_dwd.eos_dict_type
+        where dicttypename = '服务网点使用状态';
+        ```
+
+      - eos_dict_entry：字典状态明细表，记录所有具体的状态或者类别信息
+
+        ```sql
+        --字典明细表：字典类型id、具体的编号和值
+        select
+               dicttypeid,
+               dictid,
+               dictname
+        from one_make_dwd.eos_dict_entry
+        where dicttypeid = 'BUSS_SERVICE_STATION_STATUS';
+        ```
+
+      - ciss_base_areas：行政地区信息表
+
+        - 通过具体的id关联所有地区信息
+
+    - **实现设计**
+
+      ```sql
+      select
+          id, --网点id
+          name, --网点名称
+          code, --网点编号
+          province, --所在省份id
+          b.provincename
+          city, --所在城市id
+          c.cityname
+          region, --所在地区id
+          d.countyname
+          status, --网点状态id
+          e.dictname as statusname,
+          org_id, --部门id
+          org_name --部门名称
+      from one_make_dwd.ciss_base_servicestation a
+      -- 关联省份数据，获取省份名称
+      join (select id provinceid , areaname provincename from one_make_dwd.ciss_base_areas where rank = 1) b
+      on a.province = b.provinceid
+      join (select id cityid , areaname cityname from one_make_dwd.ciss_base_areas where rank = 2) c
+      on a.city = c.cityid
+      join (select id countyid , areaname countyname from one_make_dwd.ciss_base_areas where rank = 3) d
+      on a.region = d.countyid
+      join (select
+             dictid, -- 状态id
+             dictname -- 状态名称
+      from one_make_dwd.eos_dict_entry where dicttypeid in (select dicttypeid from one_make_dwd.eos_dict_type where dicttypename = '服务网点使用状态') ) e
+      on a.status = e.dictid;
+      ```
+
+- **小结**
+
+  - 掌握服务网点维度的需求与设计
 
 ### 6. 服务网点维度构建
 
