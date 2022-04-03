@@ -312,7 +312,81 @@
 
 ### 4. 日期时间维度构建
 
+- **目标**：**实现日期时间维度表的构建**
 
+- **实施**
+
+  - **建维度表**
+
+    ```sql
+    -- 创建日期维度表,日期维度表按照年份分区
+    create external table if not exists one_make_dws.dim_date(
+        date_id string comment '日期id'
+        , year_name_cn string comment '年份名称（中文）'
+        , year_month_id string comment '年月id'
+        , year_month_cn string comment '年月（中文）'
+        , quota_id string comment '季度id'
+        , quota_namecn string comment '季度名称（中文）'
+        , quota_nameen string comment '季度名称（英文）'
+        , quota_shortnameen string comment '季度名称（英文简写）'
+        , week_in_year_id string comment '周id'
+        , week_in_year_name_cn string comment '周（中文）'
+        , week_in_year_name_en string comment '周（英文）'
+        , weekday int comment '星期'
+        , weekday_cn string comment '星期（中文）'
+        , weekday_en string comment '星期（英文）'
+        , weekday_short_name_en string comment '星期（英文缩写）'
+        , yyyymmdd string comment '日期_yyyy_mm_dd'
+        , yyyymmdd_cn string comment '日期中文'
+        , is_workday string comment '是否工作日'
+        , is_weekend string comment '是否周末'
+        , is_holiday string comment '是否法定节假日'
+        , date_type string comment '日期类型'
+    ) comment '时间维度表'
+    partitioned by (year integer)
+    stored as orc
+    location '/data/dw/dws/one_make/dim_date'
+    ;
+    ```
+
+  - **加载数据**
+
+    - 进入Hadoop容器
+
+    - HDFS创建路径
+
+      ```shell
+      docker exec -it hadoop bash
+      hdfs dfs -mkdir -p /data/dw/dws/one_make/dim_date/2021
+      ```
+
+    - 可以使用rz方式
+
+      ```
+      yum install -y lrzsz
+      rz
+      hdfs dfs -put part-00000-cf2fc4b3-7485-4861-81e7-da0c3f76e6de-c000.snappy.orc /data/dw/dws/one_make/dim_date/2021/
+      ```
+
+      ![image-20211104160000137](assets/image-20211104160000137.png)
+
+    - 申明分区
+
+      ```
+      alter table one_make_dws.dim_date add if not exists partition (year='2021') location '/data/dw/dws/one_make/dim_date/2021';
+      ```
+
+    - 查看数据
+
+      ```sql
+      select * from one_make_dws.dim_date;
+      ```
+
+      ![image-20211104160150210](assets/image-20211104160150210.png)
+
+- **小结**
+
+  - 实现日期时间维度表的构建
 
 ### 5. 服务网点维度设计
 
