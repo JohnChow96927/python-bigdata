@@ -259,7 +259,56 @@
 
 ### 3. 日期时间维度设计
 
+- **目标**：**掌握日期时间维度的需求与设计**
 
+- **路径**
+
+  - step1：需求
+  - step2：设计
+
+- **实施**
+
+  - **需求**：构建日期时间维度表，得到所有年、季度、月、周、日的维度信息
+
+    | dateId             | String | 日期ID               | 20210101                     |
+    | ------------------ | ------ | -------------------- | ---------------------------- |
+    | yearNameCN         | String | 年份名称（中文）     | 2021年                       |
+    | year               | Int    | 年份                 | 2021                         |
+    | yearMonthId        | String | 年月ID               | 202101                       |
+    | yearNameCN         | String | 年月（中文）         | 2021年01月                   |
+    | quotaId            | String | 季度ID               | 2021Q1                       |
+    | quotaNameCN        | String | 季度名称（中文）     | 第一季度                     |
+    | quotaNameEN        | String | 季度名称（英文）     | 2021 Q1                      |
+    | quotaShortNameEN   | String | 季度名称（英文简写） | Q1                           |
+    | weekInYearId       | String | 周ID                 | 2021W1                       |
+    | weekInYearNameCN   | String | 周（中文）           | 2021第1周                    |
+    | weekInYearNameEN   | String | 周（英文）           | 2021 W1                      |
+    | weekday            | Int    | 星期                 | 5                            |
+    | weekdayCN          | String | 星期（中文）         | 星期五                       |
+    | weekdayEN          | String | 星期（英文）         | Friday                       |
+    | weekdayShortNameEN | String | 星期（英文缩写）     | Fri                          |
+    | yyyyMMdd           | String | 日期(yyyy-mm-dd)     | 2021-01-01                   |
+    | yyyyMMddCN         | String | 日期中文             | 2021年01月01日               |
+    | isWorkday          | String | 是否工作日           | n                            |
+    | isWeekend          | String | 是否周末             | n                            |
+    | isHoliday          | String | 是否法定节假日       | y                            |
+    | dateType           | String | 日期类型             | 法定节假日 \| 工作日 \| 周末 |
+
+    - 统计不同时间维度下的呼叫次数、工单数、维修数、安装数、报销金额、核销数等
+
+  - **设计**
+
+    - 数据来源：提前通过程序生成构建，**不是从数据中抽取的**
+
+      ```
+      2021  2021-10	4	42周		星期日		2021-10-10		yes	 no		周末
+      ```
+
+    - 执行周期：每一年生成下一年的每一天的维度信息，**增量**同步到维度表的分区中
+
+- **小结**
+
+  - 掌握日期时间维度的需求与设计
 
 ### 4. 日期时间维度构建
 
