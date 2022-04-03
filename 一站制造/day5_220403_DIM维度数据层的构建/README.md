@@ -797,7 +797,116 @@
 
 ### 9. 组织机构
 
+- **目标**：**实现组织机构维度的设计及构建**
 
+- **路径**
+
+  - step1：需求
+  - step2：设计
+  - step3：实现
+
+- **实施**
+
+  - **需求**：实现组织机构维度表的构建，得到每个工程师对应的组织机构信息
+
+    ![image-20211003103949211](assets/image-20211003103949211-1636160297885-1645086557359.png)
+
+    - 统计不同服务人员的工单数、核销数等
+
+  - **设计**
+
+    - org_employee：员工信息表【员工id、员工编码、员工名称、用户系统id】
+
+      ```sql
+      select
+         empid, --员工id
+         empcode, --员工编码
+         empname, --员工名称
+         userid --用户系统id
+      from one_make_dwd.org_employee;
+      ```
+
+    - org_empposition：员工岗位信息表【员工id、岗位id】
+
+      ```sql
+      select
+        empid, --员工id
+        positionid --岗位id
+      from one_make_dwd.org_empposition;
+      ```
+
+    - org_position：岗位信息表【岗位id、岗位编码、岗位名称、部门id】
+
+      ```sql
+      select
+             positionid, --岗位id
+             posicode, --岗位编码
+             posiname, --岗位名称
+             orgid --部门id
+      from one_make_dwd.org_position;
+      ```
+
+    - org_organization：部门信息表【部门id、部门编码、部门名称】
+
+      ```sql
+      select
+             orgid, --部门id
+             orgcode, --部门编码
+             orgname --部门名称
+      from one_make_dwd.org_organization;
+      ```
+
+  - **实现**
+
+    - **建维度表**
+
+      ```sql
+      -- 创建组织机构维度表，组织机构人员是经常变动的，所以按照日期分区
+      create external table if not exists one_make_dws.dim_emporg(
+          empid string comment '人员id'   
+          , empcode string comment '人员编码(erp对应的账号id)'
+          , empname string comment '人员姓名'
+          , userid string comment '用户系统id（登录用户名）'
+          , posid string comment '岗位id'
+          , posicode string comment '岗位编码'
+          , posiname string comment '岗位名称'
+          , orgid string comment '部门id'
+          , orgcode string comment '部门编码'
+          , orgname string comment '部门名称'
+      ) comment '组织机构维度表'
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dws/one_make/dim_emporg';
+      ```
+
+    - **抽取数据**
+
+      ```sql
+      -- 先根据dwd层的表进行关联，然后分别把数据取出来
+      insert overwrite table one_make_dws.dim_emporg partition(dt='20210101')
+      select
+          emp.empid as empid
+          , emp.empcode as empcode
+          , emp.empname as empname
+          , emp.userid as userid
+          , pos.positionid as posid
+          , pos.posicode as posicode
+          , pos.posiname as posiname
+          , org.orgid as orgid
+          , org.orgcode as orgcode
+          , org.orgname as orgname
+      from  one_make_dwd.org_employee emp
+      left join one_make_dwd.org_empposition emppos
+          on emp.empid = emppos.empid and emp.dt = '20210101' and emppos.dt = '20210101'
+      left join one_make_dwd.org_position pos
+          on emppos.positionid = pos.positionid and pos.dt = '20210101'
+      left join one_make_dwd.org_organization org
+          on pos.orgid = org.orgid and org.dt = '20210101';
+      ```
+
+- **小结**
+
+  - 实现组织机构维度的设计及构建
 
 ### 10. 仓库, 物流
 
