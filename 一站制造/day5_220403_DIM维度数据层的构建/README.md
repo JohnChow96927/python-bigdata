@@ -1012,6 +1012,18 @@
 
 ### 1. 未开启Cross Join
 
+- 报错
 
+  ```
+  Exception in thread "main" org.apache.spark.sql.AnalysisException: Detected implicit cartesian product for INNER join between logical plans.Use the CROSS JOIN syntax to allow cartesian products between these relations
+  ```
+
+- Spark2.x默认不允许执行笛卡尔积，除非**显示申明cross join**或者开启属性：`spark.sql.crossJoin.enabled  true`
 
 ### 2. Unable to move source
+
+```
+Error: org.apache.spark.sql.AnalysisException: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to move source hdfs://hadoop.bigdata.cn:9000/data/dw/dws/one_make/dim_warehouse/.hive-staging_hive_2020-12-23_04-26-01_363_5663538019799519260-16/-ext-10000/part-00000-63069107-6405-4e31-a55a-6bdeefcd7d9b-c000 to destination hdfs://hadoop.bigdata.cn:9000/data/dw/dws/one_make/dim_warehouse/dt=20210101/part-00000-63069107-6405-4e31-a55a-6bdeefcd7d9b-c000; (state=,code=0)
+```
+
+- 重启SparkSQL的ThriftServer，与MetaStore构建新的会话连接
