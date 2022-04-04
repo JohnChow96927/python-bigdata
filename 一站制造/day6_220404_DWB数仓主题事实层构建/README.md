@@ -559,8 +559,6 @@ DWB数仓主题事实层构建
       from one_make_dwd.ciss_service_workorder_back;
       ```
 
-      
-
     - **ciss_service_workorder_user**：工程师信息表
 
       ```sql
@@ -570,8 +568,6 @@ DWB数仓主题事实层构建
           username       --工程师姓名
       from one_make_dwd.ciss_service_workorder_user;
       ```
-
-      
 
     - **ciss_service_trvl_exp_dtl**：差旅费用信息表
 
@@ -761,6 +757,148 @@ DWB数仓主题事实层构建
   - 掌握DWB层呼叫中心事实指标表的需求分析
 
 ### 7. 工单事实指标构建
+
+- **目标**：**实现DWB层工单事实指标表的构建**
+
+- **实施**
+
+  - **建表**
+
+    ```sql
+    drop table if exists one_make_dwb.fact_worker_order;
+    create table if not exists one_make_dwb.fact_worker_order(
+        wo_id string comment '工单id'
+        , callaccept_id string comment '来电受理单id'
+        , oil_station_id string comment '油站id'
+        , userids string comment '服务该工单用户id(注意：可能会有多个，以逗号分隔)'
+        , wo_num bigint comment '工单单据数量'
+        , back_num bigint comment '退回工单数量，默认为0'
+        , abolished_num bigint comment '已作废工单数量'
+        , wait_dispatch_num bigint comment '待派工数量'
+        , wait_departure_num bigint comment '待出发数量'
+        , alread_complete_num bigint comment '已完工工单数量（已完工、已回访）'
+        , processing_num bigint comment '正在处理工单数量（待离站、待完工）'
+        , people_num int comment '工单人数数量（一个工单由多人完成）'
+        , service_total_duration int comment '服务总时长（按小时），(leave_time - start_time)'
+        , repair_service_duration int comment '报修响应时长（按小时），(start_time-submit_time)'
+        , customer_repair_num bigint comment '客户报修工单数量'
+        , charg_num bigint comment '收费工单数量'
+        , repair_device_num bigint comment '维修设备数量'
+        , install_device_num bigint comment '安装设备数据量'
+        , install_num bigint comment '安装单数量'
+        , repair_num bigint comment '维修单数量'
+        , remould_num bigint comment '改造单数量'
+        , inspection_num bigint comment '巡检单数量'
+        , workorder_trvl_exp decimal(20,1) comment '工单差旅费'
+    )
+    partitioned by (dt string)
+    stored as orc
+    location '/data/dw/dwb/one_make/fact_worker_order'
+    ;
+    ```
+
+  - **抽取**
+
+    ```sql
+    insert overwrite table one_make_dwb.fact_worker_order partition(dt = '20210101')
+    select
+        --工单id
+        wo.id wo_id
+    	--来电受理单id
+        , max(callaccept_id) callaccept_id
+    	--油站id
+        , max(oil_station_id) oil_station_id
+    	--工程师id
+        , max(case when wo.service_userids is not null then concat_ws(',', wo.service_userid, wo.service_userids) else wo.service_userid end) userids
+        --工单单据数量：安装单、维修单……
+    	, count(wo.id) wo_num
+    	--退回工单数量
+        , count(wob.id) back_num
+    	--已作废工单数量
+        , sum(case when status = '-1' then 1 else 0 end) abolished_num
+    	--待派发工单数量
+        , sum(case when status = '4' then 1 else 0 end) wait_dispatch_num
+    	--待出发工单数量
+        , sum(case when status = '2' then 1 else 0 end) wait_departure_num
+        --已完工工单数量
+    	, sum(case when status = '5' then 1 when status = '6' then 1 else 0 end) alread_complete_num
+        --处理中工单数量
+    	, sum(case when status = '3' then 1 when status = '4' then 1 else 0 end) processing_num
+        --工单人数
+    	, case when count(usr.id) = 0 then 1 else count(usr.id) end people_num
+        --服务总时长
+    	, max((wo.leave_time - wo.start_time) / 3600000) service_total_duration
+        --报修响应时长
+    	, max((wo.start_time - wo.submit_time) / 3600000) repair_service_duration
+        --客户报修工单数量
+    	, sum(case when wo.is_customer_repairs = '2' then 1 else 0 end) customer_repairs
+        --收费工单数量
+    	, sum(case when wo.is_charg = '1' then 1 else 0 end) charg_num
+        --维修设备数量
+    	, max(case when sod.repair_device_num = 0 then 1 when sod.repair_device_num is null then 0 else sod.repair_device_num end) repair_device_num
+        --安装设备数量
+    	, max(case when sod2.install_device_num = 0 then 1 when sod2.install_device_num is null then 0 else sod2.install_device_num end) install_device_num
+        --安装单数量
+    	, sum(case when sertype.installid is not null then 1 else 0 end) install_num
+        --维修单数量
+    	, sum(case when sertype.repairid is not null then 1 else 0 end) repair_num
+        --改造单数量
+    	, sum(case when sertype.remouldid is not null then 1 else 0 end) remould_num
+        --巡检单数量
+    	, sum(case when sertype.inspectionid is not null then 1 else 0 end) inspection_num
+        --工单差旅费
+    	, max(case when ed.submoney5 is null then 0.0 else ed.submoney5 end) workorder_trvl_exp
+    -- 工单信息表
+    from one_make_dwd.ciss_service_workorder wo
+    	--关联回退工单：回退工单个数
+        left join one_make_dwd.ciss_service_workorder_back wob on wo.id = wob.workorder_id
+    	--关联工程师信息表：工程师人数
+        left join one_make_dwd.ciss_service_workorder_user usr on wo.id = usr.workorder_id
+    	--关联差旅费用信息表：工单差旅费用
+        left join one_make_dwd.ciss_service_trvl_exp_dtl ed on wo.id = ed.work_order_id
+    	--关联维修设备个数信息
+        left join (
+    			--统计每个工单的维修设备个数
+    			select
+    			    so.workorder_id, count(sod.service_order_id) repair_device_num
+    			--服务单表关联设备表：每个工单对应的设备id
+    			from one_make_dwd.ciss_service_order so
+    			left join one_make_dwd.ciss_service_order_device sod
+    			on so.id = sod.service_order_id
+    			where so.type = '2' and so.dt='20210101'
+    			group by so.workorder_id
+        ) sod on wo.id = sod.workorder_id
+    	--关联安装设备个数信息
+        left join (
+    	      --统计每个工单的安装设备个数
+              select
+    		      so.workorder_id, count(sod.service_order_id) install_device_num
+    		  from one_make_dwd.ciss_service_order so
+    		  left join one_make_dwd.ciss_service_order_device sod
+    		  on so.id = sod.service_order_id
+              --过滤服务单的类型为安装类型的服务单
+    		  where so.type = '1' and so.dt='20210101'
+    		  group by so.workorder_id
+    	) sod2 on wo.id = sod2.workorder_id
+    	--工单类型合并表：安装、维修、改造、巡检单id
+        left join (
+              select
+    		      so.id, so.workorder_id, install.id installid, repair.id repairid, remould.id remouldid, inspection.id inspectionid
+    		  from one_make_dwd.ciss_service_order so
+              left join one_make_dwd.ciss_service_install install on so.id = install.service_id
+              left join one_make_dwd.ciss_service_repair repair on so.id = repair.service_id
+              left join one_make_dwd.ciss_service_remould remould on so.id = remould.service_id
+              left join one_make_dwd.ciss_service_inspection inspection on so.id = inspection.service_id
+              where so.dt = '20210101'
+        ) sertype on wo.id = sertype.workorder_id
+    where wo.dt='20210101'
+    group by wo.id
+    ;
+    ```
+
+- **小结**
+
+  - 实现DWB层呼叫中心事实指标表的构建
 
 ### 8. 安装事实指标需求分析
 
