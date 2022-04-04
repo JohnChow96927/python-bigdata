@@ -317,7 +317,117 @@
 
 ### 3. 费用事务事实表
 
+- **目标**：**实现DWB层费用报销事实指标表的构建**
 
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+  - step3：目标实现
+
+- **实施**
+
+  - **目标需求**：基于费用报销数据统计费用报销金额等指标
+
+    ![image-20211003182720330](assets/image-20211003182720330.png)
+
+  - **数据来源**
+
+    - **ciss_service_expense_report**：费用信息表
+
+      ```sql
+      select
+          id,--报销单id
+          create_user_id,--创建人id
+          submoney5, --报销金额
+          create_org_id --部门id
+      from ciss_service_expense_report;
+      ```
+
+    - **ciss_base_servicestation**：服务网点信息表
+
+      ```sql
+      select
+          id,--服务网点id
+          org_id --部门id
+      from ciss_base_servicestation;
+      ```
+
+    - **ciss_service_exp_report_dtl**：费用明细表
+
+      ```sql
+      select
+          exp_report_id,--报销单id
+          submoney5,--项目报销实际金额
+          item_id --费用项目id
+      from ciss_service_exp_report_dtl;
+      ```
+
+    - **tmp_dict**：数据字典表
+
+      ```sql
+      select
+             dictid, --项目id
+             dictname --项目名称
+      from one_make_dwb.tmp_dict where dicttypename = '费用报销项目';
+      ```
+
+  - **目标实现**
+
+    - **建表**
+
+      ```sql
+      drop table if exists one_make_dwb.fact_regular_exp;
+      create table if not exists one_make_dwb.fact_regular_exp(
+            exp_id string comment '费用报销id'
+          , ss_id string comment '服务网点id'
+          , srv_user_id string comment '服务人员id'
+          , actual_exp_money decimal(20,1) comment '费用实际报销金额'
+          , exp_item string comment '费用项目id'
+          , exp_item_name string comment '费用项目名称'
+          , exp_item_money decimal(20,1) comment '费用项目实际金额'
+      )
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dwb/one_make/fact_regular_exp';
+      ```
+
+    - **抽取**
+
+      ```sql
+      insert overwrite table one_make_dwb.fact_regular_exp partition(dt = '20210101')
+      select
+          /*+repartitions(1) */
+          exp.id as exp_id                           --费用报销id
+          , ss.id as ss_id                           --服务网点id
+          , exp.create_user_id as srv_user_id        --创建人id
+          , exp.submoney5 as actual_exp_money        --实际报销金额
+          , dict.dictid as exp_item                  --费用项目id
+          , dict.dictname as exp_item_name           --费用项目名称
+          , exp_dtl.submoney5 as exp_item_money      --费用项目金额
+      from
+      --费用信息表
+      (
+          select
+      	    *
+      	from one_make_dwd.ciss_service_expense_report
+          where dt = '20210101' and status = 9 --只取制证会计已审状态
+      ) exp
+      --服务网点信息表
+      left join one_make_dwd.ciss_base_servicestation ss
+      on ss.dt = '20210101' and ss.org_id = exp.create_org_id
+      --报销明细表
+      left join one_make_dwd.ciss_service_exp_report_dtl exp_dtl
+      on exp_dtl.dt = '20210101' and exp.id = exp_dtl.exp_report_id
+      --数据字典表
+      left join one_make_dwb.tmp_dict dict
+      on dict.dicttypename = '费用报销项目' and dict.dictid = exp_dtl.item_id
+      ;
+      ```
+
+- **小结**
+
+  - 实现DWB层费用报销事实指标表的构建
 
 ### 4. 差旅费用事务事实
 
