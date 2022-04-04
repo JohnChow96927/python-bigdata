@@ -2229,7 +2229,198 @@
 
 ### 8. 客户主题
 
+- **目标**：**掌握客户主题的需求分析及实现**
 
+- **路径**
+
+  - step1：需求
+  - step2：分析
+  - step3：实现
+
+- **实施**
+
+  - **需求**
+
+    | 字段名称                | 字段说明      | 来源                           |
+    | ----------------------- | ------------- | ------------------------------ |
+    | sum_install_num         | 安装数量      | one_make_dwb.fact_worker_order |
+    | max_install_num         | 安装最大数量  | one_make_dwb.fact_worker_order |
+    | min_install_num         | 安装最小数量  | one_make_dwb.fact_worker_order |
+    | avg_min_install_num     | 安装平均数量  | one_make_dwb.fact_worker_order |
+    | sum_repair_num          | 维修数量      | one_make_dwb.fact_worker_order |
+    | max_repair_num          | 维修最大数量  | one_make_dwb.fact_worker_order |
+    | min_repair_num          | 维修最小数量  | one_make_dwb.fact_worker_order |
+    | avg_repair_num          | 维修平均数量  | one_make_dwb.fact_worker_order |
+    | sum_wo_num              | 派工数量      | one_make_dwb.fact_worker_order |
+    | max_sum_wo_num          | 派工最大数量  | one_make_dwb.fact_worker_order |
+    | min_sum_wo_num          | 派工最小数量  | one_make_dwb.fact_worker_order |
+    | avg_wo_num              | 派工平均数量  | one_make_dwb.fact_worker_order |
+    | sum_remould_num         | 巡检数量      | one_make_dwb.fact_worker_order |
+    | max_remould_num         | 巡检最大数量  | one_make_dwb.fact_worker_order |
+    | min_remould_num         | 巡检最小数量  | one_make_dwb.fact_worker_order |
+    | avg_remould_num         | 巡检平均数量  | one_make_dwb.fact_worker_order |
+    | sum_alread_complete_num | 回访数量      | one_make_dwb.fact_worker_order |
+    | max_alread_complete_num | 回访最大数量  | one_make_dwb.fact_worker_order |
+    | min_alread_complete_num | 回访最小数量  | one_make_dwb.fact_worker_order |
+    | avg_alread_complete_num | 回访平均数量  | one_make_dwb.fact_worker_order |
+    | dws_day string          | 日期维度-按天 | one_make_dws.dim_date          |
+    | dws_week string         | 日期维度-按周 | one_make_dws.dim_date          |
+    | dws_month string        | 日期维度-按月 | one_make_dws.dim_date          |
+    | oil_type string         | 油站类型      | one_make_dws.dim_oilstation    |
+    | oil_province            | 油站所属省    | one_make_dws.dim_oilstation    |
+    | oil_city string         | 油站所属市    | one_make_dws.dim_oilstation    |
+    | oil_county string       | 油站所属区    | one_make_dws.dim_oilstation    |
+    | customer_classify       | 客户类型      | one_make_dws.dim_oilstation    |
+    | customer_province       | 客户所属省    | one_make_dws.dim_oilstation    |
+
+  - **分析**
+
+    - 指标
+      - 安装数量、最大安装数量、最小安装数量、平均安装数量
+      - 维修数量、最大维修数量、最小维修数量、平均维修数量
+      - 派工数量、最大派工数量、最小派工数量、平均派工数量
+      - 改造数量、最大改造数量、最小改造数量、平均改造数量
+      - 回访数量、最大回访数量、最小回访数量、平均回访数量
+    - 维度
+      - 日期维度：天、周、月
+      - 油站维度：类型、省份、城市、区域，类型、省份
+
+- 数据
+
+  - 事实表
+
+    - fact_worker_order：工单事务事实表
+
+      ```sql
+          select
+              install_num,--安装数
+              repair_num,--维修数
+              remould_num,--改造数
+              wo_num,--工单数
+              alread_complete_num,--完成数，已回访
+              oil_station_id, --油站id
+              dt --日期
+          from fact_worker_order;
+      ```
+
+  - 维度表
+
+    - dim_oilstation：油站维度表
+
+      ```sql
+          select
+              id,--油站id
+              company_name,--公司名称
+              province_name,--省份名称
+              city_name,--城市名称
+              county_name,--区域名称
+              customer_classify_name,--客户名称
+              customer_province_name--客户省份
+          from dim_oilstation;
+      ```
+
+    - dim_date：时间维度表
+
+      ```sql
+      select
+            date_id,--天
+              week_in_year_id,--周
+              year_month_id --月
+          from dim_date;
+      ```
+
+- **实现**
+
+  - 建表
+
+    ```sql
+    drop table if exists one_make_st.subj_customer;
+      create table if not exists one_make_st.subj_customer(
+        sum_install_num int comment '安装数量'
+          ,max_install_num int comment '安装最大数量'
+          ,min_install_num int comment '安装最小数量'
+          ,avg_min_install_num decimal(20, 1) comment '安装平均数量'
+          ,sum_repair_num int comment '维修数量'
+          ,max_repair_num int comment '维修最大数量'
+          ,min_repair_num int comment '维修最小数量'
+          ,avg_repair_num decimal(20, 1) comment '维修平均数量'
+          ,sum_wo_num int comment '派工数量'
+          ,max_sum_wo_num int comment '派工最大数量'
+          ,min_sum_wo_num int comment '派工最小数量'
+          ,avg_sum_wo_num decimal(20, 1) comment '派工平均数量'
+          ,sum_remould_num int comment '巡检数量'
+          ,max_remould_num int comment '巡检最大数量'
+          ,min_remould_num int comment '巡检最小数量'
+          ,avg_remould_num decimal(20, 1) comment '巡检平均数量'
+          ,sum_alread_complete_num int comment '回访数量'
+          ,max_alread_complete_num int comment '回访最大数量'
+          ,min_alread_complete_num int comment '回访最小数量'
+          ,avg_alread_complete_num decimal(20, 1) comment '回访平均数量'
+          ,dws_day string comment '日期维度-按天'
+          ,dws_week string comment '日期维度-按周'
+          ,dws_month string comment '日期维度-按月'
+          ,oil_type string comment '油站维度-油站类型'
+          ,oil_province string comment '油站维度-油站所属省'
+          ,oil_city string comment '油站维度-油站所属市'
+          ,oil_county string comment '油站维度-油站所属区'
+          ,customer_classify string comment '客户维度-客户类型'
+          ,customer_province string comment '客户维度-客户所属省'
+      ) comment '客户主题表'
+      partitioned by (month String, week String, day String)
+      stored as orc
+      location '/data/dw/st/one_make/subj_customer'
+      ;
+    ```
+
+    - 构建
+
+      ```sql
+      insert overwrite table one_make_st.subj_customer partition(month = '202101', week='2021W1', day='20210101')
+      select
+        sum(fwo.install_num) sum_install_num,                  --安装数量
+      	max(fwo.install_num) max_install_num,                  --最大安装数量
+      min(fwo.install_num) min_install_num,                  --最小安装数量
+          avg(fwo.install_num) avg_min_install_num,              --平均安装数量
+      	sum(fwo.repair_num) sum_repair_num,                    --维修数量
+      	max((fwo.repair_num)) max_repair_num,                  --最大维修数量
+          min(fwo.repair_num) min_repair_num,                    --最小维修数量
+      	avg((fwo.repair_num)) avg_repair_num,                  --平均维修数量
+      	sum(fwo.wo_num) sum_wo_num,                            --派工数量
+      	max(fwo.wo_num) max_sum_wo_num,                        --最大派工数量
+          min(fwo.wo_num) min_sum_wo_num,                        --最小派工数量
+      	avg(fwo.wo_num) avg_wo_num,                            --平均派工数量
+      	sum(fwo.remould_num) sum_remould_num,                  --改造数量
+      	max(fwo.remould_num) max_remould_num,                  --最大改造数量
+          min(fwo.remould_num) min_remould_num,                  --最小改造数量
+      	avg(fwo.remould_num) avg_remould_num,                  --平均改造数量
+      	sum(fwo.alread_complete_num) sum_alread_complete_num,  --回访数量
+          max(fwo.alread_complete_num) max_alread_complete_num,  --最大回访数量
+      	min(fwo.alread_complete_num) min_alread_complete_num,  --最小回访数量
+          avg(fwo.alread_complete_num) avg_alread_complete_num,  --平均回访数量
+      	dd.date_id dws_day,                                    --日期天
+      	dd.week_in_year_id dws_week,                           --日期周
+      	dd.year_month_id dws_month,                            --日期月
+      	dimoil.company_name oil_type,                          --油站类型
+          dimoil.province_name oil_province,                     --油站省份
+      	dimoil.city_name oil_city,                             --油站城市
+      	dimoil.county_name oil_county,                         --油站区域
+      	dimoil.customer_classify_name customer_classify,       --客户类型
+          dimoil.customer_province_name customer_province        --客户省份
+      --工单事务事实表
+      from one_make_dwb.fact_worker_order fwo
+      --日期维度表
+      left join one_make_dws.dim_date dd on fwo.dt = dd.date_id
+      --油站维度表
+      left join one_make_dws.dim_oilstation dimoil on fwo.oil_station_id = dimoil.id
+      where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+      group by dd.date_id, dd.week_in_year_id, dd.year_month_id, dimoil.company_name, dimoil.province_name, dimoil.city_name, dimoil.county_name,
+               dimoil.customer_classify_name, dimoil.customer_province_name
+      ;
+      ```
+
+- **小结**
+
+  - 掌握客户主题的需求分析及实现
 
 ### 9. 物料主题
 
