@@ -1918,7 +1918,134 @@
 
 ### 6. 安装主题
 
+- **目标**：**掌握安装主题的需求分析及实现**
 
+- **路径**
+
+  - step1：需求
+  - step2：分析
+  - step3：实现
+
+- **实施**
+
+  - **需求**：统计不同维度下的安装主题指标的结果
+
+    ![image-20211004101636246](assets/image-20211004101636246.png)
+
+    
+
+  - **分析**
+
+    - **指标**：安装数量、支付金额
+    - **维度**
+
+- 安装方式
+      - 日期维度：天、周、月
+      - 油站维度：类型、省份、城市、地区，类型、省份
+
+  - **数据**
+
+    - 事实表
+
+      - fact_srv_install：安装事务事实表
+
+        ```sql
+        select
+            inst_id, --安装单id
+            inst_type_id, --安装方式id 1-设备安装，2-设备联调
+            exp_device_money, --安装费用
+            dt,--日期
+            os_id --油站id
+        from one_make_dwb.fact_srv_install;
+        ```
+
+      - 维度表
+
+        - dim_oilstation：油站维度表
+
+          ```sql
+          select
+              id,--油站id
+              company_name,--公司名称
+              province_name,--省份名称
+              city_name,--城市名称
+              county_name,--区域名称
+              customer_classify_name,--客户名称
+            customer_province_name--客户省份
+          from dim_oilstation;
+          ```
+
+        - dim_date：时间维度表
+
+          ```sql
+          select
+              date_id,--天
+              week_in_year_id,--周
+              year_month_id --月
+          from dim_date;
+          ```
+
+    - **实现**
+
+      - **建表**
+
+        ```sql
+          create table if not exists one_make_st.subj_install(
+              install_way string comment '安装方式'
+              ,install_sum bigint comment '安装数量'
+              ,sum_money int comment '支付费用'
+              ,dws_day string comment '日期维度-按天'
+              ,dws_week string comment '日期维度-按周'
+              ,dws_month string comment '日期维度-按月'
+              ,oil_type string comment '油站维度-油站类型'
+              ,oil_province string comment '油站维度-油站所属省'
+              ,oil_city string comment '油站维度-油站所属市'
+              ,oil_county string comment '油站维度-油站所属区'
+              ,customer_classify string comment '客户维度-客户类型'
+              ,customer_province string comment '客户维度-客户所属省'
+          ) comment '安装主题表'
+          partitioned by (month string, week string, day string)
+          stored as orc
+          location '/data/dw/st/one_make/subj_install';
+        ```
+
+      - **构建**
+
+        ```sql
+          insert overwrite table one_make_st.subj_install partition(month = '202101', week='2021W1', day='20210101')
+          select
+          	--安装方式
+              max(case when install.inst_type_id = 1 then '设备安装' when install.inst_type_id = 2 then '设备联调' else '未知' end) install_way
+              , count(install.inst_id) install_sum                                     --安装数量
+          	, sum(install.exp_device_money) sum_money            					 --支付金额
+              , dd.date_id dws_day                                                     --日期天
+              , dd.week_in_year_id dws_week                                            --日期周
+              , dd.year_month_id dws_month                                             --日期月
+              , dimoil.company_name oil_type                                           --油站类型
+              , dimoil.province_name oil_province                                      --油站省份
+              , dimoil.city_name oil_city                                              --油站城市
+              , dimoil.county_name oil_county                                          --油站地区
+              , dimoil.customer_classify_name customer_classify                        --客户类型
+              , dimoil.customer_province_name customer_province                        --客户省份
+          --安装事务事实表
+          from one_make_dwb.fact_srv_install install
+          --关联日期维度表
+          left join one_make_dws.dim_date dd on install.dt = dd.date_id
+          --关联油站维度表
+          left join one_make_dws.dim_oilstation dimoil on install.os_id = dimoil.id
+          where dd.year_month_id = '202101' and dd.week_in_year_id = '2021W1' and dd.date_id = '20210101'
+          --按照维度分组
+          group by
+              inst_type_id,
+              dd.date_id, dd.week_in_year_id, dd.year_month_id,
+              dimoil.company_name, dimoil.province_name, dimoil.city_name, dimoil.county_name,
+              dimoil.customer_classify_name, dimoil.customer_province_name
+          ;
+        ```
+
+- **小结**
+
+  - 掌握安装主题的需求分析及实现
 
 ### 7. 维修主题
 
