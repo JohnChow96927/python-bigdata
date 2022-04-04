@@ -580,7 +580,143 @@
 
 ### 5. 网点物料事实表
 
+- **目标**：**实现DWB层网点物料事实指标表的构建**
 
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+  - step3：目标实现
+
+- **实施**
+
+  - **目标需求**：基于物料申请单的信息统计物料申请数量、物料申请金额等指标
+
+    ![image-20211003220952233](assets/image-20211003220952233.png)
+
+  - **数据来源**
+
+    - ciss_material_wdwl_sqd：物料申请信息表
+
+      ```sql
+      select
+          id,--申请单id
+          code,--申请单编号
+          service_station_code,--服务网点编号
+          logistics_type,--物流公司类型
+          logistics_company,--物流公司名称
+          warehouse_code --仓库id
+      from ciss_material_wdwl_sqd;
+      ```
+
+    - **ciss_base_servicestation**：服务网点信息表
+
+      ```sql
+      select
+          id,--服务网点id
+          code --服务网点编号
+      from ciss_base_servicestation;
+      ```
+
+    - **ciss_material_wdwl_sqd_dtl**：物料申请明细表
+
+      ```sql
+      select
+          wdwl_sqd_id,--申请单id
+          application_reason,--申请理由
+          count_approve,--审核数量
+          price,--单价
+          count --个数
+      from ciss_material_wdwl_sqd_dtl;
+      ```
+
+  - **目标实现**
+
+    - **建表**
+
+      ```sql
+      create table if not exists one_make_dwb.fact_srv_stn_ma(
+            ma_id string comment '申请单id'
+          , ma_code string comment '申请单编码'
+          , ss_id string comment '服务网点id'
+          , logi_id string comment '物流类型id'
+          , logi_cmp_id string comment '物流公司id'
+          , warehouse_id string comment '仓库id'
+          , total_m_num decimal(10,0) comment '申请物料总数量'
+          , total_m_money decimal(10,1) comment '申请物料总金额'
+          , ma_form_num decimal(10,0) comment '申请单数量'
+          , inst_m_num decimal(10,0) comment '安装申请物料数量'
+          , inst_m_money decimal(10,1) comment '安装申请物料金额'
+          , bn_m_num decimal(10,0) comment '保内申请物料数量'
+          , bn_m_money decimal(10,1) comment '保内申请物料金额'
+          , rmd_m_num decimal(10,0) comment '改造申请物料数量'
+          , rmd_m_money decimal(10,1) comment '改造申请物料金额'
+          , rpr_m_num decimal(10,0) comment '维修申请物料数量'
+          , rpr_m_money decimal(10,1) comment '维修申请物料金额'
+          , sales_m_num decimal(10,0) comment '销售申请物料数量'
+          , sales_m_money decimal(10,1) comment '销售申请物料金额'
+          , insp_m_num decimal(10,0) comment '巡检申请物料数量'
+          , insp_m_money decimal(10,1) comment '巡检申请物料金额'
+      )
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dwb/one_make/fact_srv_stn_ma';
+      ```
+
+    - **抽取**
+
+      ```sql
+      insert overwrite table one_make_dwb.fact_srv_stn_ma partition(dt = '20210101')
+      select    
+      	/*+repartition(1) */ 
+          ma.id as ma_id, 	                       --物料申请单id
+      	ma.code as ma_code,                        --申请单编号
+      	stn.id as ss_id,                           --服务网点id
+      	ma.logistics_type as logi_id,              --物流类型id
+      	ma.logistics_company as logi_cmp_id,       --物流公司id
+          ma.warehouse_code as warehouse_id,         --仓库id
+      	sum(m_smry.cnt) as total_m_num ,           --申请物料总数量
+      	sum(m_smry.money) as total_m_money,        --申请物料总金额
+          count(1) as ma_form_num,                   --申请单数量
+      	sum(case when m_smry.ma_rsn = 1 then m_smry.cnt else 0 end) as inst_m_num,        --安装申请物料数量   
+          sum(case when m_smry.ma_rsn = 1 then m_smry.money else 0 end) as inst_m_money,    --安装申请物料金额
+          sum(case when m_smry.ma_rsn = 2 then m_smry.cnt else 0 end) as bn_m_num,          --保内申请物料数量
+          sum(case when m_smry.ma_rsn = 2 then m_smry.money else 0 end) as bn_m_money,      --保内申请物料金额
+          sum(case when m_smry.ma_rsn = 3 then m_smry.cnt else 0 end) as rmd_m_num,         --改造申请物料数量
+          sum(case when m_smry.ma_rsn = 3 then m_smry.money else 0 end) as rmd_m_money,     --改造申请物料金额
+          sum(case when m_smry.ma_rsn = 4 then m_smry.cnt else 0 end) as rpr_m_num,         --维修申请物料数量
+          sum(case when m_smry.ma_rsn = 4 then m_smry.money else 0 end) as rpr_m_money,     --维修申请物料金额
+          sum(case when m_smry.ma_rsn = 5 then m_smry.cnt else 0 end) as sales_m_num,       --销售申请物料数量
+          sum(case when m_smry.ma_rsn = 5 then m_smry.money else 0 end) as sales_m_money,   --销售申请物料金额
+          sum(case when m_smry.ma_rsn = 6 then m_smry.cnt else 0 end) as insp_m_num,        --巡检申请物料数量
+          sum(case when m_smry.ma_rsn = 6 then m_smry.money else 0 end) as insp_m_money     --巡检申请物料金额
+      --物料申请信息表:8为审核通过
+      from (
+      		select * 
+      		from one_make_dwd.ciss_material_wdwl_sqd 
+      		where dt = '20210101' and status = 8 
+      	 ) ma
+      --关联站点信息表，获取站点id
+      left join one_make_dwd.ciss_base_servicestation stn 
+      	on stn.dt = '20210101' and ma.service_station_code = stn.code
+      --关联物料申请费用明细
+      left join (
+      			 select 
+      				dtl.wdwl_sqd_id as wdwl_sqd_id, 
+      				dtl.application_reason as ma_rsn, 
+      				sum(dtl.count_approve) as cnt,
+                      sum(dtl.price * dtl.count) as money
+                   from one_make_dwd.ciss_material_wdwl_sqd_dtl dtl
+      			 where dtl.dt = '20210101'
+      			 group by dtl.wdwl_sqd_id, dtl.application_reason
+                ) m_smry on m_smry.wdwl_sqd_id = ma.id
+      group by ma.id, ma.code, stn.id, ma.logistics_type, ma.logistics_company, ma.warehouse_code
+      ;
+      ```
+
+- **小结**
+
+  - 实现DWB层网点物料事实指标表的构建
 
 ## II. ST层构建: 周期快照事实表
 
