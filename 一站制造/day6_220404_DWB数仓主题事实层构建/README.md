@@ -1130,7 +1130,63 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现油站主题表的维度指标构建**
+
+   - **实施**
+
+     - **建表**
+
+       ```sql
+       -- 创建油站主题表
+       drop table if exists one_make_st.subj_oilstation;
+       create table if not exists one_make_st.subj_oilstation(
+           sum_osnum bigint comment '油站数量'
+           ,sumnew_osnum int comment '新增油站数量'
+           ,dws_day string comment '日期维度-按天'
+           ,dws_week string comment '日期维度-按周'
+           ,dws_month string comment '日期维度-按月'
+           ,oil_type string comment '油站维度-油站类型'
+           ,oil_province string comment '油站维度-油站所属省'
+           ,oil_city string comment '油站维度-油站所属市'
+           ,oil_county string comment '油站维度-油站所属区'
+           ,customer_classify string comment '客户维度-客户类型'
+           ,customer_province string comment '客户维度-客户所属省'
+       ) comment '油站主题表'
+       partitioned by (month String, week String, day String)
+       stored as orc
+       location '/data/dw/st/one_make/subj_oilstation';
+       ```
+
+     - **构建**
+
+       ```sql
+       insert overwrite table one_make_st.subj_oilstation partition(month = '202101', week='2021W1', day='20210101')
+       select
+           sum(oil.os_num) sum_osnum,                          --油站数量
+       	sum(oil.current_new_os_num) sumnew_osnum,           --新增油站数量
+           dd.date_id dws_day,                                 --日期天
+       	dd.week_in_year_id dws_week,                        --日期周
+       	dd.year_month_id dws_month,                         --日期月
+           dimoil.company_name oil_type,                       --油站类型
+       	dimoil.province_name oil_province,                  --油站省份
+       	dimoil.city_name oil_city,                          --油站城市
+           dimoil.county_name oil_county,                      --油站区域
+       	dimoil.customer_classify_name customer_classify,    --客户类型
+           dimoil.customer_province_name customer_province     --客户省份
+       --油站事务事实表
+       from one_make_dwb.fact_oil_station oil
+       --关联日期维度表
+       left join one_make_dws.dim_date dd on oil.dt = dd.date_id
+       --关联油站维度表
+       left join one_make_dws.dim_oilstation dimoil on oil.os_id = dimoil.id
+       where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+       --按照维度字段分组
+       group by dd.date_id, dd.week_in_year_id, dd.year_month_id,  dimoil.company_name, dimoil.province_name, dimoil.city_name, dimoil.county_name, dimoil.customer_classify_name, dimoil.customer_province_name;
+       ```
+
+   - **小结**
+
+     - 实现油站主题表的维度指标构建
 
 ### 3. 回访主题
 
