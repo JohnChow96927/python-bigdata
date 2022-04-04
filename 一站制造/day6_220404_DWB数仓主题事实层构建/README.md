@@ -17,7 +17,7 @@
 
      - **目标需求**：基于维修信息数据统计维修设备个数、维修、更换、升级配件数量、工时费用、配件费用等指标
 
-       ![image-20211003172704904](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/%E4%B8%80%E7%AB%99%E5%88%B6%E9%80%A0%E9%A1%B9%E7%9B%AE/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/Day05&Day06%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0/%E8%AF%BE%E5%89%8D%E7%AC%94%E8%AE%B0_Day06_DWB%E6%95%B0%E4%BB%93%E4%B8%BB%E9%A2%98%E4%BA%8B%E5%AE%9E%E5%B1%82%E6%9E%84%E5%BB%BA/Day06_%E6%95%B0%E4%BB%93%E4%B8%BB%E9%A2%98%E5%BA%94%E7%94%A8%E5%B1%82ST%E5%B1%82%E6%9E%84%E5%BB%BA.assets/image-20211003172704904.png)
+       ![image-20211003172704904](assets/image-20211003172704904-1649035961777.png)
 
      - **数据来源**
 
@@ -82,7 +82,102 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现DWB层维修事实指标表的构建**
+
+   - **实施**
+
+     - **建表**
+
+       ```sql
+       drop table if exists one_make_dwb.fact_srv_repair;
+       create table if not exists one_make_dwb.fact_srv_repair(
+           rpr_id string comment '维修单id'
+           , rpr_code string comment '维修单编码'
+           , srv_user_id string comment '服务人员用户id'
+           , ss_id string comment '服务网点id'
+           , os_id string comment '油站id'
+           , date_id string comment '日期id'
+           , exp_rpr_num string comment '收费维修数量'
+           , hour_money int comment '工时费用'
+           , parts_money int comment '配件费用'
+           , fars_money int comment '车船费用'
+           , rpr_device_num int comment '维修设备数量'
+           , rpr_mtrl_num int comment '维修配件数量'
+           , exchg_parts_num int comment '更换配件数量'
+           , upgrade_parts_num int comment '升级配件数量'
+           , fault_type_ids string comment '故障类型id集合'
+       ) comment '维修单事实表'
+       partitioned by (dt string)
+       stored as orc
+       location '/data/dw/dwb/one_make/fact_srv_repair';
+       ```
+
+     - **抽取**
+
+       ```sql
+       insert overwrite table one_make_dwb.fact_srv_repair partition(dt = '20210101')
+       select
+           repair.id rpr_id                                              --维修单id
+       	, repair.code rpr_code                                        --维修单号
+       	, swo.service_userid srv_user_id                              --工程师id
+       	, swo.service_station_id ss_id                                --服务网点id
+       	, swo.oil_station_id os_id                                    --油站id
+       	, swo.create_time date_id                                     --创建时间
+       	, case when repair.is_pay = 1 then 1 else 0 end exp_rpr_num   --收费维修数量
+       	, repair.hour_charge hour_money                               --工时费用
+       	, repair.parts_charge parts_money                             --配件费用
+       	, repair.fares_charge fars_money                              --车船费用
+       	, rpr_device_num                                              --维修设备数量
+       	, rpr_mtrl_num                                                --维修配件数量
+       	, exchg_parts_num                                             --更换配件数量
+       	, upgrade_parts_num                                           --升级配件数量
+       	, fault_type_ids                                              --故障类型id集合
+       	--维修信息表
+       from one_make_dwd.ciss_service_repair repair
+       	--服务单信息表
+           left join one_make_dwd.ciss_service_order sorder on repair.service_id = sorder.id
+       	--工单信息表
+           left join one_make_dwd.ciss_service_workorder swo on sorder.workorder_id = swo.id
+       	--获取维修设备数量
+           left join (
+       		select
+       			rep.id, count(rep.id) rpr_device_num
+       		from one_make_dwd.ciss_service_repair rep
+       		left join one_make_dwd.ciss_service_order sod on rep.service_id = sod.id
+       		left join one_make_dwd.ciss_service_order_device dev on sod.id = dev.service_order_id
+       		group by rep.id
+           ) repairdvc on repair.id = repairdvc.id
+       	--获取维修、更换、升级配件数量
+           left join (
+       		select
+       			rep.id,
+           	   sum(case when sfd.solution_id = 1 then 1 else 0 end) rpr_mtrl_num,
+           	   sum(case when sfd.solution_id = 2 then 1 else 0 end) exchg_parts_num,
+           	   sum(case when sfd.solution_id = 3 then 1 else 0 end) upgrade_parts_num
+       		from one_make_dwd.ciss_service_repair rep
+           	left join one_make_dwd.ciss_service_order sod on rep.service_id = sod.id
+           	left join one_make_dwd.ciss_service_order_device dev on sod.id = dev.service_order_id
+           	left join one_make_dwd.ciss_service_fault_dtl sfd on dev.id = sfd.serviceorder_device_id
+       		group by dev.id,rep.id
+           ) dvcnum on repair.id = dvcnum.id
+       	--获取故障类型ID
+           left join (
+       		select
+       			rep.id, concat_ws(',', collect_set(sfd.fault_type_id)) fault_type_ids
+       		from one_make_dwd.ciss_service_repair rep
+           	left join one_make_dwd.ciss_service_order sod on rep.service_id = sod.id
+           	left join one_make_dwd.ciss_service_order_device dev on sod.id = dev.service_order_id
+           	left join one_make_dwd.ciss_service_fault_dtl sfd on dev.id = sfd.serviceorder_device_id
+       		where sfd.fault_type_id is not null
+       		group by rep.id
+           ) faulttype on repair.id = faulttype.id
+       where repair.dt = '20210101'
+       ;
+       ```
+
+   - **小结**
+
+     - 实现DWB层维修事实指标表的构建
 
 ### 2. 客户回访事务事实表
 
