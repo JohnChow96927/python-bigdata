@@ -777,7 +777,171 @@
 
 1. #### 需求分析
 
-   
+   - **目标**：**掌握工单主题的需求分析**
+
+   - **路径**
+
+     - step1：需求
+     - step2：分析
+
+   - **实施**
+
+     - **需求**：统计不同维度下的工单主题指标的结果
+
+       | 字段名称                  | 字段说明                | 来源                           |
+       | ------------------------- | ----------------------- | ------------------------------ |
+       | owner_process             | 派工方式-自己处理数量   | one_make_dwb.fact_call_service |
+       | tran_process              | 派工方式-转派工数量     | one_make_dwb.fact_call_service |
+       | wokerorder_num            | 工单总数sum             | one_make_dwb.fact_worker_order |
+       | wokerorder_num_max        | 工单总数最大值max       | one_make_dwb.fact_worker_order |
+       | wokerorder_num_min        | 工单总数最小值min       | one_make_dwb.fact_worker_order |
+       | wokerorder_num_avg        | 工单总数平均值avg       | one_make_dwb.fact_worker_order |
+       | install_sumnum            | 派工类型-安装总数       | one_make_dwb.fact_worker_order |
+       | repair_sumnum             | 派工类型-维修总数       | one_make_dwb.fact_worker_order |
+       | remould_sumnum            | 派工类型-巡检总数       | one_make_dwb.fact_worker_order |
+       | inspection_sumnum         | 派工类型-改造总数       | one_make_dwb.fact_worker_order |
+       | alread_complete_sumnum    | 完工总数                | one_make_dwb.fact_worker_order |
+       | customer_classify_zsh     | 客户类型-中石化数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_jxs     | 客户类型-经销商数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_qtzx    | 客户类型-其他直销数量   | one_make_dws.dim_oilstation    |
+       | customer_classify_zsy     | 客户类型-中石油数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_qtwlh   | 客户类型-其他往来户数量 | one_make_dws.dim_oilstation    |
+       | customer_classify_zhjt    | 客户类型-中化集团数量   | one_make_dws.dim_oilstation    |
+       | customer_classify_zhy     | 客户类型-中海油数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_gys     | 客户类型-供应商数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_onemake | 客户类型-一站制造**数量 | one_make_dws.dim_oilstation    |
+       | customer_classify_fwy     | 客户类型-服务员数量     | one_make_dws.dim_oilstation    |
+       | customer_classify_zt      | 客户类型-中铁数量       | one_make_dws.dim_oilstation    |
+       | customer_classify_hzgs    | 客户类型-合资公司数量   | one_make_dws.dim_oilstation    |
+       | customer_classify_jg      | 客户类型-军供数量       | one_make_dws.dim_oilstation    |
+       | customer_classify_zhhangy | 客户类型-中航油数量     | one_make_dws.dim_oilstation    |
+       | dws_day string            | 日期维度-按天           | one_make_dws.dim_date          |
+       | dws_week string           | 日期维度-按周           | one_make_dws.dim_date          |
+       | dws_month string          | 日期维度-按月           | one_make_dws.dim_date          |
+       | oil_type string           | 油站类型                | one_make_dws.dim_oilstation    |
+       | oil_province              | 油站所属省              | one_make_dws.dim_oilstation    |
+       | oil_city string           | 油站所属市              | one_make_dws.dim_oilstation    |
+       | oil_county string         | 油站所属区              | one_make_dws.dim_oilstation    |
+       | customer_classify         | 客户类型                | one_make_dws.dim_oilstation    |
+       | customer_province         | 客户所属省              | one_make_dws.dim_oilstation    |
+
+     - **分析**
+
+       - **指标**
+
+         - 工单自处理个数、工单转派工个数【呼叫中心主题事务事实表】
+         - 工单总数、最大值、最小值、平均值
+         - 安装总数、维修总数、巡检总数、改造总数、完工总数
+         - 中石化数量、经销商数量、其他直销数量、中石油数量、其他往来户数量、中化集团数量、中海油数量
+         - 供应商数量、一站制造数量、服务工程师数量、中铁数量、合资公司数量、军供数量、中航油数量
+
+       - **维度**
+
+         - 日期维度：天、周、月
+         - 油站维度：类型、省份、城市、地区、类型、省份
+
+       - **数据表**
+
+         - 事实表
+
+           - fact_worker_order：工单事实表
+
+             ```sql
+             select
+                 wo_num, --工单数量
+                 callaccept_id,--来电受理单id
+                 oil_station_id, --油站id
+                 dt --日期
+             from fact_worker_order;
+             ```
+
+           - fact_call_service：呼叫中心事实表
+
+             ```sql
+             select
+                 id,--来电受理单id
+               process_way_name --处理方式
+             from fact_call_service;  
+             ```
+
+         - 维度表
+
+           - dim_oilstation：油站维度表
+
+             ```sql
+             select
+                 id,--油站id
+                 company_name,--公司名称
+                 province_name,--省份名称
+                 city_name,--城市名称
+                 county_name,--区域名称
+                 customer_classify_name,--客户名称
+                 customer_province_name--客户省份
+             from dim_oilstation;
+             ```
+
+           - dim_date：时间维度表
+
+             ```sql
+             select
+                 date_id,--天
+                 week_in_year_id,--周
+               year_month_id --月
+             from dim_date;
+             ```
+
+           - 实现分析【不能运行】
+
+             ```sql
+             select
+                 sum(case when b.process_way_name = '自己处理' then 1 else 0 end) as self_process ,
+                 sum(case when b.process_way_name = '转派工' then 1 else 0 end) as change_process ,
+                 sum(wo_num), --工单数量
+                 max(wo_num),
+                 min(wo_num),
+                 avg(wo_num),
+                 sum(install_num),
+                 sum(repair_num),
+                 sum(inspection_num),
+                 sum(remould_num),
+                 sum(case when c.customer_classify_name = '中石化' then 1 else 0 end ) as zsh_cnt,
+                 callaccept_id,--来电受理单id
+                 c.id,c.customer_province_name,c.customer_classify_name,c.county_name,c.city_name,c.province_name,c.company_name,
+                 oil_station_id, --油站id
+                 d.year_month_id,d.week_in_year_id,d.date_id
+             from fact_worker_order a
+             join (select
+                     id,--来电受理单id
+                     process_way_name --处理方式
+                 from fact_call_service) b
+             on a.callaccept_id = b.id
+             join (select
+                     id,--油站id
+                     company_name,--公司名称
+                     province_name,--省份名称
+                     city_name,--城市名称
+                     county_name,--区域名称
+                     customer_classify_name,--客户名称
+                     customer_province_name--客户省份
+                 from one_make_dws.dim_oilstation) c
+             on a.oil_station_id = c.id
+             join (select
+                     date_id,--天
+                     week_in_year_id,--周
+                   year_month_id --月
+                 from one_make_dws.dim_date) d
+             on a.dt = d.date_id
+             group by c.id,c.customer_province_name,c.customer_classify_name,c.county_name,c.city_name,c.province_name,c.company_name,
+                      d.year_month_id,d.week_in_year_id,d.date_id;
+             
+             -- 天 + 油站
+             -- 月 + 油站
+             -- 周 + 油站
+             ```
+
+   - **小结**
+
+     - 掌握工单主题的需求分析
 
 2. #### 构建实现
 
