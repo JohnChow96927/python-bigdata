@@ -1465,7 +1465,134 @@
 
 1. #### 需求分析
 
-   
+   - **目标**：**掌握费用主题的需求分析**
+
+   - **路径**
+
+     - step1：需求
+     - step2：分析
+
+   - **实施**
+
+     - **需求**:统计不同维度下的费用主题指标的结果
+
+       | 字段名称                 | 字段说明                   | 来源                          |
+       | ------------------------ | -------------------------- | ----------------------------- |
+       | install_money            | 安装费用                   | one_make_dwb.fact_srv_install |
+       | max_install_money        | 最大安装费用               | one_make_dwb.fact_srv_install |
+       | min_install_money        | 最小安装费用               | one_make_dwb.fact_srv_install |
+       | avg_install_money        | 平均安装费用               | one_make_dwb.fact_srv_install |
+       | sumbiz_trip_money        | 外出差旅费用金额总计       | one_make_dwb.fact_trvl_exp    |
+       | sumin_city_traffic_money | 市内交通费用金额总计       | one_make_dwb.fact_trvl_exp    |
+       | sumhotel_money           | 住宿费费用金额总计         | one_make_dwb.fact_trvl_exp    |
+       | sumfars_money            | 车船费用金额总计           | one_make_dwb.fact_trvl_exp    |
+       | sumsubsidy_money         | 补助费用金额总计           | one_make_dwb.fact_trvl_exp    |
+       | sumroad_toll_money       | 过桥过路费用金额总计       | one_make_dwb.fact_trvl_exp    |
+       | sumoil_money             | 油费金额总计               | one_make_dwb.fact_trvl_exp    |
+       | exp_item_total           | 差旅费用扣款明细总计       | one_make_dwb.fact_regular_exp |
+       | actual_total_money       | 差旅费用总额统计           | one_make_dwb.fact_trvl_exp    |
+       | sum_secondary_money      | 差旅费用二阶段扣款总计     | one_make_dwb.fact_trvl_exp    |
+       | sum_third_money          | 差旅费用三阶段扣款总计     | one_make_dwb.fact_trvl_exp    |
+       | max_secondary_money      | 差旅费用二阶段最大扣款总计 | one_make_dwb.fact_trvl_exp    |
+       | max_third_money          | 差旅费用三阶段最大扣款总计 | one_make_dwb.fact_trvl_exp    |
+       | sum_srv_user             | 报销人员总数量             | one_make_dwb.fact_trvl_exp    |
+       | max_srv_user             | 报销人员最大数量           | one_make_dwb.fact_trvl_exp    |
+       | min_srv_user             | 报销人员最小数量           | one_make_dwb.fact_trvl_exp    |
+       | avg_srv_user             | 报销人员平均数量           | one_make_dwb.fact_trvl_exp    |
+       | dws_day string           | 日期维度-按天              | one_make_dws.dim_date         |
+       | dws_week string          | 日期维度-按周              | one_make_dws.dim_date         |
+       | dws_month string         | 日期维度-按月              | one_make_dws.dim_date         |
+       | oil_type string          | 油站类型                   | one_make_dws.dim_oilstation   |
+       | oil_province             | 油站所属省                 | one_make_dws.dim_oilstation   |
+       | oil_city string          | 油站所属市                 | one_make_dws.dim_oilstation   |
+       | oil_county string        | 油站所属区                 | one_make_dws.dim_oilstation   |
+       | customer_classify        | 客户类型                   | one_make_dws.dim_oilstation   |
+       | customer_province        | 客户所属省                 | one_make_dws.dim_oilstation   |
+
+     - **分析**
+
+       - **指标**
+         - 安装费用、最大安装费用、最小安装费用、平均安装费用
+         - 外出差旅费用金额总计、市内交通费用金额总计、住宿费用金额总计、车船费用金额总计、补助费用金额总计、过桥过路费用金额总计、油费金额总计
+         - 差旅费用扣款明细总计、差旅费用总额统计、差旅费用二阶段扣款总计、差旅费用三阶段扣款总计、差旅费用二阶段最大扣款总计、差旅费用三阶段最大扣款总计
+         - 报销人员数量、报销人员最大数量、报销人员最小数量、报销人员平均数量
+       - **维度**
+         - 日期维度：天、周、月
+         - 油站维度：类型、省份、城市、区域，类型、省份
+
+   - **数据**
+
+     - 事实表
+
+       - fact_trvl_exp：差旅事务事实表
+
+         ```sql
+         select
+                 biz_trip_money,--外出差旅费用
+                 in_city_traffic_money,--市内交通费用
+                 hotel_money,--住宿费用
+                 fars_money,--车船费用
+                 subsidy_money,--补助费用
+                 road_toll_money,--过桥过路费用
+                 oil_money,--油费
+                 secondary_money,--二单补助费用总计
+                 third_money, --三单补助费用总计
+                 actual_total_money,--费用报销总计
+                 ss_id,--服务网点id
+                 srv_user_id,--工程师id
+                 dt --日期
+             from fact_trvl_exp;
+         ```
+
+         - fact_regular_exp：报销事务事实表
+
+           ```sql
+           select
+             ss_id,--服务网点id
+               srv_user_id,--工程师id
+               exp_item_name --费用项目名称
+           from fact_regular_exp;
+           ```
+
+         - fact_srv_install：安装事务事实表
+
+           ```sql
+           select
+               ss_id,--服务网点id
+                 exp_device_money,--安装费用
+                 os_id --油站id
+             from fact_srv_install;
+           ```
+
+         - 维度表
+
+           - dim_oilstation：油站维度表
+
+           ```sql
+             select
+                 id,--油站id
+                   company_name,--公司名称
+                   province_name,--省份名称
+                   city_name,--城市名称
+                   county_name,--区域名称
+                   customer_classify_name,--客户名称
+                   customer_province_name--客户省份
+               from dim_oilstation;
+           ```
+
+           - dim_date：时间维度表
+
+             ```sql
+             select
+                 date_id,--天
+                 week_in_year_id,--周
+                   year_month_id --月
+               from dim_date;
+             ```
+
+   - **小结**
+
+     - 掌握费用主题的需求分析
 
 2. #### 构建实现
 
