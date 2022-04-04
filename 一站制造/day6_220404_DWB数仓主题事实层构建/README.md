@@ -495,6 +495,271 @@ DWB数仓主题事实层构建
 
 ### 6. 工单事实指标需求分析
 
+- **目标**：**掌握DWB层工单事实指标表的需求分析**
+
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+
+- **实施**
+
+  - **目标需求**：基于工单信息统计等待分配工单数量、完成工单数量、处理工单数量、响应时长、服务时长等指标
+
+    | 字段名                  | 说明                                                         | 数据来源                                                     |
+    | ----------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+    | wo_id                   | 工单id                                                       | one_make_dwd.ciss_service_workorder                          |
+    | callaccept_id           | 来电受理单id                                                 | one_make_dwd.ciss_service_workorder                          |
+    | oil_station_id          | 油站id                                                       | one_make_dwd.ciss_service_workorder                          |
+    | userids                 | 服务该工单用户id(注意：可能会有多个，以逗号分隔)             | one_make_dwd.ciss_service_workorder                          |
+    | wo_num                  | 工单单据数量                                                 | one_make_dwd.ciss_service_workorder                          |
+    | back_num                | 退回工单数量（如果工单没有被退回，数量是0）                  | one_make_dwd.ciss_service_workorder、ciss_service_workorder_back |
+    | abolished_num           | 已作废工单数量                                               | one_make_dwd.ciss_service_workorder                          |
+    | wait_dispatch_num       | 待派工数量                                                   | one_make_dwd.ciss_service_workorder、eos_dict_type、eos_dict_entry派工单状态：待派工（status=4） |
+    | alread_complete_num     | 已完工工单数量（已完工、已回访）                             | 派工单状态：已完工、已回访（status=5 \|\| 6）                |
+    | processing_num          | 正在处理工单数量（待离站、待完工）                           | 派工单状态：待离站、待完工（status=3 \|\| 4）                |
+    | people_num              | 工单人数数量（一个工单由多人完成）                           | one_make_dwd.ciss_service_workorder、ciss_service_workorder_user默认为1数据预处理；工单用户id是否为空；工单用户id是否为空 |
+    | service_total_duration  | 服务总时长（按小时）->从出发到完工时间（leave_time - start_time） | one_make_dwd.ciss_service_workorder                          |
+    | repair_service_duration | 报修响应时长（按小时）->呼叫中心受理到出发时间（start_time-submit_time） | one_make_dwd.ciss_service_workorder                          |
+    | customer_repair_num     | 客户报修工单数量                                             | one_make_dwd.ciss_service_workorder；is_customer_repairs字段 |
+    | charg_num               | 收费工单数量                                                 | one_make_dwd.ciss_service_workorder；is_charg字段            |
+    | repair_device_num       | 维修设备数量                                                 | ciss_service_order、ciss_service_order_device；状态：维修（type=2） |
+    | install_device_num      | 安装设备数据量                                               | ciss_service_order、ciss_service_order_device；状态：安装(type=1) |
+    | install_num             | 安装单数量（以下四个单据的数量有可能会有重叠，例如：一个工单有可能有巡检、也有可能有维修） | one_make_dwd.ciss_service_install                            |
+    | repair_num              | 维修单数量                                                   | ciss4.ciss_service_repair                                    |
+    | remould_num             | 巡检单数量                                                   | ciss4.ciss_service_remould                                   |
+    | inspection_num          | 改造单数量                                                   | ciss4.ciss_service_inspection                                |
+    | workorder_trvl_exp      | 工单差旅费(通过工单id与ciss4.ciss_service_trvl_exp_dtl关联，取submoney5即可) | ciss4.ciss_service_trvl_exp_dtl                              |
+
+  - **数据来源**
+
+    - **ciss_service_workorder**：工单详情事实表
+
+      ```sql
+      select
+          id,--工单id
+          callaccept_id,--来电受理id
+          oil_station_id, --油站id
+          service_userid,--工程师id
+          status,--工单状态
+          submit_time,--提交时间
+          start_time,--开始时间
+          leave_time,--离开时间
+          is_customer_repairs,--是否为报修工单
+          is_charg --是否为收费工单
+      from one_make_dwd.ciss_service_workorder;
+      ```
+
+    - **ciss_service_workorder_back**：回退工单信息表
+
+      ```sql
+      select 
+          id,              --回退id
+          workorder_id     --工单id
+      from one_make_dwd.ciss_service_workorder_back;
+      ```
+
+      
+
+    - **ciss_service_workorder_user**：工程师信息表
+
+      ```sql
+      select
+          workorder_id,  --工单id
+          userid,        --工程师id
+          username       --工程师姓名
+      from one_make_dwd.ciss_service_workorder_user;
+      ```
+
+      
+
+    - **ciss_service_trvl_exp_dtl**：差旅费用信息表
+
+      ```sql
+      select
+          work_order_id, --工单id
+          submoney5 --应收会计扣款金额
+      from one_make_dwd.ciss_service_trvl_exp_dtl;
+      ```
+
+      
+
+    - **ciss_service_order**：服务单信息表
+
+      ```sql
+      select
+        id,            --服务单id
+        workorder_id,  --工单id
+        type           --工单类型,1-安装，2-维修，3-巡检,4-改造
+      from one_make_dwd.ciss_service_order;
+      ```
+
+      
+
+    - **ciss_service_order_device**：服务单设备信息表
+
+      ```sql
+      select
+          id,               --设备id
+          service_order_id  --服务单id
+      from one_make_dwd.ciss_service_order_device;
+      ```
+
+    - 工单类型合并表
+
+      - ciss_service_install：设备安装信息表
+        - 服务单id、安装工单id
+      - ciss_service_repair：设备维修信息表
+        - 服务单id、维修工单id
+      - ciss_service_remould：设备改造信息表
+        - 服务单id、改造工单id
+      - ciss_service_inspection：设备巡检信息表
+        - 服务单id、巡检工单id
+
+      ```sql
+      select
+        so.id,                     --服务单id
+        so.workorder_id,           --工单id
+        install.id installid,      --安装单id
+        repair.id repairid,        --维修单id
+        remould.id remouldid,      --改造单id
+        inspection.id inspectionid --巡检单id
+      --服务单信息表
+      from one_make_dwd.ciss_service_order so
+      --安装单信息表
+      left join one_make_dwd.ciss_service_install install on so.id = install.service_id
+      --维修单信息表
+      left join one_make_dwd.ciss_service_repair repair on so.id = repair.service_id
+      --改造单信息表
+      left join one_make_dwd.ciss_service_remould remould on so.id = remould.service_id
+      --巡检单信息表
+      left join one_make_dwd.ciss_service_inspection inspection on so.id = inspection.service_id
+      where so.dt = '20210101';
+      ```
+
+  - 实现思路逻辑
+
+    ```sql
+    select
+        id,--工单id
+        callaccept_id,--来电受理id
+        oil_station_id, --油站id
+        service_userid,--工程师id
+        status,--工单状态
+        case when b.id is null then 0 else 1 end back_num,
+        case when status = -1 then 1 else 0 end abolished_num,
+        case when status = 1 then 1 else 0 end wait_dispath_num,
+        case when status in (5,6) then 1 else 0 end alread_complete_num,
+        case when status in (3,4) then 1 else 0 end processing_num,
+        leave_time - a.start_time service_total_duration,
+        start_time - a.submit_time repair_service_duration,
+        count(installid) as install_num,
+        count(repairid) as repair_num,
+        count(inspectionid) as inspect_num,
+        count(remouldid) as remould_num,
+        d.submoney5 workorder_trvl_exp,
+        submit_time,--提交时间
+        start_time,--开始时间
+        leave_time,--离开时间
+        is_customer_repairs,--是否为报修工单
+        case when is_customer_repairs = 1 then 1 else 0 end repart_wo_num,
+        is_charg, --是否为收费工单
+        case when is_charg = 1 then 1 else 0 end charg_num
+    from one_make_dwd.ciss_service_workorder a
+    join (select
+            id,              --回退id
+            workorder_id     --工单id
+        from one_make_dwd.ciss_service_workorder_back) b
+    on a.id = b.workorder_id
+    join (select
+          so.id,                     --服务单id
+          so.workorder_id,           --工单id
+          install.id installid,      --安装单id
+          repair.id repairid,        --维修单id
+          remould.id remouldid,      --改造单id
+          inspection.id inspectionid --巡检单id
+        --服务单信息表
+        from one_make_dwd.ciss_service_order so
+        --安装单信息表
+        left join one_make_dwd.ciss_service_install install on so.id = install.service_id
+        --维修单信息表
+        left join one_make_dwd.ciss_service_repair repair on so.id = repair.service_id
+        --改造单信息表
+        left join one_make_dwd.ciss_service_remould remould on so.id = remould.service_id
+        --巡检单信息表
+        left join one_make_dwd.ciss_service_inspection inspection on so.id = inspection.service_id
+        where so.dt = '20210101') c
+    on a.id = c.workorder_id
+    join (select
+            work_order_id, --工单id
+            submoney5 --应收会计扣款金额
+        from one_make_dwd.ciss_service_trvl_exp_dtl) d
+    on a.id = d.work_order_id
+    group by a.id;
+    
+    
+    select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_WORKORDER_STATUS';
+    
+    -- 计算工程师人数
+    select
+        workorder_id,  --工单id
+        userid,        --工程师id
+        username       --工程师姓名
+    from one_make_dwd.ciss_service_workorder_user;
+    
+    -- 计算：回退工单个数
+    select
+        id,              --回退id
+        workorder_id     --工单id
+    from one_make_dwd.ciss_service_workorder_back;
+    
+    -- 计算：工单差旅费用
+    select
+        work_order_id, --工单id
+        submoney5 --应收会计扣款金额
+    from one_make_dwd.ciss_service_trvl_exp_dtl;
+    
+    
+    -- 计算：每个工单对应的每个服务单的类型的设备的个数
+    select
+      id,            --服务单id
+      workorder_id,  --工单id
+      type,           --服务单类型,1-安装，2-维修，3-巡检,4-改造
+      so_device.id as device_id -- 设备id
+    from one_make_dwd.ciss_service_order so
+    join (select
+            id,               --设备id
+            service_order_id  --服务单id
+        from one_make_dwd.ciss_service_order_device) so_device
+    on so.id = so_device.service_order_id;
+    
+    
+    -- 一个工单相当于一个订单组，一个订单组中会对应多个订单，工单id => 服务单id => 多个安装单、维修单、改造单、巡检单
+    select
+      so.id,                     --服务单id
+      so.workorder_id,           --工单id
+      install.id installid,      --安装单id
+      repair.id repairid,        --维修单id
+      remould.id remouldid,      --改造单id
+      inspection.id inspectionid --巡检单id
+    --服务单信息表
+    from one_make_dwd.ciss_service_order so
+    --安装单信息表
+    left join one_make_dwd.ciss_service_install install on so.id = install.service_id
+    --维修单信息表
+    left join one_make_dwd.ciss_service_repair repair on so.id = repair.service_id
+    --改造单信息表
+    left join one_make_dwd.ciss_service_remould remould on so.id = remould.service_id
+    --巡检单信息表
+    left join one_make_dwd.ciss_service_inspection inspection on so.id = inspection.service_id
+    where so.dt = '20210101';
+    
+    ```
+
+- **小结**
+
+  - 掌握DWB层呼叫中心事实指标表的需求分析
+
 ### 7. 工单事实指标构建
 
 ### 8. 安装事实指标需求分析
