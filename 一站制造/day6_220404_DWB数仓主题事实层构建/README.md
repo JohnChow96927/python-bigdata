@@ -1063,7 +1063,70 @@
 
 1. #### 需求分析
 
-   
+   - **目标**：**掌握油站主题的需求分析**
+
+   - **路径**
+
+     - step1：需求
+     - step2：分析
+
+   - **实施**
+
+     - **需求**：统计不同维度下的油站主题指标的结果
+
+       ![image-20211004095550115](assets/image-20211004095550115-1649037677329.png)
+
+     - **分析**
+
+       - **指标**：油站数量、新增油站数量
+       - **维度**
+         - 日期维度：天、周、月
+         - 油站维度：类型、省份、城市、地区、客户类型、省份
+
+   - **数据表**
+
+     - 事实表
+
+       - fact_oil_station：油站事实表
+
+         ```sql
+             select
+                 os_id, --油站id
+                 os_num,--油站个数
+                 current_new_os_num, --新增油站个数
+                 dt --日期天
+         from  fact_oil_station;
+         ```
+
+     - 维度表
+
+       - dim_oilstation：油站维度表
+
+         ```sql
+         select
+                 id,--油站id
+                 company_name,--公司名称
+                 province_name,--省份名称
+                 city_name,--城市名称
+                 county_name,--区域名称
+                 customer_classify_name,--客户名称
+                 customer_province_name--客户省份
+             from dim_oilstation;
+         ```
+
+       - dim_date：时间维度表
+
+         ```sql
+         select
+                 date_id,--天
+               week_in_year_id,--周
+                 year_month_id --月
+             from dim_date;
+         ```
+
+   - **小结**
+
+     - 掌握油站主题的需求分析
 
 2. #### 构建实现
 
