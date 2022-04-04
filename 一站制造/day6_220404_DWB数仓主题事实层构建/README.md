@@ -2049,7 +2049,183 @@
 
 ### 7. 维修主题
 
+- **目标**：**掌握维修主题的需求分析及实现**
 
+- **路径**
+
+  - step1：需求
+  - step2：分析
+  - step3：实现
+
+- **实施**
+
+  - **需求**：统计不同维度下的维修主题指标的结果
+
+    ![image-20211004103548816](assets/image-20211004103548816.png)
+
+    String：“a,b,c,d” => sum(size(split（col,”,”）))
+
+  - **分析**
+
+    - 指标
+      - 支付费用、工时费用、零部件费用、交通费用
+      - 故障总数、最大数量、平均数量
+    - 维度
+      - 日期维度：天、周、月
+      - 油站维度：类型、省份、城市、地区、类型、省份
+      - 物流公司
+
+  - 数据
+
+    - 事实表
+
+      - fact_srv_repair：维修事务事实表
+
+        ```sql
+            select
+                hour_money,--工时费用
+                parts_money,--配件物料费用
+                fars_money,--交通费用
+                fault_type_ids, --故障id集合
+                dt,--日期
+                os_id,--油站id
+              ss_id --服务网点id
+            from fact_srv_repair;
+        ```
+
+      - fact_srv_stn_ma：网点物料事务事实表
+
+        ```sql
+        select
+          ss_id,--服务网点id
+          logi_cmp_id --物流公司id
+        from fact_srv_stn_ma;
+        ```
+
+    - 维度表
+
+      - dim_oilstation：油站维度表
+
+        ```sql
+        select
+            id,--油站id
+            company_name,--公司名称
+            province_name,--省份名称
+            city_name,--城市名称
+            county_name,--区域名称
+            customer_classify_name,--客户名称
+          customer_province_name--客户省份
+        from dim_oilstation;
+        ```
+
+      - dim_date：时间维度表
+
+        ```sql
+        select
+            date_id,--天
+            week_in_year_id,--周
+          year_month_id --月
+        from dim_date;
+        ```
+
+      - dim_logistics：物流维度表
+
+        ```sql
+        select 
+        type_id,  --物流公司id
+        type_name --物流公司名称
+        from one_make_dws.dim_logistics where prop_name = '物流公司';
+        ```
+
+    - **实现**
+
+      - 建表
+
+        ```sql
+        drop table if exists one_make_st.subj_repair;
+          create table if not exists one_make_st.subj_repair(
+              sum_pay_money decimal(20,1) comment '支付费用'
+              ,sum_hour_money decimal(20,1) comment '小时费用'
+              ,sum_parts_money decimal(20,1) comment '零部件费用'
+              ,sum_fars_money decimal(20,1) comment '交通费用'
+              ,sum_faulttype_num bigint comment '故障类型总数'
+              ,max_faulttype_num int comment '故障类型最大数量'
+              ,avg_faulttype_num int comment '故障类型平均数量'
+              ,dws_day string comment '日期维度-按天'
+              ,dws_week string comment '日期维度-按周'
+              ,dws_month string comment '日期维度-按月'
+              ,oil_type string comment '油站维度-油站类型'
+              ,oil_province string comment '油站维度-油站所属省'
+              ,oil_city string comment '油站维度-油站所属市'
+              ,oil_county string comment '油站维度-油站所属区'
+              ,customer_classify string comment '客户维度-客户类型'
+              ,customer_province string comment '客户维度-客户所属省'
+              ,logi_company string comment '物流公司维度-物流公司名称'
+          ) comment '维修主题表'
+          partitioned by (month String, week String, day String)
+          stored as orc
+          location '/data/dw/st/one_make/subj_repair';
+        ```
+
+      - 构建
+
+        ```sql
+        insert overwrite table one_make_st.subj_repair partition(month = '202101', week='2021W1', day='20210101')
+          select
+              sum(pay_money) sum_pay_money, 				--支付费用
+          	sum(hour_money) sum_hour_money,             --工时费用
+              sum(parts_money) sum_parts_money,           --物料费用
+          	sum(fars_money) sum_fars_money,             --交通费用
+              sum(fault_type_num) sum_faulttype_num,      --故障类型总数
+          	max(fault_type_num) max_faulttype_num,      --最大故障数量
+              avg(fault_type_num) avg_faulttype_num,      --平均故障数量
+          	dws_day,                                    --日期天
+          	dws_week,                                   --日期周
+          	dws_month,                                  --日期月
+          	oil_type,                                   --油站类型
+              oil_province,                               --油站省份
+          	oil_city,                                   --油站城市
+          	oil_county,                                 --油站区域
+          	customer_classify,                          --客户类型
+          	customer_province,                          --客户省份
+          	logi_company                                --物流公司
+          from (
+          	   select
+          		   (hour_money + parts_money+fars_money) pay_money,
+          		   hour_money,
+          		   parts_money,
+          		   fars_money,
+          		   case when (size(split(fault_type_ids, ','))) <= 0 then 0 else (size(split(fault_type_ids, ','))) end fault_type_num,
+          		   dd.date_id dws_day,
+          		   dd.week_in_year_id dws_week,
+          		   dd.year_month_id dws_month,
+          		   dimoil.company_name oil_type,
+          		   dimoil.province_name oil_province,
+          		   dimoil.city_name oil_city,
+          		   dimoil.county_name oil_county,
+          		   dimoil.customer_classify_name customer_classify,
+          		   dimoil.customer_province_name customer_province,
+          		   type_name logi_company
+          	   --维修事务事实表
+          	   from one_make_dwb.fact_srv_repair repair
+          	   --关联日期维度表
+          	   left join one_make_dws.dim_date dd on repair.dt = dd.date_id
+          	   --关联油站维度表
+          	   left join one_make_dws.dim_oilstation dimoil on repair.os_id = dimoil.id
+          	   --关联网点物料事实表：获取物流公司id
+          	   left join one_make_dwb.fact_srv_stn_ma fssm on repair.ss_id = fssm.ss_id
+          	   --关联物流维度表：获取物流公司名称
+          	   left join (
+          					select type_id, type_name from one_make_dws.dim_logistics where prop_name = '物流公司'
+          	              ) dl on fssm.logi_cmp_id = dl.type_id
+          	   where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101' and exp_rpr_num = 1
+          	  ) repair_tmp
+          group by dws_day, dws_week, dws_month, oil_type, oil_province, oil_city, oil_county,customer_classify, customer_province,logi_company;
+        ```
+
+- **小结**
+
+  - 掌握维修主题的需求分析与实现
 
 ### 8. 客户主题
 
