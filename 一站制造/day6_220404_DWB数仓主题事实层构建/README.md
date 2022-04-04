@@ -1192,7 +1192,146 @@
 
 1. #### 需求分析
 
-   
+   - **目标**：**掌握回访主题的需求分析**
+
+   - **路径**
+
+     - step1：需求
+     - step2：分析
+
+   - **实施**
+
+     - **需求**：统计不同维度下的回访主题指标的结果
+
+       | 字段名称            | 字段说明                  | 来源                            |
+       | ------------------- | ------------------------- | ------------------------------- |
+       | rtn_srv_num         | 回访服务人员数量          | one_make_dwb.fact_srv_rtn_visit |
+       | vst_user            | 回访人员数量              | one_make_dwb.fact_srv_rtn_visit |
+       | wait_dispatch_num   | 待派工数量                | one_make_dwb.fact_worker_order  |
+       | wait_departure_num  | 待出发数量                | one_make_dwb.fact_worker_order  |
+       | alread_complete_num | 已完工工单数量            | one_make_dwb.fact_worker_order  |
+       | processing_num      | 正在处理工单数量          | one_make_dwb.fact_worker_order  |
+       | satisfied_num       | 满意数量                  | one_make_dwb.fact_srv_rtn_visit |
+       | unsatisfied_num     | 不满意数量                | one_make_dwb.fact_srv_rtn_visit |
+       | srv_atu_num         | 服务态度满意数量          | one_make_dwb.fact_srv_rtn_visit |
+       | srv_bad_atu_num     | 服务态度不满意数量        | one_make_dwb.fact_srv_rtn_visit |
+       | srv_rpr_prof_num    | 服务维修水平满意数量      | one_make_dwb.fact_srv_rtn_visit |
+       | srv_rpr_unprof_num  | 服务维修水平不满意数量    | one_make_dwb.fact_srv_rtn_visit |
+       | srv_high_res_num    | 服务响应速度满意数量      | one_make_dwb.fact_srv_rtn_visit |
+       | srv_low_res_num     | 服务响应速度不满意数量    | one_make_dwb.fact_srv_rtn_visit |
+       | rtn_rpr_num         | 返修数量                  | one_make_dwb.fact_srv_rtn_visit |
+       | max_vst_user        | 回访人员最大数量          | one_make_dwb.fact_srv_rtn_visit |
+       | min_vst_user        | 回访人员最小数量          | one_make_dwb.fact_srv_rtn_visit |
+       | dws_day string      | 日期维度-按天             | one_make_dws.dim_date           |
+       | dws_week string     | 日期维度-按周             | one_make_dws.dim_date           |
+       | dws_month string    | 日期维度-按月             | one_make_dws.dim_date           |
+       | orgname             | 组织机构-回访人员所属部门 | one_make_dws.dim_emporg         |
+       | posiname            | 组织机构-回访人员所属岗位 | one_make_dws.dim_emporg         |
+       | posiname            | 组织机构-回访人员名称     | one_make_dws.dim_emporg         |
+       | oil_type string     | 油站类型                  | one_make_dws.dim_oilstation     |
+       | oil_province        | 油站所属省                | one_make_dws.dim_oilstation     |
+       | oil_city string     | 油站所属市                | one_make_dws.dim_oilstation     |
+       | oil_county string   | 油站所属区                | one_make_dws.dim_oilstation     |
+       | customer_classify   | 客户类型                  | one_make_dws.dim_oilstation     |
+       | customer_province   | 客户所属省                | one_make_dws.dim_oilstation     |
+
+     - **分析**
+
+       - 指标
+
+         - 回访工程师数量、回访人员数量、回访人员最大数量、回访人员最小数量
+           - 回访事务事实表
+         - 待派工数量、待出发数量、已完工数量、处理中数量
+           - 工单事务事实表
+         - 满意数量、不满意数量、态度满意数量、态度不满意数量、水平满意数量、水平不满意数量、响应速度满意数量、响应速度不满意数量、返修数量
+           - 回访事务事实表
+
+       - 维度
+
+         - 日期维度：天、周、月
+           - 日期维度表
+         - 组织机构维度：人员部门、人员岗位、人员姓名
+           - 组织机构维度表
+         - 油站维度：类型、省份、城市、区域、类型、省份
+           - 油站维度表
+
+       - 数据
+
+         - 事实表
+
+           - fact_srv_rtn_visit：回访事务事实表
+
+             ```sql
+             select
+                 srv_user_id,--工程师id
+                 vst_user_id,--回访人员id
+                 satisfied_num,--满意个数
+                 unsatisfied_num,--不满意个数
+                 srv_atu_num,--态度满意个数
+                 srv_bad_atu_num,--态度不满意个数
+                 srv_rpr_prof_num,--水平满意个数
+                 srv_rpr_unprof_num,--水平不满意个数
+                 srv_high_res_num,--响应速度满意个数
+                 srv_low_res_num,--响应速度不满意个数
+                 rtn_rpr_num, --返修数量
+                 wrkodr_id, --工单id
+                 os_id,--油站id
+                 dt --日期id
+             from fact_srv_rtn_visit;
+             ```
+
+           - fact_worker_order：工单事务事实表
+
+             ```sql
+             select
+                   wo_id,--工单id
+                   wait_dispatch_num,--待派工个数
+                   wait_departure_num,--待出发个数
+                   alread_complete_num,--已完成个数
+                   processing_num --正在处理个数
+               from fact_worker_order;
+             ```
+
+         - 维度表
+
+           - dim_oilstation：油站维度表
+
+             ```sql
+             select
+                 id,--油站id
+                 company_name,--公司名称
+                 province_name,--省份名称
+                 city_name,--城市名称
+                 county_name,--区域名称
+                 customer_classify_name,--客户名称
+                 customer_province_name--客户省份
+             from dim_oilstation;
+             ```
+
+           - dim_date：时间维度表
+
+             ```sql
+             select
+                   date_id,--天
+                   week_in_year_id,--周
+                   year_month_id --月
+               from dim_date;
+             ```
+
+           - dim_emporg：组织机构维度
+
+             ```sql
+             select
+                   empid,--人员id
+                 orgname,--部门名称
+                   posiname,--岗位名称
+                   empname --员工名称
+               from dim_emporg;
+             ```
+
+   - **小结**
+
+     - 掌握回访主题的需求分析
 
 2. #### 构建实现
 
