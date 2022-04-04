@@ -410,6 +410,89 @@ DWB数仓主题事实层构建
 
 ### 5. 油站事实指标构建
 
+- **目标**：**实现DWB层油站事实指标表的构建**
+
+- **实施**
+
+  - **建表**
+
+    ```sql
+    -- 创建油站事实表
+    drop table if exists one_make_dwb.fact_oil_station;
+    create table if not exists one_make_dwb.fact_oil_station(
+        os_id string comment '油站id'
+        , os_name string comment '油站名称'
+        , os_code string comment '油站编码'
+        , province_id string comment '省份id'
+        , city_id string comment '城市id'
+        , county_id string comment '县id'
+        , status_id int comment '状态id'
+        , cstm_type_id int comment '客户分类id'
+        , os_num int comment '油站数量 默认为1'
+        , invalid_os_num int comment '已停用油站数量（状态为已停用为1，否则为0）'
+        , valid_os_num int comment '有效油站数量（状态为启用为1，否则为0）'
+        , current_new_os_num int comment '当日新增油站（新增油站为1，老油站为0）'
+        , current_invalid_os_num int comment '当日停用油站（当天停用的油站数量）'
+        , device_num int comment '油站设备数量' 
+    )
+    comment "油站事实表"
+    partitioned by (dt string)
+    stored as orc
+    location '/data/dw/dwb/one_make/fact_oil_station';
+    ```
+
+  - **抽取**
+
+    ```sql
+    insert overwrite table one_make_dwb.fact_oil_station partition(dt = '20210101')
+    select
+       oil.id os_id					--油站id
+       , name os_name				--油站名称
+       , code os_code				--油站编码
+       , province province_id		--油站省份
+       , city city_id				--油站城市
+       , region county_id			--油站区域
+       , status status_id			--油站状态
+       , customer_classify cstm_type_id		--客户分类id
+       , 1 os_num							--油站数量：默认为1
+       , case when status = 2 then 1 else 0 end invalid_os_num		--停用油站数量：1-停用，0-启用
+       , case when status = 1 then 1 else 0 end valid_os_num		--有效油站数量：1-有效，0-无效
+       , current_new_os_num					--当日新增油站数量，1-新增，0-老油站
+       , case when current_invalid_os_num is null then 0 else current_invalid_os_num end current_invalid_os_num --当日停用油站数量
+       , device_num							--油站设备数量
+       --油站信息表
+    from one_make_dwd.ciss_base_oilstation oil
+         left join (
+    	     --关联历史油站表，判断是否为新增油站
+             select 
+    		     oil.id
+    			 , case when oil.id = his.id then 0 else 1 end current_new_os_num 
+    		 from one_make_dwd.ciss_base_oilstation oil
+             left outer join one_make_dwd.ciss_base_oilstation_history his 
+    		 on oil.id = his.id where oil.dt = '20210101'
+         ) oilnewhis on oil.id = oilnewhis.id
+         left join (  
+             --关联停用油站数据，统计今日停用油站个数 
+             select 
+    		     oil.id, count(oil.id) current_invalid_os_num 
+    		 from one_make_dwd.ciss_base_oilstation oil 
+    		 where oil.dt = '20210101' and oil.status = 2 group by oil.id
+         ) invalidos on oil.id = invalidos.id
+         left join (
+    		 --关联油站设备信息表，统计油站设备个数
+             select 
+    		     oil.id, count(dev.id) device_num 
+             from one_make_dwd.ciss_base_oilstation oil
+             left join one_make_dwd.ciss_base_device_detail dev on oil.id = dev.oilstation_id
+             where oil.dt = '20210101'
+             group by oil.id
+         ) devinfo on oil.id = devinfo.id;
+    ```
+
+- **小结**
+
+  - 实现DWB层油站事实指标表的构建
+
 ### 6. 工单事实指标需求分析
 
 ### 7. 工单事实指标构建
