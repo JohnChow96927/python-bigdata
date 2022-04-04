@@ -1335,7 +1335,131 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现回访主题表的维度指标构建**
+
+   - **实施**
+
+     - **建表**
+
+       ```sql
+       drop table if exists one_make_st.subj_rtn_visit;
+       create table if not exists one_make_st.subj_rtn_visit(
+           rtn_srv_num int comment '回访服务人员数量'
+           ,vst_user int comment '回访人员数量'
+           ,wait_dispatch_num bigint comment '待派工数量'
+           ,wait_departure_num bigint comment '待出发数量'
+           ,alread_complete_num bigint comment '已完工工单数量'
+           ,processing_num bigint comment '正在处理工单数量'
+           ,satisfied_num int comment '满意数量'
+           ,unsatisfied_num int comment '不满意数量'
+           ,srv_atu_num int comment '服务态度满意数量'
+           ,srv_bad_atu_num int comment '服务态度不满意数量'
+           ,srv_rpr_prof_num int comment '服务维修水平满意数量'
+           ,srv_rpr_unprof_num int comment '服务维修水平不满意数量'
+           ,srv_high_res_num int comment '服务响应速度满意数量'
+           ,srv_low_res_num int comment '服务响应速度不满意数量'
+           ,rtn_rpr_num int comment '返修数量'
+           ,max_vst_user int comment '回访人员最大数量'
+           ,min_vst_user int comment '回访人员最小数量'
+           ,dws_day string comment '日期维度-按天'
+           ,dws_week string comment '日期维度-按周'
+           ,dws_month string comment '日期维度-按月'
+           ,orgname string comment '组织机构维度-回访人员所属部门'
+           ,posiname string comment '组织机构维度-回访人员所属岗位'
+           ,empname string comment '组织机构维度-回访人员名称'
+           ,oil_type string comment '油站维度-油站类型'
+           ,oil_province string comment '油站维度-油站所属省'
+           ,oil_city string comment '油站维度-油站所属市'
+           ,oil_county string comment '油站维度-油站所属区'
+           ,customer_classify string comment '客户维度-客户类型'
+           ,customer_province string comment '客户维度-客户所属省'
+       ) comment '回访主题表'
+       partitioned by (month String, week String, day String)
+       stored as orc
+       location '/data/dw/st/one_make/subj_rtn_visit'
+       ;
+       ```
+
+     - **构建**
+
+       ```sql
+       insert overwrite table one_make_st.subj_rtn_visit partition(month = '202101', week='2021W1', day='20210101')
+       select
+       	sum(rtn_srv_num) rtn_srv_num,                                --回访工程师数量
+       	sum(vst_user) vst_user,                                      --回访人员数量
+       	sum(wait_dispatch_sumnum) wait_dispatch_sumnum,              --待派工数量
+           sum(wait_departure_sumnum) wait_departure_sumnum,            --待出发数量
+       	sum(alread_complete_sumnum) alread_complete_sumnum,          --已完工数量
+       	sum(processing_sumnum) processing_sumnum,                    --处理中数量
+           sum(satisfied_sumnum) satisfied_sumnum,                      --满意数量
+       	sum(unsatisfied_sumnum) unsatisfied_sumnum,                  --不满意数量
+       	sum(srv_atu_sumnum) srv_atu_sumnum,                          --态度满意数量
+           sum(srv_bad_atu_sumnum) srv_bad_atu_sumnum,                  --态度不满意数量
+       	sum(srv_rpr_prof_sumnum) srv_rpr_prof_sumnum,                --水平满意数量
+       	sum(srv_rpr_unprof_sumnum) srv_rpr_unprof_sumnum,            --水平不满意数量
+           sum(srv_high_res_sumnum) srv_high_res_sumnum,                --响应速度满意数量
+       	sum(srv_low_res_sumnum) srv_low_res_sumnum,                  --响应速度不满意数量
+       	sum(rtn_rpr_sumnum) rtn_rpr_sumnum,                          --返修数量
+           max(vst_user) max_vst_user,                                  --回访人员最大数量
+       	min(vst_user) min_vst_user,                                  --回访人员最小数量
+       	dws_day,                                                     --日期天
+       	dws_week,                                                    --日期周
+       	dws_month,                                                   --日期月
+       	orgname,                                                     --组织机构人员部门
+       	posiname,                                                    --组织机构人员岗位
+       	empname,                                                     --组织机构人员姓名
+       	oil_type,                                                    --油站类型
+       	oil_province,                                                --油站省份
+           oil_city,                                                    --油站城市
+       	oil_county,                                                  --油站区域
+       	customer_classify,                                           --客户类型
+       	customer_province                                            --客户省份
+       from (
+       		 --查询得到每个工单的指标
+                select
+                    count(fsrv.srv_user_id) rtn_srv_num,
+                    count(fsrv.vst_user_id) vst_user,
+                    sum(fwo.wait_dispatch_num) wait_dispatch_sumnum,
+                    sum(fwo.wait_departure_num) wait_departure_sumnum,
+                    sum(fwo.alread_complete_num) alread_complete_sumnum,
+                    sum(fwo.processing_num) processing_sumnum,
+                    sum(fsrv.satisfied_num) satisfied_sumnum,
+                    sum(fsrv.unsatisfied_num) unsatisfied_sumnum,
+                    sum(fsrv.srv_atu_num) srv_atu_sumnum,
+                    sum(fsrv.srv_bad_atu_num) srv_bad_atu_sumnum,
+                    sum(fsrv.srv_rpr_prof_num) srv_rpr_prof_sumnum,
+                    sum(fsrv.srv_rpr_unprof_num) srv_rpr_unprof_sumnum,
+                    sum(fsrv.srv_high_res_num) srv_high_res_sumnum,
+                    sum(fsrv.srv_low_res_num) srv_low_res_sumnum,
+                    sum(fsrv.rtn_rpr_num) rtn_rpr_sumnum,
+                    dd.date_id dws_day, dd.week_in_year_id dws_week, dd.year_month_id dws_month,
+                    emp.orgname, emp.posiname, emp.empname,
+                    dimoil.company_name oil_type,
+                    dimoil.province_name oil_province, dimoil.city_name oil_city, dimoil.county_name oil_county,
+                    dimoil.customer_classify_name customer_classify,
+                    dimoil.customer_province_name customer_province
+       	     --回访事务事实表
+                from one_make_dwb.fact_srv_rtn_visit fsrv
+       		 --关联工单事实表
+       	     left join one_make_dwb.fact_worker_order fwo on fsrv.wrkodr_id = fwo.wo_id
+       		 --关联日期维度表
+       	     left join one_make_dws.dim_date dd on fsrv.dt = dd.date_id
+       		 --关联油站维度表
+       	     left join one_make_dws.dim_oilstation dimoil on fsrv.os_id = dimoil.id
+       		 --关联组织机构维度表
+       	     left join one_make_dws.dim_emporg emp on fsrv.vst_user_id = emp.empid
+                where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+       		 --按照分组维度聚合
+                group by fsrv.wrkodr_id, dd.date_id, dd.week_in_year_id, dd.year_month_id, emp.orgname, emp.posiname, emp.empname, dimoil.company_name, dimoil.province_name, dimoil.city_name, dimoil.county_name,
+                         dimoil.customer_classify_name, dimoil.customer_province_name
+            )
+       group by dws_day, dws_week, dws_month, orgname, posiname, empname, oil_type, oil_province, oil_city, oil_county, customer_classify, customer_province
+       ;
+       ```
+
+   - **小结**
+
+     - 实现回访主题表的维度指标构建
 
 ### 4. 费用主题
 
