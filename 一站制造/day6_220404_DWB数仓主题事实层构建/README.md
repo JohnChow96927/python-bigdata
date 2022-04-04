@@ -1596,7 +1596,106 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现费用主题表的维度指标构建**
+
+   - **实施**
+
+     - **建表**
+
+       ```sql
+       drop table if exists one_make_st.subj_expense;
+       create table if not exists one_make_st.subj_expense(
+           install_money decimal(20,1) comment '安装费用'
+           ,max_install_money decimal(20,1) comment '最大安装费用'
+           ,min_install_money decimal(20,1) comment '最小安装费用'
+           ,avg_install_money decimal(20,1) comment '平均安装费用'
+           ,sumbiz_trip_money decimal(20, 1) comment '外出差旅费用金额总计'
+           ,sumin_city_traffic_money decimal(20, 1) comment '市内交通费用金额总计'
+           ,sumhotel_money decimal(20, 1) comment '住宿费费用金额总计'
+           ,sumfars_money decimal(20, 1) comment '车船费用金额总计'
+           ,sumsubsidy_money decimal(20, 1) comment '补助费用金额总计'
+           ,sumroad_toll_money decimal(20, 1) comment '过桥过路费用金额总计'
+           ,sumoil_money decimal(20, 1) comment '油费金额总计'
+           ,exp_item_total int comment '差旅费用扣款明细总计'
+           ,actual_total_money decimal(20, 1) comment '差旅费用总额统计'
+           ,sum_secondary_money decimal(20, 1) comment '差旅费用二阶段扣款总计'
+           ,sum_third_money decimal(20, 1) comment '差旅费用三阶段扣款总计'
+           ,max_secondary_money decimal(20, 1) comment '差旅费用二阶段最大扣款总计'
+           ,max_third_money decimal(20, 1) comment '差旅费用三阶段最大扣款总计'
+           ,sum_srv_user int comment '报销人员总数量'
+           ,max_srv_user int comment '报销人员最大数量'
+           ,min_srv_user int comment '报销人员最小数量'
+           ,avg_srv_user int comment '报销人员平均数量'
+           ,dws_day string comment '日期维度-按天'
+           ,dws_week string comment '日期维度-按周'
+           ,dws_month string comment '日期维度-按月'
+           ,oil_type string comment '油站维度-油站类型'
+           ,oil_province string comment '油站维度-油站所属省'
+           ,oil_city string comment '油站维度-油站所属市'
+           ,oil_county string comment '油站维度-油站所属区'
+           ,customer_classify string comment '客户维度-客户类型'
+           ,customer_province string comment '客户维度-客户所属省'
+       ) comment '费用主题表'
+       partitioned by (month String, week String, day String)
+       stored as orc
+       location '/data/dw/st/one_make/subj_expense'
+       ;
+       ```
+
+     - **构建**
+
+       ```sql
+       insert overwrite table one_make_st.subj_expense partition(month = '202101', week='2021W1', day='20210101')
+       select
+       	sum(install.exp_device_money) install_money,               --安装费用
+       	max(install.exp_device_money) max_install_money,           --最大安装费用
+       	min(install.exp_device_money) min_install_money,           --最小安装费用
+           avg(install.exp_device_money) avg_install_money,           --平均安装费用
+       	sum(fte.biz_trip_money) sumbiz_trip_money,                 --外出差旅费用金额总计
+       	sum(fte.in_city_traffic_money) sumin_city_traffic_money,   --市内交通费用金额总计
+           sum(fte.hotel_money) sumhotel_money,                       --住宿费用金额总计
+       	sum(fte.fars_money) sumfars_money,                         --车船费用金额总计
+       	sum(fte.subsidy_money) sumsubsidy_money,                   --补助费用金额总计
+       	sum(fte.road_toll_money) sumroad_toll_money,               --过桥过路费用金额总计
+           sum(fte.oil_money) sumoil_money,                           --油费金额总计
+       	count(distinct fre.exp_item_name) exp_item_total,          --差旅费用扣款明细总计
+       	sum(fte.actual_total_money) actual_total_money,            --差旅费用总额统计
+           sum(fte.secondary_money) sum_secondary_money,              --差旅费用二阶段扣款总计
+       	sum(fte.third_money) sum_third_money,                      --差旅费用三阶段扣款总计
+       	max(fte.secondary_money) max_secondary_money,              --差旅费用二阶段最大扣款总计
+       	max(fte.third_money) max_third_money,                      --差旅费用三阶段最大扣款总计
+           sum(size(split(fre.srv_user_id,','))) sum_srv_user,        --报销人员数量
+       	max(size(split(fre.srv_user_id,','))) max_srv_user,        --报销人员最大数量
+           min(size(split(fre.srv_user_id,','))) min_srv_user,        --报销人员最小数量
+       	avg(size(split(fre.srv_user_id,','))) avg_srv_user,        --报销人员平均数量
+           dd.date_id dws_day,                                        --日期天
+       	dd.week_in_year_id dws_week,                               --日期周
+       	dd.year_month_id dws_month,                                --日期月
+       	dimoil.company_name oil_type,                              --油站类型
+       	dimoil.province_name oil_province,                         --油站省份
+           dimoil.city_name oil_city,                                 --油站城市
+       	dimoil.county_name oil_county,                             --油站区域
+       	dimoil.customer_classify_name customer_classify,           --客户类型
+       	dimoil.customer_province_name customer_province            --客户省份
+       --差旅事务事实表
+       from one_make_dwb.fact_trvl_exp fte
+       --安装事务事实表
+       left join one_make_dwb.fact_srv_install install on fte.ss_id = install.ss_id
+       --报销事务事实表
+       left join one_make_dwb.fact_regular_exp  fre on fte.srv_user_id = fre.srv_user_id
+       --关联日期维度表
+       left join one_make_dws.dim_date dd on fte.dt = dd.date_id
+       --关联油站维度表
+       left join one_make_dws.dim_oilstation dimoil on install.os_id = dimoil.id
+       where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+       group by inst_type_id, dd.date_id, dd.week_in_year_id, dd.year_month_id,  dimoil.company_name, dimoil.province_name, dimoil.city_name, dimoil.county_name,
+                dimoil.customer_classify_name, dimoil.customer_province_name
+       ;
+       ```
+
+   - **小结**
+
+     - 实现费用主题表的维度指标构建
 
 ### 5. 派单主题
 
