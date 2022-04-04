@@ -2446,3 +2446,96 @@
   - 了解物料域主题的设计模型
 
 ## III. DM层构建
+
+- **目标**：**掌握DM层的设计**
+
+- **路径**
+
+  - step1：DM层设计
+  - step2：运营部门主题
+
+- **实施**
+
+  - **DM层设计**
+
+    - ==**功能**：数据集市层，用于支撑对每个**部门**的各种数据的需求==
+    - **来源**：对DW层的数据按照一定的部门分类进行抽取
+
+  - **运营部门主题**
+
+    - **需求**：统计不同维度下的运营主题指标
+
+      ![image-20211004150559165](assets/image-20211004150559165.png)
+
+    - **实现**
+
+      - **建库**
+
+        ```sql
+        create database if not exists one_make_dm;
+        ```
+
+      - **建表**
+
+        ```sql
+        drop table if exists one_make_dm.mart_operation_dept;
+        create table if not exists one_make_dm.mart_operation_dept_7d(
+          wo_id string comment '工单ID'
+            ,userids string comment '工单服务用户ID'
+            ,callaccept_id string comment '来电受理ID'
+            ,oil_station_id string comment '油站ID'
+            ,os_name string comment '油站名称'
+            ,service_total_duration decimal(20,2) comment '服务工时(小时)'
+            ,repair_num bigint comment '维修工单数量'
+            ,wo_num bigint comment '工单数量'
+            ,avg_wo_num int comment '平均工单'
+            ,sum_os_online int comment '加油机在线设备总数'
+            ,atu_num_rate decimal(5,2) comment '客户回访满意度率'
+            ,rtn_visit_duration decimal(20,2) comment '来电受理时长(小时)'
+            ,dws_day string comment '日期维度-按天'
+            ,dws_week string comment '日期维度-按周'
+            ,dws_month string comment '日期维度-按月'
+        ) comment '运营部数据集市表'
+        partitioned by (month String, week String, day String)
+        stored as orc
+        location '/data/dw/dm/one_make/mart_operation_dept';
+        ```
+
+      - **构建**
+
+        ```sql
+        insert overwrite table one_make_dm.mart_operation_dept partition(month = '202101', week='2021W1', day='20210101')
+        select
+          fwo.wo_id                                                                            --工单id
+            , max(fwo.userids) userids                                                           --工程师id
+            , max(fwo.callaccept_id) callaccept_id                                               --来电受理id
+            , max(fwo.oil_station_id) oil_station_id                                             --油站id
+        	, max(fos.os_name) os_name 															 --油站名称
+            , max(fwo.service_total_duration) service_total_duration                             --服务工时
+            , sum(fwo.wo_num) wo_num                                                             --维修工单数量
+            , count(fos.os_id) sum_os_num                                                        --工单数量
+            , avg(fwo.wo_num) avg_wo_num                                                         --平均工单
+            , sum(fos.valid_os_num) sum_os_online                                                --加油机在线设备总数
+            , max(fsrv.srv_atu_num / (fsrv.srv_atu_num + fsrv.srv_bad_atu_num)) atu_num_rate     --客户回访满意度
+            , max(fcs.interval / 3600.0) rtn_visit_duration                                      --来电受理时长
+            , dd.date_id dws_day                                                                 --日期天
+            , dd.week_in_year_id dws_week                                                        --日期周
+            , dd.year_month_id dws_month                                                         --日期月
+        --工单事务事实表
+        from one_make_dwb.fact_worker_order fwo
+        --油站事务事实表
+        left join one_make_dwb.fact_oil_station fos on fwo.oil_station_id = fos.os_id
+        --回访事务事实表
+        left join one_make_dwb.fact_srv_rtn_visit fsrv on fwo.wo_id = fsrv.wrkodr_id
+        --呼叫中心事务事实表
+        left join one_make_dwb.fact_call_service fcs on fwo.callaccept_id = fcs.id
+        --日期维度表
+        left join one_make_dws.dim_date dd on fwo.dt = dd.date_id
+        where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+        group by fwo.wo_id, dd.date_id, dd.week_in_year_id, dd.year_month_id;
+        
+        ```
+
+- **小结**
+
+  - 掌握DM层的设计
