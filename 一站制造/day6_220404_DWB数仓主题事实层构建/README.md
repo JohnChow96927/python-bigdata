@@ -993,6 +993,101 @@ DWB数仓主题事实层构建
 
 ### 9. 安装事实指标构建
 
+- **目标**：**实现DWB层安装事实指标表的构建**
+
+- **实施**
+
+  - **建表**
+
+    ```sql
+    -- 创建安装单事实表
+    drop table if exists one_make_dwb.fact_srv_install;
+    create table if not exists one_make_dwb.fact_srv_install(
+        inst_id string comment '安装单id'
+        , inst_code string comment '安装单编码'
+        , inst_type_id string comment '安装方式id'
+        , srv_user_id string comment '服务人员用户id'
+        , ss_id string comment '服务网点id'
+        , os_id string comment '油站id'
+        , date_id string comment '日期id'
+        , new_inst_num int comment '全新安装数量'
+        , debug_inst_num int comment '设备联调安装数量'
+        , repair_num int comment '产生维修安装单数量'
+        , ext_exp_num int comment '额外收费安装单数量'
+        , inst_device_num int comment '安装设备数量'
+        , exp_device_money int comment '安装费用'
+        , validated_inst_num int comment '审核安装单数量'
+    ) comment '安装单事实表'
+    partitioned by (dt string)
+    stored as orc
+    location '/data/dw/dwb/one_make/fact_srv_install';
+    ```
+
+  - **抽取**
+
+    ```sql
+    insert overwrite table one_make_dwb.fact_srv_install partition(dt = '20210101')
+    select
+        sinstall.id inst_id						--安装单id
+    	, sinstall.code inst_code               --安装单号
+    	, sinstall.install_way inst_type_id     --安装方式
+    	, swo.service_userid srv_user_id        --工程师id
+    	, swo.service_station_id ss_id          --服务网点id
+    	, swo.oil_station_id os_id              --油站id
+    	, swo.create_time date_id               --创建时间
+    	, installtype.new_inst_num                          --全新安装数量
+    	, installtype.debug_inst_num                        --设备联调安装数量
+    	, installtype.repair_num                            --产生维修安装数量
+    	, installtype.ext_exp_num                           --额外收费安装数量
+    	, sodev.inst_device_num                       --安装设备数量
+    	, dtl.exp_device_money                      --安装费用
+    	, validate.validated_inst_num                    --已审核安装单数量
+    	--安装信息表
+    from one_make_dwd.ciss_service_install sinstall
+    	--服务单表
+    	left join one_make_dwd.ciss_service_order sorder on sinstall.service_id = sorder.id
+    	--工单表
+    	left join one_make_dwd.ciss_service_workorder swo on sorder.workorder_id = swo.id
+    	--获取全新、联调、维度、收费的安装数量
+    	left join (
+    	   select
+    	       id,
+    		   case when install_type = 1 then 1 else 0 end new_inst_num,
+    	       case when install_way = 2 then 1 else 0 end debug_inst_num,
+    	       case when is_repair = 1 then 1 else 0 end repair_num,
+    	       case when is_pay = 1 then 1 else 0 end ext_exp_num
+    	   from one_make_dwd.ciss_service_install
+    	) installtype on sinstall.id = installtype.id
+    	--获取每个服务单的安装设备数量
+    	left join (
+    	   select
+    	       sorder.id, count(sodevice.id) inst_device_num
+    	   from one_make_dwd.ciss_service_order sorder
+    	   left join one_make_dwd.ciss_service_order_device sodevice on sorder.id = sodevice.service_order_id
+    	   group by sorder.id
+    	) sodev on sorder.id = sodev.id
+    	--获取每个工单的报销总金额
+    	left join (
+    	  select
+    	      swo.id, sum(dtl.money5) exp_device_money
+          from one_make_dwd.ciss_service_workorder swo
+    	  left join one_make_dwd.ciss_s_install_exp_rep_02_dtl dtl on swo.id = dtl.workorder_id
+    	  where dtl.dt = '20210101' and dtl.money5 is not null
+    	  group by swo.id
+    	) dtl on swo.id = dtl.id
+    	--获取每个安装工单的审核状态
+    	left join (
+    	  select
+    	      swo.id, case when ivalida.has_validate = 1 then 1 else 0 end validated_inst_num
+    	  from one_make_dwd.ciss_service_workorder swo
+    	  left join one_make_dwd.ciss_service_install_validate ivalida on swo.id = ivalida.workorder_id
+    	) validate on swo.id = validate.id where swo.service_userid is not null and sinstall.dt = '20210101';
+    ```
+
+- **小结**
+
+  - 实现DWB层安装事实指标表的构建
+
 ### 10. 维修事务事实表
 
 1. #### 需求分析
