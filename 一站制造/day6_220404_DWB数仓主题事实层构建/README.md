@@ -244,7 +244,181 @@ DWB数仓主题事实层构建
 
   - 实现DWB层呼叫中心事实指标表的构建
 
-### 1. 维修事务事实表
+### 4. 油站事实指标需求分析
+
+- **目标**：**掌握DWB层油站事实指标表的需求分析**
+
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+
+- **实施**
+
+  - **目标需求**：基于油站信息及设备数据构建油站主题事实的油站个数、停用个数、新增个数、设备个数等
+
+    ![image-20211003144602187](assets/image-20211003144602187.png)
+
+    - 油站数量：1个油站就是一条数据，这个值默认就为1
+
+    - 已停用油站数量：2是停用状态，判断油站的状态是什么状态
+
+    - 有效油站数量：1是使用状态，判断油站的状态是什么状态
+
+    - 当日新增油站：判断之前有没有这个油站
+
+      - 新增xxxx的计算方式：新增会员、新增设备、新增访客……
+
+        - 求差值：全集 = 所有历史会员的信息表、子集 = 今日所有访问的会员信息表
+
+        - A：所有历史会员信息表 tb_user
+
+          ```
+          userid		username
+          ```
+
+        - B：今天所有访问的会员信息表tb_visit
+
+          ```
+          userid
+          ```
+
+        - 实现
+
+          ```
+          select
+            a.userid
+          from tb_visit a left join tb_user b
+          on a.userid = b.userid
+          where b.userid is null;
+          ```
+
+      - 用当日所有油站信息与历史油站信息进行关联，得到新增油站的个数
+
+        - 第一张表：历史油站信息表
+        - 第二张表：今天所有油站信息表
+        - 今天有，而历史油站信息表中没有 =》 新增油站的id
+
+    - 当日停用油站：判断当日状态是否为2
+
+    - 油站设备数量：得到这个油站的所有设备信息，按照油站id分组统计设备个数
+
+  - **数据来源**
+
+    - **ciss_base_oilstation**：油站信息表
+
+      ```sql
+        select
+           id os_id					--油站id
+           , name os_name				--油站名称
+           , code os_code				--油站编码
+           , province province_id		--油站省份
+           , city city_id				--油站城市
+           , region county_id			--油站区域
+           , status status_id			--油站状态
+           , customer_classify cstm_type_id		--客户分类id
+           , 1 os_num							--油站数量：默认为1
+           , case when status = 2 then 1 else 0 end invalid_os_num		--停用油站数量：1-停用，0-启用
+           , case when status = 1 then 1 else 0 end valid_os_num		--有效油站数量：1-有效，0-无效
+        from one_make_dwd.ciss_base_oilstation;
+      ```
+
+    - **ciss_base_oilstation_history**：油站历史记录表
+
+      - 模拟油站历史记录
+
+        ```sql
+          create table if not exists one_make_dwd.ciss_base_oilstation_history
+          stored as orc
+          as select * from one_make_dwd.ciss_base_oilstation
+          where dt < '20210102';
+        ```
+
+      - 查询新增油站信息
+
+        ```sql
+          --获取当前的油站是否是一个新增油站
+          select
+              oil.id
+              , case when oil.id = his.id then 0 else 1 end current_new_os_num 
+          --今日油站数据表
+          from one_make_dwd.ciss_base_oilstation oil
+          --历史油站数据表
+        left outer join one_make_dwd.ciss_base_oilstation_history his
+          on oil.id = his.id where oil.dt = '20210101';
+        ```
+
+      - **ciss_base_device_detail**：油站设备信息表
+
+        ```sql
+        -- 每个油站的每个设备信息
+        select
+            id,--设备id
+            oilstation_id --油站id
+        from one_make_dwd.ciss_base_device_detail;
+        
+        -- 设备信息表中按照油站id分组聚合设备id：每个油站的设备个数
+        select
+            oil.id, --油站id
+            count(dev.id) device_num  --设备个数
+        from one_make_dwd.ciss_base_oilstation oil
+        left join one_make_dwd.ciss_base_device_detail dev on oil.id = dev.oilstation_id
+        where oil.dt = '20210101'
+        group by oil.id;
+        ```
+
+      - 分析
+
+        ```sql
+          select
+             id os_id					--油站id
+             , name os_name				--油站名称
+             , code os_code				--油站编码
+             , province province_id		--油站省份
+             , city city_id				--油站城市
+             , region county_id			--油站区域
+             , status status_id			--油站状态
+             , customer_classify cstm_type_id		--客户分类id
+             , 1 os_num							--油站数量：默认为1
+             , case when status = 2 then 1 else 0 end invalid_os_num		--停用油站数量：1-停用，0-启用
+             , case when status = 1 then 1 else 0 end valid_os_num		--有效油站数量：1-有效，0-无效
+             , b.device_num --设备个数
+             , c.current_new_os_num -- 新增油站标记
+          from one_make_dwd.ciss_base_oilstation a
+        join (select
+                oil.id, --油站id
+                count(dev.id) device_num  --设备个数
+            from one_make_dwd.ciss_base_oilstation oil
+            left join one_make_dwd.ciss_base_device_detail dev on oil.id = dev.oilstation_id
+            where oil.dt = '20210101'
+            group by oil.id) b
+        on a.id = b.id
+        join (select
+              oil.id
+              , case when oil.id = his.id then 0 else 1 end current_new_os_num
+            --今日油站数据表
+            from one_make_dwd.ciss_base_oilstation oil
+            --历史油站数据表
+            left outer join one_make_dwd.ciss_base_oilstation_history his
+            on oil.id = his.id where oil.dt = '20210101') c
+        on a.id = c.id;
+        ```
+
+- **小结**
+
+  - 掌握DWB层油站事实指标表的需求分析
+
+### 5. 油站事实指标构建
+
+### 6. 工单事实指标需求分析
+
+### 7. 工单事实指标构建
+
+### 8. 安装事实指标需求分析
+
+### 9. 安装事实指标构建
+
+### 10. 维修事务事实表
 
 1. #### 需求分析
 
@@ -421,7 +595,7 @@ DWB数仓主题事实层构建
 
      - 实现DWB层维修事实指标表的构建
 
-### 2. 客户回访事务事实表
+### 11. 客户回访事务事实表
 
 1. #### 需求分析
 
@@ -557,7 +731,7 @@ DWB数仓主题事实层构建
 
      - 实现DWB层客户回访事实指标表的构建
 
-### 3. 费用事务事实表
+### 12. 费用事务事实表
 
 - **目标**：**实现DWB层费用报销事实指标表的构建**
 
@@ -671,7 +845,7 @@ DWB数仓主题事实层构建
 
   - 实现DWB层费用报销事实指标表的构建
 
-### 4. 差旅费用事务事实表
+### 13. 差旅费用事务事实表
 
 - **目标**：**实现DWB层差旅报销事实指标表的构建**
 
@@ -820,7 +994,7 @@ DWB数仓主题事实层构建
 
   - 实现DWB层差旅报销事实指标表的构建
 
-### 5. 网点物料事实表
+### 14. 网点物料事实表
 
 - **目标**：**实现DWB层网点物料事实指标表的构建**
 
