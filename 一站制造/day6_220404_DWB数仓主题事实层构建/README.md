@@ -945,7 +945,119 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现工单主题表的维度指标构建**
+
+   - **实施**
+
+     - **建库**
+
+       ```sql
+       create database if not exists one_make_st;
+       ```
+
+     - **建表**
+
+       ```sql
+       -- 创建工单主题表
+       drop table if exists one_make_st.subj_worker_order;
+       create table if not exists one_make_st.subj_worker_order(
+           owner_process bigint comment '派工方式-自己处理数量'
+           ,tran_process bigint comment '派工方式-转派工数量'
+           ,wokerorder_num bigint comment '工单总数'
+           ,wokerorder_num_max int comment '工单总数最大值'
+           ,wokerorder_num_min int comment '工单总数最小值'
+           ,wokerorder_num_avg int comment '工单总数平均值'
+           ,install_sumnum bigint comment '派工类型-安装总数'
+           ,repair_sumnum bigint comment '派工类型-维修总数'
+           ,remould_sumnum bigint comment '派工类型-巡检总数'
+           ,inspection_sumnum bigint comment '派工类型-改造总数'
+           ,alread_complete_sumnum bigint comment '完工总数'
+           ,customer_classify_zsh bigint comment '客户类型-中石化数量'
+           ,customer_classify_jxs bigint comment '客户类型-经销商数量'
+           ,customer_classify_qtzx bigint comment '客户类型-其他直销数量'
+           ,customer_classify_zsy bigint comment '客户类型-中石油数量'
+           ,customer_classify_qtwlh bigint comment '客户类型-其他往来户数量'
+           ,customer_classify_zhjt bigint comment '客户类型-中化集团数量'
+           ,customer_classify_zhy bigint comment '客户类型-中海油数量'
+           ,customer_classify_gys bigint comment '客户类型-供应商数量'
+           ,customer_classify_onemake bigint comment '客户类型-一站制造**数量'
+           ,customer_classify_fwy bigint comment '客户类型-服务员数量'
+           ,customer_classify_zt bigint comment '客户类型-中铁数量'
+           ,customer_classify_hzgs bigint comment '客户类型-合资公司数量'
+           ,customer_classify_jg bigint comment '客户类型-军供数量'
+           ,customer_classify_zhhangy bigint comment '客户类型-中航油数量'
+           ,dws_day string comment '日期维度-按天'
+           ,dws_week string comment '日期维度-按周'
+           ,dws_month string comment '日期维度-按月'
+           ,oil_type string comment '油站维度-油站类型'
+           ,oil_province string comment '油站维度-油站所属省'
+           ,oil_city string comment '油站维度-油站所属市'
+           ,oil_county string comment '油站维度-油站所属区'
+           ,customer_classify string comment '客户维度-客户类型'
+           ,customer_province string comment '客户维度-客户所属省'
+       ) comment '工单主题表'
+       partitioned by (month String, week String, day String)
+       stored as orc
+       location '/data/dw/st/one_make/subj_worker_order'
+       ;
+       ```
+
+     - **构建**
+
+       ```sql
+       insert overwrite table one_make_st.subj_worker_order partition(month = '202101', week='2021W1', day='20210101')
+       select
+         sum(case when fcs.process_way_name = '自己处理' then 1 else 0 end) owner_process, --工单自处理个数
+       	sum(case when fcs.process_way_name = '转派工' then 1 else 0 end) tran_process,    --工单转派工个数
+       	sum(fwo.wo_num) wokerorder_num,                                      --工单总数
+       	max(fwo.wo_num) wokerorder_num_max,                                  --最大值
+           min(fwo.wo_num) wokerorder_num_min,                                  --最小值
+       	avg(fwo.wo_num) wokerorder_num_avg,                                  --平均值
+       	sum(fwo.install_num) install_sumnum,                                     --安装总数
+       	sum(fwo.repair_num) repair_sumnum,                                       --维修总数
+           sum(fwo.remould_num) remould_sumnum,                                     --巡检总数
+       	sum(fwo.inspection_num) inspection_sumnum,                               --改造总数
+       	sum(fwo.alread_complete_num) alread_complete_sumnum,                     --完工总数
+           sum(case when oil.customer_classify_name ='中石化' then 1 else 0 end) customer_classify_zsh,       --中石化数量
+       	sum(case when oil.customer_classify_name ='经销商' then 1 else 0 end) customer_classify_jxs,       --经销商数量
+           sum(case when oil.customer_classify_name ='其他直销' then 1 else 0 end) customer_classify_qtzx,      --其他直销数量
+       	sum(case when oil.customer_classify_name ='中石油' then 1 else 0 end) customer_classify_zsy,       --中石油数量
+           sum(case when oil.customer_classify_name ='其他往来户' then 1 else 0 end) customer_classify_qtwlh,     --其他往来户数量
+       	sum(case when oil.customer_classify_name ='中化集团' then 1 else 0 end) customer_classify_zhjt,      --中化集团数量
+           sum(case when oil.customer_classify_name ='中海油' then 1 else 0 end) customer_classify_zhy,       --中海油数量
+       	sum(case when oil.customer_classify_name ='供应商' then 1 else 0 end) customer_classify_gys,        --供应商数量
+           sum(case when oil.customer_classify_name ='一站制造**' then 1 else 0 end) customer_classify_onemake,     --一站制造数量
+       	sum(case when oil.customer_classify_name ='服务工程师' then 1 else 0 end) customer_classify_fwy,          --服务工程师数量
+           sum(case when oil.customer_classify_name ='中铁' then 1 else 0 end) customer_classify_zt,           --中铁数量
+       	sum(case when oil.customer_classify_name ='合资公司' then 1 else 0 end) customer_classify_hzgs,         --合资公司数量
+           sum(case when oil.customer_classify_name ='军供' then 1 else 0 end) customer_classify_jg,             --军供数量
+       	sum(case when oil.customer_classify_name ='中航油' then 1 else 0 end) customer_classify_zhhangy,         --中航油数量
+           dd.date_id dws_day,                                                  --时间天
+       	dd.week_in_year_id dws_week,                                         --时间周
+       	dd.year_month_id dws_month,                                          --时间月
+       	oil.company_name oil_type,                                           --油站类型
+       	oil.province_name oil_province,                                      --油站省份
+           oil.city_name oil_city,                                              --油站城市
+       	oil.county_name oil_county,                                          --油站地区
+       	oil.customer_classify_name customer_classify,                        --客户类型
+       	oil.customer_province_name customer_province                         --客户省份
+       --工单事务事实表
+       from one_make_dwb.fact_worker_order fwo
+       --获取自处理个数,转派单个数
+       left join one_make_dwb.fact_call_service fcs on fwo.callaccept_id = fcs.id
+       --关联日期维度
+       left join one_make_dws.dim_date dd on fwo.dt = dd.date_id
+       --关联油站维度
+       left join one_make_dws.dim_oilstation oil on fwo.oil_station_id = oil.id
+       where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+       --按照维度字段分组
+       group by dd.date_id, dd.week_in_year_id, dd.year_month_id, oil.company_name, oil.province_name, oil.city_name, oil.county_name,oil.customer_classify_name, oil.customer_province_name
+       ;
+       ```
+
+   - **小结**
+
+     - 实现工单主题表的维度指标构建
 
 ### 2. 油站主题
 
