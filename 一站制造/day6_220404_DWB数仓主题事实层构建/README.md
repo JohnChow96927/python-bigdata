@@ -1699,7 +1699,222 @@
 
 ### 5. 派单主题
 
+- **目标**：**掌握派单主题的需求分析实现**
 
+- **路径**
+
+  - step1：需求
+  - step2：分析
+
+- **实施**
+
+  - **需求**：统计不同维度下的派单主题指标的结果
+
+    | 字段名称          | 字段说明                  | 来源                           |
+    | ----------------- | ------------------------- | ------------------------------ |
+    | install_sumnum    | 安装单数量                | one_make_dwb.fact_worker_order |
+    | repair_sumnum     | 维修单数量                | one_make_dwb.fact_worker_order |
+    | remould_sumnum    | 巡检单数量                | one_make_dwb.fact_worker_order |
+    | inspection_sumnum | 改造单数量                | one_make_dwb.fact_worker_order |
+    | max_wo_num        | 派单数最大值              | one_make_dwb.fact_worker_order |
+    | min_wo_num        | 派单数最小值              | one_make_dwb.fact_worker_order |
+    | avg_wo_num        | 派单数平均值              | one_make_dwb.fact_worker_order |
+    | call_srv_user     | 呼叫中心派单人            | one_make_dwb.fact_call_service |
+    | max_dispatch_cnt  | 呼叫中心最大派单          | one_make_dwb.fact_call_service |
+    | min_dispatch_cnt  | 呼叫中心最小派单          | one_make_dwb.fact_call_service |
+    | avg_dispatch_cnt  | 呼叫中心平均派单          | one_make_dwb.fact_call_service |
+    | people_wo_num     | 派单平均值                | one_make_dwb.fact_worker_order |
+    | srv_reps_duration | 派单响应时长              | one_make_dwb.fact_worker_order |
+    | srv_duration      | 服务时长                  | one_make_dwb.fact_worker_order |
+    | pepople_sumnum    | 工单人数                  | one_make_dwb.fact_worker_order |
+    | dws_day string    | 日期维度-按天             | one_make_dws.dim_date          |
+    | dws_week string   | 日期维度-按周             | one_make_dws.dim_date          |
+    | dws_month string  | 日期维度-按月             | one_make_dws.dim_date          |
+    | orgname           | 组织机构-回访人员所属部门 | one_make_dws.dim_emporg        |
+    | posiname          | 组织机构-回访人员所属岗位 | one_make_dws.dim_emporg        |
+    | posiname          | 组织机构-回访人员名称     | one_make_dws.dim_emporg        |
+    | oil_type string   | 油站类型                  | one_make_dws.dim_oilstation    |
+    | oil_province      | 油站所属省                | one_make_dws.dim_oilstation    |
+    | oil_city string   | 油站所属市                | one_make_dws.dim_oilstation    |
+    | oil_county string | 油站所属区                | one_make_dws.dim_oilstation    |
+    | customer_classify | 客户类型                  | one_make_dws.dim_oilstation    |
+    | customer_province | 客户所属省                | one_make_dws.dim_oilstation    |
+
+  - **分析**
+
+    - **指标**
+      - 安装单数量、维修单数量、改造单数量、巡检单数量
+      - 最大派单数、最小派单数、平均派单数
+      - 派单平均值、派单响应时长、服务时长、工单人数
+        - 工单主题事实表
+      - 呼叫中心派单人、呼叫中心最大派单、呼叫中心最小派单、呼叫中心平均派单
+        - 呼叫中心
+    - **维度**
+      - 日期维度：天、周、月
+      - 组织机构维度：人员部门、人员岗位、人员姓名
+      - 油站维度：类型、省份、城市、区域，类型、省份
+
+- **数据**
+
+  - 事实表
+
+    - fact_call_service：呼叫中心事务事实表
+
+      ```sql
+          select
+              userid,--受理人员id
+              dispatch_cnt,--派工数量
+              id,--呼叫受理id
+              oil_station_id, --油站id
+              dt --日期
+          from fact_call_service;
+      ```
+
+    - fact_worker_order：工单事务事实表
+
+      ```sql
+      select
+            callaccept_id,--呼叫受理id
+              install_num,--安装数量
+              repair_num,--维修数量
+              remould_num,--改造数量
+              inspection_num,--巡检数量
+              wo_num, --工单数量
+              people_num, --工单人数
+              repair_service_duration,--报修响应时长
+              service_total_duration --服务总时长
+          from fact_worker_order;
+      ```
+
+      - 维度表
+
+    - dim_oilstation：油站维度表
+
+      ```sql
+      select
+          id,--油站id
+            company_name,--公司名称
+              province_name,--省份名称
+              city_name,--城市名称
+              county_name,--区域名称
+              customer_classify_name,--客户名称
+              customer_province_name--客户省份
+          from dim_oilstation;
+      ```
+
+      - dim_date：时间维度表
+
+        ```sql
+        select
+        date_id,--天
+        week_in_year_id,--周
+            year_month_id --月
+        from dim_date;
+        ```
+
+      - dim_emporg：组织机构维度
+
+        ```sql
+        select
+            empid,--人员id
+        orgname,--部门名称
+            posiname,--岗位名称
+        empname --员工名称
+        from dim_emporg;
+        ```
+
+  - **实现**
+
+    - 建表
+
+      ```sql
+      drop table if exists one_make_st.subj_dispatch;
+      create table if not exists one_make_st.subj_dispatch(
+        install_sumnum int comment '安装单数量'
+          ,repair_sumnum int comment '维修单数量'
+        ,remould_sumnum int comment '改造单数量'
+          ,inspection_sumnum int comment '巡检单数量'
+          ,max_wo_num int comment '派单数最大值'
+          ,min_wo_num int comment '派单数最小值'
+          ,avg_wo_num decimal(20, 1) comment '派单数平均值'
+          ,call_srv_user int comment '呼叫中心派单人'
+          ,max_dispatch_cnt int comment '呼叫中心最大派单'
+          ,min_dispatch_cnt int comment '呼叫中心最小派单'
+          ,avg_dispatch_cnt decimal(20, 1) comment '呼叫中心平均派单'
+          ,people_wo_num decimal(20, 1) comment '派单平均值'
+          ,srv_reps_duration int comment '派单响应时长'
+          ,srv_duration int comment '服务时长'
+          ,pepople_sumnum int comment '工单人数'
+          ,dws_day string comment '日期维度-按天'
+          ,dws_week string comment '日期维度-按周'
+          ,dws_month string comment '日期维度-按月'
+          ,orgname string comment '组织机构维度-回访人员所属部门'
+          ,posiname string comment '组织机构维度-回访人员所属岗位'
+          ,empname string comment '组织机构维度-回访人员名称'
+          ,oil_type string comment '油站维度-油站类型'
+          ,oil_province string comment '油站维度-油站所属省'
+          ,oil_city string comment '油站维度-油站所属市'
+          ,oil_county string comment '油站维度-油站所属区'
+          ,customer_classify string comment '客户维度-客户类型'
+          ,customer_province string comment '客户维度-客户所属省'
+      ) comment '派单主题表'
+      partitioned by (month String, week String, day String)
+      stored as orc
+      location '/data/dw/st/one_make/subj_dispatch'
+      ;
+      ```
+
+    - 构建
+
+      ```sql
+      insert overwrite table one_make_st.subj_dispatch partition(month = '202101', week='2021W1', day='20210101')
+      select
+      	sum(fwo.install_num) install_sumnum,                       --安装单数量
+      	sum(fwo.repair_num) repair_sumnum,                         --维修单数量
+      sum(fwo.remould_num) remould_sumnum,                       --改造单数量
+      	sum(fwo.inspection_num) inspection_sumnum,                 --巡检单数量
+        max(fwo.wo_num) max_wo_num,                                --最大派单数
+      	min(fwo.wo_num) min_wo_num,                                --最小派单数
+      	avg(fwo.wo_num) avg_wo_num,                                --平均派单数
+      	sum(fcs.userid) call_srv_user,                             --呼叫中心派单人
+      	max(fcs.dispatch_cnt) max_dispatch_cnt,                    --呼叫中心最大派单
+          min(fcs.dispatch_cnt) min_dispatch_cnt,                    --呼叫中心最小派单
+      	avg(fcs.dispatch_cnt) avg_dispatch_cnt,                    --呼叫中心平均派单
+      	sum(fwo.wo_num) / sum(fwo.people_num) people_wo_num,       --派单平均值
+          sum(fwo.repair_service_duration) srv_reps_duration,        --派单响应时长
+      	sum(fwo.service_total_duration) srv_duration,              --服务时长
+      	sum(fwo.people_num) pepople_sumnum,                        --工单人数
+          dd.date_id dws_day,                                        --日期日
+      	dd.week_in_year_id dws_week,                               --日期周
+      	dd.year_month_id dws_month,                                --日期月
+      	emp.orgname,                                               --组织机构人员部门
+      	emp.posiname,                                              --组织机构人员岗位
+      	emp.empname,                                               --组织机构人员名称
+      	dimoil.company_name oil_type,                              --油站类型
+          dimoil.province_name oil_province,                         --油站省份
+      	dimoil.city_name oil_city,                                 --油站城市
+      	dimoil.county_name oil_county,                             --油站区域
+      	dimoil.customer_classify_name customer_classify,           --客户类型
+          dimoil.customer_province_name customer_province            --客户省份
+      --呼叫中心事务事实表
+      from one_make_dwb.fact_call_service fcs
+      --关联工单事实表
+      left join one_make_dwb.fact_worker_order fwo on fcs.id = fwo.callaccept_id
+      --关联组织机构维度表
+      left join one_make_dws.dim_emporg emp on fcs.userid = emp.empid
+      --关联日期维度表
+      left join one_make_dws.dim_date dd on fcs.dt = dd.date_id
+      --关联油站维度表
+      left join one_make_dws.dim_oilstation dimoil on fcs.oil_station_id = dimoil.id
+      where dd.year_month_id = '202101'and dd.week_in_year_id = '2021W1' and  dd.date_id = '20210101'
+      group by dd.date_id, dd.week_in_year_id, dd.year_month_id, emp.orgname, emp.posiname, emp.empname, dimoil.company_name, dimoil.province_name,
+               dimoil.city_name, dimoil.county_name, dimoil.customer_classify_name, dimoil.customer_province_name
+      ;
+      ```
+
+- **小结**
+
+  - 掌握派单主题的需求分析及实现
 
 ### 6. 安装主题
 
@@ -1709,7 +1924,11 @@
 
 
 
-### 8. 物料主题
+### 8. 客户主题
+
+
+
+### 9. 物料主题
 
 
 
