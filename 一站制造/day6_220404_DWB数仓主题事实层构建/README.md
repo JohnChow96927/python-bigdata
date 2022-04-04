@@ -233,7 +233,87 @@
 
 2. #### 构建实现
 
-   
+   - **目标**：**实现DWB层客户回访事实指标表的构建**
+
+   - **实施**
+
+     - **建表**
+
+       ```sql
+       -- 创建客户回访实时表
+       drop table if exists one_make_dwb.fact_srv_rtn_visit;
+       create table if not exists one_make_dwb.fact_srv_rtn_visit(
+           vst_id string comment '回访id'
+           , vst_code string comment '回访编号'
+           , wrkodr_id string comment '工单id'
+           , srv_user_id string comment '服务人员用户id'
+           , os_id string comment '油站id'
+           , ss_id string comment '服务网点id'
+           , vst_user_id string comment '回访人员id'
+           , satisfied_num int comment '满意数量'
+           , unsatisfied_num int comment '不满意数量'
+           , srv_atu_num int comment '服务态度满意数量'
+           , srv_bad_atu_num int comment '服务态度不满意数量'
+           , srv_rpr_prof_num int comment '服务维修水平满意数量'
+           , srv_rpr_unprof_num int comment '服务维修水平不满意数量'
+           , srv_high_res_num int comment '服务响应速度满意数量'
+           , srv_low_res_num int comment '服务响应速度不满意数量'
+           , rtn_rpr_num int comment '返修数量'
+       ) comment '客户回访事实表'
+       partitioned by (dt string)
+       stored as orc
+       location '/data/dw/dwb/one_make/fact_srv_rtn_visit';
+       ```
+
+     - **抽取**
+
+       ```sql
+       insert overwrite table one_make_dwb.fact_srv_rtn_visit partition(dt = '20210101')
+       select
+           visit.id vst_id                         --回访id
+       	, visit.code vst_code                   --回访编号
+       	, visit.workorder_id wrkodr_id          --工单id
+       	, swo.service_userid srv_user_id        --工程师id
+       	, swo.oil_station_id os_id              --油站id
+       	, swo.service_station_id ss_id          --服务网点id
+       	, visit.create_userid vst_user_id       --回访人员id
+       	, satisfied_num                         --满意数量
+       	, unsatisfied_num                       --不满意数量
+       	, srv_atu_num                           --服务态度满意数量
+       	, srv_bad_atu_num                       --服务态度不满意数量
+       	, srv_rpr_prof_num                      --服务水平满意数量
+       	, srv_rpr_unprof_num                    --服务水平不满意数量
+       	, srv_high_res_num                      --服务响应速度满意数量
+       	, srv_low_res_num                       --服务响应速度不满意数量
+       	, rtn_rpr_num                           --返修数量
+       --回访信息表
+       from one_make_dwd.ciss_service_return_visit visit
+       --工单信息表
+       left join one_make_dwd.ciss_service_workorder swo on visit.workorder_id = swo.id
+       --获取满意与不满意个数
+       left join (
+           select visit.workorder_id,
+       	    sum(case when visit.service_attitude = 1 and visit.response_speed = 1 and visit.repair_level = 1 then 1 else 0 end) satisfied_num,
+       	    sum(case when visit.service_attitude = 0 then 1 when visit.response_speed = 0 then 1 when visit.repair_level = 0 then 1 when visit.yawp_problem_type = 0 then 1 else 0 end) unsatisfied_num,
+       	    sum(case when visit.service_attitude = 1 then 1 else 0 end) srv_atu_num,
+       	    sum(case when visit.service_attitude = 0 then 1 else 0 end) srv_bad_atu_num,
+       	    sum(case when visit.repair_level = 1 then 1 else 0 end) srv_rpr_prof_num,
+       	    sum(case when visit.repair_level = 0 then 1 else 0 end) srv_rpr_unprof_num,
+       	    sum(case when visit.response_speed = 1 then 1 else 0 end) srv_high_res_num,
+       	    sum(case when visit.response_speed = 0 then 1 else 0 end) srv_low_res_num,
+       	    sum(case when visit.is_repair = 1 then 1 else 0 end) rtn_rpr_num
+           from one_make_dwd.ciss_service_return_visit visit
+       	left join one_make_dwd.ciss_service_workorder swo on visit.workorder_id = swo.id
+       	where visit.dt = '20210101'
+       	group by visit.workorder_id
+       ) vstswo on visit.workorder_id = vstswo.workorder_id
+       where visit.dt = '20210101'
+       ;
+       ```
+
+   - **小结**
+
+     - 实现DWB层客户回访事实指标表的构建
 
 ### 3. 费用事务事实表
 
