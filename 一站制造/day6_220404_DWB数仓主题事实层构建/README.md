@@ -902,6 +902,95 @@ DWB数仓主题事实层构建
 
 ### 8. 安装事实指标需求分析
 
+- **目标**：**掌握DWB层安装事实指标表的需求分析**
+
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+
+- **实施**
+
+  - **目标需求**：基于设备安装信息统计安装设备个数、收费安装个数、审核安装个数等指标
+
+    ![image-20211003164551461](assets/image-20211003164551461.png)
+
+    - 全新安装数量：install_type= 1
+    - 联调安装数量：install_way= 2
+    - 产生维修数量：is_repair = 1
+    - 额外收费数量：is_pay = 1
+    - 安装设备数量：与服务单关联，统计设备的id个数
+    - 安装费用：通过工单id从报销单信息中关联得到报销金额
+    - 审核完成工单个数
+
+  - **数据来源**
+
+    - **ciss_service_install**：安装单信息表
+
+      ```sql
+      select
+          id,--安装单id
+          code,--安装单号
+          install_way, --安装方式 
+          service_id --服务单id
+      from one_make_dwd.ciss_service_install;
+      ```
+
+    - **ciss_service_order**：服务单信息表
+
+      ```sql
+      select
+        id,            --服务单id
+        workorder_id,  --派工单id
+        type           --工单类型,1-安装，2-维修，3-巡检
+      from one_make_dwd.ciss_service_order;
+      ```
+
+    - **ciss_service_workorder**：工单详情事实表
+
+      ```sql
+      select
+          id,--派工单id
+          service_userid,--工程师id
+          service_station_id,--服务站点id
+          oil_station_id,--油站id
+          create_time --创建时间
+      from one_make_dwd.ciss_service_workorder;
+      ```
+
+    - **ciss_service_order_device**：服务单设备信息表
+
+      ```sql
+      select
+          id,               --设备id
+          service_order_id  --服务单id
+      from one_make_dwd.ciss_service_order_device;
+      ```
+
+    - **ciss_s_install_exp_rep_02_dtl**：报销单明细表
+
+      ```sql
+      select
+          id,          --报销ID
+          workorder_id,--工单id
+          money5       --报销金额
+      from one_make_dwd.ciss_s_install_exp_rep_02_dtl;
+      ```
+
+    - **ciss_service_install_validate**：设备安装审核信息表
+
+      ```sql
+      select
+          id,          --审核ID
+          workorder_id,--工单id
+          has_validate --审核状态，1-已审核，0-未审核
+      from one_make_dwd.ciss_service_install_validate;
+      ```
+
+- **小结**
+
+  - 掌握DWB层安装事实指标表的需求分析
+
 ### 9. 安装事实指标构建
 
 ### 10. 维修事务事实表
