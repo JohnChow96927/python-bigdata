@@ -429,9 +429,154 @@
 
   - 实现DWB层费用报销事实指标表的构建
 
-### 4. 差旅费用事务事实
+### 4. 差旅费用事务事实表
 
+- **目标**：**实现DWB层差旅报销事实指标表的构建**
 
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+  - step3：目标实现
+
+- **实施**
+
+  - **目标需求**：基于差率报销信息统计交通费用、住宿费用、油费金额等报销费用指标
+
+    ![image-20211003210750811](assets/image-20211003210750811.png)
+
+  - **数据来源**
+
+    - ciss_service_trvl_exp_sum：差旅报销汇总信息表
+
+      ```sql
+      select
+          id,--汇总费用报销单id
+          user_id,--报销人id【工程师id】
+          status,--汇总单状态：15表示审核通过
+          submoney5 --应收报销总金额
+      from one_make_dwd.ciss_service_trvl_exp_sum;
+      ```
+
+    - ciss_s_exp_report_wo_payment：汇总报销单与工单费用单对照表
+
+      ```sql
+      select
+          exp_report_id,--汇总费用报销单id
+          workorder_travel_exp_id --费用单id
+      from one_make_dwd.ciss_s_exp_report_wo_payment;
+      ```
+
+    - ciss_service_travel_expense：差旅报销单信息表
+
+      ```sql
+      select
+          id,--费用单id
+          work_order_id --工单id
+      from one_make_dwd.ciss_service_travel_expense;
+      ```
+
+    - ciss_service_workorder：工单信息表
+
+      ```sql
+      select
+          id,--工单id
+      service_station_id --服务网点id
+      from one_make_dwd.ciss_service_workorder;
+      ```
+
+    - ciss_service_trvl_exp_dtl：差旅费用明细表
+
+      ```sql
+      select
+          travel_expense_id,--费用单id
+          item,--费用项目名称
+          submoney5 --费用金额
+      from one_make_dwd.ciss_service_trvl_exp_dtl;
+      ```
+
+  - **目标实现**
+
+    - **建表**
+
+      ```sql
+      drop table if exists one_make_dwb.fact_trvl_exp;
+      create table if not exists one_make_dwb.fact_trvl_exp(
+          trvl_exp_id string comment '差旅报销单id'
+          , ss_id string comment '服务网点id'
+        , srv_user_id string comment '服务人员id'
+          , biz_trip_money decimal(20,1) comment '外出差旅费用金额总计'
+        , in_city_traffic_money decimal(20,1) comment '市内交通费用金额总计'
+          , hotel_money decimal(20,1) comment '住宿费费用金额总计'
+        , fars_money decimal(20,1) comment '车船费用金额总计'
+          , subsidy_money decimal(20,1) comment '补助费用金额总计'
+          , road_toll_money decimal(20,1) comment '过桥过路费用金额总计'
+          , oil_money decimal(20,1) comment '油费金额总计'
+          , secondary_money decimal(20,1) comment '二单补助费用总计'
+          , third_money decimal(20,1) comment '三单补助费用总计'
+          , actual_total_money decimal(20,1) comment '费用报销总计'
+      )
+      partitioned by (dt string)
+      stored as orc
+      location '/data/dw/dwb/one_make/fact_trvl_exp';
+      ```
+
+    - **抽取**
+
+      ```sql
+      insert overwrite table one_make_dwb.fact_trvl_exp partition(dt = '20210101')
+      select
+      	--差旅费汇总单id
+          exp_sum.id as trvl_exp_id
+      	--服务网点id
+          , wrk_odr.service_station_id as ss_id
+      	--服务人员id
+          , exp_sum.user_id as srv_user_id
+      	--外出差旅费用金额总计
+          , sum(case when trvl_dtl_sum.item = 1 then trvl_dtl_sum.item_money else 0 end) as biz_trip_money
+          --市内交通费用金额总计
+      	, sum(case when trvl_dtl_sum.item = 2 then trvl_dtl_sum.item_money else 0 end) as in_city_traffic_money
+          --住宿费费用金额总计
+      	, sum(case when trvl_dtl_sum.item = 3 then trvl_dtl_sum.item_money else 0 end) as hotel_money
+          --车船费用金额总计
+      	, sum(case when trvl_dtl_sum.item = 4 then trvl_dtl_sum.item_money else 0 end) as fars_money
+          --补助费用金额总计
+      	, sum(case when trvl_dtl_sum.item = 5 then trvl_dtl_sum.item_money else 0 end) as subsidy_money
+          --过桥过路费用金额总计
+      	, sum(case when trvl_dtl_sum.item = 6 then trvl_dtl_sum.item_money else 0 end) as road_toll_money
+          --油费金额总计
+      	, sum(case when trvl_dtl_sum.item = 7 then trvl_dtl_sum.item_money else 0 end) as oil_money
+          --二单补助费用总计
+      	, sum(case when trvl_dtl_sum.item = 8 then trvl_dtl_sum.item_money else 0 end) as secondary_money
+          --三单补助费用总计
+      	, sum(case when trvl_dtl_sum.item = 9 then trvl_dtl_sum.item_money else 0 end) as third_money
+          --费用报销总计
+      	, max(exp_sum.submoney5) as actual_total_money
+      --差旅报销汇总单
+      from one_make_dwd.ciss_service_trvl_exp_sum exp_sum
+      --汇总报销单与工单费用单对照表
+      inner join one_make_dwd.ciss_s_exp_report_wo_payment r on exp_sum.dt = '20210101' and r.dt = '20210101' and exp_sum.id = r.exp_report_id and exp_sum.status = 15
+      --差旅报销单信息表
+      inner join one_make_dwd.ciss_service_travel_expense exp on exp.dt = '20210101' and exp.id = r.workorder_travel_exp_id
+      --工单信息表
+      inner join one_make_dwd.ciss_service_workorder wrk_odr on wrk_odr.dt = '20210101' and wrk_odr.id = exp.work_order_id
+      --获取每种费用项目总金额
+      inner join  (
+      				select
+      					travel_expense_id, item, sum(submoney5) as item_money
+      				from one_make_dwd.ciss_service_trvl_exp_dtl
+      				where dt = '20210101'
+      				group by travel_expense_id, item
+      		) as trvl_dtl_sum
+        on trvl_dtl_sum.travel_expense_id = exp.id
+      group by exp_sum.id, wrk_odr.service_station_id, exp_sum.user_id
+      ;
+        
+      ```
+
+- **小结**
+
+  - 实现DWB层差旅报销事实指标表的构建
 
 ### 5. 网点物料事实表
 
