@@ -35,6 +35,215 @@ DWB数仓主题事实层构建
 - **小结**
   - 掌握一站制造中的业务主题划分及主题指标的设计
 
+### 2. 呼叫中心事实指标需求分析
+
+- **目标**：**掌握DWB层呼叫中心事实指标表的需求**
+
+- **路径**
+
+  - step1：目标需求
+  - step2：数据来源
+
+- **实施**
+
+  - **目标需求**：基于基础的时间、受理方式、来电类型等事实维度统计工单数量、电话数量、回访数量、投诉数量等
+
+    ![image-20211003132754810](assets/image-20211003132754810.png)
+
+  - **数据来源**
+
+    - **ciss_service_callaccept**：客服中心来电详情表
+
+      ```sql
+      select
+          id            --来电受理唯一id
+          , code        --受理单唯一编码
+          , call_time   --来电时间
+          , call_type   --来电类型
+          , call_oilstation_id --来电油站id
+          , accept_userid --受理人员id
+          , process_time  --处理时间
+          , process_way   --处理方式
+      from one_make_dwd.ciss_service_callaccept;
+      ```
+
+    - **eos_dict_type**：字典状态类别表，记录所有需要使用字典标记的表
+
+      ```sql
+      select dicttypeid from eos_dict_type where dicttypename = '来电类型';
+      select dicttypeid from eos_dict_type where dicttypename = '来电受理单--处理方式';
+      select dicttypeid from eos_dict_type where dicttypename = '派工单状态';
+      ```
+
+    - **eos_dict_entry**：字典状态明细表，记录所有具体的状态或者类别信息
+
+      ```sql
+        --来电类型名称
+        select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_CALL_TYPE';
+      --处理方式名称
+        select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_PROCESS_WAY';
+      ```
+
+    - **ciss_service_workorder**：工单状态明细表
+
+      ```sql
+      --派工单状态id
+      select
+             callaccept_id, --来电受理单id
+             status --派工单状态id
+      from one_make_dwd.ciss_service_workorder;
+      --派工单状态名称
+      select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_WORKORDER_STATUS';
+      ```
+
+  - 分析逻辑
+
+    ```sql
+    select
+        id            --来电受理唯一id
+        , code        --受理单唯一编码
+        , call_time   --来电时间
+        , call_type   --来电类型
+        , b.dictname as call_type_name --来电类型名称
+        , call_oilstation_id --来电油站id
+        , accept_userid --受理人员id
+        , process_time  --处理时间
+        , process_way   --处理方式id
+        , c.dictname as process_way_name, --处理方式名称
+        case when d.dictname = '已作废' then 1 else 0 end as nouse_cnt, --作废工单数量
+        case when d.dictname = '已退单' then 1 else 0 end as back_cnt, --回退工单数量
+        floor((process_time - call_time) / 1000) as staylong,
+        case when call_type = 7 then 1 else 0 end as visit_cnt,--回访个数
+        case when call_type = 8 then 1 else 0 end as tousu_cnt --投诉个数
+    from one_make_dwd.ciss_service_callaccept a
+    -- 获取所有来电类型名称
+    join
+        (select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_CALL_TYPE')  b
+    on a.call_type = b.dictid
+    join
+        (select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_PROCESS_WAY') c
+    on a.process_way = c.dictid
+    join
+        (select
+           callaccept_id, --来电受理单id
+           status, --派工单状态id
+           y.dictname --派工单状态名称
+    from one_make_dwd.ciss_service_workorder x
+    join (select dictid,dictname from one_make_dwd.eos_dict_entry where dicttypeid = 'BUSS_WORKORDER_STATUS') y
+           on x.status = y.dictid) d
+    on a.id = d.callaccept_id;
+    ```
+
+- **小结**
+
+  - 掌握DWB层呼叫中心事实指标表的需求
+
+### 3. 呼叫中心事实指标构建
+
+- **目标**：**实现DWB层呼叫中心事实指标表的构建**
+
+- **实施**
+
+  - **建库**
+
+    ```sql
+    create database if not exists one_make_dwb;
+    ```
+
+  - **建表**
+
+    ```sql
+    -- 创建呼叫中心 | 来电受理事实表
+    drop table if exists one_make_dwb.fact_call_service;
+    create table if not exists one_make_dwb.fact_call_service(
+        id string comment '受理id（唯一标识）' 
+        , code string comment '受理单唯一编码'
+        , call_date string comment '来电日期（日期id）' 
+        , call_hour int comment '来电时间（小时）（事实维度）'
+        , call_type_id string comment '来电类型（事实维度）'
+        , call_type_name string comment '来电类型名称（事实维度）'
+        , process_way_id string comment '受理方式（事实维度）' 
+        , process_way_name string comment '受理方式（事实维度）' 
+        , oil_station_id string comment '油站id' 
+        , userid string comment '受理人员id'
+        , cnt int comment '单据数量（指标列）'
+        , dispatch_cnt int comment '派工数量'
+        , cancellation_cnt int comment '派工单作废数量' 
+        , chargeback_cnt int comment '派工单退单数量'
+        , interval int comment '受理时长（单位：秒）' 
+        , tel_spt_cnt int comment '电话支持数量'
+        , on_site_spt_cnt int comment '现场安装、维修、改造、巡检数量' 
+        , custm_visit_cnt int comment '回访单据数量' 
+       , complain_cnt int comment '投诉单据数量' 
+       , other_cnt int
+    comment '其他业务单据数量')
+    partitioned by (dt string)
+    stored as orc
+    location '/data/dw/dwb/one_make/fact_call_service';
+    ```
+
+- 构建数据字典表【每次都要两张表关联，比较麻烦，合并为一张表】
+
+  ```sql
+    create table if not exists one_make_dwb.tmp_dict
+    stored as orc
+    as
+    select
+        dict_t.dicttypename             -- 类型名称
+        , dict_e.dictid                 -- 字典编号
+        , dict_e.dictname               -- 字典名称
+    from  one_make_dwd.eos_dict_type dict_t
+    left join  one_make_dwd.eos_dict_entry dict_e
+       on dict_t.dt = '20210101' and dict_e.dt = '20210101' and dict_t.dicttypeid = dict_e.dicttypeid
+    order by  dict_t.dicttypename, dict_e.dictid;
+  
+  ```
+
+  ```sql
+    select dictid,dictname from one_make_dwb.tmp_dict where dicttypename = '来电类型';
+    select dictid,dictname from one_make_dwb.tmp_dict where dicttypename = '来电受理单--处理方式';
+  ```
+
+- **抽取**
+
+  ```sql
+    insert overwrite table one_make_dwb.fact_call_service partition (dt = '20210101')
+    select
+        call.id     --来电受理唯一id
+        , call.code -- 受理单唯一编码
+        , date_format(timestamp(call.call_time / 1000), 'yyyymmdd') as call_date -- 来电日期（日期id）
+        , hour(timestamp(call.call_time / 1000))  -- 来电时间（小时）（事实维度）
+        , call.call_type -- 来电类型（事实维度）
+        , call_dict.dictname -- 来电类型名称（事实维度）
+        , call.process_way -- 受理方式（事实维度）
+        , process_dict.dictname -- 受理方式（事实维度）
+        , call.call_oilstation_id -- 油站id
+        , call.accept_userid -- 受理人员id
+        , 1 -- 单据数量（指标列）
+        , case when call.process_way = 5  then 1 else 0 end -- 派工数量：0-自己处理，1-产生派工
+        , case when workorder.status = -1 then 1 else 0 end -- 派工单作废数量
+        , case when workorder.status = -2 then 1 else 0 end -- 派工单退单数量
+    	  , floor((call.process_time - call.call_time ) / 1000)  -- 受理时长（单位：秒）
+        , case when call.call_type = 5 then 1 else 0 end -- 电话支持数量
+        , case when call.call_type in (1, 2, 3, 4) then 1 else 0 end -- 现场安装、维修、改造、巡检数量
+        , case when call.call_type = 7 then 1 else 0 end -- 回访单据数量
+        , case when call.call_type = 8 then 1 else 0 end -- 投诉单据数量
+        , case when call.call_type = 9 or call.call_type = 6 then 1 else 0 end -- 其他业务单据数量
+    -- 来电详情表
+    from one_make_dwd.ciss_service_callaccept call
+    -- 字典信息表：得到来电类型名称
+    left join one_make_dwb.tmp_dict call_dict on call.call_type = call_dict.dictid  and call_dict.dicttypename = '来电类型'
+    -- 字典信息表：受理方式名称
+    left join one_make_dwb.tmp_dict process_dict on call.process_way = process_dict.dictid and process_dict.dicttypename = '来电受理单--处理方式'
+    -- 工单信息表：得到工单状态：-2:退单，-1:作废
+  left join one_make_dwd.ciss_service_workorder workorder on workorder.dt = '20210101' and workorder.callaccept_id = call.id
+    where call.dt = '20210101' and call.code != 'null' and call.call_time is not null;
+  ```
+
+- **小结**
+
+  - 实现DWB层呼叫中心事实指标表的构建
+
 ### 1. 维修事务事实表
 
 1. #### 需求分析
