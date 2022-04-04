@@ -720,7 +720,58 @@
 
 ## II. ST层构建: 周期快照事实表
 
+- **目标**：**掌握ST层的设计**
 
+- **路径**
+
+  - step1：功能
+  - step2：来源
+  - step3：需求
+
+- **实施**
+
+  - **功能**：数据应用层，用于支撑对外所有主题的==报表==应用数据的结果
+
+    - **对外提供整个公司所有运营的报表**
+
+  - **来源**：对DWB层的主题事实数据关联DWS层的维度表进行最终聚合
+
+    - DWS：维度表：时间、地区、油站、组织机构
+
+      - 时间维度表：年、季度、月、周、天
+
+        ```
+        dt				year    quater		month    		week  
+        2022-01-01		2022	Q1			2022-01			1
+        ```
+
+    - DWB：主题事实表：工单、呼叫中心、费用
+
+      - 工单主题表：天、工单id、工单个数【1】
+
+        ```
+        dt		wokerorder_id		wo_cnt		install_cnt  rep_cnt  ins_cnt   rem_cnt
+        								1			1			0		0			0
+        ```
+
+    - ST：每个月对应的工单总个数
+
+      ```
+      select
+      	b.month,
+      	sum(wo_cnt),
+      	sum(install_cnt)
+      	……
+      from fact_workorder a
+      join dim_time b on a.dt = b.dt
+      group by b.month
+      ```
+
+  - **需求**：按照一站制造的业务主题的划分需求，构建每个主题的ST层的数据
+
+- **小结**
+
+  - 掌握ST层的设计
 
 ### 1. 工单主题
 
