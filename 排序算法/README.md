@@ -230,15 +230,41 @@ def mergeSort(arr):
 
 ## VII. 快速排序
 
-
+> 快速排序使用分治法策略来把一个串行(list)分为两个子串行
+>
+> 本质上来看, 快速排序应该算是在冒泡排序基础上的递归分治法
 
 ### 算法步骤
 
+1. 从数列中挑出一个元素, 称为“基准”(pivot)
+2. 重新排列数列, 所有元素比基准值小的摆放在基准前面, 所有元素比基准值大的摆在基准的后面(相同的数可以放到任一边). 在这个分区退出之后, 该基准就处于数列的中间位置, 这个称为分区(partition)操作
+3. 递归地(recursive)把小于基准值元素的子数列和大于基准值元素的子数列排序
 
+![img](assets/quickSort.gif)
 
 ### 代码实现
 
 ```python
+def partition(arr, left, right):
+    pivot = left
+    index = pivot + 1
+    i = index
+    while i <= right:
+        if arr[i] < arr[pivot]:
+            arr[i], arr[index] = arr[index], arr[i]
+            index += 1
+        i += 1
+    arr[pivot], arr[index - 1] = arr[index - 1], arr[pivot]
+    return index - 1
 
+
+def quickSort(arr, left=None, right=None):
+    left = 0 if not isinstance(left, (int, float)) else left
+    right = len(arr) - 1 if not isinstance(right, (int, float)) else right
+    if left < right:
+        partitionIndex = partition(arr, left, right)
+        quickSort(arr, left, partitionIndex - 1)
+        quickSort(arr, partitionIndex + 1, right)
+    return arr
 ```
 
