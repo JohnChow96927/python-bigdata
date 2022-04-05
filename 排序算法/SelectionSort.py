@@ -1,5 +1,5 @@
 """
-插入排序
+选择排序
 Created by JohnChow on 220120
 """
 
