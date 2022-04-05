@@ -12,6 +12,15 @@ def bubbleSort(nums):
     return nums
 
 
+def bubbleSort_back(nums):
+    for i in range(len(nums) - 1, 1, -1):
+        for j in range(i - 1, -1, -1):
+            if nums[j + 1] < nums[j]:
+                nums[j + 1], nums[j] = nums[j], nums[j + 1]
+    return nums
+
+
 if __name__ == '__main__':
-    nums = [2, 3, 1, 5, 6, 4, 3, 7, 5, 9, 10, 7]
+    nums = [9, 8, 7, 6, 5, 4, 3, 2, 1]
     print(bubbleSort(nums))
+    print(bubbleSort_back(nums))
