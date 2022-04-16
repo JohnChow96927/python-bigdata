@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day01/Day01作业.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo01_while_01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo02_while_02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo03_while_03.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,7 +47,7 @@
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "public",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day03",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day01/src",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
@@ -47,23 +55,51 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo9_For_3">
-    <configuration name="Demo1_Scanner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_scanner.Demo1_Scanner" />
-      <module name="day01" />
+  <component name="RunManager" selected="Application.Demo3">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_while.Demo1" />
+      <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_scanner.*" />
+          <option name="PATTERN" value="a_while.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_while.Demo2" />
+      <module name="day02" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_while.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_while.Demo3" />
+      <module name="day02" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_while.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -73,32 +109,6 @@
     </configuration>
     <configuration name="Demo9_For_3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo9_For_3" />
-      <module name="day01" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="d_if_switch_for.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="d_if_switch_for.Demo6_Switch" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo6_Switch" />
-      <module name="day01" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="d_if_switch_for.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="d_if_switch_for.Demo7_For" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo7_For" />
       <module name="day01" />
       <extension name="coverage">
         <pattern>
@@ -125,11 +135,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo3" />
+        <item itemvalue="Application.Demo2" />
+        <item itemvalue="Application.Demo1" />
         <item itemvalue="Application.Demo9_For_3" />
         <item itemvalue="Application.d_if_switch_for.Demo8_For_2" />
-        <item itemvalue="Application.d_if_switch_for.Demo7_For" />
-        <item itemvalue="Application.d_if_switch_for.Demo6_Switch" />
-        <item itemvalue="Application.Demo1_Scanner" />
       </list>
     </recent_temporary>
   </component>
@@ -148,7 +158,8 @@
       <workItem from="1650089581004" duration="677000" />
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
-      <workItem from="1650108341512" duration="11775000" />
+      <workItem from="1650108341512" duration="12416000" />
+      <workItem from="1650125422289" duration="640000" />
     </task>
     <servers />
   </component>
