@@ -2,16 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo10_Variable_Transform.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo6_Variable_4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo7_Variable_5.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo8_Cal_Variable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo9_Double_to_Int.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo1_Arithmetic_Operator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo2_Assignment_Operator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo3_Logical_Operator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo4_Ternary_Operator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day01/src/c_scanner/Demo1_Scanner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo2_If_Single_Branch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo3_If_Double_Branch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo4_If_Multi_Branch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo5_If_Multi_Branch_2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo6_Switch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo7_For.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo8_For_2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo9_For_3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,18 +40,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day02/src&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "public",
+    "jdk.selected.JAVA_MODULE": "1.8",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day02/src",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
@@ -65,7 +64,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo1_Scanner">
+  <component name="RunManager" selected="Application.Demo9_For_3">
     <configuration name="Demo1_Scanner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="c_scanner.Demo1_Scanner" />
       <module name="day01" />
@@ -79,12 +78,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo4_Ternary_Operator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_operator.Demo4_Ternary_Operator" />
+    <configuration name="Demo9_For_3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo9_For_3" />
       <module name="day01" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_operator.*" />
+          <option name="PATTERN" value="d_if_switch_for.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -92,12 +91,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo9_Double_to_Int" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo9_Double_to_Int" />
+    <configuration name="d_if_switch_for.Demo6_Switch" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo6_Switch" />
       <module name="day01" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="a_keyword.*" />
+          <option name="PATTERN" value="d_if_switch_for.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -105,12 +104,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="b_operator.Demo2_Assignment_Operator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_operator.Demo2_Assignment_Operator" />
+    <configuration name="d_if_switch_for.Demo7_For" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo7_For" />
       <module name="day01" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_operator.*" />
+          <option name="PATTERN" value="d_if_switch_for.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -118,12 +117,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="b_operator.Demo3_Logical_Operator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_operator.Demo3_Logical_Operator" />
+    <configuration name="d_if_switch_for.Demo8_For_2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo8_For_2" />
       <module name="day01" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_operator.*" />
+          <option name="PATTERN" value="d_if_switch_for.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -133,11 +132,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo9_For_3" />
+        <item itemvalue="Application.d_if_switch_for.Demo8_For_2" />
+        <item itemvalue="Application.d_if_switch_for.Demo7_For" />
+        <item itemvalue="Application.d_if_switch_for.Demo6_Switch" />
         <item itemvalue="Application.Demo1_Scanner" />
-        <item itemvalue="Application.Demo4_Ternary_Operator" />
-        <item itemvalue="Application.b_operator.Demo3_Logical_Operator" />
-        <item itemvalue="Application.b_operator.Demo2_Assignment_Operator" />
-        <item itemvalue="Application.Demo9_Double_to_Int" />
       </list>
     </recent_temporary>
   </component>
@@ -156,7 +155,7 @@
       <workItem from="1650089581004" duration="677000" />
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
-      <workItem from="1650108341512" duration="3385000" />
+      <workItem from="1650108341512" duration="7582000" />
     </task>
     <servers />
   </component>
