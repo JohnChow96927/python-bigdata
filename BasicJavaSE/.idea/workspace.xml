@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day01/Day01作业.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/a_while/Demo3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo01_while_01.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo02_while_02.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/a_while/Demo03_while_03.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo1_For.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo2_While.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +63,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo3">
+  <component name="RunManager" selected="Application.Demo3_Break_Continue">
     <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="a_while.Demo1" />
       <module name="day02" />
@@ -107,6 +103,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Demo3_Break_Continue" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_dead_loop.Demo3_Break_Continue" />
+      <module name="day02" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="b_dead_loop.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Demo9_For_3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo9_For_3" />
       <module name="day01" />
@@ -120,26 +129,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="d_if_switch_for.Demo8_For_2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo8_For_2" />
-      <module name="day01" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="d_if_switch_for.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo3_Break_Continue" />
         <item itemvalue="Application.Demo3" />
         <item itemvalue="Application.Demo2" />
         <item itemvalue="Application.Demo1" />
         <item itemvalue="Application.Demo9_For_3" />
-        <item itemvalue="Application.d_if_switch_for.Demo8_For_2" />
       </list>
     </recent_temporary>
   </component>
@@ -159,7 +155,7 @@
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
-      <workItem from="1650125422289" duration="640000" />
+      <workItem from="1650125422289" duration="1229000" />
     </task>
     <servers />
   </component>
