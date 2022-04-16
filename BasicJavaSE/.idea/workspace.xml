@@ -2,31 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/day01/Day01作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/Day01作业.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/HelloWorld.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/HelloWorld.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo3_Variable.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo3_Variable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo6_Variable_4.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo6_Variable_4.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo7_Variable_5.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo7_Variable_5.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo8_Cal_Variable.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo8_Cal_Variable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo1_Arithmetic_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo1_Arithmetic_Operator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo3_Logical_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo3_Logical_Operator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo4_Ternary_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo4_Ternary_Operator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/c_scanner/Demo1_Scanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/c_scanner/Demo1_Scanner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo2_If_Single_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo2_If_Single_Branch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo3_If_Double_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo3_If_Double_Branch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo4_If_Multi_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo4_If_Multi_Branch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo5_If_Multi_Branch_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo5_If_Multi_Branch_2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo6_Switch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo6_Switch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo7_For.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo7_For.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo8_For_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo8_For_2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo9_For_3.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo9_For_3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/homework/Day02作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/homework/Day02作业.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/d_random_number/Demo1_Random.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo1_Random.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/d_random_number/Demo2_Guess_Number.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo2_Guess_Number.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/e_array/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/e_array/Demo1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/homework/API作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/homework/API作业.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo3_Check_Array.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo4_Check_Array_Default.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo5_Get_Or_Set_Array_Element.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo6_Iterate_Array.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/e_array/Demo7_Array_Max.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,20 +67,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo2_Guess_Number">
-    <configuration name="Demo1_Random" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_random_number.Demo1_Random" />
-      <module name="day02" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="d_random_number.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Demo7_Array_Max">
     <configuration name="Demo2_Guess_Number" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="d_random_number.Demo2_Guess_Number" />
       <module name="day02" />
@@ -113,12 +81,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2_Multiplication_Table" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_nested_loop.Demo2_Multiplication_Table" />
+    <configuration name="Demo5_Get_Or_Set_Array_Element" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_array.Demo5_Get_Or_Set_Array_Element" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_nested_loop.*" />
+          <option name="PATTERN" value="e_array.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -126,12 +94,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo3_Break_Continue" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_dead_loop.Demo3_Break_Continue" />
+    <configuration name="Demo6_Iterate_Array" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_array.Demo6_Iterate_Array" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_dead_loop.*" />
+          <option name="PATTERN" value="e_array.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -139,12 +107,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="c_nested_loop.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_nested_loop.Demo1" />
+    <configuration name="Demo7_Array_Max" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_array.Demo7_Array_Max" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_nested_loop.*" />
+          <option name="PATTERN" value="e_array.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="e_array.Demo3_Check_Array" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_array.Demo3_Check_Array" />
+      <module name="day02" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="e_array.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -154,11 +135,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo7_Array_Max" />
+        <item itemvalue="Application.Demo6_Iterate_Array" />
+        <item itemvalue="Application.Demo5_Get_Or_Set_Array_Element" />
+        <item itemvalue="Application.e_array.Demo3_Check_Array" />
         <item itemvalue="Application.Demo2_Guess_Number" />
-        <item itemvalue="Application.Demo1_Random" />
-        <item itemvalue="Application.Demo2_Multiplication_Table" />
-        <item itemvalue="Application.c_nested_loop.Demo1" />
-        <item itemvalue="Application.Demo3_Break_Continue" />
       </list>
     </recent_temporary>
   </component>
@@ -178,7 +159,7 @@
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
-      <workItem from="1650125422289" duration="4038000" />
+      <workItem from="1650125422289" duration="5057000" />
     </task>
     <servers />
   </component>

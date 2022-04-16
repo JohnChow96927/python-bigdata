@@ -1,8 +1,8 @@
-package cn.itcast.day02.e_数组;
+package e_array;
 
 import java.util.Arrays;
 
-public class Demo04_array_查看不同类型数组的默认值 {
+public class Demo4_Check_Array_Default {
     public static void main(String[] args) {
         int[] intArr = new int[3];
         double[] doubleArr = new double[3];
@@ -15,3 +15,4 @@ public class Demo04_array_查看不同类型数组的默认值 {
         System.out.println(Arrays.toString(strArr)); // [null, null, null]
     }
 }
+

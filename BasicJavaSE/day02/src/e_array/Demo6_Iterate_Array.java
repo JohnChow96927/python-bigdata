@@ -1,6 +1,6 @@
-package cn.itcast.day02.e_数组;
+package e_array;
 
-public class Demo06_array_数组的遍历 {
+public class Demo6_Iterate_Array {
     public static void main(String[] args) {
         int[] arr = {11, 33, 55, 77, 99};
 
@@ -16,10 +16,9 @@ public class Demo06_array_数组的遍历 {
         }
         System.out.println("=============================");
 
-        // 方式二: 快捷键 iter
-        for(int element : arr) {
+        // 方式三
+        for (int element : arr) {
             System.out.println(element);
         }
-
     }
 }
