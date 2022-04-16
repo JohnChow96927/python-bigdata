@@ -1,34 +1,237 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day01/src/HelloWorld.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo2_Constant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo3_Variable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo4_Variable_2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo5_Variable_3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/Day01_随堂笔记.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/Day01作业.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/HelloWorld2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/aaa/bbb/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/aaa/bbb/MyMath.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/aaa/ccc/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo02_changliang.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo03_变量.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo04_变量2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo05_变量3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo06_变量4.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo06_变量5.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo07.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo08.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a/Demo09.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a_guanjianzi/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a_guanjianzi/Demo02_changliang.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a_guanjianzi/Demo03_变量.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a_guanjianzi/Demo04_变量2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/a_guanjianzi/Demo05_变量3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/b/Demo01_算数运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/b/Demo02_赋值运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/b/Demo03_逻辑运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/b/Demo04_三元运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/c_scanner/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/c_scanner/Demo02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo01_顺序结构.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo02_if_单分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo03_if_双分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo04_if_多分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo04_if_多分支_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo05_switch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo06_switch_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo07_for_入门.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo08_for_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo09_for_3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/cn/itcast/day01/d/Demo10_for_4.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/com/itheima/demo01/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/xxx/yyy/zzz/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/xxx/yyy/zzz/HelloWorld3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/Day01_随堂笔记.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/Day02_随堂笔记.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/Day02作业.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/HelloWorld2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/aaa/bbb/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/aaa/bbb/MyMath.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/aaa/ccc/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo02_changliang.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo03_变量.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo04_变量2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo05_变量3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo06_变量4.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo06_变量5.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo07.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo08.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/a/Demo09.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/b/Demo01_算数运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/b/Demo02_赋值运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/b/Demo03_逻辑运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/b/Demo04_三元运算符.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/c_scanner/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/c_scanner/Demo02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo01_顺序结构.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo02_if_单分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo03_if_双分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo04_if_多分支.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo04_if_多分支_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo05_switch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo06_switch_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo07_for_入门.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo08_for_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo09_for_3.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day01/d/Demo10_for_4.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/a_while/Demo01_while_01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/a_while/Demo02_while_02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/a_while/Demo03_while_03.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/b_sixunhuan/Demo01_死循环.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/b_sixunhuan/Demo02_死循环_2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/b_sixunhuan/Demo03_break_continue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/c_嵌套循环/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/c_嵌套循环/Demo02_jiujiu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/d_随机数/Demo01_random入门.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/d_随机数/Demo02_猜数字.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo01_array.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo02_array.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo03_array_查看数组中的内容.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo04_array_查看不同类型数组的默认值.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo05_array_获取或修改数组的元素.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo06_array_数组的遍历.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo07_array_获取数组的最大值.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/e_数组/Demo08_array_数组的内存图.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/cn/itcast/day02/f_方法/Demo01_method.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/xxx/yyy/zzz/HelloWorld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/xxx/yyy/zzz/HelloWorld3.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="27pnBV8r7O27oDNfLzNaOYn6j6X" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day02",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day02/src&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Demo5_Variable_3">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo1" />
+      <module name="day01" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_keyword.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo2_Constant" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo2_Constant" />
+      <module name="day01" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_keyword.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo3_Variable" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo3_Variable" />
+      <module name="day01" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_keyword.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo4_Variable_2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo4_Variable_2" />
+      <module name="day01" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_keyword.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo5_Variable_3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo5_Variable_3" />
+      <module name="day01" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_keyword.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Demo5_Variable_3" />
+        <item itemvalue="Application.Demo4_Variable_2" />
+        <item itemvalue="Application.Demo3_Variable" />
+        <item itemvalue="Application.Demo2_Constant" />
+        <item itemvalue="Application.Demo1" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -42,10 +245,25 @@
       <option name="presentableId" value="Default" />
       <updated>1650025761688</updated>
       <workItem from="1650025763992" duration="1483000" />
+      <workItem from="1650089581004" duration="677000" />
+      <workItem from="1650100818889" duration="848000" />
+      <workItem from="1650104565833" duration="1373000" />
+      <workItem from="1650108341512" duration="747000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
