@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo1_For.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo2_While.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo2_Multiplication_Table.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/c_嵌套循环/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/c_嵌套循环/Demo02_jiujiu.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,9 +64,9 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo3_Break_Continue">
-    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_while.Demo1" />
+  <component name="RunManager" selected="Application.Demo2_Multiplication_Table">
+    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_while.Demo2" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
@@ -77,12 +78,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_while.Demo2" />
+    <configuration name="Demo2_Multiplication_Table" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="c_nested_loop.Demo2_Multiplication_Table" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="a_while.*" />
+          <option name="PATTERN" value="c_nested_loop.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -116,12 +117,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo9_For_3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_if_switch_for.Demo9_For_3" />
-      <module name="day01" />
+    <configuration name="c_nested_loop.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="c_nested_loop.Demo1" />
+      <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_if_switch_for.*" />
+          <option name="PATTERN" value="c_nested_loop.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -131,11 +132,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo2_Multiplication_Table" />
+        <item itemvalue="Application.c_nested_loop.Demo1" />
         <item itemvalue="Application.Demo3_Break_Continue" />
         <item itemvalue="Application.Demo3" />
         <item itemvalue="Application.Demo2" />
-        <item itemvalue="Application.Demo1" />
-        <item itemvalue="Application.Demo9_For_3" />
       </list>
     </recent_temporary>
   </component>
@@ -155,7 +156,7 @@
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
-      <workItem from="1650125422289" duration="1229000" />
+      <workItem from="1650125422289" duration="1911000" />
     </task>
     <servers />
   </component>
