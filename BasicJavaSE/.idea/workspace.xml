@@ -67,13 +67,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo7_Array_Max">
-    <configuration name="Demo2_Guess_Number" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_random_number.Demo2_Guess_Number" />
+  <component name="RunManager" selected="Application.Demo1">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="f_function.Demo1" />
       <module name="day02" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_random_number.*" />
+          <option name="PATTERN" value="f_function.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -135,11 +135,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo1" />
         <item itemvalue="Application.Demo7_Array_Max" />
         <item itemvalue="Application.Demo6_Iterate_Array" />
         <item itemvalue="Application.Demo5_Get_Or_Set_Array_Element" />
         <item itemvalue="Application.e_array.Demo3_Check_Array" />
-        <item itemvalue="Application.Demo2_Guess_Number" />
       </list>
     </recent_temporary>
   </component>
