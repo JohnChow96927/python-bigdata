@@ -1,30 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/JavaSE.xmind" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/a_while/Demo01_while_01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/a_while/Demo02_while_02.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/a_while/Demo03_while_03.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/b_sixunhuan/Demo01_死循环.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/b_sixunhuan/Demo02_死循环_2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/b_sixunhuan/Demo03_break_continue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/c_嵌套循环/Demo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/c_嵌套循环/Demo02_jiujiu.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/d_随机数/Demo01_random入门.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/d_随机数/Demo02_猜数字.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo01_array.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo02_array.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo03_array_查看数组中的内容.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo04_array_查看不同类型数组的默认值.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo05_array_获取或修改数组的元素.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo06_array_数组的遍历.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo07_array_获取数组的最大值.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/e_数组/Demo08_array_数组的内存图.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/f_方法/Demo01_method.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/homework/Day02作业.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/homework/API作业.java" afterDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -70,8 +47,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -170,7 +148,7 @@
       <workItem from="1650089581004" duration="677000" />
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
-      <workItem from="1650108341512" duration="8822000" />
+      <workItem from="1650108341512" duration="11775000" />
     </task>
     <servers />
   </component>
