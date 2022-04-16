@@ -1,10 +1,10 @@
-// ÀàÃûĞèÒª¸úÍâ²¿µÄÎÄ¼şÃû±£³ÖÒ»ÖÂ
+// ç±»åéœ€è¦è·Ÿå¤–éƒ¨çš„æ–‡ä»¶åä¿æŒä¸€è‡´
 public class HelloWorld {
-    // ¿ì½İ¼ü1: main, psvm
+    // å¿«æ·é”®1: main, psvm
     public static void main(String[] args) {
-        // ¿ì½İ¼ü2: sout Êä³ö
+        // å¿«æ·é”®2: sout è¾“å‡º
         System.out.println("Hello 1 222");
-        /// ¿ì½İ¼ü3: ctrl + d ¿ìËÙ¸´ÖÆµ±Ç°ĞĞ
+        /// å¿«æ·é”®3: ctrl + d å¿«é€Ÿå¤åˆ¶å½“å‰è¡Œ
         System.out.println("Hello 1 222");
         System.out.println("Hello 1 222");
     }

@@ -2,8 +2,31 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo1_Random.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo2_Guess_Number.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/Day01作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/Day01作业.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/HelloWorld.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/HelloWorld.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo3_Variable.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo3_Variable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo6_Variable_4.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo6_Variable_4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo7_Variable_5.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo7_Variable_5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/a_keyword/Demo8_Cal_Variable.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/a_keyword/Demo8_Cal_Variable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo1_Arithmetic_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo1_Arithmetic_Operator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo3_Logical_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo3_Logical_Operator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/b_operator/Demo4_Ternary_Operator.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/b_operator/Demo4_Ternary_Operator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/c_scanner/Demo1_Scanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/c_scanner/Demo1_Scanner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo2_If_Single_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo2_If_Single_Branch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo3_If_Double_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo3_If_Double_Branch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo4_If_Multi_Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo4_If_Multi_Branch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo5_If_Multi_Branch_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo5_If_Multi_Branch_2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo6_Switch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo6_Switch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo7_For.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo7_For.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo8_For_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo8_For_2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo9_For_3.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/d_if_switch_for/Demo9_For_3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/homework/Day02作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/homework/Day02作业.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/b_dead_loop/Demo3_Break_Continue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/c_nested_loop/Demo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/d_random_number/Demo1_Random.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo1_Random.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/d_random_number/Demo2_Guess_Number.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/d_random_number/Demo2_Guess_Number.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/e_array/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/e_array/Demo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/homework/API作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/homework/API作业.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +68,8 @@
     "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day01/src",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "File.Encoding"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -154,7 +178,7 @@
       <workItem from="1650100818889" duration="848000" />
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
-      <workItem from="1650125422289" duration="3248000" />
+      <workItem from="1650125422289" duration="4038000" />
     </task>
     <servers />
   </component>

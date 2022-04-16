@@ -2,12 +2,12 @@ package b_operator;
 
 public class Demo4_Ternary_Operator {
     public static void main(String[] args) {
-        // 1. ¶¨ÒåÁ½¸öintÀàÐÍµÄ±äÁ¿a, b, ³õÊ¼»¯Öµ·Ö±ðÎª10, 20
+        // 1. å®šä¹‰ä¸¤ä¸ªintç±»åž‹çš„å˜é‡a, b, åˆå§‹åŒ–å€¼åˆ†åˆ«ä¸º10, 20
         int a = 10, b = 20;
-        // 2. Í¨¹ýÈýÔªÔËËã·û, »ñÈ¡±äÁ¿aºÍbµÄ×î´óÖµ
+        // 2. é€šè¿‡ä¸‰å…ƒè¿ç®—ç¬¦, èŽ·å–å˜é‡aå’Œbçš„æœ€å¤§å€¼
         int max = (a > b) ? a : b;
 
-        //3. ½«½á¹û(×î´óÖµ)´òÓ¡µ½¿ØÖÆÌ¨ÉÏ
+        //3. å°†ç»“æžœ(æœ€å¤§å€¼)æ‰“å°åˆ°æŽ§åˆ¶å°ä¸Š
         System.out.println(max);
     }
 }

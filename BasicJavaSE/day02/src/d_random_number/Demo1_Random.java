@@ -4,17 +4,17 @@ import java.util.Scanner;
 
 public class Demo1_Random {
     public static void main(String[] args) {
-        // ĞèÇó: ×öÒ»¸öµãÃûÆ÷
+        // éœ€æ±‚: åšä¸€ä¸ªç‚¹åå™¨
         Scanner scanner = new Scanner(System.in);
-        System.out.print("ÇëÊäÈëÑ§ÉúÈËÊı(>0): ");
+        System.out.print("è¯·è¾“å…¥å­¦ç”Ÿäººæ•°(>0): ");
         int stu_count = scanner.nextInt();
         int num = (int) (Math.random() * stu_count + 1);
-        System.out.println("±»µãµ½ÃûµÄÑ§ÉúÑ§ºÅÎª: " + num);
+        System.out.println("è¢«ç‚¹åˆ°åçš„å­¦ç”Ÿå­¦å·ä¸º: " + num);
 
-        // ×÷Òµ: ÇëÉú³É10¸ö 50-100¼äµÄËæ»úÕûÊı
+        // ä½œä¸š: è¯·ç”Ÿæˆ10ä¸ª 50-100é—´çš„éšæœºæ•´æ•°
         int n = 1;
         while (n <= 10) {
-            System.out.printf("Éú³ÉµÄµÚ" + n + "¸ö50-100¼äµÄËæ»úÕûÊıÎª: " + (int) (Math.random() * 51 + 50) + "\n");
+            System.out.printf("ç”Ÿæˆçš„ç¬¬" + n + "ä¸ª50-100é—´çš„éšæœºæ•´æ•°ä¸º: " + (int) (Math.random() * 51 + 50) + "\n");
             n++;
         }
     }

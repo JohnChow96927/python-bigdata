@@ -2,7 +2,7 @@ package d_if_switch_for;
 
 public class Demo8_For_2 {
     public static void main(String[] args) {
-        // ĞèÇó Çó1-100Ö®¼äµÄÅ¼ÊıºÍ, ²¢°ÑÇóºÍ½á¹û´òÓ¡µ½¿ØÖÆÌ¨
+        // éœ€æ±‚ æ±‚1-100ä¹‹é—´çš„å¶æ•°å’Œ, å¹¶æŠŠæ±‚å’Œç»“æœæ‰“å°åˆ°æ§åˆ¶å°
         int sum = 0;
         for (int i = 1; i <= 100; i++) {
             if (i % 2 == 0) {

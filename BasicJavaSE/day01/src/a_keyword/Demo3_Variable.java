@@ -2,12 +2,12 @@ package a_keyword;
 
 public class Demo3_Variable {
     public static void main(String[] args) {
-        // ĞèÇó: ¶¨Òå±äÁ¿, ¼ÇÂ¼°à¼¶µÄÑ§ÉúÈËÊı
-        // ·½Ê½Ò»:
+        // éœ€æ±‚: å®šä¹‰å˜é‡, è®°å½•ç­çº§çš„å­¦ç”Ÿäººæ•°
+        // æ–¹å¼ä¸€:
         int num = 45;
         System.out.println(num);
 
-        // ·½Ê½¶ş:
+        // æ–¹å¼äºŒ:
         int num2;
         num2 = 50;
         System.out.println(num2);

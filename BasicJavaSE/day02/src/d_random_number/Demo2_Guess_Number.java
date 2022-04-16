@@ -7,14 +7,14 @@ public class Demo2_Guess_Number {
         int answer = (int) (Math.random() * 100 + 1);
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.printf("ÇëÊäÈëÄúÒª²ÂµÄÊý: ");
+            System.out.printf("è¯·è¾“å…¥æ‚¨è¦çŒœçš„æ•°: ");
             int guess = scanner.nextInt();
             if (guess > answer) {
-                System.out.println("´óÁË, Çë¼ÌÐø!");
+                System.out.println("å¤§äº†, è¯·ç»§ç»­!");
             } else if (guess < answer) {
-                System.out.println("Ð¡ÁË, Çë¼ÌÐø!");
+                System.out.println("å°äº†, è¯·ç»§ç»­!");
             } else {
-                System.out.println("¹§Ï²Äú²Â¶ÔÁË, ´ð°¸¾ÍÊÇ" + answer + "!");
+                System.out.println("æ­å–œæ‚¨çŒœå¯¹äº†, ç­”æ¡ˆå°±æ˜¯" + answer + "!");
                 break;
             }
 

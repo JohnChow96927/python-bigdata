@@ -3,20 +3,20 @@ package d_if_switch_for;
 public class Demo7_For {
     public static void main(String[] args) {
         /*
-            Ŀ��: ��� 1 ~ 100
-            ��ʽ:
-                for(����ʽ1; ����ʽ2; ����ʽ4) {
-                    ����ʽ3 ... ...;
+            目标: 输出 1 ~ 100
+            格式:
+                for(表达式1; 表达式2; 表达式4) {
+                    表达式3 ... ...;
                 }
-            ����:
-                ����ʽ1
-               ��� ����ʽ2 �Ľ�� Ϊ true, ��ȥִ�� ����ʽ3,
-               ִ�б���ʽ4
+            步骤:
+                表达式1
+               如果 表达式2 的结果 为 true, 就去执行 表达式3,
+               执行表达式4
 
-               ��� ����ʽ2 �Ľ�� Ϊ true, ��ȥִ�� ����ʽ3,
-               ִ�б���ʽ4
+               如果 表达式2 的结果 为 true, 就去执行 表达式3,
+               执行表达式4
 
-               ����������: ����ʽ2�Ľ��Ϊfalse
+               结束的条件: 表达式2的结果为false
 
          */
         for (int i = 1; i <= 100; i++){

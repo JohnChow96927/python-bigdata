@@ -2,11 +2,11 @@ package d_if_switch_for;
 
 public class Demo2_If_Single_Branch {
     public static void main(String[] args) {
-        // ¶¨Òå±äÁ¿time±íÊ¾Ê±¼ä, Èç¹ûËüµÄ·¶Î§ÊÇÔÚ[0,8]Ö®¼ä, ¾Í´òÓ¡ÔçÉÏºÃ, ·ñÔò²»²Ù×÷
+        // å®šä¹‰å˜é‡timeè¡¨ç¤ºæ—¶é—´, å¦‚æžœå®ƒçš„èŒƒå›´æ˜¯åœ¨[0,8]ä¹‹é—´, å°±æ‰“å°æ—©ä¸Šå¥½, å¦åˆ™ä¸æ“ä½œ
         int time = 15;
 
         if (time >= 0 && time <= 8) {
-            System.out.println("ÔçÉÏºÃ");
+            System.out.println("æ—©ä¸Šå¥½");
         }
     }
 }

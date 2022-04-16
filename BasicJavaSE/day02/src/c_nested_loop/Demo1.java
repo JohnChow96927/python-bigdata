@@ -2,11 +2,11 @@ package c_nested_loop;
 
 public class Demo1 {
     public static void main(String[] args) {
-        // ĞèÇó: Êä³ö2020 ~ 2025ÄêµÄÔÂ·İ, Êä³ö¸ñÊ½: yyyyÄêMMÔÂ
+        // éœ€æ±‚: è¾“å‡º2020 ~ 2025å¹´çš„æœˆä»½, è¾“å‡ºæ ¼å¼: yyyyå¹´MMæœˆ
         for (int i = 2020; i < 2026 ; i++) {
             for (int j = 1; j < 13; j++) {
                 String month = String.format("%02d", j);
-                System.out.println(i + "Äê" + month + "ÔÂ");
+                System.out.println(i + "å¹´" + month + "æœˆ");
             }
         }
     }

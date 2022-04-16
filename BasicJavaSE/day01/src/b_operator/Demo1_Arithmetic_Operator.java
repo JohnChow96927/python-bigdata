@@ -13,12 +13,12 @@ public class Demo1_Arithmetic_Operator {
 
 
         int num = 10;
-        //num++ ==> ÏÈÊ¹ÓÃnumµÄÖµ, ÔÙÈÃnumµÄÖµ+1
+        //num++ ==> å…ˆä½¿ç”¨numçš„å€¼, å†è®©numçš„å€¼+1
         int a = num++;
         System.out.println("a = " + a); // 10
 
         int num2 = 10;
-        //++num2 ==> ÏÈÊ¹ÓÃnum2µÄÖµ+1, ÔÙÊ¹ÓÃnum2µÄÖµ
+        //++num2 ==> å…ˆä½¿ç”¨num2çš„å€¼+1, å†ä½¿ç”¨num2çš„å€¼
         int b = ++num2;
         System.out.println("b = " + b); // 11
     }

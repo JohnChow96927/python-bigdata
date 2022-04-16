@@ -2,7 +2,7 @@ package b_dead_loop;
 
 public class Demo3_Break_Continue {
     public static void main(String[] args) {
-        // ĞèÇó: Êä³ö1 ~ 100, ·ê7µÄ±¶ÊıÌø¹ı, µ½90µÄÊ±ºòÍ£Ö¹Ñ­»·
+        // éœ€æ±‚: è¾“å‡º1 ~ 100, é€¢7çš„å€æ•°è·³è¿‡, åˆ°90çš„æ—¶å€™åœæ­¢å¾ªç¯
         for (int i = 1; i <= 100; i++) {
             if (i % 7 == 0) {
                 continue;

@@ -4,42 +4,42 @@ import java.util.Scanner;
 
 public class Demo1_Scanner {
     public static void main(String[] args) {
-        // 1. »ñÈ¡Scanner¶ÔÏó
+        // 1. è·å–Scannerå¯¹è±¡
         Scanner scanner = new Scanner(System.in);
 
-        // 2. µ÷ÓÃ·½·¨»ñÈ¡ÓÃ»§ÊäÈëµÄÖµ
-        System.out.println("ÇëÊäÈëÄúµÄÄêÁä: ");
+        // 2. è°ƒç”¨æ–¹æ³•è·å–ç”¨æˆ·è¾“å…¥çš„å€¼
+        System.out.println("è¯·è¾“å…¥æ‚¨çš„å¹´é¾„: ");
         String age = scanner.next();
 
-        System.out.println("ÄúµÄÄêÁäÊÇ: " + age);
+        System.out.println("æ‚¨çš„å¹´é¾„æ˜¯: " + age);
 
-        // ĞèÇó: »ñÈ¡Èı¸öºÍÉĞµÄÉí¸ß, Çó×îµÍµÄÉí¸ß
-        // 1. ´´½¨Scanner¶ÔÏó
+        // éœ€æ±‚: è·å–ä¸‰ä¸ªå’Œå°šçš„èº«é«˜, æ±‚æœ€ä½çš„èº«é«˜
+        // 1. åˆ›å»ºScannerå¯¹è±¡
         Scanner scanner2 = new Scanner(System.in);
-        // 2. »ñÈ¡Èı¸öºÍÉĞµÄÉí¸ß
-        System.out.println("ÇëÊäÈëµÚÒ»¸öºÍÉĞµÄÉí¸ß:");
+        // 2. è·å–ä¸‰ä¸ªå’Œå°šçš„èº«é«˜
+        System.out.println("è¯·è¾“å…¥ç¬¬ä¸€ä¸ªå’Œå°šçš„èº«é«˜:");
 
         int height1 = scanner.nextInt();
 
-        System.out.println("ÇëÊäÈëµÚ¶ş¸öºÍÉĞµÄÉí¸ß:");
+        System.out.println("è¯·è¾“å…¥ç¬¬äºŒä¸ªå’Œå°šçš„èº«é«˜:");
         int height2 = scanner.nextInt();
 
-        System.out.println("ÇëÊäÈëµÚÈı¸öºÍÉĞµÄÉí¸ß:");
+        System.out.println("è¯·è¾“å…¥ç¬¬ä¸‰ä¸ªå’Œå°šçš„èº«é«˜:");
         int height3 = scanner.nextInt();
 
-        // 3. Çó×îµÍµÄÉí¸ß
-        // ·½Ê½Ò»
+        // 3. æ±‚æœ€ä½çš„èº«é«˜
+        // æ–¹å¼ä¸€
         // int min = height1 < height2 ? height1 : height2;
         // int min2 = min < height3 ? min : height3;
 
-        // ·½Ê½¶ş
+        // æ–¹å¼äºŒ
         // int min = height1 < height2 ? height1 : height2;
         // min = min < height3 ? min : height3;
 
-        // ·½Ê½Èı
+        // æ–¹å¼ä¸‰
         int min = (height1 < height2 ? height1 : height2) < height3 ? (height1 < height2 ? height1 : height2) : height3;
 
-        // 4 ´òÓ¡
-        System.out.println("×î°«Éí¸ß: " + min);
+        // 4 æ‰“å°
+        System.out.println("æœ€çŸ®èº«é«˜: " + min);
     }
 }

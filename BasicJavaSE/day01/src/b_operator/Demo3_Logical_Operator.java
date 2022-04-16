@@ -2,13 +2,13 @@ package b_operator;
 
 public class Demo3_Logical_Operator {
     public static void main(String[] args) {
-        // Âß¼­ÔËËã·û
-        // ×¢Òâ: Âß¼­ÔËËã·ûÁ½±ß±ØÐëÊÇbooleanÀàÐÍµÄÖµ
+        // é€»è¾‘è¿ç®—ç¬¦
+        // æ³¨æ„: é€»è¾‘è¿ç®—ç¬¦ä¸¤è¾¹å¿…é¡»æ˜¯booleanç±»åž‹çš„å€¼
         System.out.println(true && true);
         System.out.println(true && (3 > 2));
         System.out.println(false || (3 < 2));
 
-        // ÅÐ¶Ï: Èç¹û(!(xxx), Ö´ÐÐ1, ·ñÔòÖ´ÐÐ2)
+        // åˆ¤æ–­: å¦‚æžœ(!(xxx), æ‰§è¡Œ1, å¦åˆ™æ‰§è¡Œ2)
         System.out.println(!true);
         System.out.println(!(5 > 6));
     }
