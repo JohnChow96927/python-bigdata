@@ -1,7 +1,6 @@
-package cn.itcast.day03.b_final_重点;
+package b_final;
 
-public class B_final_使用final修饰类意味着不要子类了 {
-
+public class Demo2 {
 }
 
 // 结论2: 如果使用final修饰类, 意味着 当前类以后没有子类
@@ -28,5 +27,3 @@ final class B_Animal {
         System.out.println("父类的的shout方法");
     }
 }
-
-//class B_Dog extends B_Animal { }
