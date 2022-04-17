@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo5.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day01/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/e_homework/Homework.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/g_homework/Homework.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/h_stringbuilder/Demo01.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/h_stringbuilder/Demo01.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/src/k_homework/Homework.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/i_array/Demo1_Array_Sort.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/j_wrapper/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/j_wrapper/Demo2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/j_array/Demo01_数组排序.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/j_array/Demo02_自定义数组排序.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,13 +67,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo5">
-    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo2" />
+  <component name="RunManager" selected="Application.Demo2">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="j_wrapper.Demo1" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="h_stringbuilder.*" />
+          <option name="PATTERN" value="j_wrapper.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -85,12 +81,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo3" />
+    <configuration name="Demo1_Array_Sort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="i_array.Demo1_Array_Sort" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="h_stringbuilder.*" />
+          <option name="PATTERN" value="i_array.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="j_wrapper.Demo2" />
+      <module name="day03" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="j_wrapper.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -124,26 +133,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="h_stringbuilder.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo1" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="h_stringbuilder.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo2" />
+        <item itemvalue="Application.Demo1" />
+        <item itemvalue="Application.Demo1_Array_Sort" />
         <item itemvalue="Application.Demo5" />
         <item itemvalue="Application.Demo4" />
-        <item itemvalue="Application.Demo3" />
-        <item itemvalue="Application.Demo2" />
-        <item itemvalue="Application.h_stringbuilder.Demo1" />
       </list>
     </recent_temporary>
   </component>
@@ -165,7 +161,7 @@
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
-      <workItem from="1650181149168" duration="4952000" />
+      <workItem from="1650181149168" duration="6780000" />
     </task>
     <servers />
   </component>
@@ -185,5 +181,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
