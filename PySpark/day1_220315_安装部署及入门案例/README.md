@@ -143,7 +143,7 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 
 ### ★Spark vs MapReduce
 
-> ​	2014 年的时候Benchmark测试中，Spark 秒杀Hadoop，在使用十分之一计算资源的情况下，相同数据的排序上，Spark 比Map Reduce快3倍！
+> 2014 年的时候Benchmark测试中，Spark 秒杀Hadoop，在使用十分之一计算资源的情况下，相同数据的排序上，Spark 比Map Reduce快3倍！
 
 ![1632037153703](assets/1632037153703.png)
 
@@ -155,7 +155,7 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 
 - 2、其二、Spark Job调度以`DAG（有向无环图）`方式，并且每个任务Task执行以`线程（Thread）`方式，并不是像MapReduce以`进程（Process）方式`执行。
 
-> ​		Spark是一个通用的DAG引擎，使得用户能够在一个应用程序中描述复杂的逻辑，以便于优化整个数据流，并让不同计算阶段直接通过本地磁盘或内存交换数据，而不是像MapReduce那样需要通过HDFS。
+> Spark是一个通用的DAG引擎，使得用户能够在一个应用程序中描述复杂的逻辑，以便于优化整个数据流，并让不同计算阶段直接通过本地磁盘或内存交换数据，而不是像MapReduce那样需要通过HDFS。
 
 ![1634651978057](assets/1634651978057.png)
 
@@ -165,16 +165,16 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 
 > Spark 与 MapReduce 比较：Spark 为什么比MapReduce计算要快？
 
-|     比较方面     |         MapRedue 计算引擎          |                    Spark 计算引擎                     |
-| :--------------: | :--------------------------------: | :---------------------------------------------------: |
-| 1、Job 程序结构  |  1 个Map Stage + 1个 Reduce Stage  | 构架DAG图，多个Stage, 多个Map Stage + 多个Redue Stage |
-| 2、中间结果存储  |            本地磁盘Disk            |             没有Shuffle时，存储内存Memory             |
-| 3、Task 运行方式 | 进程Process：MapTask 和Reduce Task |         线程Thread：Task，无需频繁启动和销毁          |
-| 4、程序编程模型  |   直接读取文件数据，map + reduce   |            文件数据封装：RDD，调用函数处理            |
+|     比较方面     |         MapReduce 计算引擎          |                     Spark 计算引擎                     |
+| :--------------: | :---------------------------------: | :----------------------------------------------------: |
+| 1、Job 程序结构  |  1 个Map Stage + 1个 Reduce Stage   | 构架DAG图，多个Stage, 多个Map Stage + 多个Reduce Stage |
+| 2、中间结果存储  |            本地磁盘Disk             |             没有Shuffle时，存储内存Memory              |
+| 3、Task 运行方式 | 进程Process：Map Task 和Reduce Task |          线程Thread：Task，无需频繁启动和销毁          |
+| 4、程序编程模型  |   直接读取文件数据，map + reduce    |            文件数据封装：RDD，调用函数处理             |
 
 ### Spark框架模块
 
-> ​	整个Spark 框架模块包含：Spark `Core`、 Spark `SQL`、 Spark Streaming、 Spark GraphX、Spark MLlib，而后四项的能力都是建立在核心引擎之上 。
+> 整个Spark 框架模块包含：Spark `Core`、 Spark `SQL`、 Spark Streaming、 Spark GraphX、Spark MLlib，而后四项的能力都是建立在核心引擎之上 。
 
 ![1632037351380](assets/1632037351380.png)
 
@@ -203,7 +203,7 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 > 每个MapReduce运行时（比如运行YARN集群），由2部分组成：
 
 - **MRAppMaster：MapReduce**应用程序管理者，负责申请资源，调度任务执行和监控等；
-- **MapTask或ReducetTask**：要么是处理数据任务MapTask，要么是聚合数据任务ReduceTask；
+- **MapTask或ReduceTask**：要么是处理数据任务MapTask，要么是聚合数据任务ReduceTask；
 
 ![img](assets/mr-on-yarn.jpg)
 
@@ -223,7 +223,7 @@ Aapche Spark 是一种快速、通用、可扩展的大数据分析引擎，基�
 
 ### Spark运行模式
 
-> ​	Spark 框架编写的应用程序可以运行在`本地模式（Local Mode）`、`集群模式（Cluster Mode）`和**云模式（K8s）**，方便开发测试和生产部署。[基于当前最新版本：Spark-3.1.2 版本学习。]()
+> Spark 框架编写的应用程序可以运行在`本地模式（Local Mode）`、`集群模式（Cluster Mode）`和**云模式（K8s）**，方便开发测试和生产部署。[基于当前最新版本：Spark-3.1.2 版本学习。]()
 
 ![1639037529223](assets/1639037529223.png)
 
