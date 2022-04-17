@@ -1,9 +1,8 @@
-package cn.itcast.day03.d_abstract_重点;
+package d_abstract;
 
-public class Demo01 {
-
+public class Demo1 {
 }
-// 抽象类 本质: 类中的某些方法可以提前写好, 还有一些方法 我不确定未来怎么实现
+// 抽象类 本质: 类中的某些方法可以提前写好, 还有一些方法, 不确定未来如何实现
 // 子类
 class A_Cat extends A_Animal {
     @Override

@@ -1,6 +1,6 @@
-package cn.itcast.day03.d_abstract_重点;
+package d_abstract;
 
-public class Demo03 {
+public class Demo3 {
 }
 
 // 设计一个特别特殊的抽象类: 方法都没有实现
