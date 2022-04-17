@@ -1,12 +1,12 @@
-package cn.itcast.day03.h_stringbuilder;
+package h_stringbuilder;
 
 import java.util.Arrays;
 
-public class Demo03 {
+public class Demo3 {
     public static void main(String[] args) {
-        // String[] strArr = {"aaa", "bbb", "ccc", "ddd"};
-        // todo 自定义实现 [aaa, bbb, ccc, ddd] Arrays.toString(strArr)
-        // System.out.println(Arrays.toString(strArr));
+         String[] strArr1 = {"aaa", "bbb", "ccc", "ddd"};
+         // todo 自定义实现 [aaa, bbb, ccc, ddd] Arrays.toString(strArr)
+         System.out.println(Arrays.toString(strArr1));
 
         String[] strArr = {"aaa", "bbb", "ccc", "ddd"};
         StringBuilder sb = new StringBuilder();
@@ -20,7 +20,6 @@ public class Demo03 {
         }
         sb.append("]");
         String result = sb.toString();
-
         System.out.println(result);
     }
 }

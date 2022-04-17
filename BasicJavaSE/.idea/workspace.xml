@@ -2,10 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo2_Login_Simulate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo3_Iterate_String.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/h_stringbuilder/Demo5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/e_homework/Homework.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/g_homework/Homework.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/h_stringbuilder/Demo01.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/h_stringbuilder/Demo01.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/src/homework/Homework.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/src/k_homework/Homework.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,13 +71,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo5_Reverse_String">
-    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="g_string.Demo1" />
+  <component name="RunManager" selected="Application.Demo5">
+    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo2" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="g_string.*" />
+          <option name="PATTERN" value="h_stringbuilder.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -80,12 +85,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo5_Reverse_String" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="g_string.Demo5_Reverse_String" />
+    <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo3" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="g_string.*" />
+          <option name="PATTERN" value="h_stringbuilder.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -93,12 +98,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="f_object.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="f_object.Demo1" />
+    <configuration name="Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo4" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="f_object.*" />
+          <option name="PATTERN" value="h_stringbuilder.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -106,12 +111,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="g_string.Demo3_Iterate_String" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="g_string.Demo3_Iterate_String" />
+    <configuration name="Demo5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo5" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="g_string.*" />
+          <option name="PATTERN" value="h_stringbuilder.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -119,12 +124,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="g_string.Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="g_string.Demo4" />
+    <configuration name="h_stringbuilder.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo1" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="g_string.*" />
+          <option name="PATTERN" value="h_stringbuilder.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -134,11 +139,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Demo5_Reverse_String" />
-        <item itemvalue="Application.g_string.Demo4" />
-        <item itemvalue="Application.g_string.Demo3_Iterate_String" />
-        <item itemvalue="Application.g_string.Demo1" />
-        <item itemvalue="Application.f_object.Demo1" />
+        <item itemvalue="Application.Demo5" />
+        <item itemvalue="Application.Demo4" />
+        <item itemvalue="Application.Demo3" />
+        <item itemvalue="Application.Demo2" />
+        <item itemvalue="Application.h_stringbuilder.Demo1" />
       </list>
     </recent_temporary>
   </component>
@@ -160,7 +165,7 @@
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
-      <workItem from="1650181149168" duration="2812000" />
+      <workItem from="1650181149168" duration="4952000" />
     </task>
     <servers />
   </component>
