@@ -1,6 +1,6 @@
-package cn.itcast.day03.g_string;
+package g_string;
 
-public class Demo01 {
+public class Demo1 {
     public static void main(String[] args) {
         // 定义字符数组chs, 初始化值为: 'a, 'b', 'c', 这三个字符 .
         char[] charArr = {'a', 'b', 'c'};

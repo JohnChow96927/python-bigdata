@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/f_object/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/f_object/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo01.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo02.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo03_综合案例.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo04.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo2_Login_Simulate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo3_Iterate_String.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/g_string/Demo4.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,13 +66,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.f_object.Demo1">
+  <component name="RunManager" selected="Application.Demo5_Reverse_String">
     <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_static.Demo1" />
+      <option name="MAIN_CLASS_NAME" value="g_string.Demo1" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_static.*" />
+          <option name="PATTERN" value="g_string.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -82,38 +80,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_interface.Demo2" />
+    <configuration name="Demo5_Reverse_String" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="g_string.Demo5_Reverse_String" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_interface.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo2_Static_Variable" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_static.Demo2_Static_Variable" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="c_static.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo3_Example" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_interface.Demo3_Example" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="e_interface.*" />
+          <option name="PATTERN" value="g_string.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -134,13 +106,39 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="g_string.Demo3_Iterate_String" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="g_string.Demo3_Iterate_String" />
+      <module name="day03" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="g_string.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="g_string.Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="g_string.Demo4" />
+      <module name="day03" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="g_string.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo5_Reverse_String" />
+        <item itemvalue="Application.g_string.Demo4" />
+        <item itemvalue="Application.g_string.Demo3_Iterate_String" />
+        <item itemvalue="Application.g_string.Demo1" />
         <item itemvalue="Application.f_object.Demo1" />
-        <item itemvalue="Application.Demo3_Example" />
-        <item itemvalue="Application.Demo2" />
-        <item itemvalue="Application.Demo2_Static_Variable" />
-        <item itemvalue="Application.Demo1" />
       </list>
     </recent_temporary>
   </component>
@@ -162,7 +160,7 @@
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
-      <workItem from="1650181149168" duration="1049000" />
+      <workItem from="1650181149168" duration="2812000" />
     </task>
     <servers />
   </component>
