@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/i_array/Demo1_Array_Sort.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/j_wrapper/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/j_wrapper/Demo2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/j_array/Demo01_数组排序.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/j_array/Demo02_自定义数组排序.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/Day01作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day01/src/e_homework/Day01作业.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/homework/Day02作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day02/src/g_homework/Day02作业.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/homework/API作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/src/k_homework/API作业.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/k_baozhuang/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/k_baozhuang/Demo02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/k_baozhuang/Demo03.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/k_baozhuang/Demo04.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,9 +64,11 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src\g_homework" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03\src\k_homework" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Demo2">
@@ -161,7 +165,7 @@
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
-      <workItem from="1650181149168" duration="6780000" />
+      <workItem from="1650181149168" duration="7058000" />
     </task>
     <servers />
   </component>
