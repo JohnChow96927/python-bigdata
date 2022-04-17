@@ -1,34 +1,34 @@
-package cn.itcast.day03.a_多态_重点;
+package a_polymorphism;
 
-public class D_demo04_解决多态的弊端 {
+public class Demo4_Solve_Disadvantage {
     public static void main(String[] args) {
         D_Actress p1 = new D_Actress();
         p1.name = "如花";
-        //p1.doSomthing();
+        //p1.doSomething();
         cut(p1);
 
         D_Barber p2 = new D_Barber();
         p2.name = "华仔";
-        //p2.doSomthing();
+        //p2.doSomething();
         cut(p2);
 
         D_Doctor p3 = new D_Doctor();
         p3.name = "华佗";
-        //p3.doSomthing();
-         cut(p3);
+        //p3.doSomething();
+        cut(p3);
     }
 
     public static void cut(D_Person p) {
-        p.doSomthing();
+        p.doSomething();
 
-        // 事实(多态的弊端): 父类对象 没有办法调用子类特有的方法
-        // 解决: 向下转型 (类似于 int 转 byte)
-        if(p instanceof D_Actress) {
-            ((D_Actress)p).fanju();
-        } else if(p instanceof D_Barber) {
-            ((D_Barber)p).paoniu();
-        } else if(p instanceof D_Doctor) {
-            ((D_Doctor)p).zhifuyouhuo();
+        // 事实(多态的弊端): 父类对象 没有办法调用子类特有方法
+        // 解决: 向下转型(类似于int转byte)
+        if (p instanceof D_Actress) {
+            ((D_Actress) p).fanju();
+        } else if (p instanceof D_Barber) {
+            ((D_Barber) p).paoniu();
+        } else if (p instanceof D_Doctor) {
+            ((D_Doctor) p).zhifuyouhuo();
         }
     }
 }
@@ -39,7 +39,7 @@ public class D_demo04_解决多态的弊端 {
 class D_Person {
     String name;
 
-    public void doSomthing() {
+    public void doSomething() {
         System.out.println("父类 某人正在做某事 .... ...");
     }
 }
@@ -48,7 +48,7 @@ class D_Person {
 class D_Actress extends D_Person {
     //2 方法覆写
     @Override
-    public void doSomthing() {
+    public void doSomething() {
         System.out.println("子类女演员 " + name + " 立刻停止表演... ...");
     }
 
@@ -62,7 +62,7 @@ class D_Actress extends D_Person {
 class D_Barber extends D_Person {
     //2 方法覆写
     @Override
-    public void doSomthing() {
+    public void doSomething() {
         System.out.println("子类理发师 " + name + " 立刻开始理发... ...");
     }
 
@@ -76,7 +76,7 @@ class D_Barber extends D_Person {
 class D_Doctor extends D_Person {
     //2 方法覆写
     @Override
-    public void doSomthing() {
+    public void doSomething() {
         System.out.println("子类医生 " + name + " 立刻开始给患者做手术... ...");
     }
 

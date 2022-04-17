@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/a_polymorphism/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/a_polymorphism/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/a_polymorphism/Demo3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day02/f_方法/Demo01_method.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/a_polymorphism/Demo4_Solve_Disadvantage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,21 +33,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "extract.method.default.visibility": "public",
-    "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day01/src",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "File.Encoding"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day01/src&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src" />
@@ -65,7 +62,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo3">
+  <component name="RunManager" selected="Application.Demo4_Solve_Disadvantage">
     <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="f_function.Demo1" />
       <module name="day02" />
@@ -79,38 +76,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_polymorphism.Demo2" />
+    <configuration name="Demo4_Solve_Disadvantage" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_polymorphism.Demo4_Solve_Disadvantage" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="a_polymorphism.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_polymorphism.Demo3" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="a_polymorphism.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo7_Array_Max" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_array.Demo7_Array_Max" />
-      <module name="day02" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="e_array.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -131,13 +102,39 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="a_polymorphism.Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_polymorphism.Demo2" />
+      <module name="day03" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_polymorphism.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="a_polymorphism.Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_polymorphism.Demo3" />
+      <module name="day03" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_polymorphism.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Demo3" />
-        <item itemvalue="Application.Demo2" />
+        <item itemvalue="Application.Demo4_Solve_Disadvantage" />
+        <item itemvalue="Application.a_polymorphism.Demo3" />
+        <item itemvalue="Application.a_polymorphism.Demo2" />
         <item itemvalue="Application.a_polymorphism.Demo1" />
         <item itemvalue="Application.Demo1" />
-        <item itemvalue="Application.Demo7_Array_Max" />
       </list>
     </recent_temporary>
   </component>
@@ -158,6 +155,7 @@
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
+      <workItem from="1650169296180" duration="1018000" />
     </task>
     <servers />
   </component>
