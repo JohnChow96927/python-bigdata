@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day03/src/e_interface/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/e_interface/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day03/src/e_interface/Demo3_Example.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/f_object/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day03/src/f_object/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo01.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo03_综合案例.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/e_interface_重点/Demo04.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,8 +17,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -65,7 +68,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo3_Example">
+  <component name="RunManager" selected="Application.f_object.Demo1">
     <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="c_static.Demo1" />
       <module name="day03" />
@@ -118,12 +121,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="b_final.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_final.Demo1" />
+    <configuration name="f_object.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="f_object.Demo1" />
       <module name="day03" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_final.*" />
+          <option name="PATTERN" value="f_object.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -133,11 +136,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.f_object.Demo1" />
         <item itemvalue="Application.Demo3_Example" />
         <item itemvalue="Application.Demo2" />
         <item itemvalue="Application.Demo2_Static_Variable" />
         <item itemvalue="Application.Demo1" />
-        <item itemvalue="Application.b_final.Demo1" />
       </list>
     </recent_temporary>
   </component>
@@ -158,7 +161,8 @@
       <workItem from="1650104565833" duration="1373000" />
       <workItem from="1650108341512" duration="12416000" />
       <workItem from="1650125422289" duration="6714000" />
-      <workItem from="1650169296180" duration="5880000" />
+      <workItem from="1650169296180" duration="6495000" />
+      <workItem from="1650181149168" duration="1049000" />
     </task>
     <servers />
   </component>
