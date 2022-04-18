@@ -2,7 +2,38 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day04/src/a_date/B_Simple_Date_Format.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/A_date.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/B_simpleDateFormate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/C_simpleDateFormate_2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/D_DateUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/D_DateUtils_2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/D_DateUtils_3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/E_日历对象.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/a_日期/F_日历对象.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/b_异常/Demo01_向上抛.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/b_异常/Demo02_自己解决.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/b_异常/Demo03_无论是否报异常都要释放资源.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/Demo03.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/ProductDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/d_内部类/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/d_内部类/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/A_入门案例.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/B_collection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/C_list.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/D_数据结构.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/E_set.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/F_map.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/G_官方预定义的集合工具类.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/e_集合/H_可变参数.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/pojo/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/A_Beginning.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/f_homework/Day04作业.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/utils/DateUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,28 +65,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day01/src&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "public",
+    "jdk.selected.JAVA_MODULE": "1.8",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day04/src/f_homework",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "File.Encoding"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04\src\f_homework" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
@@ -65,7 +100,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.B_Simple_Date_Format">
+  <component name="RunManager" selected="JUnit.A_Beginning">
     <configuration name="A_Date" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="a_date.A_Date" />
       <module name="day04" />
@@ -92,32 +127,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="j_wrapper.Demo1" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="j_wrapper.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo1_Array_Sort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="i_array.Demo1_Array_Sort" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="i_array.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="j_wrapper.Demo2" />
       <module name="day03" />
@@ -131,13 +140,44 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="A_Beginning" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day04" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="e_set.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.A_Beginning" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="A_Beginning.show2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day04" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="e_set.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.A_Beginning" />
+      <option name="METHOD_NAME" value="show2" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.A_Beginning" />
+        <item itemvalue="JUnit.A_Beginning.show2" />
         <item itemvalue="Application.B_Simple_Date_Format" />
         <item itemvalue="Application.A_Date" />
         <item itemvalue="Application.Demo2" />
-        <item itemvalue="Application.Demo1" />
-        <item itemvalue="Application.Demo1_Array_Sort" />
       </list>
     </recent_temporary>
   </component>
@@ -160,7 +200,10 @@
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
       <workItem from="1650181149168" duration="7058000" />
-      <workItem from="1650245049417" duration="1145000" />
+      <workItem from="1650245049417" duration="5035000" />
+      <workItem from="1650272627391" duration="1818000" />
+      <workItem from="1650284479945" duration="234000" />
+      <workItem from="1650287131795" duration="1415000" />
     </task>
     <servers />
   </component>
