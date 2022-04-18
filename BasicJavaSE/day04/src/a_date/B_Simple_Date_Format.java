@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class B_Simple_Date_Format {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws Exception {
         // 目标1: 将目标Date对象转化成想要的字符串
         Date d1 = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss_SSS");
