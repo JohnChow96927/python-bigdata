@@ -2,23 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/Demo3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/ProductDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/ProductDaoTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/ProductDaoTest2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/c_junit/ProductDaoTest3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/Demo01.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/Demo02.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/Demo03.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/ProductDao.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest2.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/c_junit/ProductDaoTest3.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/src/b_Exception/Demo1_Throw.java" beforeDir="false" afterPath="$PROJECT_DIR$/day04/src/b_exception/Demo1_Throw.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/src/b_Exception/Demo2_Catch.java" beforeDir="false" afterPath="$PROJECT_DIR$/day04/src/b_exception/Demo2_Catch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/src/b_Exception/Demo3_Finally.java" beforeDir="false" afterPath="$PROJECT_DIR$/day04/src/b_exception/Demo3_Finally.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/d_inner_class/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/d_inner_class/Demo2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,35 +70,29 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ProductDaoTest3.add">
-    <configuration name="Demo3.add" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Application.Demo2">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_inner_class.Demo1" />
       <module name="day04" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_junit.*" />
+          <option name="PATTERN" value="d_inner_class.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="c_junit" />
-      <option name="MAIN_CLASS_NAME" value="c_junit.Demo3" />
-      <option name="METHOD_NAME" value="add" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo3.update" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_inner_class.Demo2" />
       <module name="day04" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_junit.*" />
+          <option name="PATTERN" value="d_inner_class.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="c_junit" />
-      <option name="MAIN_CLASS_NAME" value="c_junit.Demo3" />
-      <option name="METHOD_NAME" value="update" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -167,11 +146,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo2" />
+        <item itemvalue="Application.Demo1" />
         <item itemvalue="JUnit.ProductDaoTest3.add" />
         <item itemvalue="JUnit.ProductDaoTest2" />
         <item itemvalue="JUnit.ProductDaoTest.del" />
-        <item itemvalue="JUnit.Demo3.update" />
-        <item itemvalue="JUnit.Demo3.add" />
       </list>
     </recent_temporary>
   </component>
@@ -197,7 +176,7 @@
       <workItem from="1650245049417" duration="5035000" />
       <workItem from="1650272627391" duration="1818000" />
       <workItem from="1650284479945" duration="234000" />
-      <workItem from="1650287131795" duration="4840000" />
+      <workItem from="1650287131795" duration="5334000" />
     </task>
     <servers />
   </component>
