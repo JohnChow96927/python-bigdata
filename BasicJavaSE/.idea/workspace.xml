@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day04/src/d_inner_class/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/d_inner_class/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/B_Collection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/C_List.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/D_Data_Structrue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/E_Set.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/F_Map.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/G_Set_Util_By_Official.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/e_set/H_Changable_Variables.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/pojo/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day04/src/e_set/A_Beginning.java" beforeDir="false" afterPath="$PROJECT_DIR$/day04/src/e_set/A_Beginning.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,13 +77,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo2">
-    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_inner_class.Demo1" />
+  <component name="RunManager" selected="Application.H_Changable_Variables">
+    <configuration name="H_Changable_Variables" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_set.H_Changable_Variables" />
       <module name="day04" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_inner_class.*" />
+          <option name="PATTERN" value="e_set.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -84,61 +91,64 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_inner_class.Demo2" />
+    <configuration name="C_List.show4" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="day04" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_inner_class.*" />
+          <option name="PATTERN" value="e_set.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ProductDaoTest2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="c_junit.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="c_junit" />
-      <option name="MAIN_CLASS_NAME" value="c_junit.ProductDaoTest2" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ProductDaoTest3.add" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="c_junit.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="c_junit" />
-      <option name="MAIN_CLASS_NAME" value="c_junit.ProductDaoTest3" />
-      <option name="METHOD_NAME" value="add" />
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.C_List" />
+      <option name="METHOD_NAME" value="show4" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ProductDaoTest.del" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="E_Set.show2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="day04" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_junit.*" />
+          <option name="PATTERN" value="e_set.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="c_junit" />
-      <option name="MAIN_CLASS_NAME" value="c_junit.ProductDaoTest" />
-      <option name="METHOD_NAME" value="del" />
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.E_Set" />
+      <option name="METHOD_NAME" value="show2" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="F_Map" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day04" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="e_set.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.F_Map" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="G_Set_Util_By_Official.show1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day04" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="e_set.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="e_set" />
+      <option name="MAIN_CLASS_NAME" value="e_set.G_Set_Util_By_Official" />
+      <option name="METHOD_NAME" value="show1" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -146,11 +156,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Demo2" />
-        <item itemvalue="Application.Demo1" />
-        <item itemvalue="JUnit.ProductDaoTest3.add" />
-        <item itemvalue="JUnit.ProductDaoTest2" />
-        <item itemvalue="JUnit.ProductDaoTest.del" />
+        <item itemvalue="Application.H_Changable_Variables" />
+        <item itemvalue="JUnit.G_Set_Util_By_Official.show1" />
+        <item itemvalue="JUnit.F_Map" />
+        <item itemvalue="JUnit.E_Set.show2" />
+        <item itemvalue="JUnit.C_List.show4" />
       </list>
     </recent_temporary>
   </component>
@@ -176,7 +186,7 @@
       <workItem from="1650245049417" duration="5035000" />
       <workItem from="1650272627391" duration="1818000" />
       <workItem from="1650284479945" duration="234000" />
-      <workItem from="1650287131795" duration="5334000" />
+      <workItem from="1650287131795" duration="11128000" />
     </task>
     <servers />
   </component>
@@ -204,6 +214,31 @@
           <properties class="java.lang.NullPointerException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/day04/src/e_set/C_List.java</url>
+          <line>161</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/day04/src/e_set/C_List.java</url>
+          <line>162</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/day04/src/e_set/C_List.java</url>
+          <line>164</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/day04/src/e_set/C_List.java</url>
+          <line>169</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/day04/src/e_set/C_List.java</url>
+          <line>170</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

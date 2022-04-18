@@ -12,6 +12,8 @@ public class A_Beginning {
         // 集合: 本质是容器, 主要操作为: 存, 取
         // 数组缺陷1: 数组类型固定
         // 数组缺陷2: 数组长度固定
+        int[] arr = {11, 33, 55};
+        arr[10] = 100;  // 报错
     }
 
     @Test
@@ -47,6 +49,21 @@ public class A_Beginning {
             sum += element;
         }
         System.out.println(sum);
+    }
+
+    @Test
+    public void show4() {
+        List<Integer> list = new ArrayList<>();
+        list.add(10);
+        list.add(20);
+        list.add(30);
+
+        Integer o1 = list.get(0);
+        Integer o2 = list.get(1);
+        Integer o3 = list.get(2);
+
+        Integer result = o1 + o2 + o3;
+        System.out.println(result);
     }
 
 
