@@ -1,11 +1,10 @@
-package cn.itcast.day04.c_junit;
+package c_junit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ProductDaoTest3 {
-
     ProductDao productDao = new ProductDao();
 
     @Before

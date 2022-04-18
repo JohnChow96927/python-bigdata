@@ -1,4 +1,4 @@
-package b_Exception;
+package b_exception;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

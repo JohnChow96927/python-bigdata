@@ -1,4 +1,4 @@
-package cn.itcast.day04.c_junit;
+package c_junit;
 
 public class ProductDao {
     public void add() {

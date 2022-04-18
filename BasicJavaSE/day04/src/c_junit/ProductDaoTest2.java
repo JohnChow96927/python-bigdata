@@ -1,9 +1,8 @@
-package cn.itcast.day04.c_junit;
+package c_junit;
 
 import org.junit.Test;
 
 public class ProductDaoTest2 {
-
     ProductDao productDao = new ProductDao();
 
     @Test

@@ -1,6 +1,6 @@
-package cn.itcast.day04.c_junit;
+package c_junit;
 
-public class Demo02 {
+public class Demo2 {
     public static void main(String[] args) {
         ProductDao productDao = new ProductDao();
         productDao.del();
