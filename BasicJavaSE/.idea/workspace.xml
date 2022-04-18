@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day04/src/a_date/A_Date.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day03/src/k_homework/API作业.java" beforeDir="false" afterPath="$PROJECT_DIR$/day03/src/k_homework/API作业.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day04/src/a_date/B_Simple_Date_Format.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,9 +65,22 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.A_Date">
+  <component name="RunManager" selected="Application.B_Simple_Date_Format">
     <configuration name="A_Date" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="a_date.A_Date" />
+      <module name="day04" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_date.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="B_Simple_Date_Format" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_date.B_Simple_Date_Format" />
       <module name="day04" />
       <extension name="coverage">
         <pattern>
@@ -119,26 +131,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="h_stringbuilder.Demo5" />
-      <module name="day03" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="h_stringbuilder.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.B_Simple_Date_Format" />
         <item itemvalue="Application.A_Date" />
         <item itemvalue="Application.Demo2" />
         <item itemvalue="Application.Demo1" />
         <item itemvalue="Application.Demo1_Array_Sort" />
-        <item itemvalue="Application.Demo5" />
       </list>
     </recent_temporary>
   </component>
@@ -161,7 +160,7 @@
       <workItem from="1650125422289" duration="6714000" />
       <workItem from="1650169296180" duration="6495000" />
       <workItem from="1650181149168" duration="7058000" />
-      <workItem from="1650245049417" duration="382000" />
+      <workItem from="1650245049417" duration="1145000" />
     </task>
     <servers />
   </component>
