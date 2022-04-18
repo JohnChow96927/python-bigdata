@@ -1,11 +1,11 @@
-package cn.itcast.day04.b_异常;
+package b_Exception;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Demo02_自己解决 {
-    public static void main(String[] args)  {
+public class Demo2_Catch {
+    public static void main(String[] args) {
         String str = "2020/09/08";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -19,6 +19,5 @@ public class Demo02_自己解决 {
         }
 
         System.out.println("666666666666666666");
-
     }
 }
