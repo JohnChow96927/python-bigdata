@@ -207,7 +207,7 @@ from pyspark import SparkConf, SparkContext
 
 if __name__ == '__main__':
     """
-    RDD中累加器Accumulator：使用累加器统计处理文件中有多少条数据   
+    RDD中累加器Accumulator：使用累加器统计处理文件中有多少条数据
     """
 
     # 设置系统环境变量
