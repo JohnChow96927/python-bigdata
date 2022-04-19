@@ -2,15 +2,41 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/B_Collection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/C_List.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/D_Data_Structrue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/E_Set.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/F_Map.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/G_Set_Util_By_Official.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/e_set/H_Changable_Variables.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day04/src/pojo/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day04/src/e_set/A_Beginning.java" beforeDir="false" afterPath="$PROJECT_DIR$/day04/src/e_set/A_Beginning.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/config/myConfig.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/data/冀老师的上海生活.avi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Addable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Animal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Demo03.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Demo04.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo03_lambda/Flyable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo03.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo04.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo05.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/demo04_io/Demo06.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Demo3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Demo4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Demo5.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/a_reflect/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Addable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Animal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Demo3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Demo4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day05/src/b_lambda/Flyable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PySpark/day5_220321_Spark高级特性与内核调度/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../PySpark/day5_220321_Spark高级特性与内核调度/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +46,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Python Script" />
         <option value="Interface" />
         <option value="Class" />
       </list>
@@ -54,20 +81,20 @@
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "public",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day04/src/f_homework",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day05",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "File.Encoding"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day05" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04\src\f_homework" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
@@ -77,13 +104,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.H_Changable_Variables">
-    <configuration name="H_Changable_Variables" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_set.H_Changable_Variables" />
-      <module name="day04" />
+  <component name="RunManager" selected="Application.b_lambda.Demo4">
+    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_lambda.Demo1" />
+      <module name="day05" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_set.*" />
+          <option name="PATTERN" value="b_lambda.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -91,76 +118,65 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="C_List.show4" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
+    <configuration name="Demo5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_reflect.Demo5" />
+      <module name="day05" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_set.*" />
+          <option name="PATTERN" value="a_reflect.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="e_set" />
-      <option name="MAIN_CLASS_NAME" value="e_set.C_List" />
-      <option name="METHOD_NAME" value="show4" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="E_Set.show2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
+    <configuration name="b_lambda.Demo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_lambda.Demo2" />
+      <module name="day05" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_set.*" />
+          <option name="PATTERN" value="b_lambda.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="e_set" />
-      <option name="MAIN_CLASS_NAME" value="e_set.E_Set" />
-      <option name="METHOD_NAME" value="show2" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="F_Map" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
+    <configuration name="b_lambda.Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_lambda.Demo3" />
+      <module name="day05" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_set.*" />
+          <option name="PATTERN" value="b_lambda.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="e_set" />
-      <option name="MAIN_CLASS_NAME" value="e_set.F_Map" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="G_Set_Util_By_Official.show1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day04" />
+    <configuration name="b_lambda.Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_lambda.Demo4" />
+      <module name="day05" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_set.*" />
+          <option name="PATTERN" value="b_lambda.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="e_set" />
-      <option name="MAIN_CLASS_NAME" value="e_set.G_Set_Util_By_Official" />
-      <option name="METHOD_NAME" value="show1" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.H_Changable_Variables" />
-        <item itemvalue="JUnit.G_Set_Util_By_Official.show1" />
-        <item itemvalue="JUnit.F_Map" />
-        <item itemvalue="JUnit.E_Set.show2" />
-        <item itemvalue="JUnit.C_List.show4" />
+        <item itemvalue="Application.b_lambda.Demo4" />
+        <item itemvalue="Application.b_lambda.Demo3" />
+        <item itemvalue="Application.b_lambda.Demo2" />
+        <item itemvalue="Application.b_lambda.Demo1" />
+        <item itemvalue="Application.Demo5" />
       </list>
     </recent_temporary>
   </component>
@@ -186,7 +202,9 @@
       <workItem from="1650245049417" duration="5035000" />
       <workItem from="1650272627391" duration="1818000" />
       <workItem from="1650284479945" duration="234000" />
-      <workItem from="1650287131795" duration="11128000" />
+      <workItem from="1650287131795" duration="11206000" />
+      <workItem from="1650335886761" duration="652000" />
+      <workItem from="1650375262172" duration="6381000" />
     </task>
     <servers />
   </component>
@@ -241,5 +259,8 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/BasicJavaSE$goPy.coverage" NAME="goPy Coverage Results" MODIFIED="1650375409426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
