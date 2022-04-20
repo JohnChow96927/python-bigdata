@@ -435,7 +435,7 @@ if __name__ == '__main__':
   - 将处理数据先写入内存，后写入磁盘。
 
 - **Shuffle Read**：
-  - Shuffle 的前半部分输出叫做 Shuffle Read，类似MapReduce Shuffle中Reduce Shuffle；
+  - Shuffle 的后半部分输出叫做 Shuffle Read，类似MapReduce Shuffle中Reduce Shuffle；
   - 拉取ShuffleWrite写入磁盘的数据，进行处理。
 
 > Spark Shuffle 实现方式，经历一个漫长发展过程，直到Spark 2.0以后，Shuffle 实现机制才稳定成熟。
