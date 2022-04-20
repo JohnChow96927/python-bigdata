@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day01/day01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day01/day01.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day02/day02.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day02/day02.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day03/day03.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day03/day03.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day04/day04.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day04/day04.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day05/day05.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day05/day05.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,12 +52,12 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "public",
-    "jdk.selected.JAVA_MODULE": "1.8",
+    "jdk.selected.JAVA_MODULE": "liberica-1.8",
     "last_opened_file_path": "/Users/zhengyuan.zhou/Heima/就业班笔记及代码/ITheima_python_bigdata/BasicJavaSE",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Color Scheme Font"
+    "settings.editor.selected.configurable": "Errors"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -171,7 +177,7 @@
       <workItem from="1650287131795" duration="11206000" />
       <workItem from="1650335886761" duration="652000" />
       <workItem from="1650375262172" duration="9338000" />
-      <workItem from="1650426536800" duration="190000" />
+      <workItem from="1650426536800" duration="1508000" />
     </task>
     <servers />
   </component>
