@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -10,6 +11,9 @@
       <change beforePath="$PROJECT_DIR$/day04/day04.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day04/day04.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/day05/day05.iml" beforeDir="false" afterPath="$PROJECT_DIR$/day05/day05.iml" afterDir="false" />
     </list>
+=======
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -176,8 +180,12 @@
       <workItem from="1650284479945" duration="234000" />
       <workItem from="1650287131795" duration="11206000" />
       <workItem from="1650335886761" duration="652000" />
+<<<<<<< Updated upstream
       <workItem from="1650375262172" duration="9338000" />
       <workItem from="1650426536800" duration="1508000" />
+=======
+      <workItem from="1650375262172" duration="9430000" />
+>>>>>>> Stashed changes
     </task>
     <servers />
   </component>
