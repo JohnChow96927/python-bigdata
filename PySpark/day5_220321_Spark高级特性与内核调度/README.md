@@ -518,13 +518,13 @@ Spark Application应用提交集群(如Hadoop YARN集群)执行Job整体流程:
 
       从调用Action算子RDD开始, 采用回溯法, 依据RDD以来关系, 构建DAG图
 
-   2. 将DAG图划分为Stage阶段, 依据RDD之间依赖为宽依赖时划为
+   2. 将DAG图划分为Stage阶段, 依据RDD之间依赖为宽依赖时划分
 
       从调用Action算子RDD开始, 采用回溯法, 当相邻2个RDD之间以来为宽依赖时, 划分后面为Stage, 以此类推
 
    3. 对Job中所有Stage, 从前向后开始调度: 确定Stage中Task任务数目, 打包为TaskSet, 发送到Executor执行
 
-      每个Stage中Task数目 = Stage中最后一个RDD的分区数目
+      每个Stage中Task数目 = **Stage中最后一个RDD的分区数目**
 
       Stage执行时从前向后, 彼此之间有依赖关系, 后面的Stage处理的数据依赖于前面Stage输出的数据
 
