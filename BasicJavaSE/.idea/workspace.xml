@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day05/data/我和霜霜的上海生活.avi" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo5.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day05/src/c_io_stream/Demo6.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day05/data/1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/day05/data/1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day05/data/2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/day05/data/2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day05/data/3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/day05/data/3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day05/data/冀老师的上海生活.avi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,11 +47,11 @@
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "public",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day05",
+    "last_opened_file_path": "/Users/zhengyuan.zhou/Heima/就业班笔记及代码/ITheima_python_bigdata/BasicJavaSE",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "File.Encoding"
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Color Scheme Font"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -181,6 +171,7 @@
       <workItem from="1650287131795" duration="11206000" />
       <workItem from="1650335886761" duration="652000" />
       <workItem from="1650375262172" duration="9338000" />
+      <workItem from="1650426536800" duration="190000" />
     </task>
     <servers />
   </component>
@@ -236,7 +227,8 @@
       </breakpoints>
     </breakpoint-manager>
   </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/BasicJavaSE$goPy.coverage" NAME="goPy Coverage Results" MODIFIED="1650375409426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
