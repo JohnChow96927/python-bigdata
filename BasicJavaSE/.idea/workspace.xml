@@ -2,42 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day06/data/1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/3.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/4.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/5.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/copy.mp4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo02.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo03.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo04.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo05.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo06.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo07.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo08.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/ClientDemo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/Demo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/ServiceDemo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo03_upload/ClientDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo03_upload/ServerDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo01.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo02.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo03.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo04.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/download/传智.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/lib/junit-4.7.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/lib/mysql-connector-java-5.1.37-bin.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo5.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo6.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo7.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo8.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/b_socket/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/b_socket/Demo1_Client.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/b_socket/Demo1_Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,13 +72,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo8">
-    <configuration name="Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_io.Demo4" />
+  <component name="RunManager" selected="Application.Demo1_Client">
+    <configuration name="Demo1_Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_socket.Demo1_Client" />
       <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="a_io.*" />
+          <option name="PATTERN" value="b_socket.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -119,12 +86,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_io.Demo5" />
+    <configuration name="Demo1_Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_socket.Demo1_Server" />
       <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="a_io.*" />
+          <option name="PATTERN" value="b_socket.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -173,11 +140,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Demo1_Client" />
+        <item itemvalue="Application.Demo1_Server" />
         <item itemvalue="Application.Demo8" />
         <item itemvalue="Application.Demo7" />
         <item itemvalue="Application.Demo6" />
-        <item itemvalue="Application.Demo5" />
-        <item itemvalue="Application.Demo4" />
       </list>
     </recent_temporary>
   </component>
@@ -209,7 +176,7 @@
       <workItem from="1650426536800" duration="1508000" />
       <workItem from="1650428814627" duration="665000" />
       <workItem from="1650464596699" duration="427000" />
-      <workItem from="1650508551785" duration="3747000" />
+      <workItem from="1650508551785" duration="4671000" />
     </task>
     <servers />
   </component>
