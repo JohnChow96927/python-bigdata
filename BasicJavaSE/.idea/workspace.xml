@@ -1,26 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day06/data/1copy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/a.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/b.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/homework.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/homeworkcopy.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/data/names.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo1_1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo1_2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo1_3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo1_4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo5_Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/e_homework/Demo5_Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/data/2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/day06/data/2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/src/d_jdbc/Demo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/day06/src/d_jdbc/Demo1_1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/src/e_homework/Homework.java" beforeDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -202,7 +183,7 @@
       <workItem from="1650508551785" duration="5229000" />
       <workItem from="1650514194577" duration="39000" />
       <workItem from="1650534497797" duration="39000" />
-      <workItem from="1650546975135" duration="8126000" />
+      <workItem from="1650546975135" duration="8149000" />
     </task>
     <servers />
   </component>
