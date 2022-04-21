@@ -1,0 +1,2 @@
+a,c,d,e,g,h
+a,g,b,o,q,r
