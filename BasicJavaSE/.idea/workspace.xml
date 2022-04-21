@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day06/src/c_upload/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day06/src/c_upload/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/demo02_socket/ClientDemo01.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/demo02_socket/Demo01.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/day06/demo02_socket/ServiceDemo01.java" beforeDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -179,6 +173,7 @@
       <workItem from="1650428814627" duration="665000" />
       <workItem from="1650464596699" duration="427000" />
       <workItem from="1650508551785" duration="5229000" />
+      <workItem from="1650514194577" duration="39000" />
     </task>
     <servers />
   </component>
