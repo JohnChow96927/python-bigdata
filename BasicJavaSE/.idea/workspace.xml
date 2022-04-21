@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/day06/src/d_jdbc/Demo2.java" beforeDir="false" afterPath="$PROJECT_DIR$/day06/src/d_jdbc/Demo2.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,7 +47,7 @@
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "public",
     "jdk.selected.JAVA_MODULE": "1.8.0_321",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day06/src/utils",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day06/lib",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
@@ -59,8 +61,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\src\utils" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\lib" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\src\utils" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day05" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04\src\f_homework" />
@@ -73,20 +75,7 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.Demo1">
-    <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_upload.Client" />
-      <module name="day06" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="c_upload.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Demo4">
     <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo3" />
       <module name="day06" />
@@ -100,12 +89,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_upload.Server" />
+    <configuration name="Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo4" />
       <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_upload.*" />
+          <option name="PATTERN" value="d_jdbc.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -128,7 +117,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo1.show1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="Demo2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="day06" />
       <extension name="coverage">
         <pattern>
@@ -137,8 +126,23 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="d_jdbc" />
-      <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo1" />
-      <option name="METHOD_NAME" value="show1" />
+      <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo2" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo2.method2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day06" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="d_jdbc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="d_jdbc" />
+      <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo2" />
+      <option name="METHOD_NAME" value="method2" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -146,11 +150,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.Demo1" />
-        <item itemvalue="JUnit.Demo1.show1" />
+        <item itemvalue="Application.Demo4" />
         <item itemvalue="Application.Demo3" />
-        <item itemvalue="Application.Client" />
-        <item itemvalue="Application.Server" />
+        <item itemvalue="JUnit.Demo2.method2" />
+        <item itemvalue="JUnit.Demo2" />
+        <item itemvalue="JUnit.Demo1" />
       </list>
     </recent_temporary>
   </component>

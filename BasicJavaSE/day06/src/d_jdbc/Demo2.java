@@ -14,7 +14,7 @@ public class Demo2 {
     @Test
     public void method1() throws Exception {
         //1. 注册驱动.
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         //2. 获取连接对象.
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
         //3. 根据连接对象, 获取可以执行SQL语句的对象.
@@ -37,7 +37,7 @@ public class Demo2 {
     @Test
     public void method2() throws Exception {
         //1. 注册驱动.
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         //2. 获取连接对象.
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
         //3. 根据连接对象, 获取可以执行SQL语句的对象.
@@ -59,7 +59,7 @@ public class Demo2 {
     @Test
     public void method3() throws Exception {
         //1. 注册驱动.
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         //2. 获取连接对象.
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
         //3. 根据连接对象, 获取可以执行SQL语句的对象.
@@ -81,14 +81,14 @@ public class Demo2 {
     @Test
     public void method4() throws Exception {
         //1. 注册驱动.
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         //2. 获取连接对象.
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
         //3. 根据连接对象, 获取可以执行SQL语句的对象.
         Statement stat = conn.createStatement();
 
         //4. 执行SQL语句, 获取结果集.
-        String sql = "delete from users where uid=4;";
+        String sql = "delete from users where uid=3;";
         int num = stat.executeUpdate(sql);
 
         //5. 操作结果集.

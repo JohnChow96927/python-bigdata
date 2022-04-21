@@ -13,7 +13,7 @@ public class JDBCUtils {
     }
 
     //2. 定义成员变量, 记录数据库连接的一些值.
-    private static final String driverName = "com.mysql.jdbc.Driver";
+    private static final String driverName = "com.mysql.cj.jdbc.Driver";
     private static final String url = "jdbc:mysql:///day06";
     private static final String username = "root";
     private static final String pasword = "123456";

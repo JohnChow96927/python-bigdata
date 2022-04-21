@@ -1,6 +1,6 @@
 package d_jdbc;
 
-import com.mysql.jdbc.Driver;
+import com.mysql.cj.jdbc.Driver;
 import org.junit.Test;
 
 
