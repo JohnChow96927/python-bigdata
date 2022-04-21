@@ -1,15 +1,14 @@
-package cn.itcast.demo04_JDBC;
+package d_jdbc;
 
-import com.itheima.utils.JDBCUtils;
+import utils.JDBCUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Scanner;
 
 /*
-    案例: 解决SQL注入攻击问题, 采用PreparedStatement的预编译功能.
+    解决SQL注入攻击问题, 采用PreparedStatement的预编译功能
 
     Connection接口的成员方法:
         public PreparedStatement prepareStatement(String sql);
@@ -23,7 +22,7 @@ import java.util.Scanner;
     细节:
         如果用PreparedStatement接口的预编译功能, 因为已经预先传入SQL语句了, 所以执行SQL语句的时候, 不需要额外传入SQL语句.
  */
-public class Demo04 {
+public class Demo4 {
     public static void main(String[] args) throws Exception {
         //1. 提示用户录入账号和密码, 并接收.
         Scanner sc = new Scanner(System.in);
@@ -39,6 +38,7 @@ public class Demo04 {
 
         //2.3. 根据连接对象, 获取可以执行SQL语句的对象.
         String sql = "select * from users where username = ? and password=? ;";
+        assert conn != null;
         PreparedStatement ps = conn.prepareStatement(sql);
 
         //给占位符填充值.
@@ -54,5 +54,6 @@ public class Demo04 {
 
         //2.6. 释放资源.
         JDBCUtils.release(null, ps, conn);
+
     }
 }

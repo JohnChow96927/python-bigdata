@@ -7,5 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="junit-4.7" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-5.1.37-bin" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-5.1.37-bin (2)" level="project" />
   </component>
 </module>

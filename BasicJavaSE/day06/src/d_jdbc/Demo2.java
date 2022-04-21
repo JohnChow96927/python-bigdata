@@ -1,17 +1,15 @@
-package cn.itcast.demo04_JDBC;
+package d_jdbc;
+
+// jdbc的增删改查操作
 
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-/*
-    案例: 演示JDBC的CURD操作.
- */
-public class Demo02 {
+public class Demo2 {
     //JDBC的 查
     @Test
     public void method1() throws Exception {
@@ -68,7 +66,7 @@ public class Demo02 {
         Statement stat = conn.createStatement();
 
         //4. 执行SQL语句, 获取结果集.
-        String sql = "update users set username='杨飞' where uid=4;";
+        String sql = "update users set username='杨飞' where uid=3;";
         int num = stat.executeUpdate(sql);
 
         //5. 操作结果集.
@@ -100,4 +98,5 @@ public class Demo02 {
         stat.close();
         conn.close();
     }
+
 }

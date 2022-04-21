@@ -1,7 +1,8 @@
-package cn.itcast.demo04_JDBC;
+package d_jdbc;
 
 import com.mysql.jdbc.Driver;
 import org.junit.Test;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,60 +34,56 @@ import java.sql.Statement;
             6. 释放资源.
 
  */
-public class Demo01 {
-    //JDBC入门案例, 最粗糙版.
+public class Demo1 {
     @Test
     public void show1() throws Exception {
-        //1. 注册驱动.
+        // 1. 注册驱动
         DriverManager.registerDriver(new Driver());
-        //2. 获取连接对象.
+        // 2. 获取连接对象
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/day06", "root", "123456");
-        //3. 根据连接对象, 获取可以执行SQL语句的对象.
+        // 3. 根据连接对象, 获取可以执行SQL语句的对象
         Statement stat = conn.createStatement();
-        //4. 执行SQL语句, 获取结果集.
+        // 4. 执行SQL语句, 获取结果集
         String sql = "select * from users;";
         ResultSet rs = stat.executeQuery(sql);
-        //5. 操作结果集.
-        while (rs.next()) {      //类似于Iterator#hasNext()
+        // 5. 操作结果集
+        while (rs.next()) {
             int uid = rs.getInt("uid");
             String username = rs.getString("username");
             String password = rs.getString("password");
             System.out.println(uid + ", " + username + ", " + password);
         }
-        //6. 释放资源.
+
+        // 6. 释放资源
         rs.close();
         stat.close();
         conn.close();
     }
 
-    //DriverManager类
     @Test
     public void show2() throws Exception {
-        //1. 注册驱动.
-        //DriverManager.registerDriver(new Driver());
-
-        //实际开发注册驱动方式: 反射.
+        // 1. 反射注册驱动Driver
         Class.forName("com.mysql.jdbc.Driver");
 
-        //2. 获取连接对象.
-        //Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/day06", "root", "123456");
+        // 2. 获取连接对象
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
 
-
-        //3. 根据连接对象, 获取可以执行SQL语句的对象.
+        // 3. 获取连接对象, 获取可以执行SQL语句的对象
         Statement stat = conn.createStatement();
-        //4. 执行SQL语句, 获取结果集.
+
+        // 4. 执行SQL语句, 获取结果集
         String sql = "select * from users;";
-        ResultSet rs = stat.executeQuery(sql);
+        ResultSet resultSet = stat.executeQuery(sql);
+
         //5. 操作结果集.
-        while (rs.next()) {      //类似于Iterator#hasNext()
-            int uid = rs.getInt("uid");
-            String username = rs.getString("username");
-            String password = rs.getString("password");
+        while (resultSet.next()) {      //类似于Iterator#hasNext()
+            int uid = resultSet.getInt("uid");
+            String username = resultSet.getString("username");
+            String password = resultSet.getString("password");
             System.out.println(uid + ", " + username + ", " + password);
         }
         //6. 释放资源.
-        rs.close();
+        resultSet.close();
         stat.close();
         conn.close();
     }
@@ -114,9 +111,9 @@ public class Demo01 {
             String password = rs.getString(3);*/
 
             //方式2: 根据列的名字获取.
-           int uid = rs.getInt("uid");
-           String username = rs.getString("username");
-           String password = rs.getString("password");
+            int uid = rs.getInt("uid");
+            String username = rs.getString("username");
+            String password = rs.getString("password");
             System.out.println(uid + ", " + username + ", " + password);
         }
 
@@ -126,7 +123,4 @@ public class Demo01 {
         stat.close();
         conn.close();
     }
-
-
-    //JDBC入门案例: 最终版.
 }
