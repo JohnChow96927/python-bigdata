@@ -63,7 +63,7 @@ public class Demo1_1 {
     @Test
     public void show2() throws Exception {
         // 1. 反射注册驱动Driver
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
         // 2. 获取连接对象
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
@@ -91,7 +91,7 @@ public class Demo1_1 {
     @Test
     public void show3() throws Exception {
         //1. 注册驱动.
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
         //2. 获取连接对象.
         Connection conn = DriverManager.getConnection("jdbc:mysql:///day06", "root", "123456");
