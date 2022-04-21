@@ -1,7 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day06/data/1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/data/2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/data/3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/data/4.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/data/5.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/data/copy.mp4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo03.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo04.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo05.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo06.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo07.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Demo08.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo01_io/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/ClientDemo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo02_socket/ServiceDemo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo03_upload/ClientDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo03_upload/ServerDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo01.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo02.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo03.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/demo04_JDBC/Demo04.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/download/传智.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/lib/junit-4.7.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/lib/mysql-connector-java-5.1.37-bin.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo5.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo6.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo7.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Demo8.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day06/src/a_io/Student.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,32 +70,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Downloaded.Files.Path.Enabled": "false",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "extract.method.default.visibility": "public",
-    "jdk.selected.JAVA_MODULE": "liberica-1.8",
-    "last_opened_file_path": "/Users/zhengyuan.zhou/Heima/就业班笔记及代码/ITheima_python_bigdata/BasicJavaSE",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8.0_321&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day06&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day05" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04\src\f_homework" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day04" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day03" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
@@ -68,39 +105,13 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo1">
-    <configuration name="Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_keyword.Demo1" />
-      <module name="day01" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="a_keyword.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_io_stream.Demo3" />
-      <module name="day05" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="c_io_stream.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Demo8">
     <configuration name="Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_io_stream.Demo4" />
-      <module name="day05" />
+      <option name="MAIN_CLASS_NAME" value="a_io.Demo4" />
+      <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_io_stream.*" />
+          <option name="PATTERN" value="a_io.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -109,11 +120,11 @@
       </method>
     </configuration>
     <configuration name="Demo5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_io_stream.Demo5" />
-      <module name="day05" />
+      <option name="MAIN_CLASS_NAME" value="a_io.Demo5" />
+      <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_io_stream.*" />
+          <option name="PATTERN" value="a_io.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -122,11 +133,37 @@
       </method>
     </configuration>
     <configuration name="Demo6" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_io_stream.Demo6" />
-      <module name="day05" />
+      <option name="MAIN_CLASS_NAME" value="a_io.Demo6" />
+      <module name="day06" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_io_stream.*" />
+          <option name="PATTERN" value="a_io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo7" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_io.Demo7" />
+      <module name="day06" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Demo8" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="a_io.Demo8" />
+      <module name="day06" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="a_io.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -136,11 +173,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Demo1" />
+        <item itemvalue="Application.Demo8" />
+        <item itemvalue="Application.Demo7" />
         <item itemvalue="Application.Demo6" />
         <item itemvalue="Application.Demo5" />
         <item itemvalue="Application.Demo4" />
-        <item itemvalue="Application.Demo3" />
       </list>
     </recent_temporary>
   </component>
@@ -171,6 +208,8 @@
       <workItem from="1650375262172" duration="9338000" />
       <workItem from="1650426536800" duration="1508000" />
       <workItem from="1650428814627" duration="665000" />
+      <workItem from="1650464596699" duration="427000" />
+      <workItem from="1650508551785" duration="3747000" />
     </task>
     <servers />
   </component>
