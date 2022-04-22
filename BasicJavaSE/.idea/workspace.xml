@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day07/lib/c3p0-0.9.1.2.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/lib/junit-4.7.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/lib/mysql-connector-java-8.0.25.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/a_jdbc/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/b_dbcp/Demo_C3P0.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/c3p0-config.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/c_transaction/Demo1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo1_Thread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo2_Runnable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo_Intro.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/MyRunnable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/MyThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/utils/C3P0Utils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day07/src/utils/JDBCUtils.java" afterDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -201,7 +186,7 @@
       <workItem from="1650534497797" duration="39000" />
       <workItem from="1650546975135" duration="8149000" />
       <workItem from="1650588355683" duration="930000" />
-      <workItem from="1650591253955" duration="14585000" />
+      <workItem from="1650591253955" duration="15348000" />
     </task>
     <servers />
   </component>
