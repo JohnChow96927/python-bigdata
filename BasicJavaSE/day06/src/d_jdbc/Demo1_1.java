@@ -48,9 +48,12 @@ public class Demo1_1 {
         ResultSet rs = stat.executeQuery(sql);
         // 5. 操作结果集
         while (rs.next()) {
-            int uid = rs.getInt("uid");
-            String username = rs.getString("username");
-            String password = rs.getString("password");
+            int uid = rs.getInt(1);
+            String username = rs.getString(2);
+            String password = rs.getString(3);
+//            int uid = rs.getInt("uid");
+//            String username = rs.getString("username");
+//            String password = rs.getString("password");
             System.out.println(uid + ", " + username + ", " + password);
         }
 
