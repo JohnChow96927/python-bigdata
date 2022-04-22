@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day07/lib/c3p0-0.9.1.2.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/lib/junit-4.7.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/lib/mysql-connector-java-8.0.25.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/a_jdbc/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/b_dbcp/Demo_C3P0.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/c3p0-config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/c_transaction/Demo1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo1_Thread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo2_Runnable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/Demo_Intro.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/MyRunnable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/d_thread/MyThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/utils/C3P0Utils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day07/src/utils/JDBCUtils.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,37 +48,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8.0_321&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day06/data&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "public",
+    "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
+    "jdk.selected.JAVA_MODULE": "1.8.0_321",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day07/lib",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07\lib" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07\src" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\data" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\src" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\lib" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\src\utils" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
@@ -72,14 +88,17 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="utils" />
+    </key>
   </component>
-  <component name="RunManager" selected="JUnit.Demo1_1.show1">
-    <configuration name="Demo6" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="a_io.Demo6" />
-      <module name="day06" />
+  <component name="RunManager" selected="Application.Demo2_Runnable">
+    <configuration name="Demo1_Thread" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_thread.Demo1_Thread" />
+      <module name="day07" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="a_io.*" />
+          <option name="PATTERN" value="d_thread.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -87,12 +106,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="e_homework.Demo3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_homework.Demo3" />
-      <module name="day06" />
+    <configuration name="Demo2_Runnable" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_thread.Demo2_Runnable" />
+      <module name="day07" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_homework.*" />
+          <option name="PATTERN" value="d_thread.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -100,12 +119,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="e_homework.Demo4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_homework.Demo4" />
-      <module name="day06" />
+    <configuration name="Demo_C3P0" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="b_dbcp.Demo_C3P0" />
+      <module name="day07" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_homework.*" />
+          <option name="PATTERN" value="b_dbcp.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -113,45 +132,39 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo1_1.show1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day06" />
+    <configuration name="Demo_Intro" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="d_thread.Demo_Intro" />
+      <module name="day07" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_jdbc.*" />
+          <option name="PATTERN" value="d_thread.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="d_jdbc" />
-      <option name="MAIN_CLASS_NAME" value="d_jdbc.Demo1_1" />
-      <option name="METHOD_NAME" value="show1" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Homework.question6" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="day06" />
+    <configuration name="c_transaction.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="c_transaction.Demo1" />
+      <module name="day07" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="e_homework.*" />
+          <option name="PATTERN" value="c_transaction.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="e_homework" />
-      <option name="MAIN_CLASS_NAME" value="e_homework.Homework" />
-      <option name="METHOD_NAME" value="question6" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.Demo1_1.show1" />
-        <item itemvalue="Application.e_homework.Demo4" />
-        <item itemvalue="Application.Demo6" />
-        <item itemvalue="Application.e_homework.Demo3" />
-        <item itemvalue="JUnit.Homework.question6" />
+        <item itemvalue="Application.Demo2_Runnable" />
+        <item itemvalue="Application.Demo1_Thread" />
+        <item itemvalue="Application.Demo_Intro" />
+        <item itemvalue="Application.c_transaction.Demo1" />
+        <item itemvalue="Application.Demo_C3P0" />
       </list>
     </recent_temporary>
   </component>
@@ -188,7 +201,7 @@
       <workItem from="1650534497797" duration="39000" />
       <workItem from="1650546975135" duration="8149000" />
       <workItem from="1650588355683" duration="930000" />
-      <workItem from="1650591253955" duration="5511000" />
+      <workItem from="1650591253955" duration="14585000" />
     </task>
     <servers />
   </component>

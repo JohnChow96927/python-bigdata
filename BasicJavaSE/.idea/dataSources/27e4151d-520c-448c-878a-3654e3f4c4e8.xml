@@ -2,7 +2,7 @@
 <dataSource name="MySQL@localhost">
   <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.38">
     <root id="1">
-      <DefaultCasing>mixed/mixed</DefaultCasing>
+      <DefaultCasing>lower/lower</DefaultCasing>
       <DefaultEngine>InnoDB</DefaultEngine>
       <DefaultTmpEngine>InnoDB</DefaultTmpEngine>
       <Grants>|root||root|localhost|ALTER|G
@@ -941,399 +941,132 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <collation id="273" parent="1" name="utf8mb4_zh_0900_as_cs">
       <Charset>utf8mb4</Charset>
     </collation>
-    <schema id="274" parent="1" name="bigdata_db">
+    <schema id="274" parent="1" name="day06">
       <Current>1</Current>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <schema id="275" parent="1" name="day07">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <schema id="276" parent="1" name="information_schema">
       <CollationName>utf8_general_ci</CollationName>
     </schema>
-    <schema id="275" parent="1" name="day06">
+    <schema id="277" parent="1" name="mysql">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="276" parent="1" name="db_emp">
+    <schema id="278" parent="1" name="performance_schema">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="277" parent="1" name="db_student">
+    <schema id="279" parent="1" name="practice_50_questions">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="278" parent="1" name="information_schema">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <schema id="279" parent="1" name="interview">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <schema id="280" parent="1" name="itcast_demo">
+    <schema id="280" parent="1" name="sys">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="281" parent="1" name="john_practice">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="282" parent="1" name="kettle_demo">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="283" parent="1" name="mysql">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="284" parent="1" name="northwind">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <schema id="285" parent="1" name="performance_schema">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="286" parent="1" name="practice_50_questions">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="287" parent="1" name="python">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <schema id="288" parent="1" name="rfm_db">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="289" parent="1" name="sql_exam">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <schema id="290" parent="1" name="sys">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="291" parent="1" name="winfunc">
-      <CollationName>utf8_general_ci</CollationName>
-    </schema>
-    <user id="292" parent="1" name="mysql.infoschema">
+    <user id="281" parent="1" name="mysql.infoschema">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="293" parent="1" name="mysql.session">
+    <user id="282" parent="1" name="mysql.session">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="294" parent="1" name="mysql.sys">
+    <user id="283" parent="1" name="mysql.sys">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="295" parent="1" name="root">
+    <user id="284" parent="1" name="root">
       <Host>localhost</Host>
-      <Plugin>caching_sha2_password</Plugin>
     </user>
-    <table id="296" parent="274" name="areas">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="297" parent="274" name="category">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="298" parent="274" name="hero">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="299" parent="274" name="kongfu">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="300" parent="274" name="person">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="301" parent="274" name="person1">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="302" parent="274" name="person2">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="303" parent="274" name="person3">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="304" parent="274" name="person4">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="305" parent="274" name="product">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="306" parent="274" name="products">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8_general_ci</CollationName>
-    </table>
-    <table id="307" parent="275" name="users">
+    <table id="285" parent="274" name="account">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
-    <column id="308" parent="296" name="id">
-      <DataType>varchar(30)|0s</DataType>
+    <table id="286" parent="274" name="users">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="287" parent="275" name="account">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="288" parent="275" name="users">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <column id="289" parent="285" name="id">
+      <AutoIncrement>3</AutoIncrement>
+      <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="309" parent="296" name="title">
-      <DataType>varchar(30)|0s</DataType>
+    <column id="290" parent="285" name="name">
+      <DataType>varchar(100)|0s</DataType>
       <Position>2</Position>
     </column>
-    <column id="310" parent="296" name="pid">
-      <DataType>varchar(30)|0s</DataType>
+    <column id="291" parent="285" name="money">
+      <DataType>int|0s</DataType>
       <Position>3</Position>
     </column>
-    <key id="311" parent="296" name="PRIMARY">
+    <key id="292" parent="285" name="PRIMARY">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
     </key>
-    <column id="312" parent="297" name="cid">
-      <DataType>varchar(32)|0s</DataType>
+    <column id="293" parent="286" name="uid">
+      <AutoIncrement>7</AutoIncrement>
+      <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="313" parent="297" name="cname">
+    <column id="294" parent="286" name="username">
       <DataType>varchar(100)|0s</DataType>
       <Position>2</Position>
     </column>
-    <key id="314" parent="297" name="PRIMARY">
-      <ColNames>cid</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="315" parent="298" name="hid">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="316" parent="298" name="hname">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="317" parent="298" name="kongfu_id">
-      <DataType>int|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <key id="318" parent="298" name="PRIMARY">
-      <ColNames>hid</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="319" parent="299" name="kid">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="320" parent="299" name="kname">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <key id="321" parent="299" name="PRIMARY">
-      <ColNames>kid</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="322" parent="300" name="id">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="323" parent="300" name="last_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="324" parent="300" name="first_name">
+    <column id="295" parent="286" name="password">
       <DataType>varchar(100)|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="325" parent="300" name="address">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="326" parent="300" name="city">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <key id="327" parent="300" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="328" parent="301" name="id">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="329" parent="301" name="last_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="330" parent="301" name="first_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="331" parent="301" name="address">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="332" parent="301" name="city">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <column id="333" parent="302" name="id">
-      <AutoIncrement>10</AutoIncrement>
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="334" parent="302" name="last_name">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="335" parent="302" name="first_name">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="336" parent="302" name="address">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="337" parent="302" name="city">
-      <DataType>varchar(255)|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <key id="338" parent="302" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="339" parent="303" name="id">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="340" parent="303" name="last_name">
-      <DataType>varchar(100)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-    </column>
-    <column id="341" parent="303" name="first_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="342" parent="303" name="address">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="343" parent="303" name="city">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <column id="344" parent="304" name="id">
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="345" parent="304" name="last_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="346" parent="304" name="first_name">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="347" parent="304" name="address">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="348" parent="304" name="city">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <index id="349" parent="304" name="last_name">
-      <ColNames>last_name</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <key id="350" parent="304" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <key id="351" parent="304" name="last_name">
-      <ColNames>last_name</ColNames>
-      <UnderlyingIndexName>last_name</UnderlyingIndexName>
-    </key>
-    <column id="352" parent="305" name="pid">
-      <AutoIncrement>13</AutoIncrement>
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="353" parent="305" name="pname">
-      <DataType>varchar(20)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="354" parent="305" name="price">
-      <DataType>double|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="355" parent="305" name="category_id">
-      <DataType>varchar(32)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <key id="356" parent="305" name="PRIMARY">
-      <ColNames>pid</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="357" parent="306" name="pid">
-      <DataType>varchar(32)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="358" parent="306" name="pname">
-      <DataType>varchar(40)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="359" parent="306" name="price">
-      <DataType>double|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="360" parent="306" name="category_id">
-      <DataType>varchar(32)|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <index id="361" parent="306" name="category_id">
-      <ColNames>category_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="362" parent="306" name="PRIMARY">
-      <ColNames>pid</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-    </key>
-    <column id="363" parent="307" name="uid">
-      <AutoIncrement>1</AutoIncrement>
-      <DataType>int|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="364" parent="307" name="username">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="365" parent="307" name="password">
-      <DataType>varchar(100)|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <index id="366" parent="307" name="users_uid_uindex">
+    <index id="296" parent="286" name="users_uid_uindex">
       <ColNames>uid</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="367" parent="307" name="PRIMARY">
+    <key id="297" parent="286" name="PRIMARY">
       <ColNames>uid</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
     </key>
-    <key id="368" parent="307" name="users_uid_uindex">
+    <key id="298" parent="286" name="users_uid_uindex">
       <ColNames>uid</ColNames>
       <UnderlyingIndexName>users_uid_uindex</UnderlyingIndexName>
     </key>
+    <column id="299" parent="287" name="id">
+      <DataType>int|0s</DataType>
+      <Position>1</Position>
+    </column>
+    <column id="300" parent="287" name="name">
+      <DataType>varchar(100)|0s</DataType>
+      <Position>2</Position>
+    </column>
+    <column id="301" parent="287" name="money">
+      <DataType>int|0s</DataType>
+      <Position>3</Position>
+    </column>
+    <column id="302" parent="288" name="uid">
+      <DataType>int|0s</DataType>
+      <Position>1</Position>
+    </column>
+    <column id="303" parent="288" name="username">
+      <DataType>varchar(100)|0s</DataType>
+      <Position>2</Position>
+    </column>
+    <column id="304" parent="288" name="password">
+      <DataType>varchar(100)|0s</DataType>
+      <Position>3</Position>
+    </column>
   </database-model>
 </dataSource>
