@@ -6,13 +6,14 @@
         <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
-      <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <secret-storage>master_key</secret-storage>
       <user-name>root</user-name>
       <schema-mapping>
         <introspection-scope>
           <node kind="schema">
             <name qname="@" />
+            <name qname="day06" />
             <name qname="day07" />
           </node>
         </introspection-scope>
