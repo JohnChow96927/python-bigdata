@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day08/src/a_thread_01/PrimeThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/a_thread_01/ThreadDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/b_thread_02/PrimeThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/b_thread_02/ThreadDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/c_thread_03/PrimeThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/c_thread_03/ThreadDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/d_thread_04/PrimeRunnable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/d_thread_04/ThreadDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/e_thread_05/ThreadDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/e_thread_05/ThreadDemo2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/f_synchronized_code_block/TicketsDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/f_synchronized_code_block/TicketsRunnable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/g_synchronized_method/TicketsDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/g_synchronized_method/TicketsRunnable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/h_die_lock/DieLockDemo.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,13 +93,13 @@
       <recent name="utils" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Demo2_Runnable">
-    <configuration name="Demo1_Thread" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_thread.Demo1_Thread" />
-      <module name="day07" />
+  <component name="RunManager" selected="Application.DieLockDemo">
+    <configuration name="DieLockDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="h_die_lock.DieLockDemo" />
+      <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_thread.*" />
+          <option name="PATTERN" value="h_die_lock.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -91,12 +107,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo2_Runnable" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_thread.Demo2_Runnable" />
-      <module name="day07" />
+    <configuration name="ThreadDemo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_thread_05.ThreadDemo2" />
+      <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_thread.*" />
+          <option name="PATTERN" value="f_synchronized_code_block.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -104,12 +120,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo_C3P0" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="b_dbcp.Demo_C3P0" />
-      <module name="day07" />
+    <configuration name="TicketsDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="f_synchronized_code_block.TicketsDemo" />
+      <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="b_dbcp.*" />
+          <option name="PATTERN" value="f_synchronized_code_block.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -117,12 +133,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Demo_Intro" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="d_thread.Demo_Intro" />
-      <module name="day07" />
+    <configuration name="e_thread_05.ThreadDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="e_thread_05.ThreadDemo" />
+      <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="d_thread.*" />
+          <option name="PATTERN" value="f_synchronized_code_block.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -130,12 +146,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="c_transaction.Demo1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="c_transaction.Demo1" />
-      <module name="day07" />
+    <configuration name="g_synchronized_method.TicketsDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="g_synchronized_method.TicketsDemo" />
+      <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="c_transaction.*" />
+          <option name="PATTERN" value="g_synchronized_method.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -145,11 +161,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Demo2_Runnable" />
-        <item itemvalue="Application.Demo1_Thread" />
-        <item itemvalue="Application.Demo_Intro" />
-        <item itemvalue="Application.c_transaction.Demo1" />
-        <item itemvalue="Application.Demo_C3P0" />
+        <item itemvalue="Application.DieLockDemo" />
+        <item itemvalue="Application.g_synchronized_method.TicketsDemo" />
+        <item itemvalue="Application.f_synchronized_code_block.TicketsDemo" />
+        <item itemvalue="Application.e_thread_05.ThreadDemo2" />
+        <item itemvalue="Application.e_thread_05.ThreadDemo" />
       </list>
     </recent_temporary>
   </component>
@@ -188,6 +204,7 @@
       <workItem from="1650588355683" duration="930000" />
       <workItem from="1650591253955" duration="15348000" />
       <workItem from="1650638004024" duration="1612000" />
+      <workItem from="1650851058286" duration="7579000" />
     </task>
     <servers />
   </component>
