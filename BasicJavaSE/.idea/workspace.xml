@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day08/src/a_thread_01/PrimeThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/a_thread_01/ThreadDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/b_thread_02/PrimeThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/b_thread_02/ThreadDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/c_thread_03/PrimeThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/c_thread_03/ThreadDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/d_thread_04/PrimeRunnable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/d_thread_04/ThreadDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/e_thread_05/ThreadDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/e_thread_05/ThreadDemo2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/f_synchronized_code_block/TicketsDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/f_synchronized_code_block/TicketsRunnable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/g_synchronized_method/TicketsDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/g_synchronized_method/TicketsRunnable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/h_die_lock/DieLockDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/CoPilot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadPriority.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadPriorityDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadSleep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadSleepDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day09/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day09/src/main/java/chow/pkage/dao/ProductDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day09/src/test/java/chow/pkage/dao/ProductDaoTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +25,7 @@
         <option value="Python Script" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="JUnit4 Test Class" />
       </list>
     </option>
   </component>
@@ -37,6 +34,14 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../apache-maven-3.3.9" />
+        <option name="userSettingsFile" value="C:\apache-maven-3.3.9\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -49,31 +54,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
-    &quot;import_schema_mapping&quot;: &quot;&lt;schema-mapping&gt;&lt;databases&gt;&lt;list&gt;&lt;schema-mapping-item&gt;&lt;source-data-source-id&gt;27e4151d-520c-448c-878a-3654e3f4c4e8&lt;/source-data-source-id&gt;&lt;source-path&gt;schema/\&quot;day06\&quot;&lt;/source-path&gt;&lt;target-data-source-id&gt;27e4151d-520c-448c-878a-3654e3f4c4e8&lt;/target-data-source-id&gt;&lt;target-path&gt;schema/\&quot;day07\&quot;&lt;/target-path&gt;&lt;/schema-mapping-item&gt;&lt;/list&gt;&lt;/databases&gt;&lt;/schema-mapping&gt;&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8.0_321&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day07/lib&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit4",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4": "",
+    "extract.method.default.visibility": "public",
+    "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
+    "jdk.selected.JAVA_MODULE": "1.8.0_321",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day07/lib",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07\lib" />
@@ -89,11 +96,17 @@
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day02\src" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="chow.pkage" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="utils" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.DieLockDemo">
+  <component name="RunManager" selected="JUnit.ProductDaoTest">
     <configuration name="DieLockDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="h_die_lock.DieLockDemo" />
       <module name="day08" />
@@ -107,12 +120,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ThreadDemo2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_thread_05.ThreadDemo2" />
+    <configuration name="ThreadPriorityDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="i_thread_advance.ThreadPriorityDemo" />
       <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="f_synchronized_code_block.*" />
+          <option name="PATTERN" value="i_thread_advance.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -120,12 +133,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TicketsDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="f_synchronized_code_block.TicketsDemo" />
+    <configuration name="ThreadSleepDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="i_thread_advance.ThreadSleepDemo" />
       <module name="day08" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="f_synchronized_code_block.*" />
+          <option name="PATTERN" value="i_thread_advance.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -133,39 +146,44 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="e_thread_05.ThreadDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="e_thread_05.ThreadDemo" />
-      <module name="day08" />
+    <configuration name="ProductDaoTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day09" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="f_synchronized_code_block.*" />
+          <option name="PATTERN" value="chow.pkage.dao.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="chow.pkage.dao" />
+      <option name="MAIN_CLASS_NAME" value="chow.pkage.dao.ProductDaoTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="g_synchronized_method.TicketsDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="g_synchronized_method.TicketsDemo" />
-      <module name="day08" />
+    <configuration name="ProductDaoTest.add" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day09" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="g_synchronized_method.*" />
+          <option name="PATTERN" value="chow.pkage.dao.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="chow.pkage.dao" />
+      <option name="MAIN_CLASS_NAME" value="chow.pkage.dao.ProductDaoTest" />
+      <option name="METHOD_NAME" value="add" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ProductDaoTest" />
+        <item itemvalue="JUnit.ProductDaoTest.add" />
+        <item itemvalue="Application.ThreadSleepDemo" />
+        <item itemvalue="Application.ThreadPriorityDemo" />
         <item itemvalue="Application.DieLockDemo" />
-        <item itemvalue="Application.g_synchronized_method.TicketsDemo" />
-        <item itemvalue="Application.f_synchronized_code_block.TicketsDemo" />
-        <item itemvalue="Application.e_thread_05.ThreadDemo2" />
-        <item itemvalue="Application.e_thread_05.ThreadDemo" />
       </list>
     </recent_temporary>
   </component>
@@ -204,7 +222,11 @@
       <workItem from="1650588355683" duration="930000" />
       <workItem from="1650591253955" duration="15348000" />
       <workItem from="1650638004024" duration="1612000" />
-      <workItem from="1650851058286" duration="7579000" />
+      <workItem from="1650851058286" duration="9905000" />
+      <workItem from="1650883359953" duration="183000" />
+      <workItem from="1650883557508" duration="1431000" />
+      <workItem from="1650893608048" duration="714000" />
+      <workItem from="1650941035128" duration="3441000" />
     </task>
     <servers />
   </component>
