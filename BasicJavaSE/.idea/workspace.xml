@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day08/src/CoPilot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadPriority.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadPriorityDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadSleep.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day08/src/i_thread_advance/ThreadSleepDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day09/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day09/src/main/java/chow/pkage/dao/ProductDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day09/src/test/java/chow/pkage/dao/ProductDaoTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -226,7 +217,7 @@
       <workItem from="1650883359953" duration="183000" />
       <workItem from="1650883557508" duration="1431000" />
       <workItem from="1650893608048" duration="714000" />
-      <workItem from="1650941035128" duration="3441000" />
+      <workItem from="1650941035128" duration="3779000" />
     </task>
     <servers />
   </component>
