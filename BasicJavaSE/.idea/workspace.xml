@@ -5,6 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/day09/src/main/java/chow/pkage/pojo/Person.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day09/src/test/java/chow/pkage/pojo/PersonTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day10_hdfs/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day10_hdfs/src/main/java/com/johnchow/HdfsDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maven_parent/day10_login/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maven_parent/day10_shop/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maven_parent/day10_user/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maven_parent/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/day09/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/day09/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -67,7 +75,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "MavenSettings"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
@@ -94,26 +102,19 @@
       <recent name="" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
+      <recent name="chow.pkage.pojo" />
       <recent name="chow.pkage" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="utils" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ProductDaoTest">
-    <configuration name="DieLockDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="h_die_lock.DieLockDemo" />
-      <module name="day08" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="h_die_lock.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean" />
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.PersonTest">
     <configuration name="ThreadPriorityDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="i_thread_advance.ThreadPriorityDemo" />
       <module name="day08" />
@@ -136,6 +137,21 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PersonTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="day09" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="chow.pkage.pojo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="chow.pkage.pojo" />
+      <option name="MAIN_CLASS_NAME" value="chow.pkage.pojo.PersonTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -173,11 +189,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.PersonTest" />
         <item itemvalue="JUnit.ProductDaoTest" />
         <item itemvalue="JUnit.ProductDaoTest.add" />
         <item itemvalue="Application.ThreadSleepDemo" />
         <item itemvalue="Application.ThreadPriorityDemo" />
-        <item itemvalue="Application.DieLockDemo" />
       </list>
     </recent_temporary>
   </component>
@@ -220,7 +236,7 @@
       <workItem from="1650883359953" duration="183000" />
       <workItem from="1650883557508" duration="1431000" />
       <workItem from="1650893608048" duration="714000" />
-      <workItem from="1650941035128" duration="4114000" />
+      <workItem from="1650941035128" duration="8266000" />
     </task>
     <servers />
   </component>
