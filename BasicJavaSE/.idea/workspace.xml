@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/day09/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/day09/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,6 +63,7 @@
     "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
     "jdk.selected.JAVA_MODULE": "1.8.0_321",
     "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day07/lib",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
@@ -217,7 +220,7 @@
       <workItem from="1650883359953" duration="183000" />
       <workItem from="1650883557508" duration="1431000" />
       <workItem from="1650893608048" duration="714000" />
-      <workItem from="1650941035128" duration="3779000" />
+      <workItem from="1650941035128" duration="4114000" />
     </task>
     <servers />
   </component>
