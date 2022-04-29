@@ -452,3 +452,65 @@ Redis默认有16个仓库，编号从0至15，配置文件可以设置仓库数�
 
 ## III. Jedis客户端
 
+### 1. Jedis连接
+
+> Jedis的官网地址： https://github.com/redis/jedis，先来个快速入门：
+
+1. 引入依赖
+
+   ```xml
+   <dependency>
+   	<groupId>redis.clients</groupId>
+   	<artifactId>jedis</artifactId>
+   	<version>3.2.0</version>
+   </dependency>
+   ```
+
+2. 建立连接
+
+   ```Java
+   // 建立连接
+   Jedis jedis = new Jedis("192.168.88.100", 6379);
+   // 选择库
+   jedis.select(0);
+   ```
+
+3. 关闭连接，释放资源
+
+   ```Java
+   // 释放资源
+   if (jedis != null) {
+     jedis.close();
+   }
+   ```
+
+> 案例演示：构建Jedis连接，发送命令ping，查看是否连接。
+
+```Java
+package cn.itcast.redis;
+
+import redis.clients.jedis.Jedis;
+
+/**
+ * 获取Jedis连接，直接传递参数获取
+ */
+public class JedisConnTest {
+
+	public static void main(String[] args) {
+		// TODO: step1. 创建Jedis连接对象，创建参数
+		Jedis jedis = new Jedis("node1.itcast.cn", 6379);
+		// 选择数据库
+		jedis.select(0) ;
+
+		// TODO: step2. 测试连接
+		String pingValue = jedis.ping();
+		System.out.println(pingValue);
+
+		// TODO: step3. 关闭连接
+		jedis.close();
+	}
+}
+```
+
+![1651145131475](assets/1651145131475.png)
+
