@@ -650,3 +650,174 @@ public class JedisApiTest {
 }
 ```
 
+## 附录部分：注意事项及扩展内容
+
+### [附录1]-Jedis Maven依赖
+
+- 创建Maven Project
+
+------
+
+![1651146606444](assets/1651146606444.png)
+
+- 设置Maven 仓库
+
+------
+
+![1651146720628](assets/1651146720628.png)
+
+- 创建Maven Module模块
+
+------
+
+![1651146775402](assets/1651146775402.png)
+
+- 添加pom中依赖
+
+------
+
+```xml
+<dependencies>
+        <!-- Jedis 依赖 -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <!-- JUnit 4 依赖 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+### [附录2]-Jedis：其他类型操作
+
+- **目标**：Jedis中实现其他类型操作
+
+- **实施**
+
+  - **Hash类型**
+
+    ```
+    hset/hmset/hget/hgetall/hdel/hlen/hexists
+    ```
+
+    ```java
+       	@Test
+    	public void testHash(){
+            //hset/hmset/hget/hgetall/hdel/hlen/hexists
+            jedis.hset("m1","name","zhangsan");
+            System.out.println(jedis.hget("m1","name"));
+            
+            Map<String,String> maps = new HashMap<>();
+            maps.put("age","18");
+            maps.put("phone","110");
+            jedis.hmset("m1",maps);
+            
+            List<String> hmget = jedis.hmget("m1", "name", "age");
+            System.out.println(hmget);
+            
+            System.out.println("=");
+            Map<String, String> m1 = jedis.hgetAll("m1");
+            for(Map.Entry map : m1.entrySet()){
+                System.out.println(map.getKey()+"\t"+map.getValue());
+            }
+            
+            System.out.println("=");
+            System.out.println(jedis.hlen("m1"));
+            jedis.hdel("m1","name");
+            System.out.println(jedis.hlen("m1"));
+            System.out.println(jedis.hexists("m1","name"));
+            System.out.println(jedis.hexists("m1","age"));
+        }
+    ```
+
+  - **List类型**
+
+    ```
+    lpush/rpush/lrange/llen/lpop/rpop
+    ```
+
+    ```java
+        @Test
+        public void testList(){
+            //lpush/rpush/lrange/llen/lpop/rpop
+            jedis.lpush("list1","1","2","3");
+            System.out.println(jedis.lrange("list1",0,-1));
+            jedis.rpush("list1","4","5","6");
+            System.out.println(jedis.lrange("list1",0,-1));
+            System.out.println(jedis.llen("list1"));
+            jedis.lpop("list1");
+            jedis.rpop("list1");
+            System.out.println(jedis.lrange("list1",0,-1));
+        }
+    ```
+
+  - **Set类型**
+
+    ```
+    sadd/smembers/sismember/scard/srem
+    ```
+
+    ```java
+        @Test
+        public void testSet(){
+            //sadd/smembers/sismember/scard/srem
+            jedis.sadd("set1","1","2","3","1","2","3","4","5","6");
+            
+            System.out.println("长度："+jedis.scard("set1"));
+            System.out.println("内容："+jedis.smembers("set1"));
+            
+            System.out.println(jedis.sismember("set1","1"));
+            System.out.println(jedis.sismember("set1","7"));
+            
+            jedis.srem("set1","2");
+            System.out.println("内容："+jedis.smembers("set1"));
+    
+        }
+    ```
+
+  - **Zset类型**
+
+    ```
+    zadd/zrange/zrevrange/zcard/zrem
+    ```
+
+    ```java
+        @Test
+        public void testZset(){
+            //zadd/zrange/zrevrange/zcard/zrem
+            jedis.zadd("zset1",20.9,"yuwen");
+            jedis.zadd("zset1",10.5,"yinyu");
+            jedis.zadd("zset1",70.9,"shuxue");
+            jedis.zadd("zset1",99.9,"shengwu");
+            
+            Set<String> zset1 = jedis.zrange("zset1", 0, -1);
+            System.out.println(zset1);
+            
+            System.out.println(jedis.zrevrange("zset1",0,-1));
+            System.out.println(jedis.zcard("zset1"));
+            
+            jedis.zrem("zset1","yuwen");
+          System.out.println(jedis.zrangeWithScores("zset1",0,-1));
+        }
+    ```
+
