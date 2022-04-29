@@ -516,11 +516,7 @@ public class JedisConnTest {
 
 ### 2. String操作
 
-
-
 > 以Redis中String类型为例，使用Jedis API操作数据，进行set设置和get获取值。
-
-
 
 - Jedis API实现功能
 
@@ -529,8 +525,6 @@ public class JedisConnTest {
 ```bash
 set/get/exists/expire/ttl
 ```
-
-
 
 - 演示代码：
 
@@ -820,4 +814,3 @@ public class JedisApiTest {
           System.out.println(jedis.zrangeWithScores("zset1",0,-1));
         }
     ```
-

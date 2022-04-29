@@ -5,11 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day11_jdbc/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day11_jdbc/src/main/java/com/johnchow/JdbcDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day11_mr/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../排序算法/蒙特卡罗.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day10_hdfs/target/classes/com/johnchow/HdfsDemo.class" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../nosql-project/redis-client/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../nosql-project/redis-client/src/main/java/com/johnchow/redis/JedisApiTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../nosql-project/redis-client/src/main/java/com/johnchow/redis/JedisConnTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../nosql-project/redis-client/src/main/java/com/johnchow/redis/JedisPoolTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../nosql-project/redis-client/target/classes/com/johnchow/redis/JedisConnTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NoSQL/1. Redis内存数据库/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/1. Redis内存数据库/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,34 +53,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Downloaded.Files.Path.Enabled": "false",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit4",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4": "",
-    "extract.method.default.visibility": "public",
-    "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
-    "jdk.selected.JAVA_MODULE": "1.8.0_321",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day10",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit4&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4&quot;: &quot;&quot;,
+    &quot;extract.method.default.visibility&quot;: &quot;public&quot;,
+    &quot;import_schema_mapping&quot;: &quot;&lt;schema-mapping&gt;&lt;databases&gt;&lt;list&gt;&lt;schema-mapping-item&gt;&lt;source-data-source-id&gt;27e4151d-520c-448c-878a-3654e3f4c4e8&lt;/source-data-source-id&gt;&lt;source-path&gt;schema/\&quot;day06\&quot;&lt;/source-path&gt;&lt;target-data-source-id&gt;27e4151d-520c-448c-878a-3654e3f4c4e8&lt;/target-data-source-id&gt;&lt;target-path&gt;schema/\&quot;day07\&quot;&lt;/target-path&gt;&lt;/schema-mapping-item&gt;&lt;/list&gt;&lt;/databases&gt;&lt;/schema-mapping&gt;&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8.0_321&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day10&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day10" />
@@ -236,6 +237,9 @@
       <workItem from="1650941035128" duration="8266000" />
       <workItem from="1650970935412" duration="108000" />
       <workItem from="1651138349315" duration="3083000" />
+      <workItem from="1651223525997" duration="901000" />
+      <workItem from="1651225739722" duration="113000" />
+      <workItem from="1651225870880" duration="598000" />
     </task>
     <servers />
   </component>
