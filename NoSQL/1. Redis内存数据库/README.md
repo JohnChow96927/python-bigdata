@@ -514,3 +514,81 @@ public class JedisConnTest {
 
 ![1651145131475](assets/1651145131475.png)
 
+### 2. String操作
+
+
+
+> 以Redis中String类型为例，使用Jedis API操作数据，进行set设置和get获取值。
+
+
+
+- Jedis API实现功能
+
+------
+
+```bash
+set/get/exists/expire/ttl
+```
+
+
+
+- 演示代码：
+
+```java
+package cn.itcast.redis;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import redis.clients.jedis.Jedis;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Jedis API操作Jedis数据库中数据
+ */
+public class JedisApiTest {
+
+	// 定义Jedis变量
+	private Jedis jedis = null ;
+
+	@Before
+	public void open(){
+		// TODO: step1. 获取连接
+		jedis = new Jedis("node1.itcast.cn", 6379);
+	}
+
+	@Test
+	public void testString() throws Exception{
+		// TODO: step2. 使用连接，操作Redis数据，数据类型为String
+		/*
+			set/get/exists/expire/ttl
+		 */
+		jedis.set("name","Jack");
+		System.out.println(jedis.get("name"));
+
+		System.out.println(jedis.exists("name"));
+		System.out.println(jedis.exists("age"));
+
+		jedis.expire("name",10);
+		Long ttl = -1L ;
+		while(-2 != ttl){
+			ttl = jedis.ttl("name") ;
+			System.out.println("ttl = " + ttl);
+
+			TimeUnit.SECONDS.sleep(1);
+		}
+	}
+
+
+	@After
+	public void close(){
+		// TODO: step3. 关闭连接
+		if(null != jedis) jedis.close();
+	}
+}
+```
+
+### 3. JedisPool连接池
+
+> 
