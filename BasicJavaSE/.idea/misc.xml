@@ -5,6 +5,11 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/day09/pom.xml" />
+        <option value="$PROJECT_DIR$/day10/pom.xml" />
+        <option value="$PROJECT_DIR$/day11/pom.xml" />
+        <option value="$PROJECT_DIR$/day11_mr/pom.xml" />
+        <option value="$PROJECT_DIR$/day11_jdbc/pom.xml" />
+        <option value="$PROJECT_DIR$/day10_hdfs/pom.xml" />
       </list>
     </option>
   </component>

@@ -5,15 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/day09/src/main/java/chow/pkage/pojo/Person.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day09/src/test/java/chow/pkage/pojo/PersonTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day10_hdfs/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/day10_hdfs/src/main/java/com/johnchow/HdfsDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/maven_parent/day10_login/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/maven_parent/day10_shop/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/maven_parent/day10_user/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/maven_parent/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/day09/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/day09/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day11_jdbc/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day11_jdbc/src/main/java/com/johnchow/JdbcDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/day11_mr/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../排序算法/蒙特卡罗.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/day10_hdfs/target/classes/com/johnchow/HdfsDemo.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +36,7 @@
     <option name="generalSettings">
       <MavenGeneralSettings>
         <option name="mavenHome" value="$PROJECT_DIR$/../../../apache-maven-3.3.9" />
+        <option name="useMavenConfig" value="true" />
         <option name="userSettingsFile" value="C:\apache-maven-3.3.9\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
@@ -70,7 +67,7 @@
     "extract.method.default.visibility": "public",
     "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
     "jdk.selected.JAVA_MODULE": "1.8.0_321",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day07/lib",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE/day10",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
@@ -85,11 +82,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day10" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day11\src\main\java" />
+      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day10\src\main\java" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07\lib" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07\src" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day07" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\data" />
-      <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day06\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\BasicJavaSE\day01\src\e_homework" />
@@ -237,11 +234,18 @@
       <workItem from="1650883557508" duration="1431000" />
       <workItem from="1650893608048" duration="714000" />
       <workItem from="1650941035128" duration="8266000" />
+      <workItem from="1650970935412" duration="108000" />
+      <workItem from="1651138349315" duration="3083000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:com.google.protobuf:protobuf-java" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.hadoop:hadoop-common" />
+    <option featureType="dependencySupport" implementationName="java:com.google.inject:guice" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
