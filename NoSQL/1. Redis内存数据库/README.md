@@ -591,4 +591,62 @@ public class JedisApiTest {
 
 ### 3. JedisPool连接池
 
-> 
+> Jedis本身是线程不安全的，并且频繁的创建和销毁连接会有性能损耗，因此推荐大家使用JedisPool连接池代替`Jedis`的直连方式。
+
+![1651148024096](assets/1651148024096.png)
+
+```java
+package cn.itcast.redis;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import redis.clients.jedis.Jedis;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Jedis API操作Jedis数据库中数据
+ */
+public class JedisApiTest {
+
+	// 定义Jedis变量
+	private Jedis jedis = null ;
+
+	@Before
+	public void open(){
+		// TODO: step1. 获取连接
+		jedis = new Jedis("node1.itcast.cn", 6379);
+	}
+
+	@Test
+	public void testString() throws Exception{
+		// TODO: step2. 使用连接，操作Redis数据，数据类型为String
+		/*
+			set/get/exists/expire/ttl
+		 */
+		jedis.set("name","Jack");
+		System.out.println(jedis.get("name"));
+
+		System.out.println(jedis.exists("name"));
+		System.out.println(jedis.exists("age"));
+
+		jedis.expire("name",10);
+		Long ttl = -1L ;
+		while(-2 != ttl){
+			ttl = jedis.ttl("name") ;
+			System.out.println("ttl = " + ttl);
+
+			TimeUnit.SECONDS.sleep(1);
+		}
+	}
+
+
+	@After
+	public void close(){
+		// TODO: step3. 关闭连接
+		if(null != jedis) jedis.close();
+	}
+}
+```
+
