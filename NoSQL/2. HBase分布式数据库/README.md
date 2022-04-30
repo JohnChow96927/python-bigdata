@@ -585,7 +585,25 @@ BigTable 思想：
 
 ### 3. HBase集群架构
 
+> HBase 数据库中表Table数据，划分为很多部分进行单独存储管理，每部分数据称为：**Region分区/区域**。
 
+![1651272496985](assets/1651272496985.png)
+
+> HBase 数据库，与HDFS一样，都是分布式主从架构，主节点：**HMaster**，从节点**HRegionServer**。
+
+![image-20210523131109291](assets/image-20210523131109291.png)
+
+- **HMaster**：主节点，管理节点
+  - 负责==元数据==的管理，比如namespace、table、列簇，region等
+  - 负责所有从节点的管理
+- **HRegionServer**：从节点，存储节点
+  - 负责管理每张表的分区数据：Region
+  - 对外提供Region的读写请求
+
+- **Zookeeper**：分布式协作框架
+  - HBase 分布式集群，依赖Zookeeper框架进行协作服务，存储元数据，实现高可用HA
+- **HDFS**：分布式文件系统
+  - HBase表中数据存储到HDFS文件中，文件称为HFile文件
 
 ### 4. HBase安装部署
 
