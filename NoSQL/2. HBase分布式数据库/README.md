@@ -61,11 +61,49 @@ fork采用的是copy-on-write技术：
 
 ### 2. AOF持久化
 
+> AOF全称为Append Only File（追加文件）。Redis处理的**每一个写命令都会记录在AOF文件**，可以看做是**命令日志文件**。
+
+![image-20210725151543640](assets/image-20210725151543640.png)
+
+AOF默认是关闭的，需要修改redis.conf配置文件来开启AOF：
+
+```properties
+# 是否开启AOF功能，默认是no
+appendonly yes
+# AOF文件的名称
+appendfilename "appendonly.aof"
+```
+
+AOF的命令记录的频率也可以通过redis.conf文件来配：
+
+```properties
+# 表示每执行一次写命令，立即记录到AOF文件
+appendfsync always 
+# 写命令执行完先放入AOF缓冲区，然后表示每隔1秒将缓冲区数据写到AOF文件，是默认方案
+appendfsync everysec 
+# 写命令执行完先放入AOF缓冲区，由操作系统决定何时将缓冲区内容写回磁盘
+appendfsync no
+```
+
+三种策略对比：
+
+![image-20210725151654046](assets/image-20210725151654046.png)
+
+> RDB和AOF各有自己的优缺点，如果对数据安全性要求较高，在实际开发中往往会**结合**两者来使用。
+
+![image-20210725151940515](assets/image-20210725151940515.png)
+
 ### 3. Redis集群: 主从复制
+
+
 
 ### 4. Redis哨兵集群
 
+
+
 ### 5. Redis分片集群
+
+
 
 ## II. HBase快速入门
 
