@@ -244,7 +244,28 @@ get name
 
 ### 4. Redis哨兵集群
 
+> Redis提供了**哨兵（Sentinel）机制**来实现**主从集群的自动故障恢复**，哨兵的结构和作用如下：
 
+- **监控 **：Sentinel 会不断检查您的master和slave是否按预期工作
+- **自动故障恢复**：如果master故障，Sentinel会将一个slave提升为master
+- **通知**：Sentinel充当Redis客户端的服务发现来源，当集群发生故障转移时，将最新信息推送给Redis的客户端
+
+![image-20210725154528072](assets/image-20210725154528072.png)
+
+> Sentinel基于心跳机制监测服务状态，每隔1秒向集群的每个实例发送ping命令：
+
+- ==主观下线==：如果某sentinel节点发现某实例未在规定时间响应，则认为该实例**主观下线**。
+- ==客观下线==：若超过指定数量（quorum）的sentinel都认为该实例主观下线，则该实例**客观下线**。quorum值最好超过Sentinel实例数量的一半。
+
+![image-20210725154632354](assets/image-20210725154632354.png)
+
+> 当选中了其中一个slave为新的master后（例如slave1），故障的转移的步骤如下：
+
+- sentinel给备选的slave1节点发送slaveof no one命令，让该节点成为master
+- sentinel给所有其它slave发送slaveof 192.168.150.101 7002 命令，让这些slave成为新master的从节点，开始从新的master上同步数据。
+- 最后，sentinel将故障节点标记为slave，当故障节点恢复后会自动成为新的master的slave节点
+
+![image-20210725154816841](assets/image-20210725154816841.png)
 
 ### 5. Redis分片集群
 
