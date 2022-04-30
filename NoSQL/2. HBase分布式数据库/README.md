@@ -369,9 +369,7 @@ cluster-node-timeout 15000
 [root@node1 ~]# cp -r redis-7001 redis-7002
 ```
 
-![1651236848871](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/fake_nosql-%E7%AC%AC2%E5%A4%A9-%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/nosql-%E7%AC%AC2%E5%A4%A9-%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/assets/1651236848871.png)
-
-
+![1651236848871](assets/1651236848871.png)
 
 - 4、修改配置文件
 
@@ -495,13 +493,95 @@ public class JedisClusterTest {
 
 ## II. HBase快速入门
 
+> **HBase**是一种分布式、可扩展、支持海量数据存储的NoSQL数据库。
+
 ### 1. HBase功能概述
 
+> Google发布大数据三大论文：GFS文件系统、MapReduce分布式计算框架及BigTable大表。
 
+![1651268534057](assets/1651268534057.png)
+
+> `BigTable`【Chubby】：**HBase+Zookeeper**
+
+![1651268730543](assets/1651268730543.png)
+
+```
+BigTable 思想：
+	https://blog.csdn.net/qq_41773806/article/details/111875509
+理解BigTable：
+	https://zhuanlan.zhihu.com/p/150266419
+```
+
+> HBase是一个基于Hadoop的==分布式==的==可扩展的==大数据存储的**基于内存**==列存储==NoSQL数据库
+
+官网：https://hbase.apache.org/
+
+![1651268904382](assets/1651268904382.png)
+
+> HBase 数据库，提供**分布式的实时realtime、随机的Random、大数据持久性存储（读写数据）**，主要应用于海量数据存储和实时查询业务场景中。
+
+```ini
+# 1. 电商：
+	交易订单，例如双11交易订单
+# 2. 交通：
+	实时交通卡口流量数据
+	滴滴打车订单数据
+		https://blog.csdn.net/imgxr/article/details/80130075
+# 3. 金融：
+	交易信息
+# 4. 太平保险险单数据
+	直接存储HBase表
+```
 
 ### 2. HBase数据模型
 
+> MySQL 数据库数据存储对象：**database**和**table**
 
+![1651270138845](assets/1651270138845.png)
+
+> HBase 数据库数据存储对象：**namespace**和**table**
+
+- **HBase中的表是分布式的**，表的数据划分不同部分，分布式存储在不同的机器上；
+- **所有的表在访问时，都必须加上namespace名称，除非表在default默认namespace下**，可以不加namespace名称来进行访问；
+  - 有一个namespace叫做`itcast`，有一张表叫做`heima`，访问：**itcast:heima**
+  - HBase中自带一个namespace叫做`default`，有一张表叫`t1`，访问：**default:t1** 或者 **t1**
+  - 在HBase数据库中，默认存在2个namespace：`default`（类似Hive中defualt数据库，默认创建表都是在此namespace中，）和`hbase`（属于HBase数据库元数据表所属命名空间）
+
+![1651270642516](assets/1651270642516.png)
+
+> HBase中表Table结构：列簇**ColumnFamily**和列**Column/Qualifier**组成，每一列数据类型为字节数组`byte[]`。
+
+- **行键/主键RowKey**：
+  - 类似于MySQL主键（Primary Key）概念，唯一标记一行、作为主键索引
+  - 每张HBase表都有行健，行健这一列是HBase表创建以后自带的
+- **列族ColumnFamily**：
+  - 对除了Rowkey以外的==列进行分组，将列划分不同的组中==
+  - 任何一张HBase的表，都==至少要有一个列族==，**除了Rowkey以外的任何一列，都必须属于某个列族**，Rowkey不属于任何一个列族
+  - 分组：**将拥有相似属性的列放入同一个列族**【要读一起读，要写一起写】
+    - 设计原因：划分列族，读取数据时可以**加快读取的性能**
+    - 如果没有列族，没有划分班级教室：找一个人，告诉你这个人就在这栋楼
+    - 如果有了列族，划分了教室：找一个人，告诉你这个人在这栋楼某个房间
+- **列Qualifier/Column**：
+  - 与MySQL中的列是一样
+  - **除了rowkey以外的任何一列都必须属于某个列族**，==**引用列的时候，必须加上列族的名称**==
+  - 如果有一个列族：`info`，如果info列族中有两列：`name，age`，访问：`info:name，info:age` 
+
+![image-20210523125756429](assets/image-20210523125756429.png)
+
+> **多版本VERSIONS**：HBase可以允许某一行的某一列存储多个版本的值的，默认每一列都只能存储1个版本。如果某个列有多个版本值，默认情况下查询，根据时间戳返回最新版本的值。
+
+![image-20210523130100567](assets/image-20210523130100567.png)
+
+> MySQL数据库与HBase数据库对比：
+
+|   概念   |        MySQL        |                  Hbase                  |
+| :------: | :-----------------: | :-------------------------------------: |
+|  数据库  |      DataBase       |                NameSpace                |
+|  数据表  |        Table        |            Table【分布式的】            |
+| 数据分区 |          -          |         Region，表中数据一部分          |
+|  数据行  | 数据【主键+其他列】 |          Rowkey+数据【其他列】          |
+|   列族   |          -          |              ColumnFamily               |
+|  数据列  |  普通列与对应的值   | 列【timestamp】与对应的值【支持多版本】 |
 
 ### 3. HBase集群架构
 
