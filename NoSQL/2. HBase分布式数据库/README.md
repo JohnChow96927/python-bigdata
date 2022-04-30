@@ -95,7 +95,152 @@ appendfsync no
 
 ### 3. Redis集群: 主从复制
 
+> 单节点Redis的**并发能力**是有上限的，要进一步提高Redis的并发能力，就需要搭建**主从集群Master-Slaves**，实现**读写分离ReadWrite**。
 
+![image-20210725152037611](assets/image-20210725152037611.png)
+
+> 三个节点：一个主节点Master、两个从节点Slave
+
+|              IP               | PORT |  角色  |
+| :---------------------------: | :--: | :----: |
+| 192.168.88.100/nod1.itcast.cn | 6379 | master |
+| 192.168.88.101/nod2.itcast.cn | 6379 | slave  |
+| 192.168.88.102/nod3.itcast.cn | 6379 | slave  |
+
+- 1、解压和重命名
+
+```ini
+[root@node1 ~]# cd /root
+[root@node1 ~]# rz
+	redis-5.0.8-bin.tar.gz
+
+[root@node1 ~]# tar -zxf redis-5.0.8-bin.tar.gz 
+[root@node1 ~]# mv redis redis-replica
+```
+
+- 2、修改配置文件：`redis.conf`
+
+```ini
+# 69 行
+bind 0.0.0.0
+
+# 263 行
+dir /root/redis-replica/datas
+
+# 493 行
+replica-announce-ip 192.168.88.100
+```
+
+- 3、发送其他机器
+
+```ini
+scp -r /root/redis-replica root@node2.itcast.cn:/root
+
+scp -r /root/redis-replica root@node2.itcast.cn:/root
+```
+
+- 4、node2和node3修改配置
+
+node2配置文件修改
+
+```ini
+vim /root/redis-replica/redis.conf
+
+# 493 行
+replica-announce-ip 192.168.88.101
+```
+
+node3配置文件修改
+
+```ini
+vim /root/redis-replica/redis.conf
+
+# 493 行
+replica-announce-ip 192.168.88.102
+```
+
+- 5、启动服务
+
+每台机器单独启动服务
+
+```ini
+ /root/redis-replica/bin/redis-server /root/redis-replica/redis.conf
+```
+
+> 三个实例没有任何关系，配置主从：`replicaof` 或`slaveof`（5.0以前）命令，有临时和永久两种模式：
+
+- 修改配置文件（永久生效）
+
+  - 在`redis.conf`中添加一行配置：```slaveof <masterip> <masterport>```
+
+- 使用`redis-cli`客户端连接到redis服务，执行slaveof命令（重启后失效）：
+
+  ```ini
+  slaveof <masterip> <masterport>
+  ```
+
+- 6、添加node2为从节点
+
+```ini
+[root@node2 ~]# redis-replica/bin/redis-cli 
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> 
+127.0.0.1:6379> slaveof 192.168.88.100 6379
+OK
+127.0.0.1:6379> 
+```
+
+node1上Redis服务日志：Master
+
+![1651212740650](assets/1651212740650.png)
+
+node2上Redis服务日志：Slave
+
+![1651212785373](assets/1651212785373.png)
+
+- 7、添加node3为从节点
+
+```ini
+[root@node3 ~]# redis-replica/bin/redis-cli 
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> 
+127.0.0.1:6379> SLAVEOF 192.168.88.100 6379
+OK
+127.0.0.1:6379> 
+```
+
+node1上Redis服务日志：Master
+
+![1651212822994](assets/1651212822994.png)
+
+node3上Redis服务日志：Slave
+
+![1651212841467](assets/1651212841467.png)
+
+- 8、node1主节点查看集群状态
+
+```ini
+[root@node1 ~]# cd redis-replica/
+[root@node1 redis-replica]# 
+[root@node1 redis-replica]# bin/redis-cli   
+127.0.0.1:6379> 
+127.0.0.1:6379> INFO replication
+```
+
+![1651213169854](assets/1651213169854.png)
+
+- 9、测试
+
+```ini
+# node1 主节点设置值
+set name zhangsan
+# node2和node3 从节点获取值
+get name
+```
+
+![1651212952726](assets/1651212952726.png)
 
 ### 4. Redis哨兵集群
 
