@@ -797,3 +797,89 @@ OK
 
 ![1651190805915](assets/1651190805915.png)
 
+### [附录2]-Redis【AOF 持久化】测试
+
+- 上传解压redis目录
+
+```ini
+[root@node1 ~]# cd /root
+[root@node1 ~]# rz
+	redis-5.0.8-bin.tar.gz
+
+[root@node1 ~]# tar -zxf redis-5.0.8-bin.tar.gz
+[root@node1 ~]# mv redis redis-aof
+```
+
+- 修改配置文件：`redis.conf`
+
+```ini
+# 218、219、220行 注释掉
+	#save 900 1
+	#save 300 10
+	#save 60 10000
+
+# 264行
+dir /root/redis-aof/datas/
+
+# 699行
+appendonly yes
+# 703行
+appendfilename "appendonly.aof"
+# 729行
+appendfsync everysec
+```
+
+- 启动服务
+
+```ini
+/root/redis-aof/bin/redis-server /root/redis-aof/redis.conf  
+```
+
+- 运行客户端
+
+```ini
+[root@node1 ~]# cd /root/redis-aof
+[root@node1 redis-aof]# bin/redis-cli 
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> 
+127.0.0.1:6379> set k1 v1
+OK
+127.0.0.1:6379> set k2 v2
+OK
+127.0.0.1:6379> KEYS *
+1) "k2"
+2) "k1"
+127.0.0.1:6379> exit
+```
+
+- 查看aof文件
+
+```ini
+[root@node1 ~]# cd /root/redis-aof
+[root@node1 redis-aof]# cd datas/
+[root@node1 datas]# ll
+total 4
+-rw-r--r-- 1 root root 81 Apr 29 08:15 appendonly.aof
+[root@node1 datas]# more appendonly.aof 
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+set
+$2
+k1
+$2
+v1
+*3
+$3
+set
+$2
+k2
+$2
+v2
+```
+
