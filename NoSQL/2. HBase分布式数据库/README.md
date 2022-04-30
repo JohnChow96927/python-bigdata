@@ -726,7 +726,7 @@ export PATH=:$PATH:$HBASE_HOME/bin
 ```
 
 ```ini
- source /etc/profile
+source /etc/profile
 ```
 
 - 5、启动服务
@@ -737,11 +737,11 @@ export PATH=:$PATH:$HBASE_HOME/bin
 
 # 启动HDFS集群服务，node1上执行
 hadoop-daemon.sh start namenode
-hadoop-daemons.sh start datanode 
+hadoop-daemons.sh start datanode
 
 # 启动HBase集群服务，node1上执行
 hbase-daemon.sh start master
-hbase-daemons.sh start regionserver   
+hbase-daemons.sh start regionserver
 ```
 
 - 6、访问HBase WEB UI
