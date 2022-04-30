@@ -751,3 +751,49 @@ hbase-daemons.sh start regionserver
 ![image-20210524120224751](assets/image-20210524120224751.png)
 
 ## 附录部分: 注意事项及扩展内容
+
+### [附录1]-Redis【RDB 持久化】测试
+
+- 上传解压redis目录
+
+```ini
+[root@node1 ~]# cd /root
+[root@node1 ~]# rz
+	redis-5.0.8-bin.tar.gz
+
+[root@node1 ~]# tar -zxf redis-5.0.8-bin.tar.gz
+[root@node1 ~]# mv redis redis-rdb
+```
+
+- 修改配置文件：`redis.conf`
+
+```ini
+# 221行
+save 5 1
+
+# 254行
+dbfilename dump.rdb
+
+# 264行
+dir /root/redis-rdb/datas/
+```
+
+- 启动服务
+
+```ini
+[root@node1 ~]# /root/redis-rdb/bin/redis-server /root/redis-rdb/redis.conf  
+```
+
+- 运行客户端
+
+```ini
+[root@node1 ~]# cd redis-rdb/
+[root@node1 redis-rdb]# bin/redis-cli 
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> set k1 va
+OK
+```
+
+![1651190805915](assets/1651190805915.png)
+
