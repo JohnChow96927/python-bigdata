@@ -269,7 +269,229 @@ get name
 
 ### 5. Redis分片集群
 
+> 主从复制和哨兵集群可以解决**高可用、高并发读**的问题，但是依然有两个问题没有解决：
 
+- **海量数据存储**问题
+- **高并发写**的问题
+
+[使用分片集群可以解决上述问题：https://redis.io/docs/manual/scaling/]()
+
+#### 架构设计
+
+> 分片集群Sharded Cluster：[将多个Redis小集群从逻辑上合并为一个大集群，每个小集群管理部分数据，并且主从架构。]()
+
+![image-20210725155747294](assets/image-20210725155747294.png)
+
+> 分片集群特征：
+
+- 集群中有多个master，每个master保存不同数据
+- 每个master都可以有多个slave节点
+- master之间通过ping监测彼此健康状态
+- 客户端请求可以访问集群任意节点，最终都会被转发到正确节点
+
+> 每个小集群分摊一部分槽位Slot，对每一条Redis的数据进行槽位计算，这条数据属于哪个槽位，就存储对应槽位的小集群中
+
+- 分片的规则：**根据Key进行槽位运算：`CRC16[K] &  16383 =  0  ~ 16383`**
+
+![image-20210521170535160](assets/image-20210521170535160.png)
+
+#### 安装部署
+
+![1651237601172](assets/1651237601172.png)
+
+|               IP               | PORT |  角色  |
+| :----------------------------: | :--: | :----: |
+| 192.168.88.100/node1.itcast.cn | 7001 | master |
+| 192.168.88.101/node2.itcast.cn | 7001 | master |
+| 192.168.88.102/node3.itcast.cn | 7001 | master |
+| 192.168.88.100/node1.itcast.cn | 7002 | slave  |
+| 192.168.88.101/node2.itcast.cn | 7002 | slave  |
+| 192.168.88.102/node3.itcast.cn | 7002 | slave  |
+
+> 第一步、node1上配置**7001**端口服务
+
+- 1、解压和重命名
+
+```ini
+[root@node1 ~]# cd /root
+[root@node1 ~]# rz
+	redis-5.0.8-bin.tar.gz
+
+[root@node1 ~]# tar -zxf redis-5.0.8-bin.tar.gz 
+[root@node1 ~]# mv redis redis-7001
+```
+
+- 2、修改配置文件
+
+```ini
+vim /root/redis-7001/redis.conf
+```
+
+```shell
+#69行
+bind 0.0.0.0
+
+#88行
+protected-mode no
+
+#92行
+port 7001
+
+#136行
+daemonize yes
+
+#158行
+pidfile /var/run/redis_7001.pid
+
+#171行
+logfile "/root/redis-7001/logs/redis.log"
+
+#263行
+dir /root/redis-7001/datas/
+
+#832行
+cluster-enabled yes
+
+#840行
+cluster-config-file nodes-7001.conf
+
+#846行
+cluster-node-timeout 15000
+```
+
+> 第二步、node1上配置**7002**端口服务
+
+- 3、拷贝目录
+
+```ini
+[root@node1 ~]# cd /root/
+
+[root@node1 ~]# cp -r redis-7001 redis-7002
+```
+
+![1651236848871](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/fake_nosql-%E7%AC%AC2%E5%A4%A9-%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/nosql-%E7%AC%AC2%E5%A4%A9-%E9%A2%84%E4%B9%A0%E8%B5%84%E6%96%99/assets/1651236848871.png)
+
+
+
+- 4、修改配置文件
+
+```ini
+vim /root/redis-7002/redis.conf
+```
+
+[配置文件中：所有7001换成7002]()
+
+```ini
+#92行
+port 7002
+
+#158行
+pidfile /var/run/redis_7002.pid
+
+#171行
+logfile "/root/redis-7002/logs/redis.log"
+
+#263行
+dir /root/redis-7002/datas/
+
+#840行
+cluster-config-file nodes-7002.conf
+```
+
+> 第三步、将7001端口服务和7002端口服务同步到node2和node3
+
+- 5、同步目录scp命令
+
+```ini
+# 7001端口服务
+scp -r /root/redis-7001 root@node2.itcast.cn:/root/
+scp -r /root/redis-7001 root@node3.itcast.cn:/root/
+
+# 7002端口服务
+scp -r /root/redis-7002 root@node2.itcast.cn:/root/
+scp -r /root/redis-7002 root@node3.itcast.cn:/root/
+```
+
+#### 启动服务
+
+- 三台机器启动所有redis进程
+
+```ini
+# 启动7001服务
+/root/redis-7001/bin/redis-server /root/redis-7001/redis.conf
+
+# 启动7002服务
+/root/redis-7002/bin/redis-server /root/redis-7002/redis.conf
+```
+
+![1651238426692](assets/1651238426692.png)
+
+> 虽然服务启动了，但是目前每个服务之间都是独立的，没有任何关联。
+
+- 初始化配置集群：
+
+  ```ini
+  /root/redis-7001/bin/redis-cli --cluster create --cluster-replicas 1 \
+  192.168.88.100:7001 192.168.88.100:7002 \
+  192.168.88.101:7001 192.168.88.101:7002 \
+  192.168.88.102:7001 192.168.88.102:7002
+  
+  # --cluster-replicas,每个小的集群有几个副本，不包含master
+  ```
+
+  ![1651238854878](assets/1651238854878.png)
+
+- 连接集群
+
+  ```ini
+  /root/redis-7001/bin/redis-cli -c -h node1.itcast.cn -p 7001
+  ```
+
+  ![1651239364773](assets/1651239364773.png)
+
+#### Jedis连接
+
+> Jedis 客户端中提供类：JedisCluster，连接Redis Cluster集群，演示代码如下：
+
+```java
+import redis.clients.jedis.*;
+import java.util.HashSet;
+
+/**
+ * Jedis连接Redis Cluster集群，进行操作数据
+ */
+public class JedisClusterTest {
+
+	public static void main(String[] args) {
+		// TODO: 1. 获取连接
+		// 1-1. 连接池设置
+		JedisPoolConfig config = new JedisPoolConfig();
+		config.setMaxTotal(8); // 连接池中总的连接数
+		config.setMaxIdle(5); // 连接池中最大连接空闲数，连接未被使用数目
+		config.setMinIdle(2); // 连接池中最小连接空闲数
+		config.setMaxWaitMillis(5000); // 最大等待时间
+		// 1-2. 集群地址和端口号
+		HashSet<HostAndPort> set = new HashSet<>() ;
+		set.add(new HostAndPort("node1.itcast.cn",7001));
+		set.add(new HostAndPort("node1.itcast.cn",7002));
+		set.add(new HostAndPort("node2.itcast.cn",7001));
+		set.add(new HostAndPort("node2.itcast.cn",7002));
+		set.add(new HostAndPort("node3.itcast.cn",7001));
+		set.add(new HostAndPort("node3.itcast.cn",7002));
+
+		// 1-3. 获取连接
+		JedisCluster jedisCluster = new JedisCluster(set, 2000, 2000, 5, config);
+
+		// TODO: 2. 使用连接，操作数据
+		jedisCluster.set("name", "zhangsan");
+		System.out.println(jedisCluster.get("name"));
+
+		// TODO: 3. 关闭连接
+		jedisCluster.close();
+	}
+
+}
+```
 
 ## II. HBase快速入门
 
