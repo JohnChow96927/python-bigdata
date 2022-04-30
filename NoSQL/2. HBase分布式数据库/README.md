@@ -607,6 +607,147 @@ BigTable 思想：
 
 ### 4. HBase安装部署
 
+> 基于三台虚拟机，在HDFS和Zookeeper集群基础之上，搭建HBase集群，示意图如下。
 
+![1651273164359](assets/1651273164359.png)
+
+- 1、上传解压
+
+```ini
+# 上传软件包
+cd /export/software/
+rz
+
+# 解压
+tar -zxf hbase-2.1.0.tar.gz -C /export/server/
+
+# 软链接
+cd /export/server
+ln -s hbase-2.1.0 hbase
+
+# 赋权限
+chown -R root:root /export/server/hbase/
+
+# 删除文档
+rm -rf /export/server/hbase/docs/
+```
+
+- 2、修改配置
+
+```ini
+# 进入目录
+cd /export/server/hbase/conf/
+```
+
+修改`hbase-env.sh`
+
+```ini
+vim hbase-env.sh
+```
+
+```ini
+#28行
+export JAVA_HOME=/export/server/jdk
+
+#125行
+export HBase_MANAGES_ZK=false
+```
+
+创建存储目录
+
+```ini
+mkdir -p /export/server/hbase/datas
+```
+
+修改`hbase-site.xml`
+
+```ini
+vim hbase-site.xml
+```
+
+```xml
+    <property >
+        <name>hbase.tmp.dir</name>
+        <value>/export/server/hbase/datas</value>
+    </property>
+    <property >
+        <name>hbase.rootdir</name>
+        <value>hdfs://node1.itcast.cn:8020/hbase</value>
+    </property>
+    <property >
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>node1.itcast.cn,node2.itcast.cn,node3.itcast.cn</value>
+    </property>
+    <property>
+        <name>hbase.unsafe.stream.capability.enforce</name>
+        <value>false</value>
+    </property>
+```
+
+修改`regionservers`
+
+```ini
+vim regionservers
+```
+
+```ini
+node1.itcast.cn
+node2.itcast.cn
+node3.itcast.cn
+```
+
+复制jar包
+
+```ini
+cp /export/server/hbase/lib/client-facing-thirdparty/htrace-core-3.1.0-incubating.jar /export/server/hbase/lib/
+```
+
+- 3、分发集群
+
+```ini
+scp -r /export/server/hbase root@node2.itcast.cn:/export/server/
+scp -r /export/server/hbase root@node3.itcast.cn:/export/server/
+```
+
+- 4、配置环境变量，[三台虚拟机都配置]()
+
+```ini
+vim /etc/profile
+```
+
+```ini
+# HBASE_HOME
+export HBASE_HOME=/export/server/hbase
+export PATH=:$PATH:$HBASE_HOME/bin
+```
+
+```ini
+ source /etc/profile
+```
+
+- 5、启动服务
+
+```ini
+# 启动Zookeeper集群服务，每台机器都启动
+/export/server/zookeeper/bin/zkServer.sh start
+
+# 启动HDFS集群服务，node1上执行
+hadoop-daemon.sh start namenode
+hadoop-daemons.sh start datanode 
+
+# 启动HBase集群服务，node1上执行
+hbase-daemon.sh start master
+hbase-daemons.sh start regionserver   
+```
+
+- 6、访问HBase WEB UI
+  - 网址：http://node1.itcast.cn:16010
+  - Apache HBase 1.x之前是60010，1.x开始更改为16010，CDH版本：一直使用60010
+
+![image-20210524120224751](assets/image-20210524120224751.png)
 
 ## 附录部分: 注意事项及扩展内容
