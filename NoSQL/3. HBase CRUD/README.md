@@ -316,6 +316,68 @@ list
 
 ![1651387644624](assets/1651387644624.png)
 
+### 5. DML scan
+
+> 掌握HBase的查询数据命令scan的使用
+
+- 功能：**根据条件匹配读取多个Rowkey的数据**
+
+- 语法
+
+  ```shell
+  #读取整张表的所有数据，一般不用
+  scan 'tbname'
+  
+  #根据条件查询：工作中主要使用的场景， 用到最多
+  scan 'tbname', {Filter} 
+  ```
+
+- 示例
+
+  - 全表扫描，生产环境不要使用
+
+  ```ini
+  scan 'people'
+  ```
+
+  ![1651388709481](assets/1651388709481.png)
+
+  - 全表扫描，指定条目数，类似MySQL中limit
+
+  ```ini
+  scan 'people', {LIMIT => 2}
+  ```
+
+  ![1651388765471](assets/1651388765471.png)
+
+  - rowkey前缀过滤器，在HBase数据查询中，使用最多
+
+  ```ini
+  scan 'people', {ROWPREFIXFILTER => '1001'}
+  
+  scan 'people', {ROWPREFIXFILTER => '100'}
+  ```
+
+  ![1651389472547](assets/1651389472547.png)
+
+  - rowkey范围过滤器
+
+  ```ini
+  # STARTROW：从某个rowkey开始，包含，闭区间
+  # STOPROW：到某个rowkey结束，不包含，开区间
+  scan 'people', {STARTROW=>'1001'}
+  
+  scan 'people', {STARTROW=>'1001', STOPROW=>'1003'}
+  ```
+
+  ![1651389592581](assets/1651389592581.png)
+
+> 面试题：HBase数据库数据查询方式有哪些？？
+
+- 1、get查询，依据具体RowKey直接查询数据，[查询速度最快]()
+- 2、Scan全部扫描查询，[性能最差，几乎不建议使用]()
+- 3、Scan范围查询，过滤器查询，[前缀匹配查询，设置查询RowKey范围]()
+
 ## II. HBase Java API
 
 
