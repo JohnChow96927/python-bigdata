@@ -793,9 +793,38 @@ public void testBatchPut() throws Exception {
 
 ![img](assets/1651393628440.png?lastModify=1651475954)
 
+### 5. DML get
 
+>
+> 使用Hbase Java API实现Get读取数据
 
-
+```java
+// 依据RowKey查询数据
+@Test
+public void testGet() throws Exception{
+    // a. 获取Table对象
+    Table table = getHTable();
+    // b. 构建Get对象，传递RowKey
+    Get get = new Get(Bytes.toBytes("20220501_002"));
+    // c. 设置指定列族及列名称
+    get.addFamily(Bytes.toBytes("basic")) ;
+    get.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"));
+    // d. 查询数据
+    Result result = table.get(get);
+    // e. 遍历每列数据，封装在KeyValue中，此处为Cell单元
+    for (Cell cell : result.rawCells()) {
+        // 使用CellUtil工具类，获取值
+        String rowKey = Bytes.toString(CellUtil.cloneRow(cell));
+        String family = Bytes.toString(CellUtil.cloneFamily(cell));
+        String column = Bytes.toString(CellUtil.cloneQualifier(cell));
+        String value = Bytes.toString(CellUtil.cloneValue(cell));
+        long version = cell.getTimestamp();
+        System.out.println(rowKey + "\tcolumn="+ family +":"+ column +", timestamp="+ version +", value=" + value);
+    }
+    // f. 关闭连接
+    table.close();
+}
+```
 
 
 
