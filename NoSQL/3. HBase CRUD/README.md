@@ -22,8 +22,6 @@
 
 **列举所有Namespace**
 
-------
-
 命令：`list_namespace`，类似MySQL：**show databases**
 
 ```ini
@@ -33,8 +31,6 @@ list_namespace
 ![1651384598630](assets/1651384598630.png)
 
 **列举某个NameSpace中的表**
-
-------
 
 命令：`list_namespace_tables`，类似MySQL：**show tables  in dbname**
 
@@ -53,8 +49,6 @@ list_namespace
 ![1651384627651](assets/1651384627651.png)
 
 **创建NameSpace**
-
-------
 
 命令：`create_namespace`，类似MySQL：**create database  dbname**
 
@@ -96,7 +90,7 @@ drop_namespace 'ITCAST'
 
 ```ini
 Group name: ddl
-  Commands: alter, alter_async, alter_status, clone_table_schema, create, describe, disable, disable_all, drop, drop_all, enable, enable_all, exists, get_table, is_disabled, is_enabled, list, list_regions, locate_region, show_filters
+Commands: alter, alter_async, alter_status, clone_table_schema, create, describe, disable, disable_all, drop, drop_all, enable, enable_all, exists, get_table, is_disabled, is_enabled, list, list_regions, locate_region, show_filters
 ```
 
 **列举所有用户表**
@@ -287,6 +281,40 @@ list
     - ==K：Rowkey + 列族 + 列 + 时间【降序】==
     - ==V：值==
   - ==没有更新和删除==：**通过插入来代替的，做了标记不再显示**
+
+### 4. DML get
+
+> 掌握HBase查询的数据命令get的使用
+
+- 功能：**读取某个Rowkey的数据**
+
+  - 优点：Get是HBase中**查询数据最快的方式**，并不是最常用的方式
+  - 缺点：get命令最多**只能返回一个rowkey的数据**，根据Rowkey进行检索数据
+
+- 语法
+
+  ```ini
+  get	表名	rowkey	[列族,列]
+  
+  get 'ns:tbname','rowkey'
+  get 'ns:tbname','rowkey',[cf]
+  get 'ns:tbname','rowkey',[cf:col]
+  ```
+
+- 示例
+
+  ```ini
+  # 获取RowKey所有列数据
+  get 'people','1001'
+  
+  # 获取指定列簇中所有列数据
+  get 'people','1001', 'info'
+  
+  # 获取指定列名称数据
+  get 'people','1001', 'info:name'
+  ```
+
+![1651387644624](assets/1651387644624.png)
 
 ## II. HBase Java API
 
