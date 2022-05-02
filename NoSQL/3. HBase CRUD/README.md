@@ -653,6 +653,79 @@ public class HBaseDdlTest {
 }
 ```
 
+### 3. DML Table
+
+> 使用HBase Java API实现Table的实例开发
+
+- DML操作都必须构建HBase 表的对象来进行操作
+
+  `hbase shell` 创建表：
+
+  ```bash
+  create 'itcast:students', 'basic', 'other'
+  ```
+
+- 测试类代码：`HBaseDmlTest`
+
+  ```java
+  package cn.itcast.hbase;
+  
+  import org.apache.hadoop.conf.Configuration;
+  import org.apache.hadoop.hbase.HBaseConfiguration;
+  import org.apache.hadoop.hbase.TableName;
+  import org.apache.hadoop.hbase.client.Connection;
+  import org.apache.hadoop.hbase.client.ConnectionFactory;
+  import org.apache.hadoop.hbase.client.Table;
+  import org.junit.After;
+  import org.junit.Before;
+  import org.junit.Test;
+  
+  /**
+   * 使用HBase Java Client API 对数据库进行DML操作：
+   *      TODO：插入数据put, 删除数据delete, 查询数据get及扫描数据scan
+   */
+  public class HBaseDmlTest {
+  
+  	// 定义连接Connection
+  	private Connection conn = null ;
+  
+  	@Before
+  	public void open() throws Exception {
+  		// 1-1. 设置连接属性
+  		Configuration conf = HBaseConfiguration.create();
+  		// 设置HBase依赖ZK集群地址
+  		conf.set("hbase.zookeeper.quorum", "node1.itcast.cn,node2.itcast.cn,node3.itcast.cn");
+  		// 1-2. 传递配置，构建连接
+  		conn = ConnectionFactory.createConnection(conf);
+  	}
+  
+  	// 创建HBase Table表的对象
+  	public Table getHTable() throws Exception {
+  		// TableName对象
+  		TableName tableName = TableName.valueOf("itcast:students");
+  		// 获取Table表句柄对象
+  		Table table = conn.getTable(tableName);
+  		// 返回实例
+  		return table ;
+  	}
+  
+  	// 测试Table对象
+  	@Test
+  	public void testTable() throws Exception {
+  		System.out.println(getHTable());
+  	}
+  
+  	@After
+  	public void close() throws Exception{
+  		if(null != conn) conn.close();
+  	}
+  }
+  ```
+
+  
+
+
+
 
 
 
