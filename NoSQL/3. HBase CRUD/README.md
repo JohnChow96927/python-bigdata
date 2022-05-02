@@ -378,6 +378,48 @@ list
 - 2、Scan全部扫描查询，[性能最差，几乎不建议使用]()
 - 3、Scan范围查询，过滤器查询，[前缀匹配查询，设置查询RowKey范围]()
 
+### 6. DML count
+
+> 了解HBase的count命令的使用
+
+- **count：统计命令**
+
+  - 功能：**统计某张表的行数【rowkey的个数】**
+
+  - 语法
+
+    ```ini
+    count  '表名'
+    ```
+
+  - 示例
+
+    ```
+    count 'people'
+    ```
+
+    ![1651389861025](assets/1651389861025.png)
+
+- **面试题：HBase中如何统计一张表的行数最快**
+
+  - 方案一：分布式计算程序，读取HBase数据，统计rowkey的个数
+
+    ```ini
+    #在第一台机器启动
+    start-yarn.sh
+    
+    #在第一台机器运行
+    hbase org.apache.hadoop.HBase.mapreduce.RowCounter 'people'
+    ```
+
+  - 方案二：count命令，相对比较常用，速度中等
+
+    ```ini
+    count 'people'
+    ```
+
+
+
 ## II. HBase Java API
 
 
