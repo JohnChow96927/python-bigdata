@@ -225,7 +225,68 @@ list
 
 ![1651385600110](assets/1651385600110.png)
 
+### 3. DML put
 
+> 掌握HBase插入更新的数据命令**put**的使用
+
+- **功能**
+
+  插入  /  更新数据【某一行的某一列】
+
+- **语法**
+
+  ```ini
+  # 表名+rowkey+列族+列+值
+  put 'ns:tbname', 'rowkey', 'cf:col', 'value'
+  ```
+
+- **示例**
+
+  ```ini
+  create 'people', 'info'
+  ```
+
+  ```sql
+  put 'people', '1001', 'info:name', 'laoda'
+  put 'people', '1001', 'info:age', '25'
+  put 'people', '1001', 'info:gender', 'male'
+  put 'people', '1001', 'info:address', 'shanghai'
+  
+  put 'people', '1002','info:name', 'laoer'
+  put 'people', '1002','info:address', 'beijing'
+  
+  put 'people', '1003','info:name', 'laosan'
+  put 'people', '1003','info:age', '20'
+  
+  -- 扫描表数据
+  scan "people"
+  ```
+
+- **注意**
+
+  - put时如果不存在，就插入，如果存在就更新
+
+    ```ini
+    put 'people', '1003', 'info:name', '老三'
+    put 'people', '1003', 'info:addr', '北京'
+    
+    scan 'people'
+    ```
+
+    ![1651387194012](assets/1651387194012.png)
+
+- **观察结果**
+
+  ![1651387324953](assets/1651387324953.png)
+
+- HBase表数据：[按照Rowkey构建字典有序]()
+
+  - 排序规则：
+    - **先依据RowKey升序，再按照列簇CF升序，最后列名Column升序**
+  - 底层存储也是KV结构：每一列就是一条KV数据
+    - ==K：Rowkey + 列族 + 列 + 时间【降序】==
+    - ==V：值==
+  - ==没有更新和删除==：**通过插入来代替的，做了标记不再显示**
 
 ## II. HBase Java API
 
