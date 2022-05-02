@@ -90,9 +90,148 @@ list_namespace
 drop_namespace 'ITCAST'
 ```
 
+### 2. Table DDL
+
+> 表Table的管理命令：创建表、删除表、修改表，启用和停用表等
+
+```ini
+Group name: ddl
+  Commands: alter, alter_async, alter_status, clone_table_schema, create, describe, disable, disable_all, drop, drop_all, enable, enable_all, exists, get_table, is_disabled, is_enabled, list, list_regions, locate_region, show_filters
+```
+
+**列举所有用户表**
+
+命令：`list`，类似MySQL：**show tables**
+
+```
+list
+```
+
+![1651384944534](assets/1651384944534.png)
+
+**创建表**
+
+命令：`create`，类似MySQL：**表名 + 列的信息【名称和类型】**
+
+- [必须指定表名 + 至少一个列族]()
+
+- 语法
+
+  ```shell
+  #表示在ns1的namespace中创建一张表t1,这张表有一个列族叫f1，这个列族中的所有列可以存储5个版本的值
+  create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+  
+  #在default的namespace中创建一张表t1,这张表有三个列族，f1,f2,f3，每个列族的属性都是默认的
+  create 't1', 'f1', 'f2', 'f3'
+  ```
+
+- 示例
+
+  ```shell
+  # 创建表，可以更改列族的属性
+  
+    create 't1', {NAME => 'cf1'}, {NAME => 'cf2', VERSIONS => 3}
+  
+  # 创建表，不需要更改列族属性
+  
+    create 'heima:t2', 'cf1', 'cf2',' cf3' 
+  
+    create 'users', 'info'
+  ```
+
+**查看某个表信息**
+
+命令：`desc`，类似MySQL ：**desc  tbname**
+
+- 语法
+
+  ```ini
+  desc '表名'
+  ```
+
+- 示例
+
+  ```ini
+  desc 't1'
+  ```
+
+  ![1651385442151](assets/1651385442151.png)
+
+**判断存在某个表是否存储**
+
+命令：`exists`
+
+- 语法
+
+  ```ini
+  exists '表名'
+  ```
+
+- 示例
+
+  ```ini
+  exists 't1'
+  ```
+
+  ![1651385486643](assets/1651385486643.png)
+
+**表的禁用和启用**
+
+命令：`disable /  enable`
+
+- 功能
+
+  - HBase为了**避免修改或者删除表，影响这张表正在对外提供读写服务**
+  - [规定约束：修改或者删除表时，必须先禁用表，表示这张表暂时不能对外提供服务]()
+  - 如果是删除：禁用以后删除
+  - 如果是修改：先禁用，然后修改，修改完成以后启用
+
+- 语法
+
+  ```ini
+  disable '表名'
+  enable '表名'
+  ```
+
+- 示例
+
+  ```ini
+  # 禁用表
+  disable 't1'
+  
+  # 启用表
+  enable 't1'
+  ```
+
+**删除某个表**
+
+命令：`drop`，类似MySQL：**drop table tbname**
+
+- 语法
+
+  ```ini
+  drop '表名'
+  ```
+
+- 示例
+
+  ```ini
+  drop 't1'
+  ```
+
+- 注意
+
+  如果要对表进行删除，必须**先禁用表，再删除表**
+
+![1651385600110](assets/1651385600110.png)
+
 
 
 ## II. HBase Java API
+
+
+
+
 
 
 
