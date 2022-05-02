@@ -922,7 +922,180 @@ public void testScan() throws Exception {
 }
 ```
 
+### 9. DML Filter
 
+> 使用HBase Java API实现Scan + Filter过滤
+
+插入数据
+
+```SQL
+put "itcast:students", "20220301_001", "basic:name", "Jack"
+put "itcast:students", "20220301_001", "basic:age", "29"
+put "itcast:students", "20220301_001", "basic:gender", "male"
+put "itcast:students", "20220301_001", "other:address", "beijing"
+
+put "itcast:students", "20220302_001", "basic:name", "Tom"
+put "itcast:students", "20220302_001", "basic:age", "28"
+put "itcast:students", "20220302_001", "other:address", "shenzhen"
+
+put "itcast:students", "20220401_001", "basic:name", "Lucy"
+put "itcast:students", "20220401_001", "basic:age", "24"
+put "itcast:students", "20220401_001", "basic:gender", "female"
+put "itcast:students", "20220401_001", "other:address", "shanghai"
+
+put "itcast:students", "20220401_002", "basic:name", "David"
+put "itcast:students", "20220401_002", "basic:gender", "male"
+put "itcast:students", "20220401_002", "other:address", "hangzhou"
+```
+
+此时表中数据，如下图所示：
+
+![1651394951269](assets/1651394951269.png)
+
+**需求**：JavaAPI实现从Hbase表中根据条件读取部分
+
+```ini
+/*
+- 需求1：查询2022年3月和4月的数据
+- 需求2：查询2022年5月的所有数据
+- 需求3：查询所有age = 24的数据
+*/
+
+```
+
+- 需求1：查询2022年3月和4月的数据，[使用startRow和stopRow]()
+
+  ```java
+  // b. 构建Scan对象
+  Scan scan = new Scan();
+  // TODO: 设置startRow和stopRow
+  scan.withStartRow(Bytes.toBytes("202203"));
+  scan.withStopRow(Bytes.toBytes("202205"));
+  // c. 扫描表的数据
+  ResultScanner resultScanner = table.getScanner(scan);
+  ```
+
+- 需求2：查询2022年5月的所有数据，[使用过滤器Filter，前缀匹配查询过滤器]()
+
+  ```java
+  // b. 构建Scan对象
+  Scan scan = new Scan();
+  // TODO: 添加过滤器Filter
+  PrefixFilter prefixFilter = new PrefixFilter(Bytes.toBytes("202205"));
+  scan.setFilter(prefixFilter) ;
+  // c. 扫描表的数据
+  ResultScanner resultScanner = table.getScanner(scan);
+  ```
+
+- 需求3：查询所有age = 24的数据，[使用过滤器Filter，单值过滤器]()
+
+  ```java
+  // b. 构建Scan对象
+  Scan scan = new Scan();
+  // TODO: 添加过滤器Filter
+  SingleColumnValueFilter singleColumnValueFilter = new SingleColumnValueFilter(
+  	Bytes.toBytes("basic"), Bytes.toBytes("age"), CompareOperator.EQUAL, Bytes.toBytes("24")
+  );
+  scan.setFilter(singleColumnValueFilter) ;
+  // c. 扫描表的数据
+  ResultScanner resultScanner = table.getScanner(scan);
+  ```
+
+> Scan扫描数据时，设置过滤期Filter或前缀匹配查询数据，完整代码：
+
+```Java
+// 需求1：查询2022年3月和4月的数据
+@Test
+public void testScanFilter_V1() throws Exception{
+	// a. 获取Table对象
+	Table table = getHTable();
+	// b. 构建Scan对象
+	Scan scan = new Scan();
+	// TODO: 设置startRow和stopRow
+	scan.withStartRow(Bytes.toBytes("202203"));
+	scan.withStopRow(Bytes.toBytes("202205"));
+	// c. 扫描表的数据
+	ResultScanner resultScanner = table.getScanner(scan);
+	// d. 循环遍历，获取每条数据Result
+	for (Result result : resultScanner) {
+		// 获取RowKey值
+		System.out.println(Bytes.toString(result.getRow()));
+		// 遍历每行数据中所有Cell，获取相应列族、列名称、值等
+		for (Cell cell : result.rawCells()) {
+			// 使用CellUtil工具类，获取值
+			String family = Bytes.toString(CellUtil.cloneFamily(cell));
+			String column = Bytes.toString(CellUtil.cloneQualifier(cell));
+			String value = Bytes.toString(CellUtil.cloneValue(cell));
+			long version = cell.getTimestamp();
+			System.out.println("\t" + family +":"+ column +", timestamp="+ version +", value=" + value);
+		}
+	}
+	// e. 关闭连接
+	table.close();
+}
+
+// 需求2：查询2022年5月的所有数据
+@Test
+public void testScanFilter_V2() throws Exception{
+	// a. 获取Table对象
+	Table table = getHTable();
+	// b. 构建Scan对象
+	Scan scan = new Scan();
+	// TODO: 添加过滤器Filter
+	PrefixFilter prefixFilter = new PrefixFilter(Bytes.toBytes("202205"));
+	scan.setFilter(prefixFilter) ;
+	// c. 扫描表的数据
+	ResultScanner resultScanner = table.getScanner(scan);
+	// d. 循环遍历，获取每条数据Result
+	for (Result result : resultScanner) {
+		// 获取RowKey值
+		System.out.println(Bytes.toString(result.getRow()));
+		// 遍历每行数据中所有Cell，获取相应列族、列名称、值等
+		for (Cell cell : result.rawCells()) {
+			// 使用CellUtil工具类，获取值
+			String family = Bytes.toString(CellUtil.cloneFamily(cell));
+			String column = Bytes.toString(CellUtil.cloneQualifier(cell));
+			String value = Bytes.toString(CellUtil.cloneValue(cell));
+			long version = cell.getTimestamp();
+			System.out.println("\t" + family +":"+ column +", timestamp="+ version +", value=" + value);
+		}
+	}
+	// e. 关闭连接
+	table.close();
+}
+
+// 需求3：查询所有age = 24的数据
+@Test
+public void testScanFilter_V3() throws Exception{
+	// a. 获取Table对象
+	Table table = getHTable();
+	// b. 构建Scan对象
+	Scan scan = new Scan();
+	// TODO: 添加过滤器Filter
+	SingleColumnValueFilter singleColumnValueFilter = new SingleColumnValueFilter(
+		Bytes.toBytes("basic"), Bytes.toBytes("age"), CompareOperator.EQUAL, Bytes.toBytes("24")
+	);
+	scan.setFilter(singleColumnValueFilter) ;
+	// c. 扫描表的数据
+	ResultScanner resultScanner = table.getScanner(scan);
+	// d. 循环遍历，获取每条数据Result
+	for (Result result : resultScanner) {
+		// 获取RowKey值
+		System.out.println(Bytes.toString(result.getRow()));
+		// 遍历每行数据中所有Cell，获取相应列族、列名称、值等
+		for (Cell cell : result.rawCells()) {
+			// 使用CellUtil工具类，获取值
+			String family = Bytes.toString(CellUtil.cloneFamily(cell));
+			String column = Bytes.toString(CellUtil.cloneQualifier(cell));
+			String value = Bytes.toString(CellUtil.cloneValue(cell));
+			long version = cell.getTimestamp();
+			System.out.println("\t" + family +":"+ column +", timestamp="+ version +", value=" + value);
+		}
+	}
+	// e. 关闭连接
+	table.close();
+}
+```
 
 ## 附录: 注意事项及拓展内容
 
