@@ -748,7 +748,7 @@ public void testPut() throws Exception {
 
 - 批量插入多条数据，方便后续测试
 
-```
+```java
 // 批量插入数据Put
 @Test
 public void testBatchPut() throws Exception {
