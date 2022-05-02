@@ -418,7 +418,39 @@ list
     count 'people'
     ```
 
+### 7. DML delete
 
+> 掌握HBase的删除数据命令delete的使用
+
+- 功能：删除HBase中的数据
+
+- 语法
+
+  ```shell
+  #删除某列的数据
+  delete  tbname, rowkey, cf:col
+  
+  #删除某个rowkey数据
+  deleteall tbname, rowkey
+  
+  #清空所有数据：生产环境不建议使用，建议删表重建
+  truncate  tbname
+  ```
+
+- 示例
+
+  ```ini
+  # 删除某一列数据
+  delete 'people', '1001', 'info:address'
+  
+  # 删除某一行row数据
+  deleteall 'people','1002'
+  
+  # 清空表数据
+  truncate 'people'
+  ```
+
+![1651390440113](assets/1651390440113.png)
 
 ## II. HBase Java API
 
