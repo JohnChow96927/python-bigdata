@@ -722,78 +722,76 @@ public class HBaseDdlTest {
   }
   ```
 
-  ### 4. DML put
+### 4. DML put
 
-  > 使用HBase Java API实现Put插入或者更新数据
+> 使用HBase Java API实现Put插入或者更新数据
 
-  ```Java
-  // 插入数据Put
-  @Test
-  public void testPut() throws Exception {
-  	// a. 获取Table对象
-  	Table table = getHTable();
-  	// b. TODO: 构建Put对象，表示1个RowKey数据，指定RowKey
-  	Put put = new Put(Bytes.toBytes("20220501_001")) ;
-  	// 添加列
-  	put.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoda"));
-  	put.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("18"));
-  	put.addColumn(Bytes.toBytes("other"), Bytes.toBytes("phone"), Bytes.toBytes("110"));
-  	put.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("beijing"));
-  	// c. 插入数据
-  	table.put(put);
-  	// d. 关闭连接
-  	table.close();
-  }
-  ```
+```java
+// 插入数据Put
+@Test
+public void testPut() throws Exception {
+    // a. 获取Table对象
+    Table table = getHTable();
+    // b. TODO: 构建Put对象，表示1个RowKey数据，指定RowKey
+    Put put = new Put(Bytes.toBytes("20220501_001")) ;
+    // 添加列
+    put.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoda"));
+    put.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("18"));
+    put.addColumn(Bytes.toBytes("other"), Bytes.toBytes("phone"), Bytes.toBytes("110"));
+    put.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("beijing"));
+    // c. 插入数据
+    table.put(put);
+    // d. 关闭连接
+    table.close();
+}
+```
 
-  - 批量插入多条数据，方便后续测试
+- 批量插入多条数据，方便后续测试
 
-  ```Java
-  // 批量插入数据Put
-  @Test
-  public void testBatchPut() throws Exception {
-  	// a. 获取Table对象
-  	Table table = getHTable();
-  	// b. TODO: 构建Put对象，表示1个RowKey数据，指定RowKey
-  	List<Put> listPut = new ArrayList<>();
-  	// 第1条数据
-  	Put put1 = new Put(Bytes.toBytes("20220501_002")) ;
-  	put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoer"));
-  	put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("16"));
-  	put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("gender"), Bytes.toBytes("male"));
-  	put1.addColumn(Bytes.toBytes("other"), Bytes.toBytes("phone"), Bytes.toBytes("120"));
-  	put1.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("shanghai"));
-  	listPut.add(put1);
-  	// 第2条数据
-  	Put put2 = new Put(Bytes.toBytes("20220501_003")) ;
-  	put2.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laosan"));
-  	put2.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("16"));
-  	put2.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("hangzhou"));
-  	listPut.add(put2);
-  	// 第3条数据
-  	Put put3 = new Put(Bytes.toBytes("20220501_004")) ;
-  	put3.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laosi"));
-  	put3.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("24"));
-  	put3.addColumn(Bytes.toBytes("other"), Bytes.toBytes("job"), Bytes.toBytes("programmer"));
-  	put3.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("shanghai"));
-  	listPut.add(put3);
-  	// 第4条数据
-  	Put put4 = new Put(Bytes.toBytes("20220501_005")) ;
-  	put4.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoer"));
-  	put4.addColumn(Bytes.toBytes("other"), Bytes.toBytes("job"), Bytes.toBytes("doctor"));
-  	listPut.add(put4);
-  	// c. 插入数据
-  	table.put(listPut);
-  	// d. 关闭连接
-  	table.close();
-  }
-  ```
+```
+// 批量插入数据Put
+@Test
+public void testBatchPut() throws Exception {
+    // a. 获取Table对象
+    Table table = getHTable();
+    // b. TODO: 构建Put对象，表示1个RowKey数据，指定RowKey
+    List<Put> listPut = new ArrayList<>();
+    // 第1条数据
+    Put put1 = new Put(Bytes.toBytes("20220501_002")) ;
+    put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoer"));
+    put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("16"));
+    put1.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("gender"), Bytes.toBytes("male"));
+    put1.addColumn(Bytes.toBytes("other"), Bytes.toBytes("phone"), Bytes.toBytes("120"));
+    put1.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("shanghai"));
+    listPut.add(put1);
+    // 第2条数据
+    Put put2 = new Put(Bytes.toBytes("20220501_003")) ;
+    put2.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laosan"));
+    put2.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("16"));
+    put2.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("hangzhou"));
+    listPut.add(put2);
+    // 第3条数据
+    Put put3 = new Put(Bytes.toBytes("20220501_004")) ;
+    put3.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laosi"));
+    put3.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age"), Bytes.toBytes("24"));
+    put3.addColumn(Bytes.toBytes("other"), Bytes.toBytes("job"), Bytes.toBytes("programmer"));
+    put3.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"), Bytes.toBytes("shanghai"));
+    listPut.add(put3);
+    // 第4条数据
+    Put put4 = new Put(Bytes.toBytes("20220501_005")) ;
+    put4.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("name"), Bytes.toBytes("laoer"));
+    put4.addColumn(Bytes.toBytes("other"), Bytes.toBytes("job"), Bytes.toBytes("doctor"));
+    listPut.add(put4);
+    // c. 插入数据
+    table.put(listPut);
+    // d. 关闭连接
+    table.close();
+}
+```
 
-  - 命令行查看表中数据
+- 命令行查看表中数据
 
-  ![1651393628440](assets/1651393628440.png)
-
-
+![img](assets/1651393628440.png?lastModify=1651475954)
 
 
 
