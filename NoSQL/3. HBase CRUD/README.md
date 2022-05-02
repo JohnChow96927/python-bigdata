@@ -2,6 +2,94 @@
 
 ## I. HBase命令行操作
 
+> HBase 数据库提供命令行：hbase shell，对数据库进行DDL、DML及管理操作。
+
+```ini
+[root@node1 ~]# hbase shell
+```
+
+![1651371277226](assets/1651371277226.png)
+
+> 命令行输入命令：`help` ，显示支持命令，可以查看帮助。 
+
+![1651371355092](assets/1651371355092.png)
+
+### 1. NameSpace DDL
+
+> HBase中命名空间：**namespace**，支持命令如下所示
+
+![1651371652589](assets/1651371652589.png)
+
+**列举所有Namespace**
+
+------
+
+命令：`list_namespace`，类似MySQL：**show databases**
+
+```ini
+list_namespace
+```
+
+![1651384598630](assets/1651384598630.png)
+
+**列举某个NameSpace中的表**
+
+------
+
+命令：`list_namespace_tables`，类似MySQL：**show tables  in dbname**
+
+- 语法
+
+  ```shell
+  list_namespace_tables 'Namespace的名称'
+  ```
+
+- 示例
+
+  ```shell
+  list_namespace_tables 'hbase'
+  ```
+
+![1651384627651](assets/1651384627651.png)
+
+**创建NameSpace**
+
+------
+
+命令：`create_namespace`，类似MySQL：**create database  dbname**
+
+- 语法
+
+  ```ini
+  create_namespace 'Namespace的名称'
+  ```
+
+- 示例
+
+  ```shell
+  create_namespace 'heima'
+  
+  create_namespace 'ITCAST'
+  ```
+
+![1651384689506](assets/1651384689506.png)
+
+**删除NameSpace**
+
+命令：`drop_namespace`，**只能删除空命名空间**，如果命名空间中存在表，不允许删除
+
+- 语法：
+
+  ```
+  drop_namespace 'Namespace的名称'
+  ```
+
+- 示例
+
+```ini
+drop_namespace 'ITCAST'
+```
+
 
 
 ## II. HBase Java API
