@@ -826,6 +826,32 @@ public void testGet() throws Exception{
 }
 ```
 
+### 6. DML Delete
+
+> 使用Hbase Java API实现Delete删除数据
+
+```Java
+// 依据RowKey删除数据
+@Test
+public void testDelete() throws Exception {
+	// a. 获取Table对象
+	Table table = getHTable();
+	// b. 构建Delete对象，传递RowKey
+	Delete delete = new Delete(Bytes.toBytes("20220501_004")) ;
+	// c. 添加删除列族及列明
+	delete.addFamily(Bytes.toBytes("other"));
+	delete.addColumn(Bytes.toBytes("basic"), Bytes.toBytes("age")) ;
+	// d. 执行删除
+	table.delete(delete);
+	// e. 关闭连接
+	table.close();
+}
+```
+
+命令行查看表数据，发现：20220501_004 中other列簇数据和basic:age列数据已经被删除
+
+![1651393767560](assets/1651393767560.png)
+
 
 
 ## 附录: 注意事项及拓展内容
