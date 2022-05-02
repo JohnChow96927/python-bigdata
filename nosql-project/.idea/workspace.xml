@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/hbase-client/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseClientTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDdlTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDmlTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBasePutTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NoSQL/3. HBase CRUD/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/3. HBase CRUD/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,7 +53,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/nosql-project",
     "settings.editor.selected.configurable": "vcs.Git"
   }
 }]]></component>
@@ -150,6 +158,7 @@
       <workItem from="1651225870217" duration="1493000" />
       <workItem from="1651292214720" duration="1914000" />
       <workItem from="1651328278562" duration="29000" />
+      <workItem from="1651477311563" duration="2467000" />
     </task>
     <servers />
   </component>

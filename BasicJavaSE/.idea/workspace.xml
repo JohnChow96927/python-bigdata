@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/JavaSE.xmind" beforeDir="false" afterPath="$PROJECT_DIR$/JavaSE.xmind" afterDir="false" />
-    </list>
+    <list default="true" id="82412b19-2ab7-4dd9-b92b-a341ef87b4a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,7 +61,7 @@
     "extract.method.default.visibility": "public",
     "import_schema_mapping": "<schema-mapping><databases><list><schema-mapping-item><source-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</source-data-source-id><source-path>schema/\"day06\"</source-path><target-data-source-id>27e4151d-520c-448c-878a-3654e3f4c4e8</target-data-source-id><target-path>schema/\"day07\"</target-path></schema-mapping-item></list></databases></schema-mapping>",
     "jdk.selected.JAVA_MODULE": "1.8.0_321",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/BasicJavaSE",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/nosql-project",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
@@ -237,6 +235,7 @@
       <workItem from="1651225870880" duration="599000" />
       <workItem from="1651292163876" duration="48000" />
       <workItem from="1651328304147" duration="994000" />
+      <workItem from="1651477283688" duration="26000" />
     </task>
     <servers />
   </component>
