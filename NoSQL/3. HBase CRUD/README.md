@@ -887,42 +887,7 @@ public void testScan() throws Exception {
 }
 ```
 
-### 8. DML Scan
-
-> 使用Hbase Java API实现Scan读取数据
-
-```java
-// 使用Scan全部扫描查询数据
-@Test
-public void testScan() throws Exception {
-	// a. 获取Table对象
-	Table table = getHTable();
-	// b. 构建Scan对象
-	Scan scan = new Scan();
-	scan.addFamily(Bytes.toBytes("basic")) ;
-	scan.addColumn(Bytes.toBytes("other"), Bytes.toBytes("address"));
-	// c. 扫描表的数据
-	ResultScanner resultScanner = table.getScanner(scan);
-	// d. 循环遍历，获取每条数据Result
-	for (Result result : resultScanner) {
-		// 获取RowKey值
-		System.out.println(Bytes.toString(result.getRow()));
-		// 遍历每行数据中所有Cell，获取相应列族、列名称、值等
-		for (Cell cell : result.rawCells()) {
-			// 使用CellUtil工具类，获取值
-			String family = Bytes.toString(CellUtil.cloneFamily(cell));
-			String column = Bytes.toString(CellUtil.cloneQualifier(cell));
-			String value = Bytes.toString(CellUtil.cloneValue(cell));
-			long version = cell.getTimestamp();
-			System.out.println("\t" + family +":"+ column +", timestamp="+ version +", value=" + value);
-		}
-	}
-	// e. 关闭连接
-	table.close();
-}
-```
-
-### 9. DML Filter
+### 8. DML Filter
 
 > 使用HBase Java API实现Scan + Filter过滤
 

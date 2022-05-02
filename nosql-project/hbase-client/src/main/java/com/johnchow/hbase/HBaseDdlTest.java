@@ -28,25 +28,36 @@ public class HBaseDdlTest {
     // TODO: 创建命名空间namespace
     @Test
     public void createNamespace() throws Exception {
+        // a. 获取Admin对象
         HBaseAdmin admin = (HBaseAdmin) conn.getAdmin();
+        // b. 构建命名空间描述符, 设置属性
         NamespaceDescriptor descriptor = NamespaceDescriptor.create("itcast").build();
+        // c. 创建命名空间
         admin.createNamespace(descriptor);
+        // d. 关闭
         admin.close();
     }
 
     // TODO: 创建表, 如果表存在, 先删除, 再创建
     @Test
     public void createTable() throws Exception {
+        // a. 获取Admin对象
         HBaseAdmin admin = (HBaseAdmin) conn.getAdmin();
+        // b. 构建表的对象
         TableName tableName = TableName.valueOf("itcast:students");
+        // c. 判断表是否存在, 如果存在, 将其删除
         if (admin.tableExists(tableName)) {
+            // 禁用表
             admin.disableTable(tableName);
+            // 删除表
             admin.deleteTable(tableName);
         }
+        // d. 创建表
         ColumnFamilyDescriptor familyBasic = ColumnFamilyDescriptorBuilder.newBuilder(Bytes.toBytes("basic")).build();
         ColumnFamilyDescriptor familyOther = ColumnFamilyDescriptorBuilder.newBuilder(Bytes.toBytes("other")).build();
         TableDescriptor desc = TableDescriptorBuilder.newBuilder(tableName).setColumnFamily(familyBasic).setColumnFamily(familyOther).build();
         admin.createTable(desc);
+        // 关闭连接
         admin.close();
     }
 

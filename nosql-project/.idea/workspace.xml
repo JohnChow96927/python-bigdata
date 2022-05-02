@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/hbase-client/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseClientTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDdlTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDmlTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBasePutTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../NoSQL/3. HBase CRUD/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/3. HBase CRUD/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDdlTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/hbase-client/src/main/java/com/johnchow/hbase/HBaseDdlTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,76 +52,82 @@
     "settings.editor.selected.configurable": "vcs.Git"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.JedisClusterTest">
-    <configuration name="JedisClusterTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.redis.JedisClusterTest" />
-      <module name="redis-client" />
+  <component name="RunManager" selected="JUnit.HBaseDmlTest.testScanFilter_V3">
+    <configuration name="HBaseDmlTest.testDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.johnchow.redis.*" />
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="JedisConnTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.redis.JedisConnTest" />
-      <module name="redis-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="JedisApiTest.testHash" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="redis-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.redis" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.redis.JedisApiTest" />
-      <option name="METHOD_NAME" value="testHash" />
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testDelete" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="JedisApiTest.testString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="redis-client" />
+    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.johnchow.redis.*" />
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.redis" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.redis.JedisApiTest" />
-      <option name="METHOD_NAME" value="testString" />
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScan" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="JedisPoolTest.testString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="redis-client" />
+    <configuration name="HBaseDmlTest.testScanFilter_V1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.johnchow.redis.*" />
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.redis" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.redis.JedisPoolTest" />
-      <option name="METHOD_NAME" value="testString" />
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScanFilter_V1" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HBaseDmlTest.testScanFilter_V2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScanFilter_V2" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HBaseDmlTest.testScanFilter_V3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScanFilter_V3" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -134,11 +135,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.JedisClusterTest" />
-        <item itemvalue="JUnit.JedisPoolTest.testString" />
-        <item itemvalue="JUnit.JedisApiTest.testString" />
-        <item itemvalue="JUnit.JedisApiTest.testHash" />
-        <item itemvalue="Application.JedisConnTest" />
+        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V3" />
+        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V2" />
+        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V1" />
+        <item itemvalue="JUnit.HBaseDmlTest.testScan" />
+        <item itemvalue="JUnit.HBaseDmlTest.testDelete" />
       </list>
     </recent_temporary>
   </component>
@@ -158,7 +159,7 @@
       <workItem from="1651225870217" duration="1493000" />
       <workItem from="1651292214720" duration="1914000" />
       <workItem from="1651328278562" duration="29000" />
-      <workItem from="1651477311563" duration="2467000" />
+      <workItem from="1651477311563" duration="5572000" />
     </task>
     <servers />
   </component>
