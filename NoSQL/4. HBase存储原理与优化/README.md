@@ -675,3 +675,148 @@ hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.Disa
 
   ![深入HBase架构解析(E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/nosql_day04_20220503/fake_nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/03_%E7%AC%94%E8%AE%B0/assets/yeQBn2.jpg)](assets/yeQBn2.jpg)
 
+## II. HBase优化
+
+### 1. Rowkey设计
+
+> HBase 性能问题：[在某个时间段内，大量的读写请求全部集中在某个Region中，导致这台RegionServer的负载比较高，其他的Region和RegionServer比较空闲。]()
+
+- **问题**：这台RegionServer故障的概率就会增加，整体性能降低，效率比较差
+
+- **原因**：本质上的原因，[数据分配不均衡]()
+
+  ```ini
+  # 1. 情况一：如果这张表只有一个分区
+  	所有数据都存储在一个分区中，这个分区要响应所有读写请求，出现了热点
+  	
+  # 2. 情况二：如果这张表有多个分区，而且写入时Rowkey是连续的
+  	一张表有5个分区
+  		region0：-oo  20
+          region1：20   40
+          region2：40   60
+          region3: 60    80
+          region4: 80    +oo
+      
+      批量写入数据：
+          000001：region0
+          000002：region0
+          ……
+          199999：region0
+      # 都写入了同一个region0分区
+  		200000：region1
+  		200001：region1
+  		……
+  		399999：region1    	
+      
+  # 3. 情况三：Region范围不合理
+  	Region：3个分区
+  	    region0：-oo ~ 30
+          region1：30  ~ 70
+          region2:70 ~ +oo
+          
+      # Rowkey：字母开头，所有数据都写入了region2
+  ```
+
+> 创建HBase表时，指定一张表拥有多个Region分区，不要使用默认分区：1个分区。
+
+- **划分的目标**：划分**多个分区**，实现**分布式并行读写**，将无穷区间划分为几段，将数据存储在不同分区中，实现分区的负载均衡
+
+- **划分的规则**：**==Rowkey或者Rowkey的前缀来划分==**
+
+- 方式一：指定分隔段，实现预分区
+
+  - 前提：先设计rowkey
+
+  ```shell
+  create 'htb1', 'info', SPLITS => ['10', '20', '30', '40']
+  
+  #将每个分割的段写在文件中，一行一个
+  create 'htb2', 'info', SPLITS_FILE => 'splits.txt'
+  
+  splits.txt：
+  10
+  20
+  30
+  40
+  ```
+
+- 方式二：指定Region个数，自动进行Hash划分：==字母和数字的组合==
+
+  ```shell
+  #你的rowkey的前缀是数字和字母的组合 
+  create 'htb2', 'info', {NUMREGIONS => 5, SPLITALGO => 'HexStringSplit'}
+  ```
+
+  ![image-20210525152034069](assets/image-20210525152034069-1651592774844.png)
+
+- 方式三：Java API
+
+  ```java
+  HBASEAdmin admin = conn.getAdmin
+  admin.create(表的描述器对象, byte[][] splitsKey)
+  ```
+
+> **根据不同业务需求，来合理的设计rowkey，实现高性能的数据存储**
+
+- **唯一原则**：Rowkey必须具有唯一性，不能重复，一个Rowkey唯一标识一条数据
+
+- **业务原则**：Rowkey的设计必须贴合业务的需求，一般选择**最常用的查询条件作为rowkey的前缀**
+
+- **组合原则**：将更多的经常作为的查询条件的列放入Rowkey中，可以满足更多的条件查询可以走索引查询
+
+- **散列原则**：为了避免出现热点问题，需要将数据的rowkey生成规则构建散列的rowkey
+
+  - **方案一：更换不是连续的字段作为前缀，例如用户id**
+  - **方案二：反转**，一般用于时间作为前缀，查询时候必须将数据反转再查询
+
+  - ==方案三：加盐（Salt）==，本质对数据进行编码，生成数字加字母组合的结果
+
+- **长度原则**：在满足业务需求情况下，rowkey越短越好，一般建议Rowkey的长度小**于100字节**
+
+  - 原因：rowkey越长，比较性能越差，rowkey在底层的存储是冗余的
+  - 如果rowkey超过了100字节，将一个长的rowkey，编码为8位，16位，32位
+
+```ini
+HBase中RowKey设计（表的设计）
+	实际业务需求为例：
+		全省交通卡口流量数据，每天数据增量1500万条左右
+-----------------------------------------------------------------------
+RowKey设计原则：
+	1) 业务性（满足大多数据查询需求）、
+		依据【车牌号码】查询车流量数据（行驶数据），加上时间范围过滤查询
+		查询一：前缀匹配
+			苏A-7D8E7
+			所有车流量数据
+		查询二：前缀匹配
+			苏A-7D8E7 + 【20220501】
+			查询某一条车流量数据
+		查询三：前缀范围
+			苏A-7D8E7 + [20220401  ~ 20220501)
+			查询某个时间范围（比如4月份）内数据
+		查询四：
+			很少此类型查询
+			依据卡口查询车流量
+
+	
+	2) 唯一性（避免rowkey相同，数据被覆盖）、
+	
+	3) 热点性（写入数据时，分散写入不同Region）
+
+CREATE 'ROAD_TRAFFIC_FLOW', 'INFO', {SPLIT => ['rk1', 'rk2', 'rk3', 'rk4']}
+	表中有5个Region分区
+
+RowKey值
+	业务性：
+		cphm  +  datetime 
+
+	唯一性：
+		套牌车，很有可能出现：在同一时刻，恰好驶过不同路口，记录流量数据
+		cphm  +  datetime  +  qkbh（卡口编号）
+
+	热点性：
+		reverse(cphm)  +  datetime  +  qkbh
+
+	如果插入数据
+		put 'ROAD_TRAFFIC_FLOW', '7E8D7-A苏_20220501091013445_B019999999', 'INFO:CPHM', '苏A-7D8E7'
+-----------------------------------------------------------------------
+```
