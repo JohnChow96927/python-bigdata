@@ -303,3 +303,139 @@ put tbname, rowkey, cf:col, value
   ```
 
 - 封装一个文件，通过`hbase shell filepath`来定期的运行这个脚本
+
+### 5. Store 内部原理: StoreFile Compaction
+
+> Hbase通过**Compaction**实现**将零散的有序数据合并为整体有序大文件，提高对HDFS数据的查询性能**
+
+- **功能**：什么是Compaction？
+
+  ```ini
+  # 将多个单独有序StoreFile文件进行合并，合并为整体有序的大文件，加快读取速度
+      file1: 1 2 3 4 5
+      file2: 6 7 9
+      file3: 1 8 10
+  
+  # 每个文件都读取，可能读取无效的数据
+  	file：1 1 2 3 4 5 6 7 8 9 10
+  ```
+
+- **版本功能**
+
+  ```ini
+  # 2.0版本之前，只有StoreFile文件的合并
+    磁盘中合并：minor compaction、major compaction
+    
+  # 2.0版本开始，内存中的数据也可以先合并后Flush
+    内存中合并：In-memory compaction
+    磁盘中合并：minor compaction、major compaction
+  ```
+
+> HBase 2.0之前Compaction，分为Minor Compaction和Major Compaction。
+
+![img](assets/1383445-20200626214934396-990187247.png)
+
+- **minor compaction**：轻量级
+
+  - 功能：将最早生成的几个小的StoreFile文件进行合并，成为一个大文件，不定期触发
+
+  - 特点
+
+    - 只实现将多个小的StoreFile合并成一个相对较大的StoreFile，占用的资源不多
+    - 不会将标记为更新或者删除的数据进行处理
+
+  - 属性
+
+    ```ini
+    hbase.hstore.compaction.min=3
+    ```
+
+- **major compaction**：重量级合并
+
+  - 功能：将**整个Store**中所有StoreFile进行合并为一个StoreFile文件，整体有序的一个大文件
+
+  - 特点
+
+    - 将所有文件进行合并，构建整体有序
+    - 合并过程中会进行**清理过期和标记为删除的数据**
+    - 资源消耗比较大
+
+  - 参数配置
+
+    ```ini
+    hbase.hregion.majorcompaction=7天
+    ```
+
+> HBase 2.0开始，新增：**In-memory compaction**。
+
+- 原理：将当前写入的数据划分segment【数据段】
+
+  - 当数据不断写入MemStore，划分不同的segment，最终变成storefile文件
+
+- 如果开启内存合并，先将第一个segment放入一个队列中，与其他的segment进行合并
+
+  - 合并以后的结果再进行flush
+
+- 内存中合并的方式
+
+  ```properties
+  hbase.hregion.compacting.memstore.type=None|basic|eager|adaptive
+  
+  none：不开启，不合并
+  ```
+
+- basic（基础型）
+
+  ```shell
+  Basic compaction策略不清理多余的数据版本，无需对cell的内存进行考核
+  	basic适用于所有大量写模式
+  ```
+
+- eager（饥渴型）
+
+  ```
+  eager compaction会过滤重复的数据，清理多余的版本，这会带来额外的开销
+  	eager模式主要针对数据大量过期淘汰的场景，例如：购物车、消息队列等
+  ```
+
+- **adaptive（适应型）**
+
+  ```
+  adaptive compaction根据数据的重复情况来决定是否使用eager策略
+  	找出cell个数最多的一个，然后计算一个比例，如果比例超出阈值，则使用eager策略，否则使用basic策略
+  ```
+
+> 在工作中要避免**自动触发major compaction**，影响业务，所以禁用自动进行major compaction。
+
+```ini
+hbase.hregion.majorcompaction=0
+```
+
+- 在不影响业务的时候，手动处理，每天在业务不繁忙的时候，调度工具实现手动进行`major_compact`
+
+  ```shell
+  Run major compaction on passed table or pass a region row
+            to major compact an individual region. To compact a single
+            column family within a region specify the region name
+            followed by the column family name.
+            Examples:
+            
+            Compact all regions in a table:
+            hbase> major_compact 't1'
+            hbase> major_compact 'ns1:t1'
+            
+            Compact an entire region:
+            hbase> major_compact 'r1'
+            
+            Compact a single column family within a region:
+            hbase> major_compact 'r1', 'c1'
+            
+            Compact a single column family within a table:
+            hbase> major_compact 't1', 'c1'
+            
+            Compact table with type "MOB"
+            hbase> major_compact 't1', nil, 'MOB'
+            
+            Compact a column family using "MOB" type within a table
+            hbase> major_compact 't1', 'c1', 'MOB'
+  ```
