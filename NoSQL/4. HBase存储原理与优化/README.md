@@ -820,3 +820,84 @@ RowKey值
 		put 'ROAD_TRAFFIC_FLOW', '7E8D7-A苏_20220501091013445_B019999999', 'INFO:CPHM', '苏A-7D8E7'
 -----------------------------------------------------------------------
 ```
+
+### 2. 内存与表优化
+
+> **优化一**：RegionServer内存分配
+
+- RegionServer堆内存：100%
+
+![1651575162735](assets/1651575162735-1651592814511.png)
+
+- **MemStore**：写缓存
+
+  ```ini
+  hbase.regionserver.global.memstore.size = 0.4
+  ```
+
+  - 如果存多了，Flush到HDFS
+
+- **BlockCache**：读缓存
+
+  ```ini
+  hfile.block.cache.size = 0.4
+  ```
+
+  - **LRU淘汰算法**，将最近最少被使用的数据从缓存中剔除
+
+- 读多写少，降低MEMStore比例
+
+- 读少写多，降低BlockCache比例
+
+> **优化二**：压缩机制，对于大量数据的压缩存储，提高性能
+
+- 本质：Hbase的压缩源自于Hadoop对于压缩的支持
+
+- 检查Hadoop支持的压缩类型
+
+  - `hadoop checknative`
+
+- 需要将Hadoop的本地库配置到Hbase中
+
+  - 关闭Hbase的服务，配置Hbase的压缩本地库： `lib/native/Linux-amd64-64`
+
+  ```ini
+  cd /export/server/hbase/
+  
+  mkdir -p lib/native
+  ```
+
+  - 将Hadoop的压缩本地库创建一个软链接到Hbase的`lib/native`目录下
+
+  ```ini
+  ln -s /export/server/hadoop/lib/native /export/server/hbase/lib/native/Linux-amd64-64
+  ```
+
+  - 启动Hbase服务
+
+  ```
+  start-hbase.sh
+  
+  hbase shell
+  ```
+
+- 创建表
+
+  ```ini
+  create 't1_snappy', {NAME=>'info', COMPRESSION => 'SNAPPY'}
+  
+  put 't1_snappy',' 001', 'info:name','laoda'
+  ```
+
+> **优化三**：布隆过滤，在写入数据时，建立布隆索引;读取数据时，根据布隆索引加快数据的检索
+
+- **功能**：什么是布隆过滤器？
+  - 列族的一个属性，用于**数据查询时对数据的过滤**
+  - 列族属性：`BLOOMFILTER => NONE | 'ROW' | ROWCOL`
+    - NONE ：不开启布隆过滤器
+- **ROW：行级布隆过滤**
+  - 生成StoreFile文件时，会将这个文件中有哪些Rowkey的数据记录在文件的头部
+  - 当读取StoreFile文件时，会从文件头部获取这个StoreFile中的所有rowkey，自动判断是否包含需要的rowkey，如果包含就读取这个文件，如果不包含就不读这个文件
+- **ROWCOL**：行列级布隆过滤
+  - 生成StoreFile文件时，会将这个文件中有哪些Rowkey的以及对应的列族和列的信息数据记录在文件的头部
+  - 当读取StoreFile文件时，会从文件头部或者这个StoreFile中的所有rowkey以及列的信息，自动判断是否包含需要的rowkey以及列，如果包含就读取这个文件，如果不包含就不读这个文件
