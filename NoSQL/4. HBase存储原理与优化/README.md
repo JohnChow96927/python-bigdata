@@ -572,3 +572,62 @@ hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.Disa
 ![1636267953005](assets/1636267953005-1651592227741.png)
 
 [所以读写HBase表数据时，创建连接Connection时，指定依赖Zookeper集群地址。]()
+
+### 8. 数据写入流程
+
+> **Hbase写入数据的整体流程**
+
+- **step1：获取表的元数据**
+
+  - ==先连接zk，从zk获取meta表所在的regionserver==
+
+  - 根据查询的表名读取meta表，获取这张表的所有region的信息
+
+    ```ini
+    meta表是一张表，数据存储在一个region，这个region存在某个regionserver上
+    ```
+
+  - 怎么知道meta表的regionserver在哪？
+
+    - 这个地址记录在ZK中
+
+      ![image-20210628113529706](assets/image-20210628113529706-1651592657465.png)
+
+    - 得到这张表的所有region的范围和地址
+
+- **step2：找到对应的Region**
+
+  - 根据Rowkey和所有region的范围，来匹配具体写入哪个region
+  - 获取这个region所在的regionserver的地址
+
+- **step3：写入数据**
+
+  - 请求对应的regionserver
+
+  - regionserver根据提交的region的名称和数据来操作对应的region
+
+  - 根据列族来判断具体写入哪个store
+
+    ```ini
+    # 1.先写WAL：write ahead log
+    	为了避免内存数据丢失，所有数据写入内存之前会
+    	先记录这个内存操作
+    
+    # 2. 然后写这个Store的Memstore中
+    ```
+
+![深入HBase架构解析(E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/nosql_day04_20220503/fake_nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/03_%E7%AC%94%E8%AE%B0/assets/QjaYR3Q.jpg)](assets/QjaYR3Q.jpg)
+
+> [思考：hbase的region没有选择副本机制来保证安全，如果RegionServer故障，Master发现故障，怎么保证数据可用性？]()
+
+- step1：Master会根据元数据将这台RegionServe中的Region恢复到别的机器上
+
+- step2：怎么实现数据恢复？
+
+  ```ini
+  # 1. Memstore：WAL进行恢复
+  	WAL记录在HDFS上
+  
+  # 2. StoreFile：HDFS有副本机制
+  ```
+
