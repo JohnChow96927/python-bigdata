@@ -237,3 +237,69 @@ put tbname, rowkey, cf:col, value
 
 ![1651416286339](assets/1651416286339.png)
 
+### 4. Store内部原理: MemStore Flush
+
+> Hbase利用Flush实现**将内存数据溢写到HDFS**，保持内存中不断存储最新的数据。
+
+![1651446902140](assets/1651446902140.png)
+
+- **将内存memstore中的数据溢写到HDFS中变成磁盘文件storefile【HFILE】**
+  - 关闭集群：自动Flush
+  - 参数配置：自动触发机制
+
+- 自动触发机制：HBase 2.0之前参数
+
+  ```properties
+  #region的memstore的触发
+  #判断如果某个region中的某个memstore达到这个阈值，那么触发flush，flush这个region的所有memstore
+  hbase.hregion.memstore.flush.size=128M
+  
+  #region的触发级别：如果没有memstore达到128，但是所有memstore的大小加在一起大于等于128*4
+  #触发整个region的flush
+  hbase.hregion.memstore.block.multiplier=4
+  
+  #regionserver的触发级别：所有region所占用的memstore达到阈值，就会触发整个regionserver中memstore的溢写
+  #从memstore占用最多的Regin开始flush
+  hbase.regionserver.global.memstore.size=0.4 --RegionServer中Memstore的总大小
+  
+  #低于水位后停止
+  hbase.regionserver.global.memstore.size.upper.limit=0.99
+  hbase.regionserver.global.memstore.size.lower.limit = 0.4*0.95 =0.38
+  ```
+
+- 自动触发机制：HBase 2.0之后
+
+  ```properties
+  #设置了一个flush的最小阈值
+  #memstore的判断发生了改变：max("hbase.hregion.memstore.flush.size / column_family_number",hbase.hregion.percolumnfamilyflush.size.lower.bound.min)
+  #如果memstore高于上面这个结果，就会被flush，如果低于这个值，就不flush，如果整个region所有的memstore都低于，全部flush
+  #水位线 = max（128 / 列族个数,16）,列族一般给3个 ~ 42M
+  #如果memstore的空间大于42,就flush，如果小于就不flush；如果都小于，全部flush
+  
+  举例：3个列族，3个memstore,90/30/30   90会被Flush
+  
+  举例：3个列族，3个memstore,30/30/30   全部flush
+  
+  hbase.hregion.percolumnfamilyflush.size.lower.bound.min=16M
+  ```
+
+  ```ini
+  # 2.x中多了一种机制：In-Memory-compact,如果开启了【不为none】，会在内存中对需要flush的数据进行合并
+  #合并后再进行flush，将多个小文件在内存中合并后再flush
+    hbase.hregion.compacting.memstore.type=None|basic|eager|adaptive
+  ```
+
+> **注意**：工作中一般进行手动Flush
+
+- 原因：避免大量的Memstore将大量的数据同时Flush到HDFS上，占用大量的内存和磁盘的IO带宽，会影响业务
+
+- 解决：手动触发，定期执行
+
+  ```shell
+  hbase> flush 'TABLENAME'
+  hbase> flush 'REGIONNAME'
+  hbase> flush 'ENCODED_REGIONNAME'
+  hbase> flush 'REGION_SERVER_NAME'
+  ```
+
+- 封装一个文件，通过`hbase shell filepath`来定期的运行这个脚本
