@@ -998,3 +998,114 @@ RowKey值
   hbase.client.scanner.caching = 2147483647
   ```
 
+## III. HBase高级
+
+### 1. 批量导入BulkLoad 
+
+> **问题**：有一批大数据量的数据，要写入Hbase中，如果按照传统的方案来写入Hbase，必须先写入内存，然后内存溢写到HDFS，导致Hbase的内存负载和HDFS的磁盘负载过高，影响业务。
+
+- **解决**：写入Hbase方式
+
+  ```ini
+  # 方式一：构建Put对象，先写内存
+  	WAL 预写日志
+  	memstore、storefile
+  
+  # 方式二：BulkLoad，直接将数据变成StoreFile文件，放入Hbase对应的HDFS目录中
+    数据不经过内存，读取数据时可以直接读取到
+  ```
+
+- **步骤**
+
+  - step1：先将要写入的数据转换为HFILE文件
+  - step2：将HFILE文件加载到Hbase的表中【直接将文件放入了Hbase表对应的HDFS目录中】
+
+  ![img](assets/666745-20180819165702671-363002652.png)
+
+  
+
+- **特点**：不经过内存，降低了内存和磁盘的IO吞吐
+
+> **实现BulkLoad方式加载数据到Hbase的表中**
+
+- **需求**
+
+  ```ini
+  # 银行每天都产生大量的转账记录，超过一定时期的数据，需要定期进行备份存储。
+  	在MySQL中有大量转账记录数据，需要将这些数据保存到HBase中
+  	因为数据量非常庞大，所以采用的是Bulk Load方式来加载数据
+  ```
+
+![1651532697329](assets/1651532697329-1651592945338.png)
+
+- **数据**文件：`bank_record.csv`，每一列以逗号分隔
+
+  <img src="assets/image-20210905095107951.png" alt="image-20210905095107951" style="zoom:67%;" />
+
+  - 1、启动HDFS、YARN、HBase服务
+
+  ```ini
+  start-dfs.sh
+  
+  start-yarn.sh
+  
+  start-zk.sh
+   
+  start-hbase.sh
+  ```
+
+- 2、创建表
+
+  ```ini
+  create "bank_records", "info"
+  ```
+
+- 3、上传测试文件
+
+  ```shell
+    hdfs dfs -mkdir -p  /bulkload/input
+    hdfs dfs -put bank_record.csv /bulkload/input/
+  ```
+
+  ![image-20210926165515741](assets/image-20210926165515741-1651592927374.png)
+
+  - 4、开发转换程序：`将CSV文件转换为HFILE文件`
+
+  - 5、上传jar包到Linux上
+
+    ```ini
+    [root@node2 ~]# cd /root
+    [root@node2 ~]# rz
+    	bulkload.jar
+    ```
+
+    ![1651532827574](E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/nosql_day04_20220503/fake_nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/03_%E7%AC%94%E8%AE%B0/assets/1651532827574.png)
+
+  - 6、转换为HFILE
+
+    ```ini
+    export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/export/server/hbase/lib/*
+    yarn jar /root/bulkload.jar \
+    cn.itcast.hbase.bulkload.BulkLoadDriver  \
+    /bulkload/input/ /bulkload/output
+    ```
+
+  - 7、查看结果
+
+  ![1651533445497](assets/1651533445497-1651592918941.png)
+
+  - 8、加载到Hbase表中
+
+  ```ini
+  export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/export/server/hbase/lib/*
+  hbase org.apache.hadoop.hbase.tool.LoadIncrementalHFiles \
+  /bulkload/output bank_records
+  ```
+
+  - 9、查看数据
+
+  ![1651533560226](assets/1651533560226-1651592914668.png)
+
+> 批量加载数据流程示意图：
+
+![img](assets/hbase_Bulkload_iteblog-1651592912226.png)
