@@ -1,5 +1,7 @@
 # HBase存储原理与优化
 
+## I. HBase存储原理
+
 ### 1. Table、Region、RS
 
 > **问题**：客户端操作的是表，数据最终存在RegionServer中，表和RegionServer的关系是什么？
@@ -15,7 +17,7 @@
 
   - 类似于HDFS中Block,用于实现Hbase中分布式
 
-- 就是分区的概念，每张表都可以划分为多个Region，实现分布式存储，默认一张表只有一个分区	
+- 就是分区的概念，每张表都可以划分为多个Region，实现分布式存储，默认一张表只有一个分区
 
   3. 每个Region由一台RegionServer所管理，Region存储在RegionServer
   4. 一台RegionServer可以管理多个Region
@@ -63,3 +65,92 @@
 ```
 
 ![image-20210524171650278](assets/image-20210524171650278.png)
+
+### 2. Region划分规则
+
+> **问题**：一张表划分为多个Region，划分的规则是什么？写一条数据到表中，这条数据会写入哪个Region，分配规则是什么？
+
+- **回顾HDFS和Redis划分规则**
+
+  ```ini
+  # 1. HDFS：划分分区的规则，按照大小划分
+  	文件按照每128M划分一个Block
+  	
+  # 2. Redis：将0 ~ 16383划分成多个段，每个小的集群分配一个段的内容
+  	CRC16（K） & 16383
+  ```
+
+- **HBase分区划分规则**：**范围划分【根据Rowkey范围】**
+
+  ```ini
+  # 1. 任何一个Region都会对应一个范围
+    	如果只有一个Region，范围：-oo  ~  +oo
+  	
+  # 2. 范围划分：从整个-oo ~  +oo区间上进行范围划分
+  
+  #3. 每个分区都会有一个范围：根据Rowkey属于哪个范围就写入哪个分区
+  	[startKey,stopKey)	 -> 前闭后开区间
+  	
+  默认：一张表创建时，只有一个Region，范围：-oo  ~ +oo
+  ```
+
+![image-20210926112849026](assets/image-20210926112849026.png)
+
+- 自定义：创建表时，指定有多少个分区，每个分区的范围
+
+  ```ini
+  创建一张表，有2个分区Region
+  	create 't3', 'f1', SPLITS => ['50']
+  分区范围
+    	region0：-oo ~  50
+    	region1：50  ~ +oo
+  ```
+
+- 数据分配的规则：**==根据Rowkey属于哪个范围就写入哪个分区==**
+
+```ini
+# 举个栗子：创建一张表，有4个分区Region，20,40,60
+  	create 'itcast:t3', {SPLITS => [20, 40, 60]}
+  	
+# 规则：前闭后开
+	region0：-oo ~ 20
+	region1：20   ~ 40
+	region2：40   ~ 60
+	region3：60  ~ +oo
+
+# 写入数据的rowkey：
+	# 比较是按照ASCII码比较的，不是数值比较
+	# 比较规则：ASCII码逐位比较
+    A1234：region3
+    c6789：region3
+    00000001：region0
+    2：region0
+    99999999：region3
+	
+```
+
+> 创建表后，打开HBase WEB UI页面，查看表的分区Region信息
+
+```ini
+# 1. 默认只有1个分区
+
+# 2. 注意：随着数据越来越多，达到阈值，这个分区会自动分裂为两个分裂
+```
+
+![image-20210525120031461](assets/image-20210525120031461.png)
+
+```ini
+# 3. 手动创建多个分区
+create 'itcast:t3','cf',SPLITS => ['20', '40', '60', '80']
+```
+
+![image-20210525120214465](assets/image-20210525120214465.png)
+
+```ini
+# 4. 写入数据
+put 'itcast:t3','0300000','cf:name','laoda'
+put 'itcast:t3','7890000','cf:name','laoer'
+```
+
+![image-20210525120338729](assets/image-20210525120338729.png)
+
