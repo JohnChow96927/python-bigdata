@@ -236,3 +236,4 @@ put tbname, rowkey, cf:col, value
 ```
 
 ![1651416286339](assets/1651416286339.png)
+
