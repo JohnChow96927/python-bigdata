@@ -500,3 +500,75 @@ hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.Disa
   split 'regionName', 'splitKey'
   ```
 
+### 7. 元数据表hbase:meta
+
+![image-20210323223403690](assets/image-20210323223403690-1622106546045-1651592349792.png)
+
+> 当执行一条Put操作，数据是如何写入Hbase表或执行一条Get操作，如何从HBase表读取数据？
+
+```ini
+# 写入数据
+	put 表名 rowkey 列族:列 值
+
+# 读取数据
+	get 表名 rowkey
+```
+
+![1636235100229](assets/1636235100229.png)
+
+- step1：根据**表名**获取这张表对应的**所有Region的信息**
+  - 整个Hbase的所有Regionserver中有很多个Region：100
+  - 先根据表名找到这张表有哪些region：5
+- step2：根据**Rowkey**判断具体写入哪个Region
+  - 知道表的所有region
+  - 根据rowkey属于哪个**region范围**，来确定具体写入哪个region
+- step3：将put操作提交给这个**Region所在的RegionServer**
+  - 获取这个Region所在的RegionServer地址
+- step4：RegionServer将数据写入Region根据**列族**判断写入**哪个Store**
+- step5：将数据写入**MemStore**中
+
+> 读写HBase表数据，3个思考题：
+
+- 问题1：如何知道这张表对应的region有哪些？
+- 问题2：如何知道每个Region的范围的？
+- 问题3：如何知道Region所在的RegionServer地址的？
+
+> HBase自带的两张系统表
+
+- **hbase:namespace**：存储HBase中所有namespace的信息
+
+  ![1636267206649](assets/1636267206649-1651592281294.png)
+
+- **hbase:meta**：存储表的元数据
+
+![](assets/7vYrau2.jpg)
+
+> `hbase:meta`表结构
+
+- Rowkey：每张表每个Region的名称
+
+  ```ini
+  itcast:t3,20,1632627488682.fba4b18252cfa72e48ffe99cc63f7604
+  表名,startKey,时间，唯一id
+  ```
+
+![image-20210325091441577](assets/image-20210325091441577-1651592230839.png)
+
+- HBase中每张表的每个region对应元数据表中的一个Rowkey
+
+  ```ini
+  # info:regioninfo
+  	STARTKEY => 'eeeeeeee', ENDKEY => ''
+  	
+  # info:server
+  	column=info:server, timestamp=1651559521977, value=node2.itcast.cn:16020 
+  ```
+
+> 根据表名读取meta表，基于rowkey的前缀匹配，获取这张表的所有region信息
+
+- 第一点： 系统表【`hbase:meta`】只有1个Region
+- 第二点：Region所在RegionServer地址信息，被保存到Zookeeper上
+
+![1636267953005](assets/1636267953005-1651592227741.png)
+
+[所以读写HBase表数据时，创建连接Connection时，指定依赖Zookeper集群地址。]()
