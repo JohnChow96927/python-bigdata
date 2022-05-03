@@ -901,3 +901,100 @@ RowKey值
 - **ROWCOL**：行列级布隆过滤
   - 生成StoreFile文件时，会将这个文件中有哪些Rowkey的以及对应的列族和列的信息数据记录在文件的头部
   - 当读取StoreFile文件时，会从文件头部或者这个StoreFile中的所有rowkey以及列的信息，自动判断是否包含需要的rowkey以及列，如果包含就读取这个文件，如果不包含就不读这个文件
+
+### 3. 基础环境优化
+
+> Linux系统优化
+
+- 开启文件系统的预读缓存可以提高读取速度
+
+  ```ini
+  blockdev --setra 32768 /dev/sda
+  ```
+
+- 最大限度使用物理内存
+
+  ```ini
+  sysctl -w vm.swappiness=0
+  ```
+
+- 调整文件及进程句柄数
+
+  ```shell
+  vim /etc/security/limits.conf 修改打开文件数限制
+  末尾添加：
+  *                soft    nofile          1024000
+  *                hard    nofile          1024000
+  *             	 -       nofile          1024000
+  *            	 -       nproc           1024000 
+  
+  
+  vim /etc/security/limits.d/20-nproc.conf 修改用户打开进程数限制
+  修改为：
+  *          soft    nproc     4096
+  root       soft    nproc     unlimited
+  *          soft    nproc     40960
+  root       soft    nproc     unlimited
+  ```
+
+> HDFS文件系统级别优化，在`hdfs-site.xml`中添加
+
+- 保证RPC调用会有较多的线程数
+
+  ```ini
+  dfs.namenode.handler.count = 20
+  dfs.datanode.handler.count = 20
+  ```
+
+- 文件块大小的调整
+
+  ```ini
+  dfs.blocksize = 256M
+  ```
+
+- 文件句柄数
+
+  ```ini
+  dfs.datanode.max.transfer.threads = 4096
+  ```
+
+- 超时时间
+
+  ```ini
+  dfs.image.transfer.timeout = 60000
+  ```
+
+- 避免DN错误宕机
+
+  ```ini
+  dfs.datanode.failed.volumes.tolerated = 1
+  ```
+
+> Zookeeper 优化
+
+- 优化Zookeeper会话超时时间
+
+  ```ini
+  zookeeper.session.timeout = 90000
+  ```
+
+> Hbase属性优化
+
+- 设置RPC监听数量
+
+  ```ini
+  hbase.regionserver.handler.count = 50
+  ```
+
+- 优化hbase客户端缓存
+
+  ```ini
+  hbase.client.write.buffer = 2097152
+  ```
+
+- 指定scan.next扫描HBase所获取的行数
+
+  ```ini
+  hbase.client.scanner.caching = 2147483647
+  ```
+
