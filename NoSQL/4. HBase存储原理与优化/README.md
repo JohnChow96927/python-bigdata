@@ -154,3 +154,85 @@ put 'itcast:t3','7890000','cf:name','laoer'
 
 ![image-20210525120338729](assets/image-20210525120338729.png)
 
+### 3. Region内部结构
+
+> **问题**：数据在Region的内部是如何存储的？
+
+```ini
+put tbname, rowkey, cf:col, value
+
+# tbname：决定了这张表的数据最终要读写哪些分区
+# rowkey：决定了具体读写哪个分区
+# cf：决定具体写入哪个Store
+```
+
+- Region：对整张表的数据划分，按照范围划分，实现分布式存储     
+
+![](assets/image-20210524171934125.png)
+
+```ini
+# Store：
+    对分区的数据进行划分，按照列族划分，一个列族对应一个Store
+    不同列族的数据写入不同的Store中，实现了按照列族将列进行分组
+    根据用户查询时指定的列族，可以快速的读取对应的store
+
+# MemStore：
+    每个Store都有一个: 内存存储区域
+    数据写入memstore就直接返回
+
+# StoreFile：
+    每个Store中可能有0个或者多个StoreFile文件
+    逻辑上：Store
+    物理上：HDFS，HFILE【二进制文件】
+```
+
+> **问题：Hbase的数据在HDFS中是如何存储的？**
+
+- 整个Hbase在HDFS中的存储目录
+
+  ```properties
+  hbase.rootdir=hdfs://node1.itcast.cn:8020/hbase
+  ```
+
+  ![image-20210625154845286](assets/image-20210625154845286.png)
+
+  - NameSpace：目录结构
+
+![image-20210625154914849](assets/image-20210625154914849.png)
+
+- Table：目录结构
+
+  ![image-20210625154949303](assets/image-20210625154949303.png)
+
+- Region：目录结构
+
+  ![image-20210625155037410](assets/image-20210625155037410.png)
+
+- Store/ColumnFamily：目录结构
+
+  ![image-20210625155222749](assets/image-20210625155222749.png)
+
+- StoreFile
+
+  ![image-20210625155242858](assets/image-20210625155242858.png)
+
+  - 如果HDFS上没有storefile文件，可以通过flush，手动将表中的数据从内存刷写到HDFS中
+
+    ```
+    flush 'itcast:t3'    
+    ```
+
+> Region的内部存储结构是什么样的？
+
+```ini
+# 1. NS:Table|RegionServer：整个Hbase数据划分
+
+# 2. Region：划分表的数据，按照Rowkey范围划分
+      - Store：划分分区数据，按照列族划分
+        - MemStore：物理内存存储
+        - StoreFile：物理磁盘存储
+          - 逻辑：Store
+          - 物理：HDFS[HFile]
+```
+
+![1651416286339](assets/1651416286339.png)
