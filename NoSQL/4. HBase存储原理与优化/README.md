@@ -631,3 +631,47 @@ hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.Disa
   # 2. StoreFile：HDFS有副本机制
   ```
 
+### 9. 数据读取流程
+
+> **Hbase数据读取整体流程**
+
+- **step1：获取元数据**
+
+  - 客户端请求Zookeeper，获取meta表所在的regionserver的地址
+  - 读取meta表的数据
+  - **注意：客户端会缓存meta表的数据，只有第一次会连接ZK，读取meta表的数据，缓存会定期失效，要重新缓存**
+  - 避免每次请求都要先连接zk，再读取meta表
+
+- **step2：找到对应的Region**
+
+  - 根据meta表中的元数据，找到表对应的region
+  - 根据region的范围和读取的Rowkey，判断需要读取具体哪一个Region
+  - 根据region的Regionserver的地址，请求对应的RegionServer
+
+- **step3：读取数据**
+
+  - **先查询memstore**
+
+  - 如果开启了缓存，**就读BlockCache**
+
+    - 如果缓存中没有，也读取storefile，从storefile读取完成以后，放入缓存中
+
+  - 如果没有开启缓存**，就读取StoreFile**
+
+  - 第一次查询
+
+    ```ini
+     memstore
+     storefile：如果开启了缓存，就将这次从storefile中读取的数据放入缓存BlockCache
+    ```
+
+  - 第二次查询
+
+    ```ini
+    memstore：写缓存
+    blockCache：读缓存
+    storefile：二进制
+    ```
+
+  ![深入HBase架构解析(E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/nosql_day04_20220503/fake_nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/03_%E7%AC%94%E8%AE%B0/assets/yeQBn2.jpg)](assets/yeQBn2.jpg)
+
