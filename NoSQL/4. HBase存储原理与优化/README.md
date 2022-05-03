@@ -1109,3 +1109,86 @@ RowKey值
 > 批量加载数据流程示意图：
 
 ![img](assets/hbase_Bulkload_iteblog-1651592912226.png)
+
+### 2. 协处理器Coprocessor
+
+> 什么是协处理器？
+
+- [协处理器指的是可以自定义开发一些功能集成到Hbase中]()
+
+- **observer类**：观察者类，类似于**监听机制**，MySQL中的触发器、Zookeeper中的监听
+
+  - 实现：**监听A，如果A触发了，就执行B**
+  - 监听对象
+
+  ```ini
+  Region
+  Table
+  
+  RegionServer
+  Master
+  ```
+
+> 需求：当往第一张表写入数据时，自动往第二张表写入一条数据，并且将rowkey中的字段换位
+
+```ini
+# put 't1_users','20191211_001','info:name','zhangsan'
+
+t1_users：
+	rowkey：20220501_1001
+
+t2_users：
+	rowkey：1001_20220501
+```
+
+- 1、创建两张表
+
+  ```shell
+  #rowkey：time_id
+  create 't1_users','info'
+  
+  #rowkey：id_time
+  create 't2_users','info'
+  ```
+
+- 2、将开发好的协处理器jar包上传到hdfs上
+
+  ```ini
+  hdfs dfs -mkdir -p /coprocessor/jar
+  
+  hdfs dfs -put coprocessor.jar /coprocessor/jar/
+  ```
+
+- 3、添加协处理器到`t1_users`中，用于监听proc1的操作
+
+  ```shell
+  disable 't1_users'
+  
+  alter 't1_users', METHOD => 'table_att','Coprocessor'=>'hdfs://node1.itcast.cn:8020/coprocessor/jar/coprocessor.jar|cn.itcast.hbase.coprocessor.SyncDataCoprocessor|1001|'
+  
+  enable 't1_users'
+  ```
+
+- 4、测试
+
+  ```ini
+  put 't1_users','20220501_1001','info:name','zhangsan'
+  
+  scan 't1_users'
+  
+  scan 't2_users'
+  ```
+
+- 5、卸载协处理器
+
+  ```ini
+  disable 't1_users'
+  
+  alter 't1_users', METHOD=>'table_att_unset',NAME=>'coprocessor$1'
+  
+  enable 't1_users'
+  ```
+
+> - 协处理器API过于繁琐，基于不同的需求需要开发多个协处理器共同实现，不建议使用
+> - 建议使用**Phoenix**等第三方工具来实现
+
