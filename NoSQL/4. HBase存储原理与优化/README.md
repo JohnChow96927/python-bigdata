@@ -439,3 +439,64 @@ hbase.hregion.majorcompaction=0
             Compact a column family using "MOB" type within a table
             hbase> major_compact 't1', 'c1', 'MOB'
   ```
+
+### 6. Region Split
+
+> HBase通过Region Split策略来保证一个Region存储的数据量不会过大，通过**分裂实现分摊负载，避免热点**，降低故障率。
+
+![1636214320221](assets/1636214320221.png)
+
+> 什么是Split分裂机制？
+
+- 为了避免一个Region存储的数据过多，提供了Region分裂机制
+- 实现将一个Region分裂为两个Region
+- 由RegionServer实现Region的分裂，得到两个新的Region(Region下线)
+- 由Master负责将两个新的Region分配到Regionserver上（Region上线
+
+> 相关参数配置
+
+- region阈值
+
+```ini
+hbase.hregion.max.filesize=10GB
+```
+
+- 0.94之前：判断region中是否有一个storefile文件是否达到阈值，如果达到，就分裂
+
+```ini
+hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy
+```
+
+- 0.94开始：如果region个数在**0 ` 100**之间
+
+```ini
+# 规则：Math.min(getDesiredMaxFileSize(),initialSize * tableRegionsCount * tableRegionsCount * tableRegionsCount)
+# initialSize = 128 X 2
+# min(10GB, 256 x region个数的3次方)
+hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.IncreasingToUpperBoundRegionSplitPolicy
+```
+
+- 2.x开始
+
+```properties
+# 规则：return tableRegionsCount  1  ? this.initialSize : getDesiredMaxFileSize();
+# 判断region个数是否为1，如果为1，就按照256分，如果不为1，就按照10GB来分
+hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.SteppingSplitPolicy
+```
+
+> **注意**：工作作中避免自动触发，影响集群读写，建议关闭
+
+```properties
+hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.DisabledRegionSplitPolicy
+```
+
+- 手动操作
+
+  ```shell
+  split 'tableName'
+  split 'namespace:tableName'
+  split 'regionName' # format: 'tableName,startKey,id'
+  split 'tableName', 'splitKey'
+  split 'regionName', 'splitKey'
+  ```
+
