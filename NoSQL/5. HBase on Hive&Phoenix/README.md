@@ -361,7 +361,146 @@ yum -y install python-argparse
 
 ### 3. DDL操作
 
+> 实现基于SQL的数据库管理：创建、切换、删除
 
+![1651664471320](assets/1651664471320.png)
+
+- 创建NS（创建数据库)
+
+```SQL
+CREATE SCHEMA IF NOT EXISTS TEST_PHOENIX;
+```
+
+- 切换NS
+
+  ```sqlite
+  USE TEST_PHOENIX ;
+  ```
+
+- 删除NS
+
+  ```sqlite
+  DROP SCHEMA IF EXISTS TEST_PHOENIX;
+  ```
+
+- **注意：Phoenix中默认会将所有字符转换为大写，如果想要使用小写字母，必须加上双引号**
+
+> 实现基于SQL的数据表管理：创建、列举、查看、删除
+
+- **列举**
+
+  ```
+  !tables
+  ```
+
+  ![1651664729665](assets/1651664729665-1651719203551.png)
+
+- **创建**
+
+  - 语法：http://phoenix.apache.org/language/index.html#create_table
+
+  ![1651664846873](assets/1651664846873.png)
+
+  - **注意规则**
+
+    - 建表的时候需要指定字段
+    - ==谁是primary key谁就是rowkey，每张表必须有主键==
+
+  - 定义字段时，要指定列族，列族的属性可以在建表语句中指定
+
+    - split：指定建表构建多个分区，每个分区段划分
+
+    ```sql
+     CREATE TABLE my_table ( 
+         id INTEGER not null primary key desc, 
+         m.date DATE not null,
+         m.db_utilization DECIMAL, 
+         i.db_utilization
+     ) m.VERSIONS='3';
+    ```
+
+  - 如果Hbase中没有这个表【一般不用】
+
+    ```sql
+    USE TEST_PHOENIX;
+    CREATE TABLE IF NOT EXISTS TEST_PHOENIX.ORDER_DTL(
+        RK varchar primary key,
+        INFO.STATUS varchar,
+        INFO.PAY_MONEY float,
+        INFO.PAYWAY integer,
+        INFO.USER_ID varchar,
+        INFO.OPERATION_DATE varchar,
+        INFO.CATEGORY varchar
+    );
+    ```
+
+    ![1651664969497](assets/1651664969497.png)
+
+- 查看表
+
+  ```SQL
+  !desc ORDER_DTL;
+  ```
+
+  ![1651665454712](assets/1651665454712.png)
+
+- 表删除
+
+  ![1651665480578](assets/1651665480578.png)
+
+  ```SQL
+  DROP TABLE IF EXISTS TEST_PHOENIX.ORDER_DTL;
+  ```
+
+  ![1651665308040](assets/1651665308040.png)
+
+> 如果HBase中表已存在会自动关联【**常用**】
+
+- HBase中建表并导入数据
+
+  ```ini
+  hbase shell ORDER_INFO.txt 
+  ```
+
+- Phoenix中建表
+
+  ```sql
+  CREATE TABLE IF NOT EXISTS ORDER_INFO(
+      ID varchar primary key,
+      INFO.USER_ID varchar,
+      INFO.OPERATION_DATE varchar,
+      INFO.PAYWAY varchar,
+      INFO.PAY_MONEY varchar,
+      INFO.STATUS varchar,
+      INFO.CATEGORY varchar
+  ) column_encoded_bytes=0;
+  ```
+
+  [表名与列名都必须一致，大小写严格区分]()
+
+![1651671330466](assets/1651671330466.png)
+
+- 查看表中数据
+
+```SQL
+SELECT * FROM ORDER_INFO LIMIT 10 ;
+
+SELECT COUNT(*) AS total FROM ORDER_INFO ;
+```
+
+![1651671384633](assets/1651671384633.png)
+
+> 注意：创建表时，必须指定主键作为Rowkey，主键列不能加列族
+
+- Phoenix 4.8版本之前，只要**创建同名的Hbase表，会自动关联数据**
+
+- Phoenix 4.8版本以后，不推荐关联表的方式
+
+  - 推荐使用视图关联的方式来实现，如果要使用关联表的方式，必须加上以下参数
+
+  ```ini
+   column_encoded_bytes=0 ;
+  ```
 
 ### 4. 视图View
 
