@@ -218,7 +218,7 @@ put tbname, rowkey, cf:col, value
 
   - 如果HDFS上没有storefile文件，可以通过flush，手动将表中的数据从内存刷写到HDFS中
 
-    ```
+    ```ini
     flush 'itcast:t3'    
     ```
 
@@ -673,7 +673,7 @@ hbase.regionserver.region.split.policy=org.apache.hadoop.hbase.regionserver.Disa
     storefile：二进制
     ```
 
-  ![深入HBase架构解析(E:/Heima/%E5%B0%B1%E4%B8%9A%E7%8F%AD%E6%95%99%E5%B8%88%E5%86%85%E5%AE%B9%EF%BC%88%E6%AF%8F%E6%97%A5%E6%9B%B4%E6%96%B0%EF%BC%89/NoSQL%20Flink/nosql_day04_20220503/fake_nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/nosql_day04_20220503%EF%BC%9A%E8%AE%B2%E4%B9%89%E7%AC%94%E8%AE%B0%E4%BB%A3%E7%A0%81%E8%B5%84%E6%96%99/03_%E7%AC%94%E8%AE%B0/assets/yeQBn2.jpg)](assets/yeQBn2.jpg)
+  ![深入HBase架构解析](assets/yeQBn2.jpg)
 
 ## II. HBase优化
 
