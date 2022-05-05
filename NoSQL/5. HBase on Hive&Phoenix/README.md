@@ -1136,7 +1136,124 @@ SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
 
 ### 3. 覆盖索引
 
+> **覆盖索引功能**：在构建全局索引时，将**经常作为查询条件或者结果的列放入索引表中**，直接通过索引表来返回数据结果
 
+- 原始数据表
+
+  ```ini
+  rowkey：车牌号码_时间_卡口编号		车牌号码		时间		卡口编号	  行驶速度
+  ```
+
+- 需求：根据【卡口编号】进行数据查询
+
+  - 创建全局索引
+
+  ```sql
+  CREATE INDEX qkbh_index ON ROAD_TRAFFIC_FLOW(卡口编号);
+  ```
+
+  - 自动构建索引表
+
+  ```ini
+  rowkey：卡口编号#车牌号码_时间_卡口编号		col：占位值
+  ```
+
+  - 如果需求发生改变，查询qkbh和speed，全局索引会失效
+
+  
+
+- ==创建全局+覆盖：include(age)==
+
+  ```ini
+  CREATE INDEX qkbh_index_v2 ON ROAD_TRAFFIC_FLOW(卡口编号) include(SPEED);
+  ```
+
+- 自动构建索引表
+
+  ```ini
+  rowkey:卡口编号#车牌号码_时间_卡口编号		col：SPEED
+  ```
+
+  ```SQL
+  SELECT QKHB FROM ROAD_TRAFFIC_FLOW;
+  
+  SELECT QKHB FROM ROAD_TRAFFIC_FLOW WHERE QKHB = 'KB1002' ;
+  
+  SELECT QKHB , SPEED FROM ROAD_TRAFFIC_FLOW ;
+  ```
+
+- **特点：**
+
+  - 基于全局索引构建，将常用的查询结果放入索引表中，直接从索引表返回结果，不用再查询原表
+
+- **应用：**
+
+  - 适合于查询条件比较固定，数据量比较小的场景下
+
+- 注意：
+
+  - 不建议将大部分列都放入覆盖索引，导致索引表过大，性能降低
+
+> 基于Phoenix实现覆盖索引的测试
+
+- 不构建索引，先查询，查看执行计划
+
+  ```sql
+  SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+  
+  explain SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002' ;
+  ```
+
+![1651709889500](assets/1651709889500.png)
+
+- 基于`QKBH`构建全局索引，运行通过`QKBH`查询`卡口编号和行驶速度`
+
+  ```sql
+  CREATE INDEX CVR_IDX_QKBH_ROAD_TRAFFIC_FLOW on ROAD_TRAFFIC_FLOW(INFO.QKBH) INCLUDE(INFO.SPEED);
+  
+  ```
+
+- 查看索引表
+
+  ```ini
+  !tables
+  
+  SELECT * FROM CVR_IDX_QKBH_ROAD_TRAFFIC_FLOW；
+  ```
+
+  查看hbase表中数据
+
+  ![1651710111504](assets/1651710111504.png)
+
+  Phoenix中查看索引和数据
+
+  ![1651710153921](assets/1651710153921.png)
+
+  - 查询数据
+
+  ```sqlite
+  SELECT QKBH, SPEED FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+  
+  explain SELECT QKBH, SPEED FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+  ```
+
+  ![1651710323966](assets/1651710323966.png)
+
+  - 如果查询内容不是索引字段，查看执行计划
+
+    ```sql
+    explain SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+    ```
+
+  ![1651710351396](assets/1651710351396.png)
+
+> **小结**
+
+- 覆盖索引是基于全局索引实现的
+  - 全局索引：用**查询条件**作为索引表rowkey，先查询索引表，再查询原表
+  - 覆盖索引：用查询条件作为索引表rowkey，将**经常查询的列直接放入索引表**，查询直接从索引表返回
+- 覆盖索引目的：
+  - 将常用的查询结果放入索引表中，直接从索引表返回数据
 
 ### 4. 本地索引
 
