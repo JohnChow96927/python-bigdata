@@ -980,7 +980,159 @@ step4：释放资源
 
 ### 2. 全局索引
 
+> **全局索引功能**：当为==某一列创建全局索引==时，Phoenix==自动创建一张索引表，将创建索引的这一列加上原表的rowkey作为新的rowkey==
 
+- 原始数据表
+
+  ```ini
+  rowkey：车牌号码_时间_卡口编号		车牌号码		时间		卡口编号	  行驶速度
+  
+  ```
+
+- 需求：根据**卡口编号**进行数据查询，[不走索引]()
+
+- 创建全局索引
+
+  ```ini
+  CREATE INDEX qkbh_index ON ROAD_TRAFFIC_FLOW(卡口编号);
+  ```
+
+- 自动构建索引表
+
+  ```ini
+  rowkey：卡口编号#车牌号码_时间_卡口编号		col：占位值
+  ```
+
+- **查询**
+
+  - 先查询索引表：通过rowkey获取名称对应的id
+  - 再查询数据表：通过id查询对应的数据
+
+- **特点：**
+
+  - 默认==只能对构建索引的字段做索引查询==
+  - 如果**查询中包含不是索引的字段**或者**条件不是索引字段**，不走索引
+
+- **应用：**==写少读多==
+
+  - 当原表的数据发生更新操作提交时，会被拦截
+  - 先更新所有索引表，然后再更新原表
+
+> 基于Phoenix实现全局索引的测试
+
+- 1、创建表、插入数据
+
+```SQL
+-- 创建表
+create 'ROAD_TRAFFIC_FLOW', 'INFO'
+
+-- 插入数据
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090000234_KB1001', 'INFO:CPHM', '苏A-7D8E7'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090000234_KB1001', 'INFO:TS', '2022-05-01 09:00:00.234'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090000234_KB1001', 'INFO:QKBH', 'KB1001'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090000234_KB1001', 'INFO:SPEED', '40 km/h'
+
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090300123_KB1002', 'INFO:CPHM', '苏A-7D8E7'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090300123_KB1002', 'INFO:TS', '2022-05-01 09:03:00.123'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090300123_KB1002', 'INFO:QKBH', 'KB1002'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090300123_KB1002', 'INFO:SPEED', '38 km/h'
+
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090600567_KB1003', 'INFO:CPHM', '苏A-7D8E7'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090600567_KB1003', 'INFO:TS', '2022-05-01 09:06:00.567'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090600567_KB1003', 'INFO:QKBH', 'KB1003'
+put 'ROAD_TRAFFIC_FLOW', '苏A-7D8E7_20220501090600567_KB1003', 'INFO:SPEED', '45 km/h'
+
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102005876_KB1002', 'INFO:CPHM', '皖C-YA890'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102005876_KB1002', 'INFO:TS', '2022-05-01 10:20:05.876'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102005876_KB1002', 'INFO:QKBH', 'KB1002'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102005876_KB1002', 'INFO:SPEED', '42 km/h'
+
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102320235_KB1003', 'INFO:CPHM', '皖C-YA890'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102320235_KB1003', 'INFO:TS', '2022-05-01 10:23:20.235'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102320235_KB1003', 'INFO:QKBH', 'KB1003'
+put 'ROAD_TRAFFIC_FLOW', '皖C-YA890_20220501102320235_KB1003', 'INFO:SPEED', '50 km/h'
+
+```
+
+- 2、Phoenix查询视图，关联HBase表
+
+```SQL
+CREATE VIEW IF NOT EXISTS ROAD_TRAFFIC_FLOW(
+    RK varchar primary key,
+    INFO.CPHM varchar,
+    INFO.TS varchar,
+    INFO.QKBH varchar,
+    INFO.SPEED varchar
+) ;
+
+SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
+```
+
+![1651708277635](assets/1651708277635.png)
+
+- 3、不构建索引，先查询，查看执行计划
+
+  ```sql
+  SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002' LIMIT 10 ;
+  ```
+
+  ![1651708375456](assets/1651708375456.png)
+
+  ```SQL
+  explain SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002' LIMIT 10 ;
+  ```
+
+  ![1651708426148](assets/1651708426148.png)
+
+- 4、基于`QKBH`构建全局索引
+
+  ```sql
+  CREATE INDEX GBL_IDX_QKBH_ROAD_TRAFFIC_FLOW on ROAD_TRAFFIC_FLOW(INFO.QKBH);
+  ```
+
+  hbase 中查看索引表数据
+
+  ![1651708932902](assets/1651708932902.png)
+
+  查看索引表和数据
+
+  ```SQL
+  !tables
+  
+  SELECT * FROM GBL_IDX_QKBH_ROAD_TRAFFIC_FLOW LIMIT 10 ;
+  ```
+
+  ![1651708623723](assets/1651708623723.png)
+
+- 5、查询数据及查询计划
+
+  ```sql
+  explain SELECT QKBH FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002' LIMIT 10 ;
+  ```
+
+  ![1651708725108](assets/1651708725108.png)
+
+- 如果查询内容不是索引字段，查看执行计划
+
+  ```sql
+  explain SELECT * FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002' LIMIT 10 ;
+  ```
+
+  ![1651708787667](assets/1651708787667.png)
+
+- 删除索引
+
+  ```sql
+  DROP INDEX GBL_IDX_QKBH_ROAD_TRAFFIC_FLOW on ROAD_TRAFFIC_FLOW;
+  ```
+
+> **小结**
+
+- 全局索引是**最常用的基础二级索引**类型
+- 索引表结构
+  - rowkey：查询条件字段【索引字段】 + 原表rowkey
+- 应用：适合于读多写少的场景
+- 特点：如果查询内容中包含非索引字段，将不走索引
 
 ### 3. 覆盖索引
 
