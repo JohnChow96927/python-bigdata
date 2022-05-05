@@ -1257,7 +1257,81 @@ SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
 
 ### 4. 本地索引
 
+> **本地索引功能**：==将索引数据与对应的原始数据放在同一台机器，避免了跨网络传输，提高了写的性能==
 
+- 与全局和覆盖的区别是什么？
+
+  ```ini
+  # 全局和覆盖都是单独构建一张索引表
+  source_table：
+  	region0【node1】，region1【node2】，region2【node3】
+  
+  index_table：
+  	region0【node4】
+  ```
+
+- 本地索引构建索引数据时，==将索引数据直接存储在原表中，这条数据和对应的索引存储同一个region中==
+
+  - 满足：**提高读的性能，也能降低对写的影响**
+
+  - 本地索引**不会创建索引表**
+
+    ```ini
+    source_table：region0【node1】，region1【node2】，region2【node3】
+    ```
+
+  - 怎么保证数据和索引能写入同一个region呢？
+
+    ```ini
+    # 数据：
+    	rowkey：id=苏A-7D8E7_20220501090000234_KB1001  name=KB1001
+    # 索引：
+    	rowkey：KB1001_苏A-7D8E7_20220501090000234_KB1001
+    ```
+
+  - 将索引数据写入到原表中
+
+  ![1651711723473](assets/1651711723473.png)
+
+- **特点**
+
+  - 即使查询数据中包含了非索引字段，也会走本地索引
+  - **本地索引会修改原始数据表**
+    - 如果构建了本地索引，不能通过Hbase的API来读写数据的，必须通过Phoenix来实现读写
+
+- **应用**：
+
+  - 提高构建索引时对写的性能的影响
+  - 最终所有索引都是为了提高读的性能的
+
+> 基于Phoenix实现本地索引的测试
+
+- 创建本地索引
+
+  ```sql
+  CREATE LOCAL INDEX LOCAL_IDX_QKBH_ROAD_TRAFFIC_FLOW on ROAD_TRAFFIC_FLOW(INFO.QKBH);
+  ```
+
+![1651711249293](assets/1651711249293.png)
+
+查看HBase表数据
+
+![1651711370349](assets/1651711370349.png)
+
+- 基于本地索引查询
+
+  ```sql
+  SELECT SPEED FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+  
+  explain SELECT SPEED FROM ROAD_TRAFFIC_FLOW WHERE QKBH = 'KB1002';
+  ```
+
+  ![1651711436207](assets/1651711436207.png)
+
+> **小结**
+
+- 本地索引设计：将索引与数据存储在同一台机器，提高读写的性能，通过建列族构建rowkey来实现的
+- 本地索引不局限于是否对列构建索引，优先走本地索引实现数据查询
 
 ## 附录
 
