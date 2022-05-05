@@ -499,12 +499,76 @@ SELECT COUNT(*) AS total FROM ORDER_INFO ;
   - 推荐使用视图关联的方式来实现，如果要使用关联表的方式，必须加上以下参数
 
   ```ini
-   column_encoded_bytes=0 ;
+   column_encoded_bytes=0;
   ```
 
 ### 4. 视图View
 
+> **问题**：直接关联HBase中的表，会导致==误删除==，容易出现问题，如何避免？
 
+- Phoenix中建议使用**视图view**的方式来关联HBase中已有的表
+- 通过构建关联视图，可以解决大部分数据查询的数据，不影响数据
+- ==视图：理解为只读的表==
+
+```SQL
+CREATE VIEW "my_hbase_table"
+    ( k VARCHAR primary key, "v" UNSIGNED_LONG) default_column_family='a';
+    
+CREATE VIEW my_view ( new_col SMALLINT )
+    AS SELECT * FROM my_table WHERE k = 100;
+    
+CREATE VIEW my_view_on_view
+    AS SELECT * FROM my_view WHERE new_col > 70;
+
+
+DROP VIEW my_view ;
+DROP VIEW IF EXISTS my_schema.my_view ;
+DROP VIEW IF EXISTS my_schema.my_view CASCADE ;
+
+
+```
+
+> 实现测试
+
+- 1、删除Phoenix中的ORDER_INFO
+
+  ```sql
+  DROP TABLE IF EXISTS ORDER_INFO;
+  ```
+
+- 2、观察Hbase中的ORDER_INFO
+
+- 3、Hbase中的表也会被删除，重新加载
+
+  ```
+  hbase shell ORDER_INFO.txt 
+  ```
+
+- 4、创建视图，关联Hbase中已经存在的表
+
+  ```sql
+  CREATE VIEW IF NOT EXISTS ORDER_INFO(
+      ID varchar primary key,
+      INFO.USER_ID varchar,
+      INFO.OPERATION_DATE varchar,
+      INFO.PAYWAY varchar,
+      INFO.PAY_MONEY varchar,
+      INFO.STATUS varchar,
+      INFO.CATEGORY varchar
+  ) ;
+  ```
+
+- 5、查询数据
+
+  ```sql
+  SELECT ID, USER_ID, PAYWAY, CATEGORY FROM ORDER_INFO LIMIT 10;
+  ```
+
+> 视图与表应用场景：
+
+- 视图：==Hbase中已经有这张表，写都是操作Hbase，Phoenix只提供读==
+- 建表：对这张表既要读也要使用Phoenix来写
+- 在实际项目中，先在HBase中创建表，再在Phoenix中创建视图；写入数据时，基于HBase 操作，查询数据使用Phoenix基于SQL操作。
 
 ### 5. 数据CRUD
 
