@@ -822,7 +822,74 @@ SELECT * FROM ORDER_REGION LIMIT 10 ;
 
 ### 7. JDBC Client
 
+> Phoenix支持使用JDBC的方式来提交SQL语句
 
+```ini
+//JDBC
+step1：申明驱动类，获取连接Connection
+step2：获取PrepareStatement语句对象
+step3：构建SQL语句，使用prep执行SQL语句
+step4：释放资源
+```
+
+- **注意：在resource中要添加hbase-site.xml配置文件**
+
+- 构建JDBC连接Phoenix
+
+  ```java
+  package cn.itcast.phoenix;
+  
+  import java.sql.Connection;
+  import java.sql.DriverManager;
+  import java.sql.PreparedStatement;
+  import java.sql.ResultSet;
+  
+  /**
+   * 基于Phoenix 提供JDBC API实现从HBase表加载数据
+   */
+  public class PhoenixJdbcDemo {
+  
+  	public static void main(String[] args) throws Exception{
+  
+  		// 定义变量
+  		Connection conn = null ;
+  		PreparedStatement pstmt = null ;
+  		ResultSet result = null ;
+  		try{
+  			// 1. 加载驱动类
+  			Class.forName("org.apache.phoenix.jdbc.PhoenixDriver") ;
+  
+  			// 2. 获取连接
+  			conn = DriverManager.getConnection("jdbc:phoenix:node1.itcast.cn,node2.itcast.cn,node3.itcast.cn:2181") ;
+  
+  			// 3. 创建Statement对象
+  			pstmt = conn.prepareStatement("SELECT USER_ID, PAY_WAY, CATEGORY FROM ORDER_REGION LIMIT 10");
+  
+  			// 4. 执行操作，此处查询
+  			result = pstmt.executeQuery();
+  
+  			// 5. 获取数据
+  			while (result.next()){
+  				String userId = result.getString("USER_ID");
+  				String payway = result.getString("PAY_WAY");
+  				String category = result.getString("CATEGORY");
+  				System.out.println(userId + ", " + payway + ", " + category);
+  			}
+  		}catch (Exception e){
+  			e.printStackTrace();
+  		}finally {
+  			// 6. 关闭连接
+  			if(null != result) result.close();
+  			if(null != pstmt) pstmt.close();
+  			if(null != conn) conn.close();
+  		}
+  	}
+  }
+  ```
+
+- 运行查看结果
+
+  ![1651681761469](assets/1651681761469-1651737499311.png)
 
 ## III. Phoenix二级索引
 
