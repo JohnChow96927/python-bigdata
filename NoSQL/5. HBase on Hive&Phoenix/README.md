@@ -59,7 +59,142 @@ Phoenix完全使用Java编写，**作为HBase内嵌的JDBC驱动**，Phoenix查�
 
 ### 2. Hive on HBase
 
+> **实现Hive与HBase  集成，使用Hive SQL对HBase  的数据进行处理**
 
+```ini
+# HBase【itcast:t1】
+	构建一个映射关系：数据存储在Hbase
+	scan 'itcast:t1'
+	
+# Hive【itcast.t1】
+	用户可以通过SQL操作Hive中表
+	select * from itcast.t1
+```
+
+> **在Hive中对HBase关联的Hive表执行SQL语句，底层通过Hadoop中的Input和Output对HBase表进行处理**
+
+![1636426118131](assets/1636426118131.png)
+
+> HBase 集成Hive优缺点：
+
+- 优点：**支持完善的SQL语句**，可以实现各种复杂SQL的数据处理及计算，通过分布式计算程序实现，对大数据量的数据处理比较友好
+- 缺点：**不支持二级索引**，数据量不是特别大的情况下，性能一般
+
+> **实现Hive on HBase 配置**
+
+- 1、修改`hive-site.xml`
+
+  Hive通过SQL访问HBase ，就是HBase 的客户端，就要连接zookeeper
+
+  ```shell
+  vim /export/server/hive/conf/hive-site.xml
+  ```
+
+  ```xml
+  <property>
+        <name>hive.zookeeper.quorum</name>
+        <value>node1.itcast.cn,node2.itcast.cn,node3.itcast.cn</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>node1.itcast.cn,node2.itcast.cn,node3.itcast.cn</value>
+    </property>
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>false</value>
+    </property>
+  ```
+
+- 2、修改`hive-env.sh`
+
+  ```ini
+  # Set HBASE_HOME
+  export HBASE_HOME=/export/server/hbase
+  ```
+
+- 3、同步集群
+
+  ```ini
+  scp /export/server/hive/conf/hive-site.xml node2.itcast.cn:/export/server/hive/conf/
+  scp /export/server/hive/conf/hive-env.sh node2.itcast.cn:/export/server/hive/conf/
+  
+  scp /export/server/hive/conf/hive-site.xml node3.itcast.cn:/export/server/hive/conf/
+  scp /export/server/hive/conf/hive-env.sh node3.itcast.cn:/export/server/hive/conf/
+  ```
+
+- 4、启动HDFS、ZK、HBase
+
+  ```ini
+  start-zk.sh
+  
+  start-dfs.sh
+  
+  start-hbase.sh
+  ```
+
+- 5、启动Hive和YARN
+
+  ```shell
+  #启动YARN
+  start-yarn.sh
+  
+  #先启动metastore服务
+  start-metastore.sh
+  #然后启动hiveserver
+  start-hiveserver2.sh
+  
+  #然后启动beeline
+  /export/server/hive/bin/beeline
+  !connect jdbc:hive2://node1.itcast.cn:10000
+  root 123456
+  ```
+
+  ![1651657955265](assets/1651657955265.png)
+
+> **实现Hive on HBase 的测试**
+
+- **如果HBase 中表已存在，只能创建外部表**
+
+  ```sql
+  --创建测试数据库
+  create database db_hbase;
+  use db_hbase;
+  
+  --创建测试表
+  create external table db_hbase.bank_records(
+  key string,
+  code string,
+  money  string,
+  pay_account string,
+  pay_channel string,
+  pay_comments string,
+  pay_name string,
+  pay_way string,
+  rec_account string,
+  rec_bank_name string,
+  rec_name string,
+  status string,
+  ts string
+  )  
+  stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'  
+  with serdeproperties("hbase.columns.mapping" = ":key,info:code,info:money,info:pay_account,info:pay_channel,info:pay_comments,info:pay_name,info:pay_way,info:rec_account,info:rec_bank_name,info:rec_name,info:status,info:timestamp") 
+  tblproperties("hbase.table.name" = "default:bank_records");
+  ```
+
+- 查询
+
+  ```SQL
+  SELECT * FROM db_hbase.bank_records LIMIT 10 ;
+    
+  SELECT rec_bank_name, COUNT(*) AS total FROM db_hbase.bank_records GROUP BY rec_bank_name ORDER BY total DESC;
+  ```
+
+> **注意**
+
+- Hive中的只是关联表，并没有数据，数据存储在HBase 表中
+- 在Hive中创建HBase 的关联表，关联成功后，使用SQL通过MapReduce处理关联表
+- 如果HBase 中表已存在，只能建外部表，使用**:key**来表示**rowkey**
+- Hive中与HBase 关联的表，**不能使用load写入数据**，只能使用insert，通过MR读写数据
 
 ## II. Phoenix快速使用
 
