@@ -200,11 +200,164 @@ Phoenix完全使用Java编写，**作为HBase内嵌的JDBC驱动**，Phoenix查�
 
 ### 1. 框架介绍
 
+```
+http://phoenix.apache.org
+```
 
+> **Aapche Phoenix** 是==构建在 HBase 之上的高效的 SQL 引擎，==同时具备 OLTP 和 OLAP 能力，作为 HBase 生态系统中非常重要的组件，重点的特性包括：
+
+- 底层存储基于 HBase，并提供一套标准的 JDBC API 作为 HBase SQL 层；
+- 支持标准 SQL，以及完整 ACID 事务特性；
+  - [底层全部通过Hbase Java API来实现，通过构建一系列的Scan和Put来实现数据的读写]()
+- 为 HBase 提供了二级索引解决方案；
+  - [底层封装了大量的内置的协处理器，可以实现各种复杂的处理需求]()
+
+> Apache Phoenix 与 Hive on HBase比较：
+
+- Hive：SQL更加全面，但是不支持二级索引，底层通过分布式计算工具来实现
+- Phoenix：SQL相对支持不全面，但是性能比较好，直接使用HbaseAPI，支持索引实现
+
+![Phoenix vs Hive](assets/PhoenixVsHive.png)
 
 ### 2. 安装配置
 
+> Phoenix安装本质：[将jars包放到HBase lib目录下，重启HBase集群即可，使用客户端连接SQLlite即可]()
 
+![1651662646664](assets/1651662646664.png)
+
+```
+文档：https://phoenix.apache.org/installation.html#
+```
+
+- 1、修改三台Linux文件句柄数
+
+  ```shell
+  vim /etc/security/limits.conf
+  #在文件的末尾添加以下内容，*号不能去掉
+  
+  * soft nofile 65536
+  * hard nofile 131072
+  * soft nproc 2048
+  * hard nproc 4096
+  ```
+
+  ![1651662710779](assets/1651662710779.png)
+
+- 2、上传解压，选择node1机器
+
+  ```shell
+  cd /export/software/
+  rz
+  
+  tar -zxvf apache-phoenix-5.0.0-HBase-2.0-bin.tar.gz -C /export/server/
+  
+  cd /export/server/
+  chown -R root:root apache-phoenix-5.0.0-HBase-2.0-bin/
+  ln -s apache-phoenix-5.0.0-HBase-2.0-bin phoenix
+  ```
+
+- 3、将Phoenix所有jar包分发到Hbase的**lib**目录下
+
+  ```ini
+  #拷贝到第一台机器
+  cp -r /export/server/phoenix/phoenix-* /export/server/hbase/lib/
+  ```
+
+- 4、分发集群，远程拷贝node2和node3
+
+```ini
+# node2
+scp -r /export/server/hbase/lib/phoenix-* root@node2.itcast.cn:/export/server/hbase/lib
+# node3
+scp -r /export/server/hbase/lib/phoenix-* root@node3.itcast.cn:/export/server/hbase/lib
+```
+
+- 5、修改`hbase-site.xml`，添加一下属性
+
+  ```ini
+  vim /export/server/hbase/conf/hbase-site.xml
+  ```
+
+  ```xml
+  <!-- 关闭流检查，从2.x开始使用async -->
+  <property>
+      <name>hbase.unsafe.stream.capability.enforce</name>
+      <value>false</value>
+  </property>
+  <!-- 支持HBase命名空间映射 -->
+  <property>
+      <name>phoenix.schema.isNamespaceMappingEnabled</name>
+      <value>true</value>
+  </property>
+  <!-- 支持索引预写日志编码 -->
+  <property>
+      <name>hbase.regionserver.wal.codec</name>
+    <value>org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec</value>
+  </property>
+  ```
+
+  - 6、配置文件同步给其他两台机器
+
+    ```ini
+    cd /export/server/hbase/conf/
+    scp hbase-site.xml root@node2.itcast.cn:$PWD
+    scp hbase-site.xml root@node3.itcast.cn:$PWD
+    ```
+
+- 7、配置文件同步给Phoenix 
+
+  ```shell
+  # 删除
+  rm -rf /export/server/phoenix/bin/hbase-site.xml 
+  
+  # 在拷贝
+  cp /export/server/hbase/conf/hbase-site.xml /export/server/phoenix/bin/
+  ```
+
+- 8、重启HBase集群
+
+  ```ini
+  stop-hbase.sh
+  start-hbase.sh
+  ```
+
+> 启动运行Phoenix自带命令行客户端：`sqlline`
+
+- 安装依赖，在node1上
+
+```ini
+yum -y install python-argparse
+```
+
+- 启动运行命令
+
+```ini
+/export/server/phoenix/bin/sqlline.py node1.itcast.cn,node2.itcast.cn,node3.itcast.cn:2181
+```
+
+[执行Python脚本，使用Python2，如果虚拟机上安装Python3，此时运行，将会出现错误。]()
+
+```ini
+# 修改python脚本，指定具体Python解释器未知即可
+[root@node1 ~]# cd /export/server/phoenix/bin
+
+```
+
+![1636439863298](assets/1636439863298.png)
+
+- 测试
+
+  ```ini
+  !tables
+  ```
+
+![1651664182018](assets/1651664182018.png)
+
+- 退出
+
+  ```ini
+  !quit
+  ```
 
 ### 3. DDL操作
 
