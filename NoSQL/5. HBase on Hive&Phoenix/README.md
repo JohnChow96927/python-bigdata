@@ -572,7 +572,129 @@ DROP VIEW IF EXISTS my_schema.my_view CASCADE ;
 
 ### 5. 数据CRUD
 
+> 基于order_info订单数据实现DQL查询数据
 
+![1651678430129](assets/1651678430129.png)
+
+```sql
+SELECT * FROM TEST LIMIT 1000;
+
+SELECT * FROM TEST LIMIT 1000 OFFSET 100;
+
+SELECT full_name FROM SALES_PERSON WHERE ranking >= 5.0 
+UNION ALL 
+SELECT reviewer_name FROM CUSTOMER_REVIEW WHERE score >= 8.0
+```
+
+- 需求一：查询支付方式为1的数据
+
+  ```sql
+  SELECT ID, USER_ID, PAYWAY, CATEGORY FROM ORDER_INFO WHERE PAYWAY = '1';
+  ```
+
+  ![1651678575436](assets/1651678575436.png)
+
+  
+
+- 需求二：查询每种支付方式对应的用户人数，并且按照用户人数降序排序
+
+  ```sql
+  SELECT PAYWAY, COUNT(DISTINCT USER_ID) AS total
+  FROM ORDER_INFO GROUP BY PAYWAY 
+  ORDER BY total DESC;
+  ```
+
+  ![1651678778689](assets/1651678778689.png)
+
+- 需求三：查询数据的第60行到66行
+
+  ```sql
+   --以前的写法：limit M,N
+   --M：开始位置
+   --N：显示的条数
+   --Phoenix的写法：limit N offset M
+  SELECT * FROM ORDER_INFO LIMIT 6 OFFSET 60;   -- 总共66行，显示最后6行
+  ```
+
+  ![1651678873406](assets/1651678873406.png)
+
+- **小结**
+
+- 函数支持：http://phoenix.apache.org/language/functions.html
+
+  - 基本查询与MySQL也是一致的
+  - 写的时候注意数据类型以及大小写的问题即可
+  - 如果遇到SQL报错，检查语法是否支持
+
+> 创建订单ORDER_DATA表，进行DML插入数据操作
+
+- 语法及示例
+
+  ![image-20210928114954338](assets/image-20210928114954338.png)
+
+  ```sql
+  -- 插入数据，未指定字段
+  UPSERT INTO TEST VALUES('foo','bar',3);
+  
+  -- 插入数据，指定字段名称
+  UPSERT INTO TEST(NAME,ID) VALUES('foo',123);
+  
+  -- 插入数据，如果主键存在，指定如何更新数据
+  UPSERT INTO TEST(ID, COUNTER) VALUES(123, 0) ON DUPLICATE KEY UPDATE COUNTER = COUNTER;
+  
+  ```
+
+- 创建表
+
+  ```SQL
+  CREATE TABLE IF NOT EXISTS TEST_PHOENIX.ORDER_DATA(
+      ID varchar primary key,
+      INFO.USER_ID varchar,
+      INFO.OPERATION_DATE varchar,
+      INFO.PAYWAY varchar,
+      INFO.PAY_MONEY varchar,
+      INFO.STATUS varchar,
+      INFO.CATEGORY varchar
+  );
+  ```
+
+- 方式一：插入一条数据
+
+  ```sql
+  UPSERT INTO TEST_PHOENIX.ORDER_DATA VALUES('z8f3ca6f-2f5c-44fd-9755-1792de183845','4944191','2020-04-25 12:09:16','1','4070','未提交','电脑');
+  ```
+
+  ![1651679516110](assets/1651679516110.png)
+
+- 方式二：更新USERID为123456
+
+  ```sql
+  UPSERT INTO TEST_PHOENIX.ORDER_DATA(ID, USER_ID) values('z8f3ca6f-2f5c-44fd-9755-1792de183845','123456');
+  ```
+
+  ![1651679566630](assets/1651679566630.png)
+
+> 基于ORDER_DATA订单数据实现DML删除数据
+
+- 语法及示例
+
+  ```sql
+  DELETE FROM TEST;
+  
+  DELETE FROM TEST WHERE ID=123;
+  
+  DELETE FROM TEST WHERE NAME LIKE 'foo%';
+  ```
+
+  
+
+- 删除USER_ID为123456的rowkey数据
+
+  ```sql
+  DELETE FROM TEST_PHOENIX.ORDER_DATA WHERE USER_ID = '123456';
+  ```
+
+  ![1651679661912](assets/1651679661912.png)
 
 ### 6. 表预分区
 
