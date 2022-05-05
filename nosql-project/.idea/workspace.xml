@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../NoSQL/5. HBase on Hive&amp;Phoenix/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/5. HBase on Hive&amp;Phoenix/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,15 +44,21 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "jdk.selected.JAVA_MODULE": "1.8",
     "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/nosql-project",
     "settings.editor.selected.configurable": "vcs.Git"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "phoenix"
+    ]
   }
 }]]></component>
-  <component name="RunManager" selected="JUnit.HBaseDmlTest.testScanFilter_V3">
+  <component name="RunManager">
     <configuration name="HBaseDmlTest.testDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hbase-client" />
       <extension name="coverage">
@@ -61,22 +70,6 @@
       <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
       <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
       <option name="METHOD_NAME" value="testDelete" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hbase-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.hbase.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
-      <option name="METHOD_NAME" value="testScan" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -130,15 +123,22 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V3" />
-        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V2" />
-        <item itemvalue="JUnit.HBaseDmlTest.testScanFilter_V1" />
-        <item itemvalue="JUnit.HBaseDmlTest.testScan" />
-        <item itemvalue="JUnit.HBaseDmlTest.testDelete" />
-      </list>
-    </recent_temporary>
+    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScan" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
