@@ -17,6 +17,16 @@
       <option name="url" value="http://maven.aliyun.com/nexus/content/groups/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="jboss" />
+      <option name="name" value="jboss" />
+      <option name="url" value="http://repository.jboss.com/nexus/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="cloudera" />
+      <option name="name" value="cloudera" />
+      <option name="url" value="https://repository.cloudera.com/artifactory/cloudera-repos/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

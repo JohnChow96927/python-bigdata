@@ -11,6 +11,7 @@
     <modules>
         <module>redis-client</module>
         <module>hbase-client</module>
+        <module>phoenix-client</module>
     </modules>
 
     <properties>

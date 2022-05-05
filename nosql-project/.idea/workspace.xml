@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/phoenix-client/libs/phoenix-5.0.0-HBase-2.0-client.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/phoenix-client/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/phoenix-client/src/main/resources/hbase-site.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../NoSQL/5. HBase on Hive&amp;Phoenix/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/5. HBase on Hive&amp;Phoenix/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +52,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/nosql-project",
+    "last_opened_file_path": "C:/GitHub Desktop/ITheima_python_bigdata/nosql-project/phoenix-client/src/main/resources",
     "settings.editor.selected.configurable": "vcs.Git"
   },
   "keyToStringList": {
@@ -58,7 +61,7 @@
     ]
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.HBaseDmlTest.testDelete">
     <configuration name="HBaseDmlTest.testDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="hbase-client" />
       <extension name="coverage">
@@ -70,6 +73,22 @@
       <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
       <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
       <option name="METHOD_NAME" value="testDelete" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hbase-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.hbase.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
+      <option name="METHOD_NAME" value="testScan" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -123,22 +142,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hbase-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.hbase.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
-      <option name="METHOD_NAME" value="testScan" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -157,6 +160,7 @@
       <workItem from="1651292214720" duration="1914000" />
       <workItem from="1651328278562" duration="29000" />
       <workItem from="1651477311563" duration="7354000" />
+      <workItem from="1651738116523" duration="422000" />
     </task>
     <servers />
   </component>

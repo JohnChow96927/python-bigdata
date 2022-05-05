@@ -686,8 +686,6 @@ SELECT reviewer_name FROM CUSTOMER_REVIEW WHERE score >= 8.0
   DELETE FROM TEST WHERE NAME LIKE 'foo%';
   ```
 
-  
-
 - 删除USER_ID为123456的rowkey数据
 
   ```sql
@@ -1210,7 +1208,6 @@ SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
 
   ```sql
   CREATE INDEX CVR_IDX_QKBH_ROAD_TRAFFIC_FLOW on ROAD_TRAFFIC_FLOW(INFO.QKBH) INCLUDE(INFO.SPEED);
-  
   ```
 
 - 查看索引表
@@ -1336,3 +1333,55 @@ SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
 ## 附录
 
 ### Phoenix Maven依赖
+
+- 添加依赖到pom文件
+
+```xml
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+- 创建目录，放置jar包和配置文件
+
+![1651681683069](assets/1651681683069.png)
+
+- 添加jar包到Maven Module模块：
+
+![1651681201423](assets/1651681201423.png)
