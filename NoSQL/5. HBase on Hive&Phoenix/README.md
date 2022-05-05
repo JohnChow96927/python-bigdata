@@ -465,7 +465,7 @@ CREATE SCHEMA IF NOT EXISTS TEST_PHOENIX;
 - Phoenix中建表
 
   ```sql
-  CREATE TABLE IF NOT EXISTS ORDER_INFO(
+  CREATE TABLE IF NOT EXISTS "ORDER_INFO"(
       ID varchar primary key,
       INFO.USER_ID varchar,
       INFO.OPERATION_DATE varchar,
@@ -861,7 +861,7 @@ step4：释放资源
   			conn = DriverManager.getConnection("jdbc:phoenix:node1.itcast.cn,node2.itcast.cn,node3.itcast.cn:2181") ;
   
   			// 3. 创建Statement对象
-  			pstmt = conn.prepareStatement("SELECT USER_ID, PAY_WAY, CATEGORY FROM ORDER_REGION LIMIT 10");
+  			pstmt = conn.prepareStatement("SELECT USER_ID, PAYWAY, CATEGORY FROM ORDER_INFO LIMIT 10");
   
   			// 4. 执行操作，此处查询
   			result = pstmt.executeQuery();
@@ -869,7 +869,7 @@ step4：释放资源
   			// 5. 获取数据
   			while (result.next()){
   				String userId = result.getString("USER_ID");
-  				String payway = result.getString("PAY_WAY");
+  				String payway = result.getString("PAYWAY");
   				String category = result.getString("CATEGORY");
   				System.out.println(userId + ", " + payway + ", " + category);
   			}
@@ -984,7 +984,6 @@ step4：释放资源
 
   ```ini
   rowkey：车牌号码_时间_卡口编号		车牌号码		时间		卡口编号	  行驶速度
-  
   ```
 
 - 需求：根据**卡口编号**进行数据查询，[不走索引]()
@@ -1061,9 +1060,9 @@ CREATE VIEW IF NOT EXISTS ROAD_TRAFFIC_FLOW(
     INFO.TS varchar,
     INFO.QKBH varchar,
     INFO.SPEED varchar
-) ;
+);
 
-SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
+SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10;
 ```
 
 ![1651708277635](assets/1651708277635.png)
@@ -1215,7 +1214,7 @@ SELECT * FROM ROAD_TRAFFIC_FLOW LIMIT 10 ；
   ```ini
   !tables
   
-  SELECT * FROM CVR_IDX_QKBH_ROAD_TRAFFIC_FLOW；
+  SELECT * FROM CVR_IDX_QKBH_ROAD_TRAFFIC_FLOW;
   ```
 
   查看hbase表中数据

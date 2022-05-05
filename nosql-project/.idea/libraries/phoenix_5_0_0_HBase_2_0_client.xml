@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="phoenix-5.0.0-HBase-2.0-client">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/phoenix-client/libs/phoenix-5.0.0-HBase-2.0-client.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/phoenix-client/libs/phoenix-5.0.0-HBase-2.0-client.jar!/" />
+      <root url="jar://$PROJECT_DIR$/phoenix-client/libs/phoenix-5.0.0-HBase-2.0-client.jar!/org/apache/phoenix/shaded" />
+    </SOURCES>
+  </library>
+</component>
