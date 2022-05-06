@@ -299,7 +299,7 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
   # 启动ZK集群
   start-zk.sh
   
-  # 启动Kafka服务，三台机器
+  # 启动Kafka服务，三台机器(报权限不够, 使用启停脚本启停服务)
   /export/server/kafka/bin/kafka-server-start.sh -daemon /export/server/kafka/config/server.properties
   ```
 
