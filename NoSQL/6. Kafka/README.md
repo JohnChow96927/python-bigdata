@@ -688,7 +688,67 @@ Maven Module模块中pom文件内容
 
 ### 2. 生产者API
 
+> **任务：**基于Kafka Producer API将数据写入Kafka Topic。
 
+- **开发步骤**
+  - step1：创建`KafkaProducer`连接对象
+  - step2：构建`ProducerRecord`记录实例
+  - step3：调用KafkaProducer的`send`方法将数据写入Kafka
+
+- KafkaProducer 生产者连接对象，传递参数设置
+
+  - 文档：
+
+    http://kafka.apache.org/24/documentation.html#producerconfigs
+
+  - 重要参数：
+
+    **bootstrap.servers**、**key.serializer**、**value.serializer**及**acks**
+
+  - ProducerRecord记录对象，创建时构造方法
+
+    ![1635888798755](assets/1635888798755.png)
+
+  - 案例代码
+
+  ```java
+  package cn.itcast.kafka.producer;
+  
+  import org.apache.kafka.clients.producer.KafkaProducer;
+  import org.apache.kafka.clients.producer.ProducerConfig;
+  import org.apache.kafka.clients.producer.ProducerRecord;
+  
+  import java.util.Properties;
+  
+  /**
+   * 使用Java API 开发Kafka 生产者
+   */
+  public class KafkaWriteTest {
+  
+  	public static void main(String[] args) {
+  		// TODO: 1.构建KafkaProducer连接对象
+  		// 1-1. 设置Producer属性
+  		Properties props = new Properties();
+  		// Kafka Brokers地址信息
+  		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092");
+  		// 写入数据时序列化和反序列化方式
+  		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+  		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+  		// 1-2. 传递配置，创建Producer实例
+  		KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+  
+  		// TODO: 2. 构建ProducerRecord记录实例
+  		ProducerRecord<String, String> record = new ProducerRecord<String, String>("test-topic", "hello world");
+  
+  		// TODO: 3. 调用send方法，发送数据至Topic
+  		producer.send(record) ;
+  
+  		// TODO: 4. 关闭资源
+  		producer.close();
+  	}
+  
+  }
+  ```
 
 ### 3. 消费者API
 
