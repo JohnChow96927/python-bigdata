@@ -179,7 +179,133 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ## II. Kafka快速上手
 
-- 
+![](assets/Kafka-architecture-1651806823893.png)
+
+### 1. 安装部署
+
+![1651794799241](assets/1651794799241.png)
+
+> **目标**：**实现Kafka分布式集群的搭建部署**
+
+- 版本选择：`kafka_2.12-2.4.1.tgz`
+  - Kafka：2.4.1
+  - Scala：2.12，Kafka是由Scala语言和Java语言开发
+  - 下载：http://archive.apache.org/dist/kafka/
+
+- 1、上传解压，在node1操作
+
+  ```shell
+  cd /export/software/
+  rz
+  
+  tar -zxvf kafka_2.12-2.4.1.tgz -C /export/server
+  
+  cd /export/server
+  ln -s kafka_2.12-2.4.1 kafka
+  ```
+
+  ![1651762326756](assets/1651762326756.png)
+
+  - `bin`：一般用于存放客户端操作命令脚本
+  - `sbin`：一般用于存放集群的启动和关闭的命令脚本，如果没有这个命令，脚本放在bin目录中
+  - `config`：配置文件目录
+  - `lib`：jar包的存放目录
+  - `logs`：一般用于存放服务日志
+
+- 2、创建存储目录
+
+  ```ini
+  mkdir -p /export/server/kafka/kafka-logs
+  ```
+
+- 3、修改配置
+
+  - 切换到配置文件目录
+
+    ```ini
+    cd /export/server/kafka/config
+    ```
+
+  - 修改`server.properties`
+
+    ```ini
+    vim server.properties
+    ```
+
+    ```properties
+    #21行：唯一的 服务端id
+    broker.id=1
+    
+    #60行：指定kafka的数据存储的位置
+    log.dirs=/export/server/kafka/kafka-logs
+    
+    #123行：指定zookeeper的地址
+    zookeeper.connect=node1.itcast.cn:2181,node2.itcast.cn:2181,node3.itcast.cn:2181/kafka
+    
+    #在最后添加两个配置，允许删除topic，当前kafkaServer的主机名
+    delete.topic.enable=true
+    host.name=node1.itcast.cn
+    ```
+
+- 4、安装包分发集群
+
+  ```ini
+  scp -r /export/server/kafka root@node2.itcast.cn:/export/server/
+  scp -r /export/server/kafka root@node3.itcast.cn:/export/server/
+  ```
+
+- 5、修改配置
+
+  - node2机器：`server.properties`
+
+  ```properties
+  #21行：唯一的 服务端id
+  broker.id=2
+  
+  #最后
+  host.name=node2.itcast.cn
+  
+  ```
+
+  - node3机器：`server.properties`
+
+  ```ini
+  #21行：唯一的 服务端id
+  broker.id=3
+  
+  #最后
+  host.name=node3.itcast.cn
+  ```
+
+- 6、添加环境变量，集群所有机器
+
+  ```shell
+  vim /etc/profile
+  ```
+
+  ```shell
+  #KAFKA_HOME
+  export KAFKA_HOME=/export/server/kafka
+  export PATH=:$PATH:$KAFKA_HOME/bin
+  ```
+
+  ```shell
+  source /etc/profile
+  ```
+
+- 7、启动Kafka集群，先启动Zookeeper集群
+
+  ```ini
+  # 启动ZK集群
+  start-zk.sh
+  
+  # 启动Kafka服务，三台机器
+  /export/server/kafka/bin/kafka-server-start.sh -daemon /export/server/kafka/config/server.properties
+  ```
+
+  查看三台机器服务
+
+  ![1651763711967](assets/1651763711967-1651806860680.png)
 
 ### 2. Topic操作
 
