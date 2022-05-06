@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/kafka-client/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/consumer/KafkaReadTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/producer/KafkaWriteLoopTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/producer/KafkaWriteTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,36 +50,62 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Downloaded.Files.Path.Enabled": "false",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.OpenDatabaseViewOnStart": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "jdk.selected.JAVA_MODULE": "1.8",
-    "last_opened_file_path": "C:/Users/JohnChow/AppData/Roaming/JetBrains/IntelliJIdea2022.1/jdbc-drivers/Phoenix-HBase-Client/phoenix-5.0.0-HBase-2.0-client.jar",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/JohnChow/AppData/Roaming/JetBrains/IntelliJIdea2022.1/jdbc-drivers/Phoenix-HBase-Client/phoenix-5.0.0-HBase-2.0-client.jar&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "phoenix"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;phoenix&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\nosql-project\phoenix-client\src\main\resources" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\nosql-project\phoenix-client\libs" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.PhoenixJdbcDemo">
+  <component name="RunManager" selected="Application.KafkaWriteTest">
+    <configuration name="KafkaReadTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.kafka.consumer.KafkaReadTest" />
+      <module name="kafka-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.kafka.consumer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="KafkaWriteTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.kafka.producer.KafkaWriteTest" />
+      <module name="kafka-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.kafka.producer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="PhoenixJdbcDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.johnchow.phoenix.PhoenixJdbcDemo" />
       <module name="phoenix-client" />
@@ -83,38 +115,6 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HBaseDmlTest.testScan" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hbase-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.hbase.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
-      <option name="METHOD_NAME" value="testScan" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HBaseDmlTest.testScanFilter_V1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hbase-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.hbase.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
-      <option name="METHOD_NAME" value="testScanFilter_V1" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -153,6 +153,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.KafkaWriteTest" />
+        <item itemvalue="Application.KafkaReadTest" />
         <item itemvalue="Application.PhoenixJdbcDemo" />
       </list>
     </recent_temporary>
@@ -177,6 +179,7 @@
       <workItem from="1651738116523" duration="690000" />
       <workItem from="1651738829002" duration="2291000" />
       <workItem from="1651766758523" duration="2195000" />
+      <workItem from="1651824008519" duration="4673000" />
     </task>
     <servers />
   </component>
