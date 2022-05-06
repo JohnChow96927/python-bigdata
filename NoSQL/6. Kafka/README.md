@@ -153,13 +153,33 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ### 5. 集群架构
 
+> Kafka 集群基础架构角色：**Zookeeper 集群**和**Kafka集群**
 
+![1635857033453](assets/1635857033453.png)
+
+- **架构角色**
+  - Kafka 集群：分布式主从架构，实现消息队列的构建
+  - Zookeeper 集群：辅助选举Controller、元数据存储
+
+- **Kafka中的每个角色以及对应的功能**
+  - 分布式**主从架构**，节点：Broker，进程：Kafka
+  - 主节点：**Kafka** ==Controller==
+    - 一种特殊的Broker，从所有Broker中选举出来的
+    - 负责普通Broker的工作
+    - 负责管理所有从节点：Topic、分区和副本
+    - 每次启动集群，会从所有Broker中选举一个Controller，由Zookeeper实现
+  - 从节点：**Kafka Broker**
+    - 对外提供读写请求
+    - 如果Controller故障，会重新从Broker选举一个新的Controller
+- **Zookeeper 的功能**
+  - 辅助选举Controller节点
+  - 存储元数据，比如Brokers信息、topic名称、分区及副本等等
+
+![1595333842797](assets/1595333842797.png)
 
 ## II. Kafka快速上手
 
-### 1. 安装部署
-
-
+- 
 
 ### 2. Topic操作
 
