@@ -309,13 +309,201 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ### 2. Topic操作
 
+> **Kafka集群中Topic的管理命令，实现创建Topic及列举Topic**
 
+- Topic管理脚本
+
+  ![1651763764871](assets/1651763764871.png)
+
+  - 查看用法
+
+    ![1651763807149](assets/1651763807149.png)
+
+    ```ini
+    [root@node1 bin]# kafka-topics.sh 
+    Create, delete, describe, or change a topic.
+    Option                                   Description                            
+    ------                                   -----------                            
+    --alter                                  Alter the number of partitions,        
+                                               replica assignment, and/or           
+                                               configuration for the topic.         
+    --at-min-isr-partitions                  if set when describing topics, only    
+                                               show partitions whose isr count is   
+                                               equal to the configured minimum. Not 
+                                               supported with the --zookeeper       
+                                               option.                              
+    --bootstrap-server <String: server to    REQUIRED: The Kafka server to connect  
+      connect to>                              to. In case of providing this, a     
+                                               direct Zookeeper connection won't be 
+                                               required.                            
+    --command-config <String: command        Property file containing configs to be 
+      config property file>                    passed to Admin Client. This is used 
+                                               only with --bootstrap-server option  
+                                               for describing and altering broker   
+                                               configs.                             
+    --config <String: name=value>            A topic configuration override for the 
+                                               topic being created or altered.The   
+                                               following is a list of valid         
+                                               configurations:                      
+                                                    cleanup.policy                        
+                                                    compression.type                      
+                                                    delete.retention.ms                   
+                                                    file.delete.delay.ms                  
+                                                    flush.messages                        
+                                                    flush.ms                              
+                                                    follower.replication.throttled.       
+                                               replicas                             
+                                                    index.interval.bytes                  
+                                                    leader.replication.throttled.replicas 
+                                                    max.compaction.lag.ms                 
+                                                    max.message.bytes                     
+                                                    message.downconversion.enable         
+                                                    message.format.version                
+                                                    message.timestamp.difference.max.ms   
+                                                    message.timestamp.type                
+                                                    min.cleanable.dirty.ratio             
+                                                    min.compaction.lag.ms                 
+                                                    min.insync.replicas                   
+                                                    preallocate                           
+                                                    retention.bytes                       
+                                                    retention.ms                          
+                                                    segment.bytes                         
+                                                    segment.index.bytes                   
+                                                    segment.jitter.ms                     
+                                                    segment.ms                            
+                                                    unclean.leader.election.enable        
+                                             See the Kafka documentation for full   
+                                               details on the topic configs.It is   
+                                               supported only in combination with --
+                                               create if --bootstrap-server option  
+                                               is used.                             
+    --create                                 Create a new topic.                    
+    --delete                                 Delete a topic                         
+    --delete-config <String: name>           A topic configuration override to be   
+                                               removed for an existing topic (see   
+                                               the list of configurations under the 
+                                               --config option). Not supported with 
+                                               the --bootstrap-server option.       
+    --describe                               List details for the given topics.     
+    --disable-rack-aware                     Disable rack aware replica assignment  
+    --exclude-internal                       exclude internal topics when running   
+                                               list or describe command. The        
+                                               internal topics will be listed by    
+                                               default                              
+    --force                                  Suppress console prompts               
+    --help                                   Print usage information.               
+    --if-exists                              if set when altering or deleting or    
+                                               describing topics, the action will   
+                                               only execute if the topic exists.    
+                                               Not supported with the --bootstrap-  
+                                               server option.                       
+    --if-not-exists                          if set when creating topics, the       
+                                               action will only execute if the      
+                                               topic does not already exist. Not    
+                                               supported with the --bootstrap-      
+                                               server option.                       
+    --list                                   List all available topics.             
+    --partitions <Integer: # of partitions>  The number of partitions for the topic 
+                                               being created or altered (WARNING:   
+                                               If partitions are increased for a    
+                                               topic that has a key, the partition  
+                                               logic or ordering of the messages    
+                                               will be affected). If not supplied   
+                                               for create, defaults to the cluster  
+                                               default.                             
+    --replica-assignment <String:            A list of manual partition-to-broker   
+      broker_id_for_part1_replica1 :           assignments for the topic being      
+      broker_id_for_part1_replica2 ,           created or altered.                  
+      broker_id_for_part2_replica1 :                                                
+      broker_id_for_part2_replica2 , ...>                                           
+    --replication-factor <Integer:           The replication factor for each        
+      replication factor>                      partition in the topic being         
+                                               created. If not supplied, defaults   
+                                               to the cluster default.              
+    --topic <String: topic>                  The topic to create, alter, describe   
+                                               or delete. It also accepts a regular 
+                                               expression, except for --create      
+                                               option. Put topic name in double     
+                                               quotes and use the '\' prefix to     
+                                               escape regular expression symbols; e.
+                                               g. "test\.topic".                    
+    --topics-with-overrides                  if set when describing topics, only    
+                                               show topics that have overridden     
+                                               configs                              
+    --unavailable-partitions                 if set when describing topics, only    
+                                               show partitions whose leader is not  
+                                               available                            
+    --under-min-isr-partitions               if set when describing topics, only    
+                                               show partitions whose isr count is   
+                                               less than the configured minimum.    
+                                               Not supported with the --zookeeper   
+                                               option.                              
+    --under-replicated-partitions            if set when describing topics, only    
+                                               show under replicated partitions     
+    --version                                Display Kafka version.                 
+    --zookeeper <String: hosts>              DEPRECATED, The connection string for  
+                                               the zookeeper connection in the form 
+                                               host:port. Multiple hosts can be     
+                                               given to allow fail-over.            
+    ```
+
+- 1、创建Topic
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --create \
+  --topic test-topic \
+  --partitions 3 \
+  --replication-factor 2 \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+  - `--create`：创建
+  - --topic：指定名称
+  - --partitions ：分区个数
+  - --replication-factor：分区的副本个数
+  - --bootstrap-server：指定Kafka服务端地址
+  - `--list`：列举
+
+  ![1651763863253](assets/1651763863253.png)
+
+- 2、列举Topic
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --list \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+  ![1635868177645](assets/1635868177645.png)
+
+- 3、查看Topic信息
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --describe \
+  --topic test-topic  \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+  ![1651763905304](assets/1651763905304.png)
+
+  - 每个分区都有一个唯一的标号：从`0`开始
+  - 怎么唯一标识一个分区：**Topic名称+分区编号**
+  - Leader：这个分区的Leader副本所在的**Broker id**
+  - Replicas：这个分区的所有副本所在的**Broker id**
+  - `ISR`：in -sync -replicas，可用副本
+
+- 4、删除Topic
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --delete \
+  --topic test-topic  \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+  ![1651763976353](assets/1651763976353.png)
 
 ### 3. 生产消费
 
-
-
-### 4. Kafka Tool
+> 4. Kafka Tool
 
 
 
