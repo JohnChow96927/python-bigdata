@@ -503,7 +503,89 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ### 3. 生产消费
 
-> 4. Kafka Tool
+> 了解命令行如何模拟测试生产者和消费者
+
+- 命令行提供的脚本
+
+  ![1651764085497](assets/1651764085497.png)
+
+- Console生产者
+
+  ```ini
+  /export/server/kafka/bin/kafka-console-producer.sh \
+  --topic test-topic \
+  --broker-list node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+- Console消费者
+
+  ```ini
+  /export/server/kafka/bin/kafka-console-consumer.sh \
+  --topic test-topic \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092  \
+  --from-beginning
+  ```
+
+  - `--from-beginning`：从每个分区的最初开始消费，默认从最新的offset进行消费
+  - 如果不指定【--from-beginning】，默认从最新位置开始消费
+
+- 生产者发送数据，消费者消费数据
+
+![1651764261681](assets/1651764261681.png)
+
+> **了解如何实现Kafka集群的吞吐量及压力测试**
+
+- 创建Topic
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --create \
+  --topic logs-data \
+  --partitions 3 \
+  --replication-factor 2 \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+- 生产测试：`kafka-producer-perf-test.sh`
+
+  ```shell
+  /export/server/kafka/bin/kafka-producer-perf-test.sh \
+  --topic logs-data \
+  --num-records 1000000 \
+  --throughput -1 \
+  --record-size 1000 \
+  --producer-props \
+  bootstrap.servers=node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092 \
+  acks=1
+  ```
+
+  - `--num-records`：写入数据的条数
+  - `--throughput`：是否做限制，-1表示不限制
+  - `--record-size`：每条数据的字节大小
+
+  ![1651764545699](assets/1651764545699.png)
+
+  ```ini
+  1000000 records sent,
+  12502.344190 records/sec (11.92 MB/sec), 
+  2548.20 ms avg latency, 7507.00 ms max latency, 
+  2310 ms 50th, 6423 ms 95th, 7252 ms 99th, 7459 ms 99.9th
+  ```
+
+- 消费测试
+
+  ```shell
+  /export/server/kafka/bin/kafka-consumer-perf-test.sh \
+  --topic logs-data \
+  --broker-list node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092  \
+  --fetch-size 1048576 \
+  --messages 1000000
+  ```
+
+  ![1651764677524](assets/1651764677524.png)
+
+> 工作中一般根据实际的需求来调整参数，测试kafka集群的最高性能，判断是否能满足需求
+
+### 4. Kafka Tool
 
 
 
