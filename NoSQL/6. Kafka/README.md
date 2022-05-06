@@ -627,7 +627,64 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ### 1. 环境准备
 
+> 从Kafka 0.10版本开始，重构生产者和消费 Java API，使用用户使用时更加简单。
 
+- 生产者Producer：
+
+  - `KafkaProducer`（连接Kafka集群），`ProducerRecord`（每条数据）
+
+  https://kafka.apache.org/24/javadoc/index.html?org/apache/kafka/clients/producer/KafkaProducer.html
+
+- 消费者Consuemr:
+
+  - `KafkaConsumer`(连接Kafka集群)，`ConsumerRecord`（每条消息）
+
+  https://kafka.apache.org/24/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html
+
+![1651766007069](assets/1651766007069.png)
+
+> 创建Maven Module模块，添加依赖
+
+![1651765923652](assets/1651765923652.png)
+
+Maven Module模块中pom文件内容
+
+```xml
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Kafka 依赖 -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+> 创建相关目录结构，按照功能代码进行划分：
+
+![1651766155263](assets/1651766155263.png)
 
 ### 2. 生产者API
 
