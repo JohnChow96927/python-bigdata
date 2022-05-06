@@ -832,7 +832,51 @@ Maven Module模块中pom文件内容
 
 ### 1. Kafka启停脚本
 
+> 编写Shell脚本，Kafka集群启动和停止：
 
+- 启动脚本：`start-kafka.sh`
+
+  ```shell
+  vim /export/server/kafka/bin/start-kafka.sh
+  ```
+
+  ```shell
+  #!/bin/bash
+  KAFKA_HOME=/export/server/kafka
+  
+  for number in {1..3}
+  do
+          host=node${number}.itcast.cn
+          /usr/bin/ssh ${host} "source /etc/profile; ${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_HOME}/config/server.properties"
+          echo "${host} starting..............................."
+  done
+  ```
+
+  ```ini
+  chmod u+x /export/server/kafka/bin/start-kafka.sh
+  ```
+
+- 关闭脚本：`stop-kafka.sh`
+
+  ```shell
+  vim /export/server/kafka/bin/stop-kafka.sh
+  ```
+
+  ```shell
+  #!/bin/bash
+  KAFKA_HOME=/export/server/kafka
+  
+  for number in {1..3}
+  do
+  	host=node${number}.itcast.cn
+  	/usr/bin/ssh ${host} "source /etc/profile; ${KAFKA_HOME}/bin/kafka-server-stop.sh"
+  	echo "${host} stoping................................"
+  done
+  ```
+
+  ```shell
+  chmod u+x /export/server/kafka/bin/stop-kafka.sh
+  ```
 
 ### 2. Kafka Maven依赖
 
