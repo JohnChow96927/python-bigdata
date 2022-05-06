@@ -113,7 +113,45 @@ Kafka的诞生，是为了**解决Linkedin的数据管道**问题，起初Linked
 
 ### 4. Topic存储
 
-> 5. 集群架构
+> **Kafka中的Topic、Partition和Replication概念**
+
+![](assets/image-20210328163508888.png)
+
+- **Topic：数据主题**，用于区分不同的数据，**对数据进行分类**
+  - 类似于MySQL中会将数据划分到不同的表：不同的数据存储在不同的表中
+  - **一个Topic可以划分多个分区Partition**，每个不同分区存储在不同的Kafka节点上
+  - 写入Topic的数据实现分布式存储
+  - 生产者写入一条KV结构数据，这条数据写入这个Topic的哪个分区由分区规则来决定
+  - 有多种分区规则：不同场景对应的分区规则不一样
+
+- **Partition：数据分区**，用于实现Topic的分布式存储，对Topic的数据进行划分
+  - 每个分区存储在不同的Kafka节点Broker上
+  - 例如上图中：Topic名称为T1，T1有三个分区：P0、P1、P2
+  - 写入Topic：根据一定的规则决定写入哪个具体的分区
+
+- Replication：数据副本，保证数据的安全性
+
+  - Kafka每一个分区都可以有多个副本，类似于HDFS的副本机制，一个块构建多个副本
+  - **注意：Kafka中一个分区的副本个数最多只能等于机器的个数**，相同分区的副本不允许放在同一台机器
+  - Kafka将一个分区的多个副本，划分为两种角色：Leader副本和Follower副本
+    - **Leader副本**：负责对外提供`读写`，可以认为：Master 副本，生产者和消费者只对leader副本进行读写
+    - **Follower副本**：与Leader同步数据，如果leader故障，从follower新的leader副本对外提供读写
+
+  ![image-20210328164309902](assets/image-20210328164309902.png)
+
+> Kafka 中基本概念：
+
+|     Kafka     | 解释                                                         |        HDFS         |
+| :-----------: | :----------------------------------------------------------- | :-----------------: |
+|   Producer    | 生产者，写入数据到Kafka的Topic                               |   写入数据客户端    |
+|   Consumer    | 消费者，消费Kafka的Topic的Partition数据                      |   读取数据客户端    |
+| ConsumerGroup | 消费者组，消费Kafka的Topic                                   |          -          |
+|    Broker     | Kafka节点                                                    | NameNode + DataNode |
+|     Topic     | 逻辑数据分类的对象，类似于数据库或者表的概念，Topic是分布式的，一个Topic可以有多个分区 |        文件         |
+|   Partition   | 分区结构，物理概念，数据按照写入先后顺序写入分区，一个Topic有多个分区，每个分区有多个副本 |        Block        |
+|  Replication  | 副本机制，通过副本来保证分区数据安全，相同分区的副本不能再同一台机器 |      副本机制       |
+
+### 5. 集群架构
 
 
 
