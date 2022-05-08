@@ -283,7 +283,78 @@ AR = ISR + OSR
 
 ### 6. 数据同步概念: HW, LEO, LSO
 
+> **Topic队列分区Partition副本同步过中的概念：HW、LEO和LSO。**
 
+- 什么是HW、LEO？
+
+  ```ini
+  # HW：High Watermark的缩写，俗称高水位
+  	标识一个特定的消息偏移量（offset），消费者只能拉取到这个offset之前的消息。
+  	HW = 当前这个分区所有副本同步的最低位置 + 1
+  		消费者能消费到的最大位置
+  
+  
+  # LEO：Log End Offset 缩写
+  	标识当前日志文件中下一条待写入消息的offset
+  	LEO = 当前每个副本已经写入数据的最新位置 + 1
+  
+  ```
+
+  <img src="assets/image-20210331153446511.png" alt="image-20210331153446511" style="zoom:80%;" />
+
+  ```ini
+  # 假设topic 分区有3个副本
+  	Leader：0 1 2 3 4 5 6 7 8 
+  		LEO：9
+  	Follower1: 0  1 2  3 4 5
+  		LEO：6
+  	Follower2：0  1  2  3  4  5 6
+  		LEO = 7
+  	HW = 6
+  	
+  
+  # 分区HW高水位 =  所有副本中LEO最小值
+      low_watermark：最低消费的offset
+      high_watermark：最高消费的offset
+  ```
+
+![img](assets/1387008-20210827185057588-2029732907.png)
+
+- **数据写入Leader及同步过程**
+
+  ![1635978562469](assets/1635978562469.png)
+
+- step1、数据写入分区的Leader副本
+
+<img src="assets/image-20210331153522041.png" alt="image-20210331153522041" style="zoom:80%;" />
+
+```ini
+leader：LEO = 5 
+follower1：LEO = 3
+follower2：LEO = 3
+```
+
+- step2：Follower到Leader副本中同步数据
+
+  <img src="assets/image-20210331153541554.png" alt="image-20210331153541554" style="zoom:80%;" />
+
+```ini
+  leader：LEO = 5 
+  follower1：LEO = 5
+  follower2：LEO = 4
+```
+
+- step3：所有的副本都成功写入了消息3和消息4，整个分区的HW和LEO都变为5，因此消费者可以消费到offset为4的消息。
+
+![1635978717791](assets/1635978717791.png)
+
+```ini
+leader：LEO = 5 
+follower1：LEO = 5
+follower2：LEO = 5
+  
+HW = LEO = 5
+```
 
 ### 7. 可视化工具: Kafka Eagle
 
