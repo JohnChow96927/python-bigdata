@@ -560,7 +560,80 @@ HW = LEO = 5
 
 ### 1. ACK机制
 
+> **ack机制**：producer发送消息的确认机制，会影响到kafka的消息吞吐量和安全可靠性。
 
+![1635918368067](assets/1635918368067.png)
+
+- 参数：`ack`，数据传输的**确认码**，用于==定义生产者如何将数据写入Kafka==
+  - `0`：生产者发送一条数据写入Kafka，不管Kafka有没有写入这条数据，都直接发送下一条【**快，不安全，不用的**】
+  - `1`：中和性方案，生产者发送一条数据写入Kafka，Kafka将这条数据写入对应分区Leader副本，就返回一个ack，生产者收到ack，发送下一条【**性能和安全性之间做了权衡**】
+  - `all/-1`：生产者发送一条数据写入Kafka，Kafka将这条数据写入对应分区Leader副本，并且等待所有Follower同步成功，就返回一个ack，生产者收到ack，发送下一条【**安全，慢**】
+  - [如果ack为-1或者为all，生产者没有收到ack，就认为数据丢失，重新发送这条数据]()
+
+```Java
+package cn.itcast.kafka.producer;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.util.Properties;
+
+/**
+ * 使用Java API开发Kafka 生产者，发送数据到Topic队列
+ */
+public class KafkaWriteAckTest {
+
+	public static void main(String[] args) {
+		// TODO: 1. 构建KafkaProducer对象
+		Properties props = new Properties() ;
+		// Kafka Brokers地址
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092") ;
+		// 写入数据时Key和Value类型
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer") ;
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer") ;
+		// TODO: 设置数据发送确认机制ack
+		props.put(ProducerConfig.ACKS_CONFIG, "-1") ;
+		// 传递属性，创建对象
+		KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props) ;
+
+		// TODO: 2. 构建ProducerRecord实例，封装数据
+		ProducerRecord<String, String> producerRecord = new ProducerRecord<>("test-topic", "hello world");
+
+		// TODO: 3. 调用send方法，发送数据至Topic
+		kafkaProducer.send(producerRecord);
+
+		// TODO: 4. 关闭资源
+		kafkaProducer.close();
+	}
+
+}
+```
+
+> **面试题**：Kafka的生产者如何保证生产数据不丢失的机制原理：**ACK + 重试机制**
+
+- 第一点：**ACK 机制**
+
+  - [生产者生产数据写入kafka，等待kafka返回ack确认，收到ack，生产者发送下一条]()
+  - **0**：不等待ack，直接发送下一条
+    - 优点：快
+    - 缺点：数据易丢失
+  - **1**：生产者将数据写入Kafka，Kafka等待这个分区Leader副本，返回ack，发送下一条
+    - 优点：性能和安全做了中和的选项
+    - 缺点：依旧存在一定概率的数据丢失的情况
+  - **all**：生产者将数据写入Kafka，Kafka等待这个分区所有ISR副本同步成功，返回ack，发送下一条
+    - 优点：安全
+    - 缺点：性能比较差
+    - 问题：如果ISR中只有leader一个，leader写入成功，直接返回，leader故障数据丢失怎么办？
+    - 解决：搭配`min.insync.replicas`来使用，表示最少要有几个ISR的副本
+
+- 第二点：**重试机制**
+
+  ```ini
+  retries = 0 发送失败的重试次数
+  ```
+
+  ![1651942276749](assets/1651942276749.png)
 
 ### 2. 分区规则
 
