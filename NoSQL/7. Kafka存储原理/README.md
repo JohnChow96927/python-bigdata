@@ -358,7 +358,203 @@ HW = LEO = 5
 
 ### 7. 可视化工具: Kafka Eagle
 
+> **Kafka Eagle 监控工具**：可以管理监控kafka集群，面板可视化，管理Kafka主题（包含查看、删除、创建等）、消费者组合消费者实例监控、消息阻塞告警、Kafka集群健康状态查看等，告警功能，同时支持邮件、微信、钉钉告警通知。
 
+```ini
+# 官网：
+	https://www.kafka-eagle.org/
+# 文档：
+	https://www.kafka-eagle.org/articles/docs/documentation.html
+# 下载：
+	http://download.kafka-eagle.org/
+```
+
+- 1、下载解压，在node3集群
+
+  ```shell
+  cd /export/software/
+  rz
+  
+  tar -zxvf kafka-eagle-web-1.4.6-bin.tar.gz -C /export/server/
+  cd /export/server/kafka-eagle-web-1.4.6
+  ```
+
+- 2、准备数据库：存储eagle的元数据，在Mysql中创建一个数据库
+
+  ```ini
+  [root@node1 ~]# mysql -uroot -p123456
+  ```
+
+  ```sql
+  CREATE DATABASE eagle;
+  ```
+
+- 3、修改配置文件：
+
+  ```shell
+  cd /export/server/kafka-eagle-web-1.4.6/conf/
+  vim  system-config.properties
+  ```
+
+  ```properties
+  ######################################
+  # multi zookeeper & kafka cluster list
+  ######################################
+  kafka.eagle.zk.cluster.alias=cluster1
+  node1.itcast.cn:2181,node2.itcast.cn:2181,node3.itcast.cn:2181/kafka
+  
+  ######################################
+  # broker size online list
+  ######################################
+  cluster1.kafka.eagle.broker.size=20
+  
+  ######################################
+  # zk client thread limit
+  ######################################
+  kafka.zk.limit.size=25
+  
+  ######################################
+  # kafka eagle webui port
+  ######################################
+  kafka.eagle.webui.port=8048
+  
+  ######################################
+  # kafka offset storage
+  ######################################
+  cluster1.kafka.eagle.offset.storage=kafka
+  cluster2.kafka.eagle.offset.storage=zk
+  
+  ######################################
+  # kafka metrics, 30 days by default
+  ######################################
+  kafka.eagle.metrics.charts=true
+  kafka.eagle.metrics.retain=30
+  
+  
+  ######################################
+  # kafka sql topic records max
+  ######################################
+  kafka.eagle.sql.topic.records.max=5000
+  kafka.eagle.sql.fix.error=false
+  
+  ######################################
+  # delete kafka topic token
+  ######################################
+  kafka.eagle.topic.token=keadmin
+  
+  ######################################
+  # kafka sasl authenticate
+  ######################################
+  cluster1.kafka.eagle.sasl.enable=false
+  cluster1.kafka.eagle.sasl.protocol=SASL_PLAINTEXT
+  cluster1.kafka.eagle.sasl.mechanism=SCRAM-SHA-256
+  cluster1.kafka.eagle.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="kafka" password="kafka-eagle";
+  cluster1.kafka.eagle.sasl.client.id=
+  cluster1.kafka.eagle.sasl.cgroup.enable=false
+  cluster1.kafka.eagle.sasl.cgroup.topics=
+  
+  ######################################
+  # kafka mysql jdbc driver address
+  ######################################
+  kafka.eagle.driver=com.mysql.jdbc.Driver
+  kafka.eagle.url=jdbc:mysql://node1.itcast.cn:3306/eagle?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+  kafka.eagle.username=root
+  kafka.eagle.password=123456
+  ```
+
+- 4、配置环境变量
+
+  ```shell
+  vim /etc/profile
+  ```
+
+  ```ini
+  # KE_HOME
+  export KE_HOME=/export/server/kafka-eagle-web-1.4.6
+  export PATH=$PATH:$KE_HOME/bin
+  ```
+
+  ```ini
+  source /etc/profile
+  ```
+
+- 5、添加执行权限
+
+  ```shell
+  chmod u+x /export/server/kafka-eagle-web-1.4.6/bin/ke.sh
+  ```
+
+- 6、启动服务
+
+  ```ini
+  /export/server/kafka-eagle-web-1.4.6/bin/ke.sh start
+  ```
+
+  ![1651940329029](assets/1651940329029-1651998823008.png)
+
+- 7、登陆
+
+  ```ini
+  # 网页：
+  	http://node3.itcast.cn:8048/ke
+  # 用户名：
+  	admin
+  # 密码：
+  	123456
+  ```
+
+![image-20210402102447211](assets/image-20210402102447211-1651998818529.png)
+
+- 8、Kafka Eagle使用
+
+  - 监控Kafka集群
+
+    ![image-20210402102510140](assets/image-20210402102510140-1651998815607.png)
+
+    ![image-20210402102529749](assets/image-20210402102529749-1651998813447.png)
+
+  - 监控Zookeeper集群
+
+    ![image-20210402102553266](assets/image-20210402102553266-1651998811174.png)
+
+    ![image-20210402102600285](assets/image-20210402102600285-1651998808648.png)
+
+  - 监控Topic
+
+    ![image-20210402102615411](assets/image-20210402102615411-1651998806700.png)
+
+    ![image-20210402102626221](assets/image-20210402102626221-1651998802676.png)
+
+    ![image-20210402102656476](assets/image-20210402102656476-1651998800578.png)
+
+    ![image-20210402102812506](assets/image-20210402102812506-1651998791823.png)
+
+  - **查看数据积压**
+
+    - 现象：消费跟不上生产速度，导致处理的延迟
+    - **原因**
+      - 消费者组的并发能力不够
+    - 消费者处理失败
+
+- 网络故障，导致数据传输较慢
+
+- 解决
+
+  - 提高消费者组中消费者的并行度
+
+  - 分析处理失败的原因
+
+  - 找到网络故障的原因
+
+  - 查看监控
+
+    ![image-20210402102945675](assets/image-20210402102945675-1651998788519.png)
+
+    ![image-20210402103024311](assets/image-20210402103024311-1651998785995.png)
+
+- 检查集群状态情况报表
+
+  ![image-20210402103550318](assets/image-20210402103550318-1651998781496.png)
 
 ## II. Kafka Producer
 
