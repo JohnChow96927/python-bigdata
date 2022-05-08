@@ -72,7 +72,87 @@
 
 ### 3. 读取流程
 
+> Kafka中队列Topic每个分区Partition数据存储在磁盘上，分为很多Segment片段，包含数据文件和索引数据。
+>
+> - `.log`：存储真正的数据
+> - `.index`：存储对应的.log文件的索引
 
+- **Segment的划分规则**：满足任何一个条件都会划分segment
+
+  - 按照时间周期生成
+
+    ```properties
+    #如果达到7天，重新生成一个新的Segment
+    log.roll.hours = 168
+    ```
+
+  - 按照文件大小生成
+
+    ```properties
+    #如果一个Segment存储达到1G，就构建一个新的Segment
+    log.segment.bytes = 1073741824  
+    ```
+
+- **Segment文件的命名规则**
+
+  - 以**当前文件存储的最小offset**来命名的
+
+    ```
+    00000000000000000000.log			offset : 0 ~ 2344
+    00000000000000000000.index
+    
+    00000000000000002345.log			offset : 2345 ~ 6788
+    00000000000000002345.index
+    
+    00000000000000006789.log			offset : 6789 ~
+    00000000000000006789.index
+    ```
+
+- **索引内容**
+
+  - 第一列：此条数据在`.log`文件中的位置，编号（序号），从1开始
+
+  - 第二列：此条数据在`.log`文件中的物理偏移量，从0开始
+
+    ```
+    文件中的第几条,数据在这个文件中的物理位置
+    1,0				--表示log文件中的第1条，在文件中的位置是第0个字节开始
+    
+    3,497			--表示这个文件中的第3条，在文件中的位置是第497个字节开始
+    ```
+
+![1635946713081](assets/1635946713081.png)
+
+- 什么时候生成一条索引？
+
+  - `.log`日志文件中数据每隔多久在`.index`文件添加一条索引
+
+  ```properties
+  #.log文件每增加4096字节，在.index中增加一条索引
+  log.index.interval.bytes=4096
+  ```
+
+> **消费者Consumer从Topic队列中拉取数据【读取流程】：**
+
+- **step1**：消费者根据**Topic、Partition、Offset**提交给Kafka请求读取数据
+- **step2**：Kafka根据元数据信息，找到对应分区Partition对应的Leader副本节点
+- **step3**：请求Leader副本所在的Broker，**先读PageCache**，通过**零拷贝机制**【Zero Copy】读取PageCache
+  - 实现零磁盘读写
+  - 直接将内存数据发送到网络端口，实现传输
+- **step4**：如果PageCache中没有，读取Segment文件段，先根据offset找到要读取的Segment
+  - 先根据offset和segment文件段名称定位这个offset在哪个segment文件段中
+- **step5**：将.log文件对应的.index文件加载到内存中，根据.index中索引的信息找到Offset在.log文件中的最近位置
+- **step6**：读取.log，根据索引读取对应Offset的数据
+
+> 面试题：向Kafka中写入数据和读取数据，为什么很快？
+
+- Kafka为什么写入很快？
+  - [PageCahce + 顺序写]()
+- Kafka为什么读取和快？
+  - [PageCache + 零拷贝]()
+  - [index索引机制 + offset]()
+
+知乎文档：https://zhuanlan.zhihu.com/p/183808742
 
 ### 4. 数据清理
 
