@@ -1254,13 +1254,7 @@ public class KafkaWriteAckTest {
   			for (ConsumerRecord<String, String> record : records) {
   				// TODO: 3. 获取每条消息具体值
   				String topic = record.topic();
-  				int partition = record.partition();
-  				String key = record.key();
-  				String message = record.value();
-  				long timestamp = record.timestamp();
-  				// 获取偏移量
-  				long offset = record.offset();
-  				System.out.println(topic + "\t" + partition + "\t" + offset + "\t" + key + "\t" + message + "\t" + timestamp);
+   
   			}
   
   		// todo: 手动提交偏移量
