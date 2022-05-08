@@ -4,17 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/kafka-client/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/consumer/KafkaReadTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/producer/KafkaWriteLoopTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/producer/KafkaWriteTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-    </list>
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
   </component>
   <component name="DatabaseLocalColorSettings">
     <colors>
@@ -42,6 +39,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
   <component name="ProjectId" id="28SxYetu9oUGgbvgZLoDT7Kb3c5" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -61,7 +61,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/JohnChow/AppData/Roaming/JetBrains/IntelliJIdea2022.1/jdbc-drivers/Phoenix-HBase-Client/phoenix-5.0.0-HBase-2.0-client.jar&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/WeChatFS/WeChat Files/zhouzhengyuan1949/FileStorage/File/2022-05/scala-intellij-bin-2021.1.22.zip&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
@@ -179,7 +179,10 @@
       <workItem from="1651738116523" duration="690000" />
       <workItem from="1651738829002" duration="2291000" />
       <workItem from="1651766758523" duration="2195000" />
-      <workItem from="1651824008519" duration="4673000" />
+      <workItem from="1651824008519" duration="4715000" />
+      <workItem from="1651939125800" duration="474000" />
+      <workItem from="1651939621758" duration="718000" />
+      <workItem from="1651943021369" duration="355000" />
     </task>
     <servers />
   </component>
