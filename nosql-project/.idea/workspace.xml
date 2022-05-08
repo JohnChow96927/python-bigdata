@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/offset/KafkaReadCommitOffsetTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/offset/KafkaReadCommitOffsetTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/offset/KafkaReadCommitPartitionOffsetTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/kafka-client/src/main/java/com/johnchow/kafka/offset/KafkaReadCommitPartitionOffsetTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +185,7 @@
       <workItem from="1651939125800" duration="474000" />
       <workItem from="1651939621758" duration="718000" />
       <workItem from="1651943021369" duration="355000" />
-      <workItem from="1651997241406" duration="4084000" />
+      <workItem from="1651997241406" duration="4980000" />
     </task>
     <servers />
   </component>
