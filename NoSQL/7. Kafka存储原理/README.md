@@ -1109,7 +1109,303 @@ public class KafkaWriteAckTest {
 
 ### 2. 消费Offset
 
+> **问题**：当消费者Consumer从Topic队列的分区Partition中消费数据时，从哪里开始消费读取数据？
 
+![1651965784726](assets/1651965784726.png)
+
+#### 消费者消费过程
+
+> 消费者消费Kafka中的Topic数据：根据==每个分区的Offset==进行消费
+
+- ==第一次消费规则：由属性决定【==[auto.offset.reset = latest | earliest | none]()】
+
+  - `latest`：默认的值，从Topic每个分区的最新的位置开始消费
+  - `earliest`：从最早的位置开始消费，每个分区的offset为0开始消费
+  - `none`：如果是第一次消费，属性为none，Kafka会抛出异常
+
+  ![1651967364225](assets/1651967364225.png)
+
+- 第二次消费开始：根据==**上一次消费的Offset**==位置**+1**继续进行消费
+
+  ![image-20210331094448841](assets/image-20210331094448841.png)
+
+- **问题1：消费者如何知道上一次消费的位置是什么？**
+
+  - 消费者每次成功消费会在内存中记录offset的值，下次直接请求上一次消费的位置
+
+- **问题2：如果因为一些原因，消费者故障了，重启消费者，原来内存中offset就没有，消费者怎么知道上一次消费的位置？**
+
+  - 如果不知道上一次的位置，就无法接着上次的位置继续消费
+  - 原因：offset只放在内存中，进程故障，内存的数据丢失
+  - 解决：**将offset持久化存储**
+
+#### Kafka Offset偏移量管理
+
+- Kafka将每个消费者消费的位置主动记录在一个Topic中：**__consumer_offsets**
+  - Consumer Offset：消费者已经消费到的offset
+  - Commit Offset：下一次请求消费的offset
+  - Commit Offset = Consumer Offset + 1
+- 如果下次消费者没有给定请求offset，kafka就根据自己记录的offset来提供消费的位置
+
+![image-20210331095219512](assets/image-20210331095219512.png)
+
+- 提交的规则：根据时间自动提交
+
+  ```java
+  props.setProperty("enable.auto.commit", "true");//是否自动提交offset
+  props.setProperty("auto.commit.interval.ms", "1000");//提交的间隔时间
+  ```
+
+  ![1651967473218](assets/1651967473218.png)
+
+#### 自动提交问题
+
+- **自动提交的规则**
+
+  - 根据时间周期来提交下一次要消费的offset，记录在`__consumer_offsets`中
+  - 默认值：每5s提交记录一次
+
+  ![1635893557985](assets/1635893557985.png)
+
+- **数据丢失的情况**
+
+  - 如果刚消费，还没处理，就达到提交周期，记录了当前 的offset
+
+  - 最后处理失败，需要重启，重新消费处理
+
+  - Kafka中已经记录消费过了，从上次消费的后面进行消费
+
+    ![image-20210531110047168](assets/image-20210531110047168.png)
+
+  - **数据重复的情况**
+
+    - 如果消费并处理成功，但是没有提交offset，程序故障
+
+    - 重启以后，kafka中记录的还是之前的offset，重新又消费一遍
+
+    - 数据重复问题
+
+      ![image-20210531110217641](assets/image-20210531110217641.png)
+
+- 原因分析
+
+  - **自动提交：按照时间来进行提交**
+  - 需求：按照消费处理的结果
+    - 如果消费并处理成功，提交
+    - 如果消费失败或者处理失败，不提交
+
+#### 手动提交Topic Offset
+
+- 关闭自动提交
+
+  ```java
+  //关闭自动提交
+  props.setProperty("enable.auto.commit", "false");
+  ```
+
+  ![1635893703135](assets/1635893703135.png)
+
+- 手动提交Offset
+
+  ![1651967940663](assets/1651967940663.png)
+
+  ```JAva
+  package cn.itcast.kafka.offset;
+  
+  import org.apache.kafka.clients.consumer.ConsumerConfig;
+  import org.apache.kafka.clients.consumer.ConsumerRecord;
+  import org.apache.kafka.clients.consumer.ConsumerRecords;
+  import org.apache.kafka.clients.consumer.KafkaConsumer;
+  
+  import java.time.Duration;
+  import java.util.Collections;
+  import java.util.Properties;
+  
+  /**
+   * 使用Java API开发Kafka消费者，从队列Topic中消费数据，实时消费，队列中一有数据理解获取
+   */
+  public class KafkaReadCommitOffsetTest {
+  
+  	public static void main(String[] args) {
+  		// TODO: 1. 构建KafkaConsumer连接对象
+  		Properties props = new Properties() ;
+  		// 指定Kafka 服务集群地址
+  		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092");
+  		// 指定消费数据key和value类型，此处从topic文件中读数据，反序列化
+  		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+  		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+  		// 指定消费组ID
+  		props.put(ConsumerConfig.GROUP_ID_CONFIG, "gid-1001") ;
+  		// todo: 第一次消费起始位置
+  		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest") ;
+  		// todo: 关闭自动提交偏移
+  		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+  		// 传递参数，创建连接
+  		KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props) ;
+  
+  		// TODO: 2. 指定topic名称，消费数据
+  		// 设置消费topic名称，可以时多个队列
+  		kafkaConsumer.subscribe(Collections.singletonList("test-topic"));
+  		// 拉取数据，一直消费数据
+  		while (true){
+  			// 设置超时时间，可以理解为每隔多久拉取一次数据
+  			ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
+  			// 循环遍历拉取数据
+  			for (ConsumerRecord<String, String> record : records) {
+  				// TODO: 3. 获取每条消息具体值
+  				String topic = record.topic();
+  				int partition = record.partition();
+  				String key = record.key();
+  				String message = record.value();
+  				long timestamp = record.timestamp();
+  				// 获取偏移量
+  				long offset = record.offset();
+  				System.out.println(topic + "\t" + partition + "\t" + offset + "\t" + key + "\t" + message + "\t" + timestamp);
+  			}
+  
+  		// todo: 手动提交偏移量
+  			kafkaConsumer.commitSync();
+  		}
+  
+  		// TODO: 4. 关闭连接
+  		//kafkaConsumer.close();
+  	}
+  
+  }
+  ```
+
+#### 手动提交Topic Offset问题
+
+> 手动提交Topic Offset的过程中会出现数据重复
+
+- **Offset的设计**
+
+  - Offset是分区级别，每个分区单独管理一套offset
+
+- 举个栗子：1个消费者，消费1个Topic，Topic有3个分区
+
+  - 第一次消费
+
+    - part0
+
+      ```
+      0	hadoop
+      1	hive
+      ```
+
+    - part1
+
+      ```
+      0	hive
+      1	spark
+      2	hue
+      ```
+
+    - part2
+
+      ```
+      0	spark
+      1	hadoop
+      ```
+
+  - 问题：part0和part1都处理成功，当处理part2时候，程序故障，重启
+
+    - offset有没有提交？**没有提交**
+
+  - 重启消费者：Kafka中没有消费记录，但是消费者刚刚分区0和分区1已经消费成功了
+
+    - 所有分区都重新消费
+
+- **原因**：Offset是分区级别的
+- 提交offset是按照整个Topic级别来提交的
+
+- **解决**：提交offset的时候，**按照分区来提交**
+- 消费成功一个分区，就提交一个分区的offset
+
+#### 手动提交分区Offset
+
+> **Kafka实现手动提交Partition的Offset**
+
+- **开发步骤**
+
+  - step1：消费每个分区的数据
+  - step2：处理输出每个分区的数据
+  - step3：手动提交每个分区的Offset
+
+- **编程代码**
+
+  ```java
+  package cn.itcast.kafka.offset;
+  
+  import org.apache.kafka.clients.consumer.*;
+  import org.apache.kafka.common.TopicPartition;
+  
+  import java.time.Duration;
+  import java.util.*;
+  
+  /**
+   * 使用Java API开发Kafka消费者，从队列Topic中消费数据，实时消费，队列中一有数据理解获取
+   */
+  public class KafkaReadCommitPartitionOffsetTest {
+  
+  	public static void main(String[] args) {
+  		// TODO: 1. 构建KafkaConsumer连接对象
+  		Properties props = new Properties() ;
+  		// 指定Kafka 服务集群地址
+  		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092");
+  		// 指定消费数据key和value类型，此处从topic文件中读数据，反序列化
+  		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+  		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+  		// 指定消费组ID
+  		props.put(ConsumerConfig.GROUP_ID_CONFIG, "gid-1001") ;
+  		// todo: 第一次消费起始位置
+  		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest") ;
+  		// todo: 关闭自动提交偏移
+  		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+  		// 传递参数，创建连接
+  		KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props) ;
+  
+  		// TODO: 2. 指定topic名称，消费数据
+  		// 设置消费topic名称，可以时多个队列
+  		kafkaConsumer.subscribe(Collections.singletonList("test-topic"));
+  		// 拉取数据，一直消费数据
+  		while (true){
+  			// 设置超时时间，可以理解为每隔多久拉取一次数据
+  			ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
+  			// 第1步、获取拉取数据的分区信息
+  			Set<TopicPartition> partitions = records.partitions();
+  			// -----------------------------------1 start--------------------------------------------------
+  			// 第2步、获取每个分区数据，进行消费
+  			for (TopicPartition partition: partitions){
+  				// 分区数据
+  				List<ConsumerRecord<String, String>> partitionRecords = records.records(partition);
+  				// 遍历消费
+  				long consumerOffset = 0 ;
+  				for (ConsumerRecord<String, String> record : partitionRecords) {
+  					String topic = record.topic();
+  					int part = record.partition();
+  					long offset = record.offset();
+  					String key = record.key();
+  					String value = record.value();
+  					//模拟处理：输出
+  					System.out.println(topic + "\t" + part + "\t" + offset + "\t" + key + "\t" + value);
+  					// 记录消费偏移量
+  					consumerOffset = offset ;
+  				}
+  				// TODO: 每个分区数据处理完成，手动提交offset
+  				Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+  				offsets.put(partition, new OffsetAndMetadata(consumerOffset)) ;
+  				kafkaConsumer.commitSync(offsets);
+  			}
+  			// -----------------------------------1 end--------------------------------------------------
+  		}
+  
+  		// TODO: 4. 关闭连接
+  		//kafkaConsumer.close();
+  	}
+  
+  }
+  ```
 
 ### 3. 消费Topic
 
