@@ -983,11 +983,11 @@ public class KafkaWriteAckTest {
 
   - 3个消费者，消费3个Topic
   - 第一个Topic：1个分区，第二个Topic：2个分区，第三个Topic：3个分区
+  - 条件: C1, C2消费第一个topic, C2, C3消费第二个topic, C3消费第三个topic
 
   ```ini
   # Topic：
   	T1[0]、    T2[0,1]、    T3[0,1,2]
-        
   # 排序
      T1【0】
      T2【0】
