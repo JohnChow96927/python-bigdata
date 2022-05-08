@@ -1478,3 +1478,66 @@ public class KafkaWriteAckTest {
 
 ## 附录: Kafka集群常用配置
 
+- 集群配置：**`server.properties`**
+
+  |              属性               | 值                      | 含义                                                         |
+  | :-----------------------------: | ----------------------- | :----------------------------------------------------------- |
+  |            broker.id            | int类型                 | Kafka服务端的唯一id，用于注册zookeeper，一般一台机器一个     |
+  |            host.name            | hostname                | 绑定该broker对应的机器地址                                   |
+  |              port               | 端口                    | Kafka服务端端口：9092                                        |
+  |            log.dirs             | 目录                    | kafka存放数据的路径                                          |
+  |        zookeeper.connect        | hostname:2181/kafkadata | zookeeper的地址                                              |
+  |  zookeeper.session.timeout.ms   | 6000                    | zookeeper会话超时时间                                        |
+  | zookeeper.connection.timeout.ms | 6000                    | zookeeper客户端连接超时时间                                  |
+  |         num.partitions          | 1                       | 分区的个数                                                   |
+  |   default.replication.factor    | 1                       | 分区的副本数                                                 |
+  |        log.segment.bytes        | 1073741824              | 单个log文件的大小，默认1G生成一个                            |
+  |    log.index.interval.bytes     | 4096                    | log文件每隔多大生成一条index                                 |
+  |         log.roll.hours          | 168                     | 单个log文件生成的时间规则，默认7天一个log                    |
+  |       log.cleaner.enable        | true                    | 开启日志清理                                                 |
+  |       log.cleanup.policy        | delete，compact         | 默认为delete，删除过期数据，compact为合并数据                |
+  |      log.retention.minutes      | 分钟值                  | segment生成多少分钟后删除                                    |
+  |       log.retention.hours       | 小时值                  | segment生成多少小时后删除【168】，7天                        |
+  |        log.retention.ms         | 毫秒值                  | segment生成多少毫秒后删除                                    |
+  |       log.retention.bytes       | -1                      | 删除文件阈值，如果整个数据文件大小，超过阈值的一个segment大小，将会删除最老的segment，直到小于阈值 |
+  | log.retention.check.interval.ms | 毫秒值【5分钟】         | 多长时间检查一次是否有数据要标记删除                         |
+  | log.cleaner.delete.retention.ms | 毫秒值                  | segment标记删除后多长时间删除                                |
+  |     log.cleaner.backoff.ms      | 毫秒值                  | 多长时间检查一次是否有数据要删除                             |
+  |   log.flush.interval.messages   | Long.MaxValue           | 消息的条数达到阈值，将触发flush缓存到磁盘                    |
+  |      log.flush.interval.ms      | Long.MaxValue           | 隔多长时间将缓存数据写入磁盘                                 |
+  |    auto.create.topics.enable    | false                   | 是否允许自动创建topic，不建议开启                            |
+  |       delete.topic.enable       | true                    | 允许删除topic                                                |
+  |     replica.lag.time.max.ms     | 10000                   | 可用副本的同步超时时间                                       |
+  |    replica.lag.max.messages     | 4000                    | 可用副本的同步记录差，该参数在0.9以后被删除                  |
+  | unclean.leader.election.enable  | true                    | 允许不在ISR中的副本成为leader                                |
+  |       num.network.threads       | 3                       | 接受客户端请求的线程数                                       |
+  |         num.io.threads          | 8                       | 处理读写硬盘的IO的线程数                                     |
+  |       background.threads        | 4                       | 后台处理的线程数，例如清理文件等                             |
+
+- **生产配置：`producer.properties`**
+
+  | 属性                | 值            | 含义                                    |
+  | ------------------- | ------------- | --------------------------------------- |
+  | bootstrap.servers   | hostname:9092 | KafkaServer端地址                       |
+  | poducer.type        | sync \| async | 同步或者异步写入磁盘                    |
+  | min.insync.replicas | 3             | 最小ISR个数                             |
+  | buffer.memory       | 33554432      | 配置生产者本地发送数据的缓存大小        |
+  | compression.type    | none          | 配置数据压缩，可配置snappy              |
+  | partitioner.class   | Partition     | 指定分区的类                            |
+  | acks                | 1             | 指定写入数据的保障方式                  |
+  | request.timeout.ms  | 10000         | 等待ack确认的时间，超时发送失败         |
+  | retries             | 3             | 发送失败的重试次数                      |
+  | batch.size          | 16384         | 批量发送的大小                          |
+  | long.ms             | 5000          | 发送间隔时间                            |
+  | metadata.max.age.ms | 300000        | 更新缓存的元数据【topic、分区leader等】 |
+
+- **消费配置：`consumer.properties`**
+
+  | 属性                    | 值            | 含义                                    |
+  | ----------------------- | ------------- | --------------------------------------- |
+  | bootstrap.servers       | hostname:9092 | 指定Kafka的server地址                   |
+  | group.id                | id            | 消费者组的 名称                         |
+  | consumer.id             | 自动分配      | 消费者id                                |
+  | auto.offset.reset       | latest        | 新的消费者从哪里读取数据latest,earliest |
+  | auto.commit.enable      | true          | 是否自动commit当前的offset              |
+  | auto.commit.interval.ms | 1000          | 自动提交的时间间隔                      |
