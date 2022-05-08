@@ -723,7 +723,68 @@ public class KafkaWriteAckTest {
 
 ### 3. 自定义分区器
 
+> **Kafka自定义生产分区器，以随机分区为例**
 
+- **开发步骤：**
+- step1：开发一个类实现Partitioner接口
+  - step2：实现partition方法
+  - step3：生产者加载分区器
+
+- 随机分区器：`RandomPartitioner`
+
+  ```java
+  package cn.itcast.kafka.partitioner;
+  
+  import org.apache.kafka.clients.producer.Partitioner;
+  import org.apache.kafka.common.Cluster;
+  
+  import java.util.Map;
+  import java.util.Random;
+  
+  /**
+   * 用户自定义的分区器，实现用户自定义随机分区
+   */
+  public class RandomPartitioner implements Partitioner {
+  
+  	/**
+  	 * TODO: 依据数据信息，构建分区编号并返回
+  	 */
+  	@Override
+  	public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+  		// 获取Topic中分区数目
+  		Integer count = cluster.partitionCountForTopic(topic);
+  		// 构建随机数
+  		Random random = new Random() ;
+  		// 随机生成一个分区编号
+  		int partitionId = random.nextInt(count);
+  		// 返回分区编号ID
+  		return partitionId;
+  	}
+  
+  	// 释放资源
+  	@Override
+  	public void close() {
+  
+  	}
+  
+  	// 获取配置
+  	@Override
+  	public void configure(Map<String, ?> configs) {
+  
+  	}
+  }
+  ```
+
+- 使用分区器，设置属性
+
+  ```java
+  // todo: 设置分区器
+  props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "cn.itcast.kafka.partitioner.RandomPartitioner");
+  ```
+
+- 查看数据结果
+
+  ![1651942745218](assets/1651942745218.png)
 
 ### 4. 事务幂等性
 
