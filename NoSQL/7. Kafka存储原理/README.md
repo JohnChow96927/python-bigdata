@@ -156,7 +156,65 @@
 
 ### 4. 数据清理
 
+> Kafka消息队列Topic主要用于数据缓存，不需要永久性的存储数据，如何将过期数据进行清理？
 
+- **属性配置**
+
+  ```properties
+  #开启清理
+  log.cleaner.enable = true
+  #清理规则
+  log.cleanup.policy = delete | compact
+  ```
+
+- **清理规则：delete**
+
+  - **基于存活时间规则：**
+
+    ```properties
+    log.retention.ms
+    log.retention.minutes
+    log.retention.hours=168/7天
+    ```
+
+  - **基于文件大小规则**
+
+    ```properties
+    #删除文件阈值，如果整个数据文件大小，超过阈值的一个segment大小，将会删除最老的segment,-1表示不使用这种规则
+    log.retention.bytes = -1
+    ```
+
+  - **基于offset消费规则**
+
+    - 功能：将明确已经消费的offset的数据删除
+
+    - 如何判断已经消费到什么位置
+
+      - step1：编写一个文件`offset.json`
+
+        ```json
+        {
+          "partitions":[
+             {"topic": "bigdata", "partition": 0,"offset": 2000},
+             {"topic": "bigdata", "partition": 1,"offset": 2000}
+           ],
+           "version":1
+        }
+        ```
+
+      - step2：指定标记这个位置
+
+        ```shell
+        kafka-delete-records.sh \
+        --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092 \
+        --offset-json-file offset.json 
+        ```
+
+- **清理规则：compact**
+
+  - 也称为压缩，==将重复的更新数据的老版本删除，保留新版本，要求每条数据必须要有Key，根据Key来判断是否重复==
+
+  <img src="assets/image-20210330222244406.png" alt="image-20210330222244406" style="zoom:80%;" />
 
 ### 5. 分区副本概念: AR, ISR, OSR
 
