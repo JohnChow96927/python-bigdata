@@ -218,7 +218,68 @@
 
 ### 5. 分区副本概念: AR, ISR, OSR
 
+> **问题**：Kafka中的分区数据如何保证数据安全？
 
+- **分区副本机制**：每个kafka中分区都可以构建多个副本，相同分区的副本存储在不同的节点上
+
+  - 为了**保证数据安全和写的性能**：分区有多个副本角色
+  - leader副本：对外提供==读写数据==
+  - follower副本：==与Leader同步数据==，如果leader故障，选举一个新的leader
+  - 选举leader副本：Kafka主节点Controller实现
+
+  ![1635976897508](assets/1635976897508.png)
+
+- **AR：All - Replicas**（`Assigned Replicas`）
+
+  - 所有副本：**一个分区在所有节点上的副本**
+
+    ```ini
+    Partition: 0   Replicas: 1,0 
+    ```
+
+- **ISR：In - Sync - Replicas**
+
+  - ==可用副本==：所有正在与Leader同步的Follower副本
+
+    ```ini
+    Partition: 0    Leader: 1       Replicas: 1,0   Isr: 1,0
+    ```
+
+  - 列表中：按照优先级排列【Controller根据副本同步状态以及Broker健康状态】，越靠前越会成为leader
+
+  - 如果leader故障，是从ISR列表中选择新的leader
+
+- **OSR：Out - Sync  - Replicas**
+
+  - ==不可用副本==：与Leader副本的同步差距很大，成为一个OSR列表的不可用副本
+
+  - 原因：**网路故障等外部环境因素，某个副本与Leader副本的数据差异性很大**
+
+  - 判断是否是一个OSR副本？
+
+    - 0.9之前：时间和数据差异
+
+      ```ini
+      replica.lag.time.max.ms = 10000   # 可用副本的同步超时时间
+      replica.lag.max.messages = 4000   # 可用副本的同步记录差，该参数在0.9以后被删除
+      ```
+
+    - 0.9以后：只按照时间来判断
+
+      ```ini
+      replica.lag.time.max.ms = 10000   # 可用副本的同步超时时间
+      ```
+
+> **小结**：Kafka中的分区数据如何保证数据安全：[分区副本机制]()
+
+```ini
+AR：所有副本
+ISR：可用副本
+OSR：不可用副本
+AR = ISR + OSR
+```
+
+![img](assets/20201218173735296.png)
 
 ### 6. 数据同步概念: HW, LEO, LSO
 
