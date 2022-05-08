@@ -637,7 +637,89 @@ public class KafkaWriteAckTest {
 
 ### 2. 分区规则
 
+> **问题**：当Producer生产者向Topic队列中发送数据时，如何确定发送到哪个分区Partition呢？
 
+- 第1、**如果指定分区：写入所指定的分区中**
+
+  ![image-20210531095525775](assets/image-20210531095525775.png)
+
+- 第2、如果没指定分区：默认调用的是`DefaultPartitioner`分区器中`partition`这个方法
+
+  ![image-20210531095726567](assets/image-20210531095726567.png)
+
+  - 第一点、**如果指定Key：按照Key的Hash取余分区的个数，来写入对应的分区**
+
+  - 第二点、 **如果没有指定Key：按照黏性分区**
+
+    ![image-20210531100112872](assets/image-20210531100112872.png)
+
+    > 在Kafka 不同版本中，Produer生产者发送数据时，如果没有分区和Key时，分区规则有区别的。
+
+    - **2.4之前：轮询分区**，数据分配相对均衡
+
+      ```ini
+      Topic			part		key		value
+      test-topic		0			1		itcast1
+      test-topic		1			2		itcast2
+      test-topic		2			3		itcast3
+      
+      test-topic		0			4		itcast4
+      test-topic		1			5		itcast5
+      test-topic		2			6		itcast6
+      
+      test-topic		0			7		itcast7
+      test-topic		1			8		itcast8
+      test-topic		2			9		itcast9
+      ```
+
+      - 缺点：性能非常差
+
+      ```ini
+      # step1：先将数据放入一个批次中，判断是否达到条件，达到条件才将整个批次的数据写入kafka
+      	批次满【batch.size】
+      	达到一定时间【linger.ms】
+      
+      # step2：根据数据属于哪个分区，就与分区构建一个连接，发送这个分区的批次的数据
+          第一条数据：先构建0分区的连接，第二条不是0分区的，所以直接构建一个批次，发送第一条
+          第二条数据：先构建1分区的连接，第三条不是1分区的，所以直接构建一个批次，发送第二条
+          ……
+          每条数据需要构建一个批次，9条数据，9个批次，每个批次一条数据
+          
+          # 批次多，每个批次数据量少，性能比较差
+      ```
+
+  - **2.4之后：黏性分区**，==实现少批次多数据==
+
+    - 规则：**判断缓存中是否有这个topic的分区连接，如果有，直接使用，如果没有随机写入一个分区，并且放入缓存**
+
+      ![image-20210531100940160](assets/image-20210531100940160.png)
+
+      ![image-20210531101042589](assets/image-20210531101042589.png)      
+
+    - 第一次：将所有数据随机选择一个分区，全部写入这个分区中，将这次的分区编号放入缓存中
+
+      ```
+      test-topic	1	37	null	itcast0
+      test-topic	1	38	null	itcast1
+      test-topic	1	39	null	itcast2
+      test-topic	1	40	null	itcast3
+      test-topic	1	41	null	itcast4
+      test-topic	1	42	null	itcast5
+      test-topic	1	43	null	itcast6
+      test-topic	1	44	null	itcast7
+      test-topic	1	45	null	itcast8
+      test-topic	1	46	null	itcast9
+      ```
+
+    - 第二次开始根据缓存中是否有上一次的编号
+
+      ```ini
+      # 有：
+      	直接使用上一次的编号
+      
+      # 没有：
+      	重新随机选择一个
+      ```
 
 ### 3. 自定义分区器
 
