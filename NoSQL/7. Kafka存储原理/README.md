@@ -1409,7 +1409,35 @@ public class KafkaWriteAckTest {
 
 ### 3. 消费Topic
 
+> **当Consumer消费者从Topic队列中消费数据时，可以指定具体分区或每个分区消费偏移量offset**
 
+- **实现步骤**
+  - step1：构建Topic分区对象
+  - step2：指定消费Topic的分区
+  - step3：输出消费结果
+
+- **编程代码**
+
+  - 指定Topic和Partition
+
+  ```Java
+  // 方式二：指定Topic和Partition
+  TopicPartition tp1 = new TopicPartition("test-topic", 1);
+  TopicPartition tp2 = new TopicPartition("test-topic", 2);
+  consumer.assign(Arrays.asList(tp1, tp2));
+  ```
+
+  - 指定某个分区及偏移量
+
+  ```Java
+  // 方式三：指定某个分区及偏移量
+  TopicPartition tp0 = new TopicPartition("test-topic", 1);
+  consumer.seek(tp0, 10);
+  ```
+
+  > 消费Topic数据时，三种指定Topic方式
+
+  ![1635896061588](assets/1635896061588.png)
 
 ### 4. 消费语义
 
