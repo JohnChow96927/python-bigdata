@@ -142,7 +142,92 @@ https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-de
 
 ### 3. 入门案例
 
+> **需求**：采集Hive的日志，临时缓存在内存中，将日志写入Flume的日志中并打印在命令行
 
+![img](assets/573045-20171201015955461-1168762564.png)
+
+- **source**：Exec Source
+  - 功能：[通过执行一条Linux命令来实现数据动态采集]()
+  - 固定搭配`tail -F`命令来使用，实现数据增量采集
+  - 动态监听单个文件的数据采集
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#exec-source
+- **channel**：memory channel，
+  - 将数据缓存在内存中
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#memory-channel
+- **sink**：Logger Sink
+  - 将数据日志打印控制台
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#logger-sink
+
+> 开发Flume Agent配置文件，并运行Agent程序，实时采集数据。
+
+- 1、创建Agent配置文件
+
+  ```ini
+  touch /export/server/flume/conf/exec-mem-log.properties
+  ```
+
+- 2、配置Agent组成，指定source、channel和sink
+
+  ```ini
+  vim /export/server/flume/conf/exec-mem-log.properties
+  ```
+
+  ```properties
+  # The configuration file needs to define the sources, 
+  # the channels and the sinks.
+  # Sources, channels and sinks are defined per a1, 
+  
+  # in this case called 'a1'
+  
+  #define the agent
+  a1.sources = s1
+  a1.channels = c1
+  a1.sinks = k1
+  
+  #define the source
+  a1.sources.s1.type = exec
+  a1.sources.s1.command = tail -f /export/server/flume/datas/test.log
+  
+  #define the channel
+  a1.channels.c1.type = memory
+  a1.channels.c1.capacity = 10000
+  
+  #define the sink
+  a1.sinks.k1.type = logger
+  
+  #bond
+  a1.sources.s1.channels = c1
+  a1.sinks.k1.channel = c1
+  ```
+
+- 3、启动Hive服务，运行SQL，产生日志
+
+  ```ini
+  # 创建数据目录
+  mkdir -p /export/server/flume/datas
+  
+  # 创建日志文件
+  touch /export/server/flume/datas/test.log
+  
+  # 追加数据
+  echo "111111111" >> /export/server/flume/datas/test.log
+  echo "222222222" >> /export/server/flume/datas/test.log
+  echo "333333333" >> /export/server/flume/datas/test.log
+  echo "444444444" >> /export/server/flume/datas/test.log
+  ```
+
+- 4、运行Agent程序，参数：`-Dflume.root.logger=INFO,console`，让Flume的日志打印在命令行
+
+```ini
+/export/server/flume/bin/flume-ng agent -n a1 \
+-c /export/server/flume/conf/ \
+-f /export/server/flume/conf/exec-mem-log.properties \
+-Dflume.root.logger=INFO,console
+```
+
+- 5、查看控制台打印数据
+
+![1652026254739](assets/1652026254739.png)
 
 ### 4. Taildir Source
 
