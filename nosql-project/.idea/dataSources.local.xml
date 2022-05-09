@@ -16,5 +16,16 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
+    <data-source name="Hive@node1.itcast.cn" uuid="1b1ef213-f6ca-4109-85be-3234dff15d01">
+      <database-info product="Apache Hive" version="3.1.2" jdbc-version="3.0" driver-name="Hive JDBC" driver-version="3.1.2" dbms="HIVE" exact-version="3.1.2" exact-driver-version="3.1" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="@" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
   </component>
 </project>
