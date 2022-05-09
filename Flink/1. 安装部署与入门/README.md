@@ -110,7 +110,44 @@ Apache Flink 官网：https://flink.apache.org/
 
 ### 2. 流式计算思想
 
+> [Flink 流式计算程序，来一条处理一条数据，真正流计算。]()
 
+![1633525474698](assets/1633525474698.png)
+
+> Flink 框架进行流式计算时，整个流程分为：[数据源Source、数据转换Transformation和数据接收器Sink]()。
+
+```ini
+第一步、从数据源获取数据时，将数据封装到数据流
+	DataStream
+	实际项目，都是从Kafka 消息队列中消费数据
+	
+第二步、数据处理时，调用DataStream方法
+	DataStream#transformation
+	类似RDD中转换算子，比如map、flatMap、filter等等
+
+第三步、将分析数据输出到外部存储
+	DataStream#sink
+	类似RDD中触发/输出算子，比如foreach.....
+```
+
+> Flink应用程序进行**分布式**流式计算时，如何做到[并行计算]()，如下图所示：
+
+![1633525569335](assets/1633525569335.png)
+
+> 对于Flink框架来说，每个Job运行时，==在处理第一条数据之前，首先需要获取资源，运行Task任务，准备数据到达，当数据到达时，一个个数据处理==。
+
+- Operator：`无论是从数据源Source加载数据，还是调用方法转换Transformation处理数据，到最后数据终端Sink输出，都称为Operator`，分为：`Source Operator、Transformation Operator和Sink Operator` 。
+- `Stream`：数据从一个Operator流向另一个Operator； 
+
+![](assets/1629901961306.png)
+
+[每个Operator可以设置并行度（`Parallelism`），假设【Source】、【map()】及【keyBy()/window()/apply()】三个Operator并行度设置为2，【Sink】Operator并行的设置为1，形成如下示意图：]()
+
+![](assets/1629901989018.png)
+
+> Flink 流式计算引擎特点：
+
+![1633397327645](assets/1633397327645.png)
 
 ### 3. 应用场景
 
