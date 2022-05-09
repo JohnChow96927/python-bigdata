@@ -702,11 +702,85 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 ![1652030056733](assets/1652030056733.png)
 
-## II. 陌陌综合案例
+## II. 综合案例
 
 ### 1.  业务需求
 
+> 陌陌综合案例，业务数据流程图：陌陌用户聊天数据存储到日志log文件中，实时采集到Kafka消息队列，实时消费数据存储到HBase表，最后关联Hive表和Phoenix表进行离线分析和即席查询。
 
+![1652051203136](assets/1652051203136.png)
+
+```ini
+数据采集：Flume
+实时存储：Kafka
+离线存储：HBase
+离线分析：Hive 离线分析
+即时查询：Phoenix 即席查询
+```
+
+> [为什么不直接将Flume的数据给HBase，而统一的给了Kafka，再由Kafka到HBase？]()
+
+- 避免高并发写导致机器负载过高、实现架构解耦、实现异步高效
+- 保证数据一致性
+
+#### 陌陌社交数据
+
+> 用户聊天数据以文本格式存储日志文件中，包含20个字段，下图所示：
+
+![image-20210905200540304](assets/image-20210905200540304.png)
+
+> 样本数据：
+
+![1645543357015](assets/1645543357015.png)
+
+上述数据各个字段之间分割符号为：**\001**
+
+#### 模拟社交数据
+
+> 本次案例，直接提供专门用于生产陌陌社交消息数据的工具，可以直接部署在业务端进行数据生成即可，接下来部署用于生产数据的工具jar包。
+
+- 1、创建原始文件目录
+
+  ```ini
+  mkdir -p /export/data/momo_init
+  ```
+
+- 2、上传模拟数据程序
+
+  ```ini
+  cd /export/data/momo_init
+  rz
+  ```
+
+  ![1652051731285](assets/1652051731285.png)
+
+  
+
+- 3、创建模拟数据目录
+
+  ```ini
+  mkdir -p /export/data/momo_data
+  ```
+
+- 4、运行程序生成数据
+
+  ```ini
+  # 1. 语法
+  java -jar /export/data/momo_init/MoMo_DataGen.jar 原始数据路径 模拟数据路径 随机产生数据间隔ms时间
+    	
+  # 2. 测试：每500ms生成一条数据
+  java -jar /export/data/momo_init/MoMo_DataGen.jar \
+  /export/data/momo_init/MoMo_Data.xlsx \
+  /export/data/momo_data \
+  500
+  
+  # 3. 结果
+  生成模拟数据文件MOMO_DATA.dat，并且每条数据中字段分隔符为\001
+  ```
+
+- 5、查看生成社交数据
+
+![1652051787791](assets/1652051787791.png)
 
 ### 2. 实时采集日志
 
