@@ -674,7 +674,147 @@ Stopping standalonesession daemon (pid: 6295) on host node1.itcast.cn.
 
 ### 4. Standalone HA
 
+> 从Standalone架构图中，可发现JobManager存在`单点故障（SPOF`），一旦JobManager出现意外，整个集群无法工作。为了确保集群的高可用，需要搭建Flink的Standalone HA。
 
+![1644670949884](assets/1644670949884.png)
+
+> Flink Standalone HA集群，类似YARN HA 集群安装部署，可以[启动多个主机点JobManager，使用Zookeeper集群监控JobManagers转态，进行选举leader，实现自动故障转移。]()
+
+![1644670962923](assets/1644670962923.png)
+
+在 Zookeeper 的协助下，一个 Standalone的Flink集群会同时有多个活着的 JobManager，其中**只有一个处于Active工作状态，其他处于 Standby 状态。**当工作中的 JobManager 失去连接后(如宕机或 Crash)，Zookeeper 会从 Standby 中选一个新的 JobManager 来接管 Flink 集群。
+
+> 1）、集群规划
+
+![](assets/1614744989801.png)
+
+```ini
+# 在node1.itcast.cn上复制一份standalone
+[root@node1 ~]# cd /export/server/
+[root@node1 server]# cp -r flink-standalone flink-ha
+
+# 删除日志文件
+[root@node1 ~]# rm -rf /export/server/flink-ha/log/*
+```
+
+> 2）、启动ZooKeeper，在`node1.itcast.cn`上启动
+
+```ini
+zookeeper-daemons.sh start
+```
+
+> 3）、启动HDFS，在`node1.itcast.cn`上启动，**如果没有关闭，不用重启**
+
+```ini
+hadoop-daemon.sh start namenode
+hadoop-daemons.sh start datanode
+```
+
+> 4）、停止集群，在`node1.itacast.cn`操作，进行HA高可用配置
+
+```ini
+/export/server/flink-standalone/bin/stop-cluster.sh 
+```
+
+> 5）、修改`flink-conf.yaml`，在`node1.itacast.cn`操作
+
+```ini
+vim /export/server/flink-ha/conf/flink-conf.yaml
+	修改内容：
+jobmanager.rpc.address: node1.itcast.cn	
+
+high-availability: zookeeper
+high-availability.storageDir: hdfs://node1.itcast.cn:8020/flink/ha/
+high-availability.zookeeper.quorum: node1.itcast.cn:2181,node2.itcast.cn:2181,node3.itcast.cn:2181
+high-availability.zookeeper.path.root: /flink
+high-availability.cluster-id: /cluster_standalone
+
+state.backend: filesystem
+state.backend.fs.checkpointdir: hdfs://node1.itcast.cn:8020/flink/checkpoints
+state.savepoints.dir: hdfs://node1.itcast.cn:8020/flink/savepoints
+```
+
+
+
+> 6）、修改`masters`，在`node1.itacast.cn`操作
+
+```ini
+vim /export/server/flink-ha/conf/masters
+	修改内容：
+	node1.itcast.cn:8081
+	node2.itcast.cn:8081
+```
+
+> 7）、分发到集群其他机器，在`node1.itacast.cn`操作
+
+```ini
+scp -r /export/server/flink-ha root@node2.itcast.cn:/export/server/
+scp -r /export/server/flink-ha root@node3.itcast.cn:/export/server/
+```
+
+> 8）、修改`node2.itcast.cn`上的`flink-conf.yaml`
+
+```ini
+[root@node2 ~]# vim /export/server/flink-ha/conf/flink-conf.yaml 
+	修改内容：33 行
+	jobmanager.rpc.address: node2.itcast.cn   
+```
+
+> 9）、重新启动Flink集群
+
+```ini
+# node1.itcast.cn和node2.itcast.cn上执行
+/export/server/flink-ha/bin/jobmanager.sh start
+
+# node1.itcast.cn和node2.itcast.cn、node3.itcast.cn执行
+/export/server/flink-ha/bin/taskmanager.sh start  # 每台机器执行
+```
+
+![1633424157381](assets/1633424157381.png)
+
+运行批处理词频统计WordCount，在Standalone HA高可用集群上：
+
+> 1）、访问WebUI
+
+![1633424730324](assets/1633424730324.png)
+
+> 2）、执行批处理词频统计WordCount
+
+```ini
+/export/server/flink-ha/bin/flink run \
+/export/server/flink-ha/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input/words.txt
+```
+
+![1633424799351](assets/1633424799351.png)
+
+> 3）、kill掉其中一个master，再次运行批处理词频统计
+
+```ini
+/export/server/flink-ha/bin/flink run \
+/export/server/flink-ha/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input/words.txt
+```
+
+![1633424955842](assets/1633424955842.png)
+
+> 查看node2.itcast.cn上JobManager监控页面：
+
+![1633425037238](assets/1633425037238.png)
+
+> 4）、关闭集群服务：Standalone 服务、Zookeeper 服务和HDFS服务
+
+```ini
+# JM和TMs服务(node2.itcast.cn)
+/export/server/flink-ha/bin/stop-cluster.sh
+
+# Zookeeper服务（node1.itcast.cn)
+zookeeper-daemons.sh stop
+
+# HDFS服务（node1.itcast.cn)
+hadoop-daemon.sh stop namenode
+hadoop-daemons.sh stop datanode
+```
 
 ### 5. Flink on YARN
 
