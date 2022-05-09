@@ -277,7 +277,7 @@ TailDir Soucre
   touch /export/server/flume/datas/logs.data
   ```
 
-- -2、开发Agent配置文件
+- 2、开发Agent配置文件
 
   创建文件
 
