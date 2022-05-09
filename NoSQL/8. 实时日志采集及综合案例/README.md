@@ -1159,13 +1159,13 @@ import org.apache.hadoop.hbase.util.Bytes;
   ```sql
   -- 基础查询
   SELECT id, msg_time, sender_nickyname,receiver_nickyname, distance
-  FROM momo_msg 
+  FROM tbl_momo_msg 
   LIMIT 10;
   
   
   -- 统计每个小时的消息数
   SELECT SUBSTR(msg_time, 0, 13) AS hour, count(*) AS total
-  FROM momo_msg
+  FROM tbl_momo_msg
   GROUP BY SUBSTR(msg_time, 0, 13);
   ```
 
@@ -1214,15 +1214,16 @@ import org.apache.hadoop.hbase.util.Bytes;
   ```sql
   -- 基础查询
   SELECT
-      "id", "info"."sender_account", "info"."receiver_account"
-  FROM momo_msg
+      "rk", "info"."sender_account", "info"."receiver_account"
+  FROM "htbl_momo_msg"
   LIMIT 10;
   
+  SELECT COUNT(1) AS TOTAL FROM "htbl_momo_msg";
   -- 查询每个发送人发送的消息数
   SELECT
       "info"."sender_account" ,
       count(*) as total
-  FROM momo_msg
+  FROM "htbl_momo_msg"
   GROUP BY "info"."sender_account"
   ORDER BY total DESC
   LIMIT 10;
@@ -1231,7 +1232,7 @@ import org.apache.hadoop.hbase.util.Bytes;
   SELECT
       "info"."sender_account" ,
       COUNT(DISTINCT "info"."receiver_account") AS total
-  FROM momo_msg
+  FROM "htbl_momo_msg"
   GROUP BY "info"."sender_account"
   ORDER BY total DESC LIMIT 10;
   ```
