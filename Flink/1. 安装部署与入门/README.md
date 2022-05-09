@@ -208,7 +208,76 @@ Apache Flink 官网：https://flink.apache.org/
 
 ### 1. 运行架构
 
+> Flink Runtime运行时架构组成：==**JobManager（主节点**）和**TaskManager`s`（从节点）**==。
 
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/concepts/flink-architecture/
+
+![1633412578726](assets/1633412578726.png)
+
+- 1）、==**JobManager**==：主节点Master，为每个Flink Job分配资源，管理和监控Job运行。
+  - 主要负责调度 Flink Job 并协调 Task 做 checkpoint；
+  - 从 Client 处接收到 Job 和JAR 包等资源后，会生成优化后的执行计划，并以 Task 为单元调度到各个 TaskManager去执行；
+
+- 2）、==**TaskManager**==：从节点Workers，调度每个Job中Task任务执行，及负责Task监控和容错等。
+  - 在启动的时候设置：`Slot 槽位数（资源槽）`，每个 slot 能启动 Task，其中Task 为线程。
+
+![1633525750169](assets/1633525750169.png)
+
+> ==**Flink Client**==：提交应用程序，给主节点JobManager
+>
+> - Client 为提交 Job 的客户端，可以是运行在任何机器上（与 JobManager 环境连通即可）。
+
+![1633412935980](assets/1633412935980.png)
+
+> Flink支持多种安装运行模式，可以将Flink程序运行在很多地方：
+
+![1648421643678](assets/1648421643678.png)
+
+- 第一、`Local 模式`
+
+  [在Windows系统上IDEA集成开发环境编写Flink 代码程序，直接运行测试即为本地测试]()
+
+  - 适用于本地开发和测试环境，占用的资源较少，部署简单
+  - 本地模式LocalMode：JobManager和TaskManager运行在==同一个JVM进程==中
+
+  ![1633414183605](assets/1633414183605.png)
+
+- 第二、`Standalone 模式`
+
+  [将JobManager和TaskManagers直接运行机器上，称为Standalone集群，Flink框架自己集群]()
+
+  - 可以在测试环境功能验证完毕到版本发布的时候使用，进行性能验证
+
+    https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/deployment/resource-providers/standalone/overview/
+
+  - 高可用HA：Standalone Cluster HA
+
+    https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/deployment/ha/zookeeper_ha/
+
+- 第三、`Flink On Yarn 模式`
+
+  [将JobManager和TaskManagers运行在NodeManage的Container容器中，称为Flink on YARN。]()
+
+  - Flink使用YARN进行调度
+
+    https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/deployment/resource-providers/yarn/
+
+- 第四、`K8s 模式`
+
+  [将JobManager和TaskManagers运行在Docker或K8s容器Container中。]()
+
+  - 由于Flink使用的无状态模式，只需要kubernetes提供计算资源即可。会是Flink以后运行的主流方式，可以起到节约硬件资源和便于管理的效果。
+
+    https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/deployment/resource-providers/native_kubernetes/
+
+```ini
+# Apache Flink 框架软件下载：
+	https://flink.apache.org/downloads.html
+	https://archive.apache.org/dist/flink/
+	
+# Aapche Flink 官方文档：
+	https://ci.apache.org/projects/flink/flink-docs-release-1.13/
+```
 
 ### 2. 本地集群
 
