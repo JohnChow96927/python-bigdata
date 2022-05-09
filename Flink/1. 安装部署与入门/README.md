@@ -820,7 +820,56 @@ hadoop-daemons.sh stop datanode
 
 #### 5.1. 运行流程
 
+在一个企业中，为了==最大化的利用集群资源==，一般都会在一个集群中同时运行多种类型的Workload，因此 Flink 也支持在 Yarn 集群运行。
 
+> 为什么使用`Flink on Yarn或Spark on Yarn?`
+
+- 1）、Yarn的资源可以按需使用，提高集群的资源利用率
+
+- 2）、Yarn的任务有优先级，根据优先级运行作业
+
+- 3）、基于Yarn调度系统，能够自动化地处理各个角色的 Failover(容错)
+
+  `当应用程序（MR、Spark、Flink）运行在YARN集群上时，可以实现容灾恢复。`
+
+> Flink on YARN本质：[将JobManager和TaskManager`s`运行在YARN Contanier容器中]()。
+
+![1633428933682](assets/1633428933682.png)
+
+- 1）、JobManager 进程和 TaskManager 进程都由 Yarn NodeManager 监控；
+
+  [JobManager和TaskManager都是运行NodeManager容器Contanier中]()
+
+- 2）、如果 JobManager 进程异常退出，则 Yarn ResourceManager 会重新调度 JobManager到其他机器；
+
+  - [JobManager和AppMaster运行在同一个Container容器中]()
+
+  ![](assets/1629929588137.png)
+
+  `max-attempts`默认值：`2`，实际生产环境，可以调整大一点，比如：`4`
+
+- 3）、如果 TaskManager 进程异常退出，JobManager 会收到消息并重新向 Yarn ResourceManager 申请资源，重新启动 TaskManager；
+
+> Flink on YARN 运行机制示意图：[将JobManager和TaskManagers运行到YARN Container容器中。]()
+
+![](assets/1614763576727.png)
+
+1. 客户端Client上传`jar包和配置文件`到HDFS集群上；
+   - 当启动一个Flink Yarn会话时，客户端首先会检查本次请求的资源是否足够；资源足够再上传。
+   - YARN Client上传完成jar包和配置文件以后，再向RM提交任务；
+2. [Client向YARN ResourceManager提交应用并申请资源；]()
+   - ResourceManager在NodeManager上启动容器，运行AppMaster，相当于JobManager进程。
+3. [ResourceManager分配Container资源并启动ApplicationMaster，然后AppMaster加载Flink的Jar包和配置构建环境，启动JobManager；]()
+   - JobManager和ApplicationMaster运行在同一个Container上；
+   - 一旦JobManager被成功启动，AppMaster就知道JobManager的地址(AM它自己所在的机器)；
+   - 它就会为TaskManager生成一个新的Flink配置文件，此配置文件也被上传到HDFS上；
+   - 此外，AppMaster容器也提供了Flink的web服务接口；
+   - YARN所分配的所有端口都是临时端口，这允许用户并行执行多个Flink
+4. [ApplicationMaster向ResourceManager申请工作资源，NodeManager加载Flink的Jar包和配置
+   构建环境并启动TaskManager（多个）。]()
+5. TaskManager启动后向JobManager发送心跳包，并等待JobManager向其分配任务；
+
+![1633433408535](assets/1633433408535.png)
 
 #### 5.2. Session模式运行
 
