@@ -1545,7 +1545,229 @@ public class BatchWordCount {
 
 ### 3. WordCount(流计算)
 
+> 编写Flink程序，**接收TCP Socket的单词数据，并以空格进行单词拆分，分组统计单词个数**。
 
+![1633446557864](assets/1633446557864.png)
+
+```java
+package cn.itcast.flink.stream;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * 使用Flink计算引擎实现实时流计算：词频统计WordCount，从TCP Socket消费数据，结果打印控制台。
+	 * 1.执行环境-env
+	 * 2.数据源-source
+	 * 3.数据转换-transformation
+	 * 4.数据接收器-sink
+	 * 5.触发执行-execute
+ */
+public class StreamWordCount {
+
+	public static void main(String[] args) throws Exception {
+		// 1.执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+		// 2.数据源-source
+		DataStreamSource<String> inputDataStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3.数据转换-transformation
+		SingleOutputStreamOperator<Tuple2<String, Integer>> resultDataStream = inputDataStream
+			// 3-1. 分割单词
+			.flatMap(new FlatMapFunction<String, String>() {
+				@Override
+				public void flatMap(String line, Collector<String> out) throws Exception {
+					for (String word : line.trim().split("\\s+")) {
+						out.collect(word);
+					}
+				}
+			})
+			// 3-2. 转换二元组
+			.map(new MapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public Tuple2<String, Integer> map(String word) throws Exception {
+					return new Tuple2<>(word, 1);
+				}
+			})
+			// 3-3. 分组和组内求和
+			.keyBy(0).sum(1);
+
+		// 4.数据接收器-sink
+		resultDataStream.print();
+
+		// 5.触发执行-execute
+		env.execute("StreamWordCount");
+	}
+
+}
+```
+
+> Apache Flink `1.12.0` 正式发布，`流批一体`真正统一运行！[在 DataStream API 上添加了高效的批执行模式的支持。]()批处理和流处理实现真正统一的运行时的一个重要里程碑。
+
+![](assets/1614734865437.png)
+
+> 在 Flink 1.12 中，默认执行模式为 `STREAMING`，要将作业配置为以 `BATCH` 模式运行，可以在提交作业的时候，设置参数 `execution.runtime-mode`。
+>
+> 文档：https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/execution_mode/
+
+![1633447728418](assets/1633447728418.png)
+
+> 修改流计算词频统计，从本地系统文本文件加载数据，处理数据，设置执行模式为：`Batch`。
+
+```java
+package cn.itcast.flink.mode;
+
+import org.apache.flink.api.common.RuntimeExecutionMode;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * 使用Flink计算引擎实现离线批处理：词频统计WordCount，TODO：从Flink 1.12开始，流批一体化，API统一，设置执行模式即可
+	 * 1.执行环境-env
+	 * 2.数据源-source
+	 * 3.数据转换-transformation
+	 * 4.数据接收器-sink
+	 * 5.触发执行-execute
+ */
+public class ExecutionWordCount {
+
+	public static void main(String[] args) throws Exception {
+		// 1.执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		// TODO: 设置执行模式execute-mode为Batch批处理
+		env.setRuntimeMode(RuntimeExecutionMode.BATCH) ;
+
+		// 2.数据源-source
+		DataStreamSource<String> inputDataStream = env.readTextFile("datas/wordcount.data") ;
+
+		// 3.数据转换-transformation
+		SingleOutputStreamOperator<Tuple2<String, Integer>> resultDataStream = inputDataStream
+			// 3-1. 分割单词
+			.flatMap(new FlatMapFunction<String, String>() {
+				@Override
+				public void flatMap(String line, Collector<String> out) throws Exception {
+					for (String word : line.trim().split("\\s+")) {
+						out.collect(word);
+					}
+				}
+			})
+			// 3-2. 转换二元组
+			.map(new MapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public Tuple2<String, Integer> map(String word) throws Exception {
+					return new Tuple2<>(word, 1);
+				}
+			})
+			// 3-3. 分组和组内求和
+			.keyBy(0).sum(1);
+
+		// 4.数据接收器-sink
+		resultDataStream.print();
+
+		// 5.触发执行-execute
+		env.execute("StreamWordCount");
+	}
+
+}
+
+
+```
+
+> 前面提交运行Flink Job时，通过 `--input、--output、--host`和 `--port` 传递参数，如下命令：
+
+```ini
+/export/server/flink-local/bin/flink run \
+/export/server/flink-local/examples/batch/WordCount.jar --input /root/words.txt --output /root/output
+```
+
+> 修改流式程序，从应用程序传递参数：`host和port`，使用Flink中工具类：`ParameterTool`，解析参数，代码如下所示：
+
+文档：https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/dev/datastream/application_parameters/
+
+![](assets/1630745360506.png)
+
+```java
+package cn.itcast.flink;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * 使用Flink计算引擎实现实时流计算：词频统计WordCount，从TCP Socket消费数据，结果打印控制台。
+	 * 1.执行环境-env
+	 * 2.数据源-source
+	 * 3.数据转换-transformation
+	 * 4.数据接收器-sink
+	 * 5.触发执行-execute
+ */
+public class WordCount {
+
+	public static void main(String[] args) throws Exception {
+
+		// TODO: 构建参数解析工具类实例对象
+		ParameterTool parameterTool = ParameterTool.fromArgs(args);
+		if(parameterTool.getNumberOfParameters() != 2){
+			System.out.println("Usage: WordCount --host <hostname> --port <port> .........");
+			System.exit(-1);
+		}
+		final String host = parameterTool.get("host") ; // 直接传递参数，获取值
+		final int port = parameterTool.getInt("port", 9999) ; // 如果没有参数，使用默认值
+
+		// 1.执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(2) ; // 设置并行度
+
+		// 2.数据源-source
+		DataStreamSource<String> inputDataStream = env.socketTextStream(host, port);
+
+		// 3.数据转换-transformation
+		SingleOutputStreamOperator<Tuple2<String, Integer>> resultDataStream = inputDataStream
+			// 3-1. 分割单词
+			.flatMap(new FlatMapFunction<String, String>() {
+				@Override
+				public void flatMap(String line, Collector<String> out) throws Exception {
+					for (String word : line.trim().split("\\s+")) {
+						out.collect(word);
+					}
+				}
+			})
+			// 3-2. 转换二元组
+			.map(new MapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public Tuple2<String, Integer> map(String word) throws Exception {
+					return new Tuple2<>(word, 1);
+				}
+			})
+			// 3-3. 分组和组内求和
+			.keyBy(0).sum(1);
+
+		// 4.数据接收器-sink
+		resultDataStream.print();
+
+		// 5.触发执行-execute
+		env.execute("StreamWordCount");
+	}
+
+}
+
+```
 
 ### 4. 打包部署运行
 
