@@ -706,7 +706,7 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 ### 1.  业务需求
 
-> 陌陌综合案例，业务数据流程图：陌陌用户聊天数据存储到日志log文件中，实时采集到Kafka消息队列，实时消费数据存储到HBase表，最后关联Hive表和Phoenix表进行离线分析和即席查询。
+> mm综合案例，业务数据流程图：mm用户聊天数据存储到日志log文件中，实时采集到Kafka消息队列，实时消费数据存储到HBase表，最后关联Hive表和Phoenix表进行离线分析和即席查询。
 
 ![1652051203136](assets/1652051203136.png)
 
@@ -723,7 +723,7 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 - 避免高并发写导致机器负载过高、实现架构解耦、实现异步高效
 - 保证数据一致性
 
-#### 陌陌社交数据
+#### mm社交数据
 
 > 用户聊天数据以文本格式存储日志文件中，包含20个字段，下图所示：
 
@@ -737,7 +737,7 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 #### 模拟社交数据
 
-> 本次案例，直接提供专门用于生产陌陌社交消息数据的工具，可以直接部署在业务端进行数据生成即可，接下来部署用于生产数据的工具jar包。
+> 本次案例，直接提供专门用于生产mm社交消息数据的工具，可以直接部署在业务端进行数据生成即可，接下来部署用于生产数据的工具jar包。
 
 - 1、创建原始文件目录
 
@@ -784,7 +784,7 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 ### 2. 实时采集日志
 
-> 使用Flume进行实时采集陌陌聊天数据，实时写入Kafka消息队列，Agent各部分组件如下：
+> 使用Flume进行实时采集mm聊天数据，实时写入Kafka消息队列，Agent各部分组件如下：
 
 - **Source**：`taildir`，动态监听多个文件实现实时数据采集；
 - **Channel**：`mem`，将数据缓存在内存；
@@ -893,7 +893,7 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 #### HBase 表设计
 
-> 陌陌社交数据存储HBase表，用于即席查询时，主要查询：依据**用户ID + 日期查询** 聊天记录。
+> mm社交数据存储HBase表，用于即席查询时，主要查询：依据**用户ID + 日期查询** 聊天记录。
 
 ![1645977023977](assets/1645977023977.png)
 
@@ -948,7 +948,7 @@ import java.time.Duration;
 import java.util.*;
 
 /**
- * 实时程序：从Kafka 消费陌陌社交数据，解析ETL后，存储HBase表。
+ * 实时程序：从Kafka 消费mm社交数据，解析ETL后，存储HBase表。
  */
 public class MomoKafkaToHBase {
 
@@ -1052,7 +1052,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 ```Java
 	/**
-	 * 将陌陌社交聊天数据实时写入HBase表中： message 消息 -> Put 对象 -> 写入表
+	 * 将mm社交聊天数据实时写入HBase表中： message 消息 -> Put 对象 -> 写入表
 	 */
 	private static void writeMessageToHBase(String message) throws Exception {
 		// step1. 分割数据
@@ -1294,6 +1294,149 @@ import org.apache.hadoop.hbase.util.Bytes;
 ```
 
 ### 2. 完整代码
+
+> 综合案例中，编写Java程序，实时从Kafka消费数据，进行ETL转换后，存储到HBase表，完整代码。
+
+```Java
+package cn.itcast.momo;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
+
+import java.time.Duration;
+import java.util.*;
+
+/**
+ * 实时程序：从Kafka 消费社交数据，解析ETL后，存储HBase表。
+ */
+public class MomoKafkaToHBase {
+
+	private static TableName tableName = TableName.valueOf("htbl_momo_msg");
+	private static byte[] cfBytes = Bytes.toBytes("info");
+	private static Table table;
+
+	// todo: 静态代码块, 构建HBase连接
+	static {
+		try {
+			// 构建配置对象
+			Configuration conf = HBaseConfiguration.create();
+			conf.set("hbase.zookeeper.quorum", "node1.itcast.cn,node2.itcast.cn,node3.itcast.cn");
+			// 构建连接
+			Connection conn = ConnectionFactory.createConnection(conf);
+			// 获取表对象
+			table = conn.getTable(tableName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		// todo: 1. 从Kafka Topic队列实时消费数据
+		// 1-1. 设置Kafka消费属性
+		Properties props = new Properties();
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092");
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, "gid-momo-2");
+		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+		// 1-2. 创建KafkaConsumer连接对象
+		KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
+		// 1-3. 设置消费Topic
+		kafkaConsumer.subscribe(Collections.singletonList("momo-msg"));
+		// 1-4. 实时拉取pull数据
+		while (true){
+			// 向Kafka请求拉取数据，等待Kafka响应，在100ms以内如果响应，就拉取数据，如果100ms内没有响应，就提交下一次请求
+			ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(100));
+			/*
+				todo: 1-5. 获取每个分区数据，存储HBase表，最后手动提交分区偏移量
+			 */
+			// a. 获取所有分区信息
+			Set<TopicPartition> partitions = consumerRecords.partitions();
+			// b. 循环遍历分区信息，获取每个分区数据
+			for (TopicPartition partition : partitions) {
+				// c. 依据分区信息，获取分区数据
+				List<ConsumerRecord<String, String>> records = consumerRecords.records(partition);
+				// d. 循环遍历分区数据，获取每天数据单独处理
+				long consumerOffset = 0L ;
+				for (ConsumerRecord<String, String> record : records) {
+					// 获取信息Message
+					String message = record.value();
+					System.out.println(message);
+
+					// todo: 2. 实时存储数据至HBase表
+					if(StringUtils.isNotEmpty(message) && message.split("\001").length == 20){
+						writeMessageToHBase(message) ;
+					}
+
+					// 获取偏移量
+					consumerOffset = record.offset();
+				}
+				// e. 手动提交分区偏移量
+				Map<TopicPartition, OffsetAndMetadata> offsets = Collections.singletonMap(
+					partition, new OffsetAndMetadata(consumerOffset + 1)
+				);
+				kafkaConsumer.commitSync(offsets);
+			}
+		}
+	}
+
+	/**
+	 * 将社交聊天数据实时写入HBase表中： message 消息 -> Put 对象 -> 写入表
+	 */
+	private static void writeMessageToHBase(String message) throws Exception {
+		// step1. 分割数据
+		String[] items = message.split("\001");
+
+		// step2. 构建RowKey
+		/*
+            RowKey = 发件人id + 消息日期 + 收件人id
+		 */
+		String senderAccount = items[2] ;
+		String msgTime = items[0] ;
+		String receiverAccount = items[11] ;
+		String rowKey = StringUtils.reverse(senderAccount) + "_" + msgTime + "_" + receiverAccount ;
+
+		// step3. 创建Put对象
+		Put put = new Put(Bytes.toBytes(rowKey)) ;
+
+		// step4. 添加列
+		put.addColumn(cfBytes, Bytes.toBytes("msg_time"), Bytes.toBytes(items[0]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_nickyname"), Bytes.toBytes(items[1]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_account"), Bytes.toBytes(items[2]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_sex"), Bytes.toBytes(items[3]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_ip"), Bytes.toBytes(items[4]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_os"), Bytes.toBytes(items[5]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_phone_type"), Bytes.toBytes(items[6]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_network"), Bytes.toBytes(items[7]));
+		put.addColumn(cfBytes, Bytes.toBytes("sender_gps"), Bytes.toBytes(items[8]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_nickyname"), Bytes.toBytes(items[9]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_ip"), Bytes.toBytes(items[10]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_account"), Bytes.toBytes(items[11]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_os"), Bytes.toBytes(items[12]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_phone_type"), Bytes.toBytes(items[13]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_network"), Bytes.toBytes(items[14]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_gps"), Bytes.toBytes(items[15]));
+		put.addColumn(cfBytes, Bytes.toBytes("receiver_sex"), Bytes.toBytes(items[16]));
+		put.addColumn(cfBytes, Bytes.toBytes("msg_type"), Bytes.toBytes(items[17]));
+		put.addColumn(cfBytes, Bytes.toBytes("distance"), Bytes.toBytes(items[18]));
+		put.addColumn(cfBytes, Bytes.toBytes("message"), Bytes.toBytes(items[19]));
+
+		// step5. 执行写入
+		table.put(put);
+	}
+
+}
+```
 
 
 
