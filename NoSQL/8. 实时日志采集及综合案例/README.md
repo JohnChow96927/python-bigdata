@@ -1171,7 +1171,70 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 ### 5. Phoenix即席查询
 
+> **使用Phoenix关联Hbase实现即时查询**
 
+![1652051240459](assets/1652051240459.png)
+
+- 1、服务启动
+
+  ```ini
+  /export/server/phoenix/bin/sqlline.py node1.itcast.cn,node2.itcast.cn,node3.itcast.cn:2181
+  ```
+
+- 2、创建视图view，关联HBase表
+
+  ```sql
+  CREATE VIEW IF NOT EXISTS "momo_msg" (
+      "rk" varchar primary key,
+      "info"."msg_time" varchar ,
+      "info"."sender_nickyname" varchar ,
+      "info"."sender_account" varchar ,
+      "info"."sender_sex" varchar ,
+      "info"."sender_ip" varchar ,
+      "info"."sender_os" varchar ,
+      "info"."sender_phone_type" varchar ,
+      "info"."sender_network" varchar ,
+      "info"."sender_gps" varchar ,
+      "info"."receiver_nickyname" varchar ,
+      "info"."receiver_ip" varchar ,
+      "info"."receiver_account" varchar ,
+      "info"."receiver_os" varchar ,
+      "info"."receiver_phone_type" varchar ,
+      "info"."receiver_network" varchar ,
+      "info"."receiver_gps" varchar ,
+      "info"."receiver_sex" varchar ,
+      "info"."msg_type" varchar ,
+      "info"."distance" varchar ,
+      "info"."message" varchar
+      );
+  ```
+
+- 3、**即时查询**
+
+  ```sql
+  -- 基础查询
+  SELECT
+      "id", "info"."sender_account", "info"."receiver_account"
+  FROM momo_msg
+  LIMIT 10;
+  
+  -- 查询每个发送人发送的消息数
+  SELECT
+      "info"."sender_account" ,
+      count(*) as total
+  FROM momo_msg
+  GROUP BY "info"."sender_account"
+  ORDER BY total DESC
+  LIMIT 10;
+  
+  -- 查询每个发送人聊天的人数
+  SELECT
+      "info"."sender_account" ,
+      COUNT(DISTINCT "info"."receiver_account") AS total
+  FROM momo_msg
+  GROUP BY "info"."sender_account"
+  ORDER BY total DESC LIMIT 10;
+  ```
 
 ## 附录:
 
