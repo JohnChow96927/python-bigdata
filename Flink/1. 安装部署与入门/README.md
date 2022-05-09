@@ -1127,7 +1127,85 @@ export HADOOP_CLASSPATH=`hadoop classpath`
 
 #### 5.5. Application模式运行
 
+> **Flink 1.11** 引入了一种新的部署模式，即 **Application** 模式，目前可以支持基于 Hadoop YARN 和 Kubernetes 的 Application 模式。
 
+```ini
+# 1、Session 模式：
+	所有作业Job共享1个集群资源，隔离性差，JM 负载瓶颈，每个Job中main 方法在客户端执行。
+
+# 2、Per-Job 模式：
+	每个作业单独启动1个集群，隔离性好，JM 负载均衡，Job作业main 方法在客户端执行。
+```
+
+![1633436605167](assets/1633436605167.png)
+
+以上两种模式，==main方法都是在客户端执行==，需要**获取 flink 运行时所需的依赖项，并生成 JobGraph，提交到集群的操作都会在实时平台所在的机器上执行**，那么将会给服务器造成很大的压力。此外，提交任务的时候会**把本地flink的所有jar包先上传到hdfs上相应的临时目录**，带来==大量的网络的开销==，所以如果任务特别多的情况下，平台的吞吐量将会直线下降。
+
+> Application 模式下，==用户程序的 main 方法将在`集群`中运行==，用户**将程序逻辑和依赖打包进一个可执行的 jar 包里**，集群的入口程序 (ApplicationClusterEntryPoint) 负责调用其中的 main 方法来生成 JobGraph。
+
+![1633436948989](assets/1633436948989.png)
+
+**Application 模式为每个提交的应用程序创建一个集群，并在应用程序完成时终止**。Application 模式在不同应用之间提供了资源隔离和负载平衡保证。在特定一个应用程序上，JobManager 执行 m**ain()** 可以[节省所需的 CPU 周期]()，还可以[节省本地下载依赖项所需的带宽]()。
+
+> ==Application 模式==使用 `bin/flink run-application` 提交作业，本质上是Session和Per-Job模式的折衷。
+
+- 通过 **`-t`** 指定部署环境，目前支持部署在 yarn 上(`-t yarn-application`) 和 k8s 上(`-t kubernetes-application`）；
+- 通过 **`-D`** 参数指定通用的运行配置，比如 jobmanager/taskmanager 内存、checkpoint 时间间隔等。
+
+```ini
+export HADOOP_CLASSPATH=`hadoop classpath`
+
+/export/server/flink-yarn/bin/flink run-application \
+-t yarn-application \
+-Djobmanager.memory.process.size=1024m \
+-Dtaskmanager.memory.process.size=1024m \
+-Dtaskmanager.numberOfTaskSlots=1 \
+/export/server/flink-yarn/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input
+
+```
+
+由于MAIN方法在JobManager（也就是NodeManager的容器Container）中执行，当Flink Job执行完成以后，启动`MRJobHistoryServer`历史服务器，查看AppMaster日志信息。
+
+```ini
+# node1.itcast.cn 上启动历史服务
+[root@node1 ~]# mr-jobhistory-daemon.sh start historyserver 
+```
+
+![1633445478494](assets/1633445478494.png)
+
+> - 第二步、查看UI界面：http://node1.itcast.cn:8088/cluster
+
+![1633445508701](assets/1633445508701.png)
+
+> Flink on YARN运行总结回顾：
+
+```ini
+Flink on YARN：
+	1、本质：
+		将Flink 集群运行到YARN Container容器中（JM和TMs在NodeManager容器中运行），此时JM和AppMaster合为一体
+
+	2、提交流程
+		a、上传jar和conf到hdfs
+		b、提交应用给RM，启动AppMaster
+		c、AppMaster下载jar和conf，启动JobManager
+		d、AppMaster先RM申请资源，下载jar和conf，启动TMs
+
+	3、部署模式：3种
+		第1种：Session 模式
+			多个Job共享一个集群资源
+			先申请资源运行JM和TMs，再提交Job执行
+		第2种：Per-Job 模式
+			每个Job独享一个集群资源
+			运行Job时，申请资源运行JM和TMs，当Job运行完成，释放资源，程序结束
+		第3种：Application 模式
+			解决Session模式和Pet-Job模式中，程序main方法在client执行性能问题
+			将Main放在JM中执行，类似Pet-Job模式，每个Job独享集群资源
+```
+
+> 测试Flink Job不同运行模式时，注意事项如下：
+
+![1648681334840](assets/1648681334840.png)
 
 ## III. Flink入门案例
 
