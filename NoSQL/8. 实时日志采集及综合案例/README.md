@@ -399,7 +399,308 @@ TailDir Soucre
 
 ### 6. HDFS Sink
 
+```
+在Flume中，日志数据实时采集时，常用Sink接收器：
+	1. HDFS sink
+		将采集数据Event写入到HDFS文件系统文件中
+		
+	2. Kafka Sink
+		将采集数据Event写入到Kafka Topic中
+```
 
+> **将Flume采集的数据写入HDFS**，使用Sink为：**HDFS Sink**
+
+- 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#hdfs-sink
+
+- Demo 案例
+
+  ```ini
+  a1.channels = c1
+  a1.sinks = k1
+  a1.sinks.k1.type = hdfs
+  a1.sinks.k1.channel = c1
+  a1.sinks.k1.hdfs.path = /flume/events/%y-%m-%d/%H%M/%S
+  a1.sinks.k1.hdfs.filePrefix = events-
+  a1.sinks.k1.hdfs.round = true
+  a1.sinks.k1.hdfs.roundValue = 10
+  a1.sinks.k1.hdfs.roundUnit = minute
+  ```
+
+#### 写入HDFS
+
+- 1、创建Agent 配置文件
+
+```ini
+touch /export/server/flume/conf/hdfs-mem-log.properties
+```
+
+- 2、开发配置文件内容
+
+  ```ini
+  vim /export/server/flume/conf/hdfs-mem-log.properties
+  ```
+
+  ```ini
+  # The configuration file needs to define the sources, 
+  # the channels and the sinks.
+  # Sources, channels and sinks are defined per a1, 
+  # in this case called 'a1'
+  
+  
+  #定义当前的agent的名称，以及对应source、channel、sink的名字
+  a1.sources = s1
+  a1.channels = c1
+  a1.sinks = k1
+  
+  #定义s1:从哪读数据，读谁
+  a1.sources.s1.type = exec
+  a1.sources.s1.command = tail -f /export/server/flume/datas/test.log
+  
+  #定义c1:缓存在什么地方
+  a1.channels.c1.type = memory
+  a1.channels.c1.capacity = 1000
+  
+  
+  #定义k1:将数据发送给谁
+  a1.sinks.k1.type = hdfs
+  a1.sinks.k1.hdfs.path = hdfs://node1.itcast.cn:8020/flume/test1
+  #指定生成的文件的前缀
+  a1.sinks.k1.hdfs.filePrefix = nginx
+  #指定生成的文件的后缀
+  a1.sinks.k1.hdfs.fileSuffix = .log
+  #指定写入HDFS的文件的类型：普通的文件
+  a1.sinks.k1.hdfs.fileType = DataStream 
+  
+  #s1将数据给哪个channel
+  a1.sources.s1.channels = c1
+  #k1从哪个channel中取数据
+  a1.sinks.k1.channel = c1
+  ```
+
+- 3、启动Agent服务
+
+```ini
+/export/server/flume/bin/flume-ng agent -n a1 \
+-c /export/server/flume/conf/ \
+-f /export/server/flume/conf/hdfs-mem-log.properties \
+-Dflume.root.logger=INFO,console
+```
+
+- 4、测试数据
+
+  ```ini
+  echo "1................................" >> /export/server/flume/datas/test.log
+  echo "2................................" >> /export/server/flume/datas/test.log
+  echo "3................................" >> /export/server/flume/datas/test.log
+  echo "4................................" >> /export/server/flume/datas/test.log
+  echo "5................................" >> /export/server/flume/datas/test.log
+  echo "6................................" >> /export/server/flume/datas/test.log
+  echo "7................................" >> /export/server/flume/datas/test.log
+  echo "8................................" >> /export/server/flume/datas/test.log
+  echo "9................................" >> /export/server/flume/datas/test.log
+  ```
+
+- 5、查看HDFS目录中文件
+
+  ![1652029327261](assets/1652029327261.png)
+
+#### 文件大小
+
+> Flume默认写入HDFS上会产生很多小文件，都在1KB左右，不利用HDFS存储
+
+- **解决**：指定文件大小
+
+```ini
+# hdfs.rollInterval：
+	按照时间间隔生成文件
+	
+# hdfs.rollSize：
+	指定HDFS生成的文件大小
+	
+# hdfs.rollCount：
+	按照event个数生成文件
+```
+
+- 1、复制Agent配置文件
+
+  ```ini
+  cp /export/server/flume/conf/hdfs-mem-log.properties /export/server/flume/conf/hdfs-mem-size.properties
+  ```
+
+- 2、修改文件内容
+
+  ```ini
+  vim /export/server/flume/conf/hdfs-mem-size.properties
+  ```
+
+  ```ini
+  # The configuration file needs to define the sources, 
+  # the channels and the sinks.
+  # Sources, channels and sinks are defined per a1, 
+  # in this case called 'a1'
+  
+  
+  #定义当前的agent的名称，以及对应source、channel、sink的名字
+  a1.sources = s1
+  a1.channels = c1
+  a1.sinks = k1
+  
+  #定义s1:从哪读数据，读谁
+  a1.sources.s1.type = exec
+  a1.sources.s1.command = tail -f /export/server/flume/datas/test.log
+  
+  #定义c1:缓存在什么地方
+  a1.channels.c1.type = memory
+  a1.channels.c1.capacity = 1000
+  
+  #定义k1:将数据发送给谁
+  a1.sinks.k1.type = hdfs
+  a1.sinks.k1.hdfs.path = hdfs://node1.itcast.cn:8020/flume/test2
+  #指定生成的文件的前缀
+  a1.sinks.k1.hdfs.filePrefix = nginx
+  #指定生成的文件的后缀
+  a1.sinks.k1.hdfs.fileSuffix = .log
+  #指定写入HDFS的文件的类型：普通的文件
+  a1.sinks.k1.hdfs.fileType = DataStream 
+  #指定按照时间生成文件，一般关闭
+  a1.sinks.k1.hdfs.rollInterval = 0
+  #指定文件大小生成文件，一般120 ~ 125M对应的字节数
+  a1.sinks.k1.hdfs.rollSize = 1024
+  #指定event个数生成文件，一般关闭
+  a1.sinks.k1.hdfs.rollCount = 0
+  
+  #s1将数据给哪个channel
+  a1.sources.s1.channels = c1
+  #k1从哪个channel中取数据
+  a1.sinks.k1.channel = c1
+  ```
+
+- 3、启动Agent服务
+
+```ini
+/export/server/flume/bin/flume-ng agent -n a1 \
+-c /export/server/flume/conf/ \
+-f /export/server/flume/conf/hdfs-mem-size.properties \
+-Dflume.root.logger=INFO,console
+```
+
+- 4、测试数据
+
+  ```ini
+  echo "A................................" >> /export/server/flume/datas/test.log
+  echo "B................................" >> /export/server/flume/datas/test.log
+  echo "C................................" >> /export/server/flume/datas/test.log
+  echo "D................................" >> /export/server/flume/datas/test.log
+  echo "E................................" >> /export/server/flume/datas/test.log
+  echo "F................................" >> /export/server/flume/datas/test.log
+  echo "X................................" >> /export/server/flume/datas/test.log
+  echo "F................................" >> /export/server/flume/datas/test.log
+  echo "Z................................" >> /export/server/flume/datas/test.log
+  ```
+
+- 5、查看HDFS目录中文件
+
+![1652029673774](assets/1652029673774.png)
+
+#### 分区目录
+
+> 问题：如何实现分区存储，每天一个或者每小时一个目录？
+
+```ini
+/flume/test3/
+	daystr=2022-05-01/nginx.log
+	daystr=2022-05-02/nginx.log
+```
+
+- 解决：**添加时间标记目录**
+
+![1652029953815](assets/1652029953815.png)
+
+```ini
+ For all of the time related escape sequences, a header with the key “timestamp” must exist among the headers of the event (unless hdfs.useLocalTimeStamp is set to true). 
+```
+
+- 1、复制Agent配置文件
+
+  ```ini
+  cp /export/server/flume/conf/hdfs-mem-size.properties /export/server/flume/conf/hdfs-mem-partition.properties
+  ```
+
+- 2、修改文件内容
+
+  ```ini
+  vim /export/server/flume/conf/hdfs-mem-partition.properties
+  ```
+
+  ```ini
+  # The configuration file needs to define the sources, 
+  # the channels and the sinks.
+  # Sources, channels and sinks are defined per a1, 
+  # in this case called 'a1'
+  
+  
+  #定义当前的agent的名称，以及对应source、channel、sink的名字
+  a1.sources = s1
+  a1.channels = c1
+  a1.sinks = k1
+  
+  #定义s1:从哪读数据，读谁
+  a1.sources.s1.type = exec
+  a1.sources.s1.command = tail -f /export/server/flume/datas/test.log
+  
+  #定义c1:缓存在什么地方
+  a1.channels.c1.type = memory
+  a1.channels.c1.capacity = 1000
+  
+  #定义k1:将数据发送给谁
+  a1.sinks.k1.type = hdfs
+  a1.sinks.k1.hdfs.path = hdfs://node1.itcast.cn:8020/flume/test3/daystr=%Y-%m-%d
+  a1.sinks.k1.hdfs.useLocalTimeStamp = true
+  #指定生成的文件的前缀
+  a1.sinks.k1.hdfs.filePrefix = nginx
+  #指定生成的文件的后缀
+  a1.sinks.k1.hdfs.fileSuffix = .log
+  #指定写入HDFS的文件的类型：普通的文件
+  a1.sinks.k1.hdfs.fileType = DataStream 
+  #指定按照时间生成文件，一般关闭
+  a1.sinks.k1.hdfs.rollInterval = 0
+  #指定文件大小生成文件，一般120 ~ 125M对应的字节数
+  a1.sinks.k1.hdfs.rollSize = 1024
+  #指定event个数生成文件，一般关闭
+  a1.sinks.k1.hdfs.rollCount = 0
+  
+  #s1将数据给哪个channel
+  a1.sources.s1.channels = c1
+  #k1从哪个channel中取数据
+  a1.sinks.k1.channel = c1
+  ```
+
+- 3、启动Agent服务
+
+```ini
+/export/server/flume/bin/flume-ng agent -n a1 \
+-c /export/server/flume/conf/ \
+-f /export/server/flume/conf/hdfs-mem-partition.properties \
+-Dflume.root.logger=INFO,console
+```
+
+- 4、测试数据
+
+  ```ini
+  echo "A123................................" >> /export/server/flume/datas/test.log
+  echo "B123................................" >> /export/server/flume/datas/test.log
+  echo "C123................................" >> /export/server/flume/datas/test.log
+  echo "D123................................" >> /export/server/flume/datas/test.log
+  echo "E123................................" >> /export/server/flume/datas/test.log
+  echo "F123................................" >> /export/server/flume/datas/test.log
+  echo "X123................................" >> /export/server/flume/datas/test.log
+  echo "F123................................" >> /export/server/flume/datas/test.log
+  echo "Z123................................" >> /export/server/flume/datas/test.log
+  ```
+
+- 5、查看HDFS目录中文件
+
+![1652030056733](assets/1652030056733.png)
 
 ## II. 陌陌综合案例
 
