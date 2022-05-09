@@ -1899,7 +1899,30 @@ Program Arguments：--host node1.itcast.cn --port 9999
 
 ## 附II. Flink框架技术栈
 
+> 一个计算框架要有长远的发展，必须打造一个完整的`生态栈Stack`（生态圈）。
 
+![img](assets/4092059-b6ff29d09ba6da97.png)
+
+> - 1）、**物理部署层**：Flink 支持本地运行、能在独立集群或者在被 YARN 管理的集群上运行， 也能
+>   部署在云上；
+>
+> [类似MapReduce程序和Spark 应用程序运行部署地方，要么本地Local，要么集群，要么云服务。]()
+>
+> 
+>
+> - 2）、**Runtime核心层**：提供了支持Flink计算的全部核心实现；
+>
+> 
+>
+> - 3）、**API&Libraries层**：DataStream、DataSet、Table、SQL API，在学习API中中，主要还是使用DataStreamAPI 和Table API & SQL；
+>
+> [类似`SparkCore：RDD API`和`SparkSQL：DataFrame SQL及DSL`]()
+>
+> ==从Flink 1.12版本开始，流批一体化，使用DataStream API进行流计算和批处理，并且Flink Table API和SQL稳定，官方建议使用处理数据。==
+>
+> 
+>
+> - 4）、**扩展库**：`复杂事件处理CEP`、机器学习库FlinkML、图处理库Gelly；
 
 ## 附III. Flink拓展阅读
 
