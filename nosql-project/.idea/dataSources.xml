@@ -9,5 +9,12 @@
       <jdbc-url>jdbc:phoenix:node1.itcast.cn,node2.itcast.cn,node3.itcast.cn:2181</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="Hive@node1.itcast.cn" uuid="1b1ef213-f6ca-4109-85be-3234dff15d01">
+      <driver-ref>hive</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.apache.hive.jdbc.HiveDriver</jdbc-driver>
+      <jdbc-url>jdbc:hive2://node1.itcast.cn:10000</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
