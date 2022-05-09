@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/momo-action/src/main/java/com/johnchow/momo/MomoKafkaToHBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NoSQL/8. 实时日志采集及综合案例/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/8. 实时日志采集及综合案例/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -188,7 +185,7 @@
       <workItem from="1651943021369" duration="355000" />
       <workItem from="1651997241406" duration="6171000" />
       <workItem from="1652062784126" duration="599000" />
-      <workItem from="1652065430173" duration="7091000" />
+      <workItem from="1652065430173" duration="7545000" />
     </task>
     <servers />
   </component>
