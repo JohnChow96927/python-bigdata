@@ -784,7 +784,106 @@ touch /export/server/flume/conf/hdfs-mem-log.properties
 
 ### 2. 实时采集日志
 
+> 使用Flume进行实时采集陌陌聊天数据，实时写入Kafka消息队列，Agent各部分组件如下：
 
+- **Source**：`taildir`，动态监听多个文件实现实时数据采集；
+- **Channel**：`mem`，将数据缓存在内存；
+- **Sink**：`KafkaSink`，分布式消息队列
+
+- 1、创建Agent属性配置文件：`momo_mem_kafka.properties`，
+
+  ```ini
+  # 创建目录
+  mkdir -p /export/data/momo_conf
+  
+  # 创建配置文件目录
+  touch /export/data/momo_conf/momo_mem_kafka.properties
+  ```
+
+- 2、编写Agent配置内容
+
+  ```ini
+  vim /export/data/momo_conf/momo_mem_kafka.properties
+  ```
+
+  ```ini
+  # define a1
+  a1.sources = s1 
+  a1.channels = c1
+  a1.sinks = k1
+  
+  #define s1
+  a1.sources.s1.type = TAILDIR
+  #指定一个元数据记录文件
+  a1.sources.s1.positionFile = /export/data/momo_conf/taildir_momo_kafka.json
+  #将所有需要监控的数据源变成一个组
+  a1.sources.s1.filegroups = f1
+  #指定了f1是谁：监控目录下所有文件
+  a1.sources.s1.filegroups.f1 = /export/data/momo_data/.*
+  #指定f1采集到的数据的header中包含一个KV对
+  a1.sources.s1.headers.f1.type = momo
+  a1.sources.s1.fileHeader = true
+  
+  #define c1
+  a1.channels.c1.type = memory
+  a1.channels.c1.capacity = 10000
+  a1.channels.c1.transactionCapacity = 1000
+  
+  #define k1
+  a1.sinks.k1.type = org.apache.flume.sink.kafka.KafkaSink
+  a1.sinks.k1.kafka.topic = momo-msg
+  a1.sinks.k1.kafka.bootstrap.servers = node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  a1.sinks.k1.kafka.flumeBatchSize = 10
+  a1.sinks.k1.kafka.producer.acks = 1
+  a1.sinks.k1.kafka.producer.linger.ms = 100
+  
+  #bind
+  a1.sources.s1.channels = c1
+  a1.sinks.k1.channel = c1
+  ```
+
+- 4、启动ZK集群和Kafka集群
+
+  ```ini
+  [root@node1 ~]# start-zk.sh  start
+  
+  [root@node1 ~]# start-kafka.sh 
+  ```
+
+  ![1652052061879](assets/1652052061879.png)
+
+- 5、创建Topic
+
+  ```ini
+  /export/server/kafka/bin/kafka-topics.sh --create \
+  --topic momo-msg  \
+  --partitions 3 \
+  --replication-factor 2 \
+  --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+  ```
+
+- 6、启动Flume程序
+
+  ```shell
+  /export/server/flume/bin/flume-ng agent \
+  -c /export/server/flume/conf/ \
+  -n a1 \
+  -f /export/data/momo_conf/momo_mem_kafka.properties \
+  -Dflume.root.logger=INFO,console
+  ```
+
+- 7、启动模拟数据
+
+  ```ini
+  java -jar /export/data/momo_init/MoMo_DataGen.jar \
+  /export/data/momo_init/MoMo_Data.xlsx \
+  /export/data/momo_data/ \
+  500
+  ```
+
+- 8、观察Kafka Topic中是否有数据
+
+![1652052221545](assets/1652052221545.png)
 
 ### 3. 实时存储HBase
 
