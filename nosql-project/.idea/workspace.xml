@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="" />
+    <list default="true" id="9e27e858-1f64-4d92-a2f3-299d3c6974c2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/momo-action/src/main/java/com/johnchow/momo/MomoKafkaToHBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NoSQL/8. 实时日志采集及综合案例/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../NoSQL/8. 实时日志采集及综合案例/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,6 +18,7 @@
   </component>
   <component name="DatabaseLocalColorSettings">
     <colors>
+      <entry key="1b1ef213-f6ca-4109-85be-3234dff15d01" value="Yellow" />
       <entry key="88af45b3-c1b1-4eb8-9de9-23af50954588" value="Rose" />
     </colors>
   </component>
@@ -50,36 +54,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/WeChatFS/WeChat Files/zhouzhengyuan1949/FileStorage/File/2022-05/scala-intellij-bin-2021.1.22.zip&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenDatabaseViewOnStart": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "1.8",
+    "last_opened_file_path": "D:/WeChatFS/WeChat Files/zhouzhengyuan1949/FileStorage/File/2022-05/scala-intellij-bin-2021.1.22.zip",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;phoenix&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "phoenix",
+      "hive"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\nosql-project\phoenix-client\src\main\resources" />
       <recent name="C:\GitHub Desktop\ITheima_python_bigdata\nosql-project\phoenix-client\libs" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.KafkaWriteTest">
+  <component name="RunManager" selected="Application.MomoKafkaToHBase">
     <configuration name="KafkaReadTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.johnchow.kafka.consumer.KafkaReadTest" />
       <module name="kafka-client" />
@@ -106,6 +111,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="MomoKafkaToHBase" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.momo.MomoKafkaToHBase" />
+      <module name="momo-action" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.momo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="PhoenixJdbcDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.johnchow.phoenix.PhoenixJdbcDemo" />
       <module name="phoenix-client" />
@@ -115,22 +133,6 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HBaseDmlTest.testScanFilter_V2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="hbase-client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.johnchow.hbase.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.johnchow.hbase" />
-      <option name="MAIN_CLASS_NAME" value="com.johnchow.hbase.HBaseDmlTest" />
-      <option name="METHOD_NAME" value="testScanFilter_V2" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -153,6 +155,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MomoKafkaToHBase" />
         <item itemvalue="Application.KafkaWriteTest" />
         <item itemvalue="Application.KafkaReadTest" />
         <item itemvalue="Application.PhoenixJdbcDemo" />
@@ -185,7 +188,7 @@
       <workItem from="1651943021369" duration="355000" />
       <workItem from="1651997241406" duration="6171000" />
       <workItem from="1652062784126" duration="599000" />
-      <workItem from="1652065430173" duration="1553000" />
+      <workItem from="1652065430173" duration="7091000" />
     </task>
     <servers />
   </component>
