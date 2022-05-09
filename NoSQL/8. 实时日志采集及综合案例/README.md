@@ -231,7 +231,147 @@ https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-de
 
 ### 4. Taildir Source
 
+> **需求**：当前日志文件是一天一个，需要每天将数据实时采集到HDFS上，如何采集呢？
 
+```ini
+/nginx/logs/
+	2022-05-01.log
+    2022-05-02.log
+    ……
+    2022-05-10.log
+```
+
+> **问题**：能不能exec source进行采集？
+
+- 不能，`exec`只能监听采集单个文件
+- `Taildir Source`：从**Apache Flume1.7**版本开始支持，**==动态监听采集多个文件==**
+- 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#taildir-source
+
+```ini
+TailDir Soucre
+	监控文件、监控目录
+	1. Tail，在Unix系统中，实时读取文件最后内容
+		tail -F xxx.log
+	
+	2. Dir
+		监控某个目录，当目录中有文件出现时，立即读取文件数据	
+```
+
+> **业务实现**：让Flume动态监听一个文件和一个目录下的所有文件
+
+- 1、数据准备
+
+  存储元数据目录
+
+  ```ini
+  mkdir -p /export/server/flume/datas/position
+  ```
+
+  创建监控目录和文件
+
+  ```shell
+  # 监控目录
+  mkdir -p /export/server/flume/datas/nginx
+   
+  # 监控文件
+  touch /export/server/flume/datas/logs.data
+  ```
+
+- -2、开发Agent配置文件
+
+  创建文件
+
+  ```ini
+  touch /export/server/flume/conf/tail-mem-log.properties
+  ```
+
+    编辑文件
+
+  ```ini
+  vim /export/server/flume/conf/tail-mem-log.properties
+  ```
+
+  ```ini
+    # define sourceName/channelName/sinkName for the agent 
+    a1.sources = s1
+    a1.channels = c1
+    a1.sinks = k1
+    
+    # define the s1
+    a1.sources.s1.type = TAILDIR
+    #指定一个元数据记录文件
+    a1.sources.s1.positionFile = /export/server/flume/datas/position/taildir_position.json
+    #将所有需要监控的数据源变成一个组，这个组内有两个数据源
+    a1.sources.s1.filegroups = f1 f2
+    #指定了f1是谁：监控一个文件
+    a1.sources.s1.filegroups.f1 = /export/server/flume/datas/logs.data
+    #指定f2是谁：监控一个目录下的所有文件
+    a1.sources.s1.filegroups.f2 = /export/server/flume/datas/nginx/.*
+    
+    # define the c1
+    a1.channels.c1.type = memory
+    a1.channels.c1.capacity = 1000
+    a1.channels.c1.transactionCapacity = 100
+    
+    # define the k1
+    a1.sinks.k1.type = logger
+    
+    # source、channel、sink bond
+    a1.sources.s1.channels = c1
+    a1.sinks.k1.channel = c1 
+  ```
+
+- 3、Agent程序运行
+
+  ```ini
+  /export/server/flume/bin/flume-ng agent -n a1 \
+  -c /export/server/flume/conf/ \
+  -f /export/server/flume/conf/tail-mem-log.properties \
+  -Dflume.root.logger=INFO,console
+  ```
+
+- 4、测试数据
+
+  ```ini
+  # 日志文件追加数据
+  echo "AAAAAAA" >> /export/server/flume/datas/logs.data
+  echo "BBBBBBB" >> /export/server/flume/datas/logs.data
+  echo "CCCCCCC" >> /export/server/flume/datas/logs.data
+  
+  # 目录写入文件
+  echo "hello flume" >> /export/server/flume/datas/nginx/1.log
+  echo "hello kafka" >> /export/server/flume/datas/nginx/2.log
+  echo "hello hbase" >> /export/server/flume/datas/nginx/3.log
+  ```
+
+  ![1652027837054](assets/1652027837054.png)
+
+- 5、元数据文件的功能：`/export/server/flume/datas/position/taildir_position.json`
+
+  - 问题：**如果Flume程序故障，重启Flume程序，已经被采集过的数据还要不要采集**？
+
+  - 需求：不需要，不能导致数据重复
+
+  - 功能：记录Flume所监听的每个文件已经被采集的位置
+
+    ```
+    [
+    	{"inode":1051122,"pos":24,"file":"/export/server/flume/datas/logs.data"},
+    	{"inode":71384940,"pos":12,"file":"/export/server/flume/datas/nginx/1.log"},
+    	{"inode":71384941,"pos":12,"file":"/export/server/flume/datas/nginx/2.log"},
+    	{"inode":71384942,"pos":12,"file":"/export/server/flume/datas/nginx/3.log"}
+    ]
+    ```
+
+> **补充**：工作中可能会见到其他的source
+
+- **Kafka Source**：
+  - 监听读取Kafka数据
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#kafka-source
+- **Spooldir Source**：
+  - 监控一个目录，只要这个目录中产生一个文件，就会全量采集一个文件
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#spooling-directory-source
+  - 缺点：不能动态监控文件，被采集的文件是不能发生变化的
 
 ### 5. Channel缓存
 
