@@ -995,11 +995,135 @@ zookeeper-daemons.sh start
 
 #### 5.3. Session模式运行
 
+> Flink on YARN ：`Session 模式`，表示多个Flink Job运行共享Standalone集群资源。
 
+[先向Hadoop YARN申请资源，启动运行服务JobManager和TaskManagers，再提交多个Job到Flink 集群上执行。]()
+
+![img](assets/616953-20190705091842823-1472310397.png)
+
+- 无论JobManager还是TaskManager，都是运行NodeManager Contanier容器中，以JVM 进程方式运行；
+- 提交每个Flink Job执行时，找的就是JobManager（**AppMaster**），找运行在YARN上应用ID；
+
+> [Session 会话模式：`yarn-session.sh`(开辟资源) + `flink run(`提交任务)]()
+
+- 第一、Hadoop YARN 运行Flink 集群，开辟资源，使用：`yarn-session.sh`
+  - 在NodeManager上，启动容器Container运行`JobManager和TaskManagers`
+- 第二、提交Flink Job执行，使用：`flink run`
+
+> 准备测试数据，测试运行批处理词频统计WordCount程序
+
+```ini
+[root@node1 ~]# vim /root/words.txt
+添加数据
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+
+[root@node1 ~]# hdfs dfs -mkdir -p /wordcount/input/
+[root@node1 ~]# hdfs dfs -put /root/words.txt /wordcount/input/
+```
+
+![1633422301964](assets/1633422301964.png)
+
+> - 第一步、在yarn上启动一个Flink会话，`node1.itcast.cn`上执行以下命令
+
+```ini
+export HADOOP_CLASSPATH=`hadoop classpath`
+/export/server/flink-yarn/bin/yarn-session.sh -d -jm 1024 -tm 1024 -s 2
+
+# 参数说明
+-d：后台执行
+-s：	每个TaskManager的slot数量
+-jm：JobManager的内存（单位MB)
+-tm：每个TaskManager容器的内存（默认值：MB）
+
+# 提交flink 集群运行yarn后，提示信息
+JobManager Web Interface: http://node1.itcast.cn:44263
+..................................................................
+$ echo "stop" | ./bin/yarn-session.sh -id application_1633441564219_0001
+If this should not be possible, then you can also kill Flink via YARN's web interface or via:
+$ yarn application -kill application_1633441564219_0001
+```
+
+> - 第二步、查看UI界面，http://node1.itcast.cn:8088/cluster/apps
+
+![1633442327570](assets/1633442327570.png)
+
+> JobManager提供WEB UI：http://node1.itcast.cn:8088/proxy/application_1614756061094_0002/#/overview
+
+![1633442372444](assets/1633442372444.png)
+
+[此时，没有任何TaskManager运行在容器Container中，需要等待有Flink Job提交执行时，才运行TaskManager。]()
+
+> - 第三步、使用`flink run`提交任务
+
+```ini
+/export/server/flink-yarn/bin/flink run \
+-t yarn-session \
+-Dyarn.application.id=application_1633441564219_0001 \
+/export/server/flink-yarn/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input/words.txt
+```
+
+![1633443314472](assets/1633443314472.png)
+
+> - 第四步、通过上方的ApplicationMaster可以进入Flink的管理界面
+
+![1633443391587](assets/1633443391587.png)
+
+> - 第五步、关闭yarn-session
+
+```ini
+# 优雅 停止应用，如果设置重启次数，即使停止应用，也会重启，一直到超过次数以后，才能真正停止应用
+echo "stop" | /export/server/flink-yarn/bin/yarn-session.sh -id application_1633441564219_0001
+
+# kill 命令，直接将运行在yarn应用杀死，毫不留情
+yarn application -kill application_1633441564219_0001
+```
 
 #### 5.4. Per-Job模式
 
+> [每个Flink Job提交运行到Hadoop YARN集群时，根据自身的情况，单独向YARN申请资源，直到作业执行完成]()
 
+![img](assets/616953-20190705091903367-1915964437.png)
+
+在Hadoop YARN中，每次提交job都会创建一个新的Flink集群，任务之间相互独立，互不影响并且方便管理。任务执行完成之后创建的集群也会消失。
+
+[采用Job分离模式，**每个Flink Job运行，都会申请资源，运行属于自己的Flink 集群**。]()
+
+> - 第一步、直接提交job
+
+```ini
+export HADOOP_CLASSPATH=`hadoop classpath`
+/export/server/flink-yarn/bin/flink run \
+-t yarn-per-job -m yarn-cluster \
+-yjm 1024 -ytm 1024 -ys 1 \
+/export/server/flink-yarn/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input
+
+# 参数说明
+-m：指定需要连接的jobmanager(主节点)地址，指定为 yarn-cluster，启动一个新的yarn-session
+-yjm：JobManager可用内存，单位兆
+-ytm：每个TM所在的Container可申请多少内存，单位兆
+-ys：每个TM会有多少个Slot
+-yd：分离模式（后台运行，不指定-yd, 终端会卡在提交的页面上）
+```
+
+![1633444275790](assets/1633444275790.png)
+
+> - 第二步、查看UI界面：http://node1.itcast.cn:8088/cluster
+
+![1633444352887](assets/1633444352887.png)
+
+> 提交Flink Job在Hadoop YARN执行时，最后给出如下错误警告：
+
+![1633444546416](assets/1633444546416.png)
+
+```ini
+解决办法： 在 flink 配置文件里 flink-conf.yaml设置
+	classloader.check-leaked-classloader: false
+```
 
 #### 5.5. Application模式运行
 
