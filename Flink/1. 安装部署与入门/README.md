@@ -1926,7 +1926,44 @@ Program Arguments：--host node1.itcast.cn --port 9999
 
 ## 附III. Flink拓展阅读
 
+此外，提供Flink 框架“八卦”新闻，大家可以自己阅读，更加了解Flink框架。
 
+> - 1）、Flink 发展现状，目前来说，Flink在中国发展相当迅速，尤其是阿里在进行推动。
+
+[全球Flink热度情况：]()
+
+![](assets/1614738294044.png)
+
+[Apache Flink使用用户：]()
+
+![](assets/1614738308219.png)
+
+[Flink 在阿里使用情况（2020.6）：]()
+
+![](assets/1614738339577.png)
+
+> - 2）、为什么选择 Flink
+
+![](assets/1614738387322.png)
+
+> - 3）、大数据分析引擎发展史，在国外一些社区，有很多人将大数据的计算引擎分成了 4 代。
+
+![1633399667903](assets/1633399667903.png)
+
+> - 4）、流式计算和批量计算
+
+![](assets/1614738443208.png)
+
+```ini
+Flink 技术框架学习：
+1、Flink 中文学习网站
+	一手资料，都是大厂分析资料
+	https://flink-learning.org.cn/
+	
+2、Flink 官方文档
+	使用什么版本Flink，就看什么文档
+	https://ci.apache.org/projects/flink/flink-docs-release-1.10/
+```
 
 ## 附IV. Flink Standalone集群回顾
 
