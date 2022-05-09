@@ -1771,7 +1771,97 @@ public class WordCount {
 
 ### 4. 打包部署运行
 
+> Flink 程序提交运行方式有两种：
 
+- 1）、方式一：以命令行的方式提交：`flink run`
+- 2）、方式二：以UI的方式提交
+
+> [将开发应用程序编译打包：`flink-day01-1.0.0.jar`，不包含其他依赖jar包，删除log4j配置文件。]()
+
+命令行方式提交Flink应用，可以运行至**Standalone集群和YARN集群**，以运行YARN的**Job分离模式**为例演示提交Flink应用程序。
+
+> - 1）、启动HDFS集群和YARN集群
+
+```ini
+# 在node1.itcast.cn上启动服务
+zookeeper-daemons.sh start
+
+hadoop-daemon.sh start namenode
+hadoop-daemons.sh start datanode
+
+yarn-daemon.sh start resourcemanager
+yarn-daemons.sh start nodemanager
+```
+
+> - 2）、上传作业jar包到linux服务器
+
+```ini
+cd /export/server/flink-yarn/
+rz
+```
+
+> - 3）、提交运行
+
+```ini
+/export/server/flink-yarn/bin/flink run \
+-t yarn-per-job \
+-m yarn-cluster \
+-yjm 1024 -ytm 1024 -ys 1 \
+--class cn.itcast.flink.WordCount \
+/export/server/flink-yarn/flink-day01-1.0.0.jar \
+--host node1.itcast.cn --port 9999
+```
+
+> - 4）、第三步、查看任务运行概述
+
+![1633448743408](assets/1633448743408.png)
+
+UI 方式提交，此种方式提交应用，可以提交Flink Job在`Flink Standalone集群和YARN Session会话模式`下，此处以YARN Session为例演示。
+
+> - 1）、第一步、启动HDFS集群和YARN集群
+
+```ini
+# 在node1.itcast.cn上启动服务
+zookeeper-daemons.sh start
+
+hadoop-daemon.sh start namenode
+hadoop-daemons.sh start datanode
+
+yarn-daemon.sh start resourcemanager
+yarn-daemons.sh start resourcemanager
+```
+
+> - 2）、第二步、启动YARN Session
+
+```ini
+export HADOOP_CLASSPATH=`hadoop classpath`
+/export/server/flink-yarn/bin/yarn-session.sh -d -jm 1024 -tm 1024 -s 2
+```
+
+> - 3）、第三步、上传作业jar包及指定相关参数
+
+![1633448931513](assets/1633448931513.png)
+
+选择打成jar包，然后填写参数值，截图如下：
+
+![1633449004149](assets/1633449004149.png)
+
+参数内容：
+
+```ini
+Entry Class：cn.itcast.flink.WordCount
+Program Arguments：--host node1.itcast.cn --port 9999
+```
+
+点击显示计划【Show Plan】:
+
+![1633449021605](assets/1633449021605.png)
+
+点击提交按钮【Submit】，运行Flink应用。
+
+> 4）、第四步、查看任务运行概述
+
+![1633449120710](assets/1633449120710.png)
 
 ## 附I. 流计算引擎的演进
 
