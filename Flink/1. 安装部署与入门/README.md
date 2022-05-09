@@ -2009,6 +2009,17 @@ Flink 技术框架学习：
 
 ## 附V. Hadoop YARN回顾复习
 
+> Hadoop YARN在国内使用比较广泛，基本上大多数公司在生产环境中都使用Hadoop  YARN 管理集群资源，Hadoop YARN 集群中的组件包括：
 
+![1633429200420](assets/1633429200420.png)
+
+> [YARN中最重要的角色是 `ResourceManager`，主要用来负责整个资源的管理，Client 端是负责向 RM提交任务。]()
+
+![img](assets/42f2a89111db24fb3a28792ca3890b4a.png)
+
+1. 用户在 Client 端提交任务后会先给到 Resource Manager；
+2. Resource Manager 会启动 Container，接着进一步启动 Application Master，即对 Master 节点的启动。
+3. 当 Master 节点启动之后，会向 Resource Manager 再重新申请资源，当 Resource Manager 将资源分配给 Application Master 之后，Application Master 再将具体的 Task 调度起来去执行。
 
 ## 附VI. Flink on YARN三种部署模式
+
