@@ -871,15 +871,137 @@ hadoop-daemons.sh stop datanode
 
 ![1633433408535](assets/1633433408535.png)
 
-#### 5.2. Session模式运行
+#### 5.2. 安装部署
+
+> Flink on YARN安装配置，此处考虑高可用HA配置，集群机器安装软件框架示意图：
+
+![1633437485506](assets/1633437485506.png)
+
+> - 1）、关闭YARN的内存检查（`node1.itcast.cn`操作）
+
+```ini
+# yarn-site.xml中添加配置
+vim /export/server/hadoop/etc/hadoop/yarn-site.xml
+	添加如下内容：
+<!-- 关闭yarn内存检查 -->
+<property>
+    <name>yarn.nodemanager.pmem-check-enabled</name>
+    <value>false</value>
+</property>
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>	
+```
+
+> - 2）、 配置Application最大的尝试次数（`node1.itcast.cn`操作）
+
+```ini
+# yarn-site.xml中添加配置
+vim /export/server/hadoop/etc/hadoop/yarn-site.xml
+	添加如下内容：
+<property>
+	<name>yarn.resourcemanager.am.max-attempts</name>
+	<value>4</value>
+</property>
+```
+
+> - 3）、同步yarn-site.xml配置文件（`node1.itcast.cn`操作）
+
+```ini
+cd /export/server/hadoop/etc/hadoop
+scp -r yarn-site.xml root@node2.itcast.cn:$PWD
+scp -r yarn-site.xml root@node3.itcast.cn:$PWD
+```
+
+> - 4）、启动HDFS集群和YARN集群（`node1.itcast.cn`操作）
+
+```ini
+[root@node1 ~]# hadoop-daemon.sh start namenode 
+[root@node1 ~]# hadoop-daemons.sh start datanode 
+
+[root@node1 ~]# /export/server/hadoop/sbin/start-yarn.sh
+```
+
+> - 5）、添加`HADOOP_CONF_DIR`环境变量(**集群所有机器**）
+
+```ini
+# 添加环境变量
+ vim /etc/profile
+	添加内容：
+	export HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop
+	
+# 环境变量生效	
+source /etc/profile
+```
+
+> - 6）、上传软件及解压（`node1.itcast.cn`操作）
+
+```ini
+[root@node1 ~]# cd /export/software/
+[root@node1 software]# rz
+	上传软件包：flink-1.13.1-bin-scala_2.11.tgz
+	
+[root@node1 software]# chmod u+x flink-1.13.1-bin-scala_2.11.tgz
+[root@node1 software]# tar -zxf flink-1.13.1-bin-scala_2.11.tgz -C /export/server/	
+
+[root@node1 ~]# cd /export/server/
+[root@node1 server]# chown -R root:root flink-1.13.1
+[root@node1 server]# mv flink-1.13.1 flink-yarn
+```
+
+> - 7）、将Flink依赖Hadoop 框架JAR包上传至`/export/server/flink-yarn/lib`目录
+
+![1633421482610](assets/1633421482610.png)
+
+```ini
+[root@node1 ~]# cd /export/server/flink-yarn/lib/
+[root@node1 lib]# rz
+	commons-cli-1.4.jar
+	flink-shaded-hadoop-3-uber-3.1.1.7.2.1.0-327-9.0.jar
+```
+
+> - 8）、配置HA高可用，依赖Zookeeper及重试次数（`node1.itcast.cn`操作）
+
+```ini
+# 修改配置文件
+vim /export/server/flink-yarn/conf/flink-conf.yaml
+ 	添加如下内容：
+high-availability: zookeeper
+high-availability.storageDir: hdfs://node1.itcast.cn:8020/flink/yarn-ha/
+high-availability.zookeeper.quorum: node1.itcast.cn:2181,node2.itcast.cn:2181,node3.itcast.cn:2181
+high-availability.zookeeper.path.root: /flink-yarn-ha
+high-availability.cluster-id: /cluster_yarn
+
+yarn.application-attempts: 10
+```
+
+> - 9）、集群所有机器，同步分发Flink 安装包，便于任意机器提交运行Flink Job。
+
+```ini
+scp -r /export/server/flink-yarn root@node2.itcast.cn:/export/server/
+scp -r /export/server/flink-yarn root@node3.itcast.cn:/export/server/
+```
+
+> - 10）、启动Zookeeper集群（`node1.itcast.cn`操作）
+
+```ini
+zookeeper-daemons.sh start
+```
+
+> 在Flink中执行应用有如下三种部署模式（Deployment  Mode）：
+
+![1633435043735](assets/1633435043735.png)
+
+#### 5.3. Session模式运行
 
 
 
-#### 5.3. Per-Job模式
+#### 5.4. Per-Job模式
 
 
 
-#### 5.4. Application模式运行
+#### 5.5. Application模式运行
 
 
 
