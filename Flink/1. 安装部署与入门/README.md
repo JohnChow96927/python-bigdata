@@ -1211,7 +1211,218 @@ Flink on YARN：
 
 ### 1. 编程模型
 
+基于Flink计算引擎，分别用批处理（Batch Processing）和流处理（Streaming Process）中实现经典程序：==词频统计WordCount==。
 
+> - ==第一点：Flink API== ，提供四个层次API，越在下面API，越复杂和灵活；越在上面API，使用越简单和抽象
+
+![](assets/1614758479527.png)
+
+> - ==第二点：编程模型==，无论编写批处理还是流计算程序，分为三个部分：==Source、Transformation和Sink==
+
+![](assets/1614758699392.png)
+
+```ini
+# 第一步、从数据源DataSource获取数据
+	流计算：DataStream
+	批处理：DataSet
+
+# 第二步、对数据进行转换处理
+	
+# 第三步、结果数据输出DataSink
+```
+
+[无论批处理Batch，还是流计算Stream，首先需要创建`执行环境ExecutionEnvironment对象`，类似Spark中`SparkSession`或者`SparkContext`。]()
+
+![](assets/1614758736610.png)
+
+> 创建整个Flink基础课程Maven Project，[约定：每天创建一个Maven Module]()
+
+![1633445886187](assets/1633445886187.png)
+
+[设置MAVEN Repository仓库目录及Maven安装目录]()
+
+> 创建第1天Maven Module，模块结构：
+
+![1633446037078](assets/1633446037078.png)
+
+POM文件添加如下内容：
+
+```xml
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <flink.version>1.13.1</flink.version>
+        <hadoop.version>3.3.0</hadoop.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>nexus-aliyun</id>
+            <name>Nexus aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>central_maven</id>
+            <name>central maven</name>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_2.11</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime-web_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <plugins>
+            <!-- 编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <!--<encoding>${project.build.sourceEncoding}</encoding>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <disableXmlReport>true</disableXmlReport>
+                    <includes>
+                        <include>**/*Test.*</include>
+                        <include>**/*Suite.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <!-- 打jar包插件(会包含所有依赖) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <!--
+                                        zip -d learn_spark.jar META-INF/*.RSA META-INF/*.DSA META-INF/*.SF -->
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <!-- <mainClass>com.itcast.flink.WordCount</mainClass> -->
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+日志配置文件：`log4j.properties`
+
+```properties
+# This affects logging for both user code and Flink
+log4j.rootLogger=INFO, console
+
+# Uncomment this if you want to _only_ change Flink's logging
+#log4j.logger.org.apache.flink=INFO
+
+# The following lines keep the log level of common libraries/connectors on
+# log level INFO. The root logger does not override this. You have to manually
+# change the log levels here.
+log4j.logger.akka=INFO
+log4j.logger.org.apache.kafka=INFO
+log4j.logger.org.apache.hadoop=INFO
+log4j.logger.org.apache.zookeeper=INFO
+
+# Log all infos to the console
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n
+
+# Suppress the irrelevant (wrong) warnings from the Netty channel handler
+log4j.logger.org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline=ERROR, console
+```
+
+> 配置IDEA远程连接服务器，比如：`node1.itcast.cn`
+
+![](assets/1629963813924.png)
 
 ### 2. WordCount(批处理)
 
