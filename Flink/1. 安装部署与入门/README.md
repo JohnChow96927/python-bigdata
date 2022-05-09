@@ -281,7 +281,220 @@ https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/concepts/flink-a
 
 ### 2. 本地集群
 
+==Local Cluster 本地集群==：**将不同进程运行在同一台机器上，只有一台机器**。
 
+> [针对Flink框架来说，进程分别为`JobManager`（主节点，管理者）和`TaskManager`（从节点，干活着）]()
+
+![](assets/1614741619007.png)
+
+> 提交Flink Job运行原理如下：
+
+![](assets/1614741637978.png)
+
+1. Flink程序（比如jar包）由`JobClient`进行提交；
+2. JobClient将作业提交给`JobManager`；
+3. JobManager负责**协调资源分配和作业执行**。资源分配完成后，任务将提交给相应的`TaskManager`；
+4. TaskManager**启动一个线程以开始执行**。TaskManager会向JobManager报告状态更改，如开始执行，正在进行或已完成；
+5. 作业执行完成后，结果将发送回客户端(JobClient)；
+
+> 1）、上传软件及解压
+
+```ini
+[root@node1 ~]# cd /export/software/
+[root@node1 software]# rz
+	上传软件包：flink-1.13.1-bin-scala_2.11.tgz
+
+[root@node1 software]# chmod u+x flink-1.13.1-bin-scala_2.11.tgz
+[root@node1 software]# tar -zxf flink-1.13.1-bin-scala_2.11.tgz -C /export/server/	
+
+[root@node1 ~]# cd /export/server/
+[root@node1 server]# chown -R root:root flink-1.13.1
+[root@node1 server]# mv flink-1.13.1 flink-local
+```
+
+[当将Flink软件压缩包解压以后，`默认配置，就是本地集群配置，可以直接启动服务即可`]()
+
+```ini
+# 目录结构
+[root@node1 server]# cd flink-local/
+[root@node1 flink-local]# ll
+total 480
+drwxrwxr-x  2 root root   4096 May 25 20:36 bin
+drwxrwxr-x  2 root root    263 May 25 20:36 conf
+drwxrwxr-x  7 root root     76 May 25 20:36 examples
+drwxrwxr-x  2 root root   4096 May 25 20:36 lib
+-rw-r--r--  1 root root  11357 Oct 29  2019 LICENSE
+drwxrwxr-x  2 root root   4096 May 25 20:37 licenses
+drwxr-xr-x  2 root root      6 Oct  5 10:25 log
+-rw-rw-r--  1 root root 455180 May 25 20:37 NOTICE
+drwxrwxr-x  3 root root   4096 May 25 20:36 opt
+drwxrwxr-x 10 root root    210 May 25 20:36 plugins
+-rw-r--r--  1 root root   1309 Jan 30  2021 README.txt
+```
+
+> 2）、启动Flink本地集群
+
+```ini
+[root@node1 ~]# cd /export/server/flink-local/
+
+[root@node1 flink-local]# bin/start-cluster.sh
+
+[root@node1 flink-local]# jps
+3504 TaskManagerRunner
+3239 StandaloneSessionClusterEntrypoint
+3559 Jps
+```
+
+> 3）、访问Flink的Web UI：http://node1.itcast.cn:8081/#/overview
+
+![1633419163511](assets/1633419163511.png)
+
+> `slot`在Flink里面可以认为是资源组，Flink是通过将==任务（Task）分成子任务（SubTask）==并且将这些子任务分配到==slot==来并行执行程序。
+
+![](assets/1628910791520.png)
+
+[Slot 封装Task运行资源，可以认为Contanier容器，]()==同一个Slot资源槽中可以运行不同类型SubTask，相当于“猪槽，可以被多个PIG吃食。”==
+
+> 4）、测试完成以后，关闭本地集群
+
+```ini
+ [root@node1 ~]# /export/server/flink-local/bin/stop-cluster.sh 
+```
+
+当本地集群启动以后，运行Flink应用程序，分别运行**流计算和批处理 词频统计**。
+
+> 通过`flink` 脚本命令提交运行jar包程序，具体命令使用说明如下：
+
+```ini
+[root@node1 ~]# cd /export/server/flink-local/
+[root@node1 flink-local]# bin/flink run --help
+
+Action "run" compiles and runs a program.
+
+  Syntax: run [OPTIONS] <jar-file> <arguments>
+  "run" action options:
+     -c,--class <classname>               Class with the program entry point
+                                          ("main()" method). Only needed if the
+                                          JAR file does not specify the class in
+                                          its manifest.
+     -C,--classpath <url>                 Adds a URL to each user code
+                                          classloader  on all nodes in the
+                                          cluster. The paths must specify a
+                                          protocol (e.g. file://) and be
+                                          accessible on all nodes (e.g. by means
+                                          of a NFS share). You can use this
+                                          option multiple times for specifying
+                                          more than one URL. The protocol must
+                                          be supported by the {@link
+                                          java.net.URLClassLoader}.
+     -d,--detached                        If present, runs the job in detached
+                                          mode
+     -p,--parallelism <parallelism>       The parallelism with which to run the
+                                          program. Optional flag to override the
+                                          default value specified in the
+                                          configuration.
+
+  Options for Generic CLI mode:
+     -D <property=value>   Allows specifying multiple generic configuration
+                           options. The available options can be found at
+                           https://ci.apache.org/projects/flink/flink-docs-stabl
+                           e/ops/config.html
+     -t,--target <arg>     The deployment target for the given application,
+                           which is equivalent to the "execution.target" config
+                           option. For the "run" action the currently available
+                           targets are: "remote", "local", "kubernetes-session",
+                           "yarn-per-job", "yarn-session". For the
+                           "run-application" action the currently available
+                           targets are: "kubernetes-application".
+
+  Options for yarn-cluster mode:
+     -m,--jobmanager <arg>            Set to yarn-cluster to use YARN execution
+                                      mode.
+     -yid,--yarnapplicationId <arg>   Attach to running YARN session
+     -z,--zookeeperNamespace <arg>    Namespace to create the Zookeeper
+                                      sub-paths for high availability mode
+
+  Options for default mode:
+     -D <property=value>             Allows specifying multiple generic
+                                     configuration options. The available
+                                     options can be found at
+                                     https://ci.apache.org/projects/flink/flink-
+                                     docs-stable/ops/config.html
+     -m,--jobmanager <arg>           Address of the JobManager to which to
+                                     connect. Use this flag to connect to a
+                                     different JobManager than the one specified
+                                     in the configuration. Attention: This
+                                     option is respected only if the
+                                     high-availability configuration is NONE.
+     -z,--zookeeperNamespace <arg>   Namespace to create the Zookeeper sub-paths
+                                     for high availability mode
+```
+
+> 1）、流计算：WordCount词频统计，[运行流式计算程序，从TCP Socket 读取数据，进行词频统计。]()
+
+![1633419832998](assets/1633419832998.png)
+
+```ini
+# 开启1个终端
+nc -lk 9999
+
+# 上传jar【StreamWordCount.jar】包至/export/server/flink-local目录
+cd /export/server/flink-local
+rz
+
+# 再开启1个终端，运行流式应用
+/export/server/flink-local/bin/flink run \
+--class cn.itcast.flink.StreamWordCount \
+/export/server/flink-local/StreamWordCount.jar \
+--host node1.itcast.cn --port 9999
+```
+
+![1633420098242](assets/1633420098242.png)
+
+> 2）、监控页面查看日志信息数据
+
+![1633420117287](assets/1633420117287.png)
+
+![1633420180093](assets/1633420180093.png)
+
+> 查看TaskManager日志，每条数据处理结果：
+
+![1633420246834](assets/1633420246834.png)
+
+执行官方示例Example，**读取文本文件数据，进行词频统计WordCount，将结果打印控制台或文件**。
+
+![1633420700445](assets/1633420700445.png)
+
+> 1）准备文件`/root/words.txt`
+
+```ini
+[root@node1 ~]# vim /root/words.txt
+添加数据
+spark python spark hive spark hive
+python spark hive spark python
+mapreduce spark hadoop hdfs hadoop spark
+hive mapreduce
+```
+
+> 2）批处理，执行如下命令
+
+```ini
+# 指定处理数据文件，通过参数 --input 传递
+/export/server/flink-local/bin/flink run \
+/export/server/flink-local/examples/batch/WordCount.jar --input /root/words.txt
+```
+
+![1633420505322](assets/1633420505322.png)
+
+```ini
+# 指定处理数据文件和输出数据目录，分别通过--input 和 --output 传递参数值
+/export/server/flink-local/bin/flink run \
+/export/server/flink-local/examples/batch/WordCount.jar \
+--input /root/words.txt \
+--output /root/out.txt
+```
+
+![1633420612315](assets/1633420612315.png)
 
 ### 3. Standalone集群
 
