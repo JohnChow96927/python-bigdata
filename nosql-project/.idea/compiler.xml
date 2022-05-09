@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="kafka-client" />
+        <module name="momo-action" />
         <module name="hbase-client" />
         <module name="phoenix-client" />
         <module name="redis-client" />

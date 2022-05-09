@@ -13,6 +13,7 @@
         <module>hbase-client</module>
         <module>phoenix-client</module>
         <module>kafka-client</module>
+        <module>momo-action</module>
     </modules>
 
     <properties>
