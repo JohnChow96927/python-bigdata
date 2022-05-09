@@ -1967,7 +1967,45 @@ Flink 技术框架学习：
 
 ## 附IV. Flink Standalone集群回顾
 
+> Flink Standalone集群安装部署，总结回顾说明如下：
 
+```
+1、Flink 集群架构
+	1）、JobManager 老大
+		Master
+		接收提交Job，调度Job执行
+	2）、TaskManager 小弟
+		Slavers
+		运行Task任务
+		
+	Flink Client
+		提交Flink Job运行，提交给JobManager
+```
+
+![](assets/1630737225965.png)
+
+```
+2、本地集群部署
+	将JobManager和TaskManager运行1台机器上，分别启动JM和TM进程（JVM进程）
+	测试：流计算程序、批处理程序，使用flink run 提交运行Job
+```
+
+![](assets/1630737282282.png)
+
+```
+3、分布式集群（Standalone集群）
+	多台机器部署，1个JobManager和多个TaskManager，需要进行基础配置
+```
+
+![](assets/1630737374891.png)
+
+```
+4、HA高可用集群
+	多台机器部署，多个JobManager和多个TaskManager，其中1个JobManager为Active，其他为Standby
+	依赖Zookeeper集群，实现leader选举功能和监控转移转移。
+```
+
+![](assets/1630737480781.png)
 
 ## 附V. Hadoop YARN回顾复习
 
