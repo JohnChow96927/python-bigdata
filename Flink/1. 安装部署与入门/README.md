@@ -498,7 +498,179 @@ hive mapreduce
 
 ### 3. Standalone集群
 
+> **Flink Standalone集群**，类似Hadoop YARN集群，==管理集群资源和分配资源给Flink Job运行任务Task==。
 
+![1644670949884](assets/1644670949884.png)
+
+1. Client客户端提交任务给JobManager；
+2. JobManager负责申请任务运行所需要的资源并管理任务和资源；
+3. JobManager分发任务给TaskManager执行；
+4. TaskManager定期向JobManager汇报状态；
+
+> 0）、集群规划：
+
+![](assets/1614743548233.png)
+
+> 1）、上传软件及解压
+
+```ini
+[root@node1 ~]# cd /export/software/
+[root@node1 software]# rz
+	上传软件包：flink-1.13.1-bin-scala_2.11.tgz
+	
+[root@node1 software]# chmod u+x flink-1.13.1-bin-scala_2.11.tgz
+[root@node1 software]# tar -zxf flink-1.13.1-bin-scala_2.11.tgz -C /export/server/	
+
+[root@node1 ~]# cd /export/server/
+[root@node1 server]# chown -R root:root flink-1.13.1
+[root@node1 server]# mv flink-1.13.1 flink-standalone
+```
+
+> 2）、修改`flink-conf.yaml`
+
+```ini
+vim /export/server/flink-standalone/conf/flink-conf.yaml
+修改内容：33行内容
+	jobmanager.rpc.address: node1.itcast.cn
+```
+
+> 3）、修改`masters`
+
+```ini
+vim /export/server/ flink-standalone/conf/masters
+修改内容：	
+	node1.itcast.cn:8081
+```
+
+> 4）、修改`workers`
+
+```ini
+vim /export/server/ flink-standalone/conf/workers
+修改内容：	
+    node1.itcast.cn
+    node2.itcast.cn
+    node3.itcast.cn
+```
+
+> 5）、添加`HADOOP_CONF_DIR`环境变量(**集群所有机器**）
+
+```ini
+vim /etc/profile
+	添加内容：
+	export HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop
+# 执行生效
+source /etc/profile
+```
+
+> 6）、将Flink依赖Hadoop 框架JAR包上传至`/export/server/flink-standalone/lib`目录
+
+![1633421482610](assets/1633421482610.png)
+
+```ini
+[root@node1 ~]# cd /export/server/flink-standalone/lib/
+
+[root@node1 lib]# rz
+	commons-cli-1.4.jar
+	flink-shaded-hadoop-3-uber-3.1.1.7.2.1.0-327-9.0.jar
+```
+
+> 7）、分发到集群其他机器
+
+```ini
+scp -r /export/server/flink-standalone root@node2.itcast.cn:/export/server
+scp -r /export/server/flink-standalone root@node3.itcast.cn:/export/server
+```
+
+接下来，启动服务进程，运行批处理程序：词频统计WordCount。
+
+> 1）、启动HDFS集群，在`node1.itcast.cn`上执行如下命令
+
+```ini
+# NameNode 主节点
+hadoop-daemon.sh start namenode
+
+# 所有DataNodes从节点
+hadoop-daemons.sh start datanode
+```
+
+> 2）、启动集群，执行如下命令
+
+```ini
+# 一键启动所有服务JobManager和TaskManagers
+[root@node1 ~]# /export/server/flink-standalone/bin/start-cluster.sh 
+Starting cluster.
+Starting standalonesession daemon on host node1.itcast.cn.
+Starting taskexecutor daemon on host node1.itcast.cn.
+Starting taskexecutor daemon on host node2.itcast.cn.
+Starting taskexecutor daemon on host node3.itcast.cn.
+```
+
+![1633421994734](assets/1633421994734.png)
+
+> 3）、访问Flink UI界面：http://node1.itcast.cn:8081/#/overview
+
+![1633422040826](assets/1633422040826.png)
+
+![1633422420531](assets/1633422420531.png)
+
+> 4）、执行官方测试案例
+
+```ini
+# 准备测试数据
+[root@node1 ~]# hdfs dfs -mkdir -p /wordcount/input/
+[root@node1 ~]# hdfs dfs -put /root/words.txt /wordcount/input/
+```
+
+![1633422301964](assets/1633422301964.png)
+
+```ini
+# 运行程序，使用--input指定处理数据文件路径
+/export/server/flink-standalone/bin/flink run \
+/export/server/flink-standalone/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input/words.txt
+```
+
+![1633422457779](assets/1633422457779.png)
+
+```ini
+# 使用--output指定处理结果数据存储目录
+/export/server/flink-standalone/bin/flink run \
+/export/server/flink-standalone/examples/batch/WordCount.jar \
+--input hdfs://node1.itcast.cn:8020/wordcount/input/words.txt \
+--output hdfs://node1.itcast.cn:8020/wordcount/output/result
+
+[root@node1 ~]# hdfs dfs -text /wordcount/output/result
+```
+
+![1633422618479](assets/1633422618479.png)
+
+> 5）、关闭Standalone集群服务
+
+```ini
+# 一键停止所有服务JobManager和TaskManagers
+[root@node1 ~]# /export/server/flink-standalone/bin/stop-cluster.sh 
+Stopping taskexecutor daemon (pid: 6600) on host node1.itcast.cn.
+Stopping taskexecutor daemon (pid: 3016) on host node2.itcast.cn.
+Stopping taskexecutor daemon (pid: 3034) on host node3.itcast.cn.
+Stopping standalonesession daemon (pid: 6295) on host node1.itcast.cn.
+```
+
+> **补充**：Flink Standalone集群启动与停止，也可以逐一服务启动
+
+```ini
+# 每个服务单独启动
+# 在node1.itcast.cn上启动
+/export/server/flink-standalone/bin/jobmanager.sh start
+# 在node1.itcast.cn、node2.itcast.cn、node3.itcast.cn
+/export/server/flink-standalone/bin/taskmanager.sh start  # 每台机器执行
+
+# ===============================================================
+# 每个服务单独停止
+# 在node1.itcast.cn上停止
+/export/server/flink-standalone/bin/jobmanager.sh stop
+# 在node1.itcast.cn、node2.itcast.cn、node3.itcast.cn
+/export/server/flink-standalone/bin/taskmanager.sh stop 
+```
 
 ### 4. Standalone HA
 
