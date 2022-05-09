@@ -375,7 +375,27 @@ TailDir Soucre
 
 ### 5. Channel缓存
 
+![image-20210507100111078](assets/image-20210507100111078.png)
 
+> **在Flume中，编写Agent，最常见使用Channel缓存：Memory内存和File文件**，负责临时缓存数据。
+
+- **Memory Channel**：将数据缓存在内存中
+
+  - 特点：==读写快、容量小、安全性较差==
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#memory-channel
+
+  ![1652028046336](assets/1652028046336.png)
+
+  - 应用：**小数据量的高性能的传输**
+
+- **File Channel**：将数据缓存在文件中
+
+  - 特点：==读写相对慢、容量大、安全性较高==
+  - 文档：https://flume.apache.org/releases/content/1.9.0/FlumeUserGuide.html#file-channel
+
+  ![1652028084897](assets/1652028084897.png)
+
+  - 应用：**数据量大，读写性能要求不高的场景下**
 
 ### 6. HDFS Sink
 
