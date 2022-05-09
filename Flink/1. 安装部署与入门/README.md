@@ -1865,7 +1865,37 @@ Program Arguments：--host node1.itcast.cn --port 9999
 
 ## 附I. 流计算引擎的演进
 
+> 至今为止，大数据技术栈中，针对流式数据处理，主要有如下三代流式计算引擎：
 
+![1633396038901](assets/1633396038901.png)
+
+- 第一代：`Apache Storm`（Alibaba `JStorm`）
+
+  [流计算引擎进行了很多代的演进，第一代流计算引擎 Apache Storm 是一个纯流的设计，延迟非常的低，但是它的问题也比较明显，即没有办法避免消息的重复处理，从而导致数据正确性有一定的问题。]()
+
+  `https://storm.apache.org/`
+
+![](assets/1629902040441.png)
+
+- 第二代：`Spark Streaming`，DStream = Seq[RDD]
+
+  [Spark Streaming 是第二代流计算引擎，解决了流计算语义正确性的问题，但是它的设计理念是以批为核心，最大的问题是延迟比较高，只能做到 10 秒级别的延迟，端到端无法实现秒以内的延迟。]()
+
+  `https://spark.apache.org/streaming/`
+
+![](assets/1629902078825.png)
+
+- 第三代：`Apache Flink`（Alibaba `Blink`）
+
+  [Flink 是第三代流计算引擎，也是最新一代的流计算引擎。它既可以保证低延迟，同时又可以保证消息的一致性语义，对于内置状态的管理，也极大降低了应用程序的复杂度。]()
+
+  `https://flink.apache.org/`
+
+![](assets/1629902139034.png)
+
+> Google 发布流式处理系统论文：`Google DataFlow`，定义流式计算引擎该有哪些功能。
+
+![](assets/1630749492194.png)
 
 ## 附II. Flink框架技术栈
 
