@@ -49,7 +49,96 @@ https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-de
 
 ### 2. 安装部署
 
+> Apache Flume 的安装非常简单，直接解压，然后配置JDK环境变量即可。
 
+- 1、上传安装包，node1机器上安装
+
+  ```ini
+  cd /export/software/
+  rz
+  ```
+
+  ![1652023242381](assets/1652023242381.png)
+
+- 2、解压安装
+
+  ```shell
+  tar -zxf apache-flume-1.9.0-bin.tar.gz -C /export/server/
+  
+  cd /export/server
+  ln -s apache-flume-1.9.0-bin flume
+  
+  chown -R root:root flume/
+  ```
+
+- 3、修改Flume环境变量
+
+  ```shell
+  cd /export/server/flume/conf/
+  mv flume-env.sh.template flume-env.sh
+  vim flume-env.sh 
+  ```
+
+  ```ini
+  # 修改22行
+  export JAVA_HOME=/export/server/jdk
+  # 修改34行
+  export HADOOP_HOME=/export/server/hadoop
+  ```
+
+- 4、集成HDFS，拷贝HDFS配置文件
+
+  ```shell
+  cp /export/server/hadoop/etc/hadoop/core-site.xml /export/server/hadoop/etc/hadoop/hdfs-site.xml /export/server/flume/conf/
+  ```
+
+  ![1652023585122](assets/1652023585122.png)
+
+- 5、删除Flume自带的guava包，替换成Hadoop的
+
+  ```ini
+  # 删除低版本jar包
+  rm -rf /export/server/flume/lib/guava-11.0.2.jar
+  
+  # 拷贝高版本jar包
+  cp /export/server/hadoop/share/hadoop/common/lib/guava-27.0-jre.jar /export/server/flume/lib/
+  ```
+
+> Flume Agent开发步骤：编写Agent配置文件和启动运行Agent程序。
+
+![image-20210507100111078](assets/image-20210507100111078.png)
+
+- **step1：编写Agent配置文件**
+  - 在配置文件中定义Agent，定义这个agent的名称，定义agent的三个基本组件
+  - Source是什么？
+    - 决定程序**从哪里采集数据**
+    - https://flume.apache.org/releases/content/1.7.0/FlumeUserGuide.html#flume-sources
+  - Channel是什么？
+    - 决定程序**将采集到的数据缓存在什么地方**
+    - https://flume.apache.org/releases/content/1.7.0/FlumeUserGuide.html#flume-channels
+  - Sink是什么？
+    - 决定程序**将数据发送到什么地方**
+    - https://flume.apache.org/releases/content/1.7.0/FlumeUserGuide.html#flume-sinks 
+
+- **step2：运行Agent程序**
+
+  - 用法
+
+    ```ini
+    Usage:  flume-ng <command> [options]...
+    ```
+
+  - 使用
+
+    ```ini
+    flume-ng agent  -c Flume配置文件目录 -f 指定运行的文件 -n 运行的Agent的名称
+    ```
+
+  - 案例
+
+    ```ini
+    flume-ng agent -n xx_name -c /export/server/flume/conf -f xxx.properties
+    ```
 
 ### 3. 入门案例
 
