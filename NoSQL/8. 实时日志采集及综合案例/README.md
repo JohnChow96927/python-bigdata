@@ -1104,7 +1104,70 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 ### 4. Hive离线分析
 
+> **使用Hive关联Hbase实现离线分析**
 
+![1652051236177](assets/1652051236177.png)
+
+- 1、启动服务：YARN和Hive
+
+  ```ini
+  #启动YARN
+  start-yarn.sh
+  
+  #先启动metastore服务
+  start-metastore.sh
+  #然后启动hiveserver
+  start-hiveserver2.sh
+  
+  #然后启动beeline
+  /export/server/hive/bin/beeline
+  !connect jdbc:hive2://node1.itcast.cn:10000
+  root 123456
+  ```
+
+- 2、Hive创建表，关联HBase表
+
+  ```sql
+  CREATE EXTERNAL TABLE IF NOT EXISTS tbl_momo_msg (
+    id string,
+    msg_time string ,
+    sender_nickyname string ,
+    sender_account string ,
+    sender_sex string ,
+    sender_ip string ,
+    sender_os string ,
+    sender_phone_type string ,
+    sender_network string ,
+    sender_gps string ,
+    receiver_nickyname string ,
+    receiver_ip string ,
+    receiver_account string ,
+    receiver_os string ,
+    receiver_phone_type string ,
+    receiver_network string ,
+    receiver_gps string ,
+    receiver_sex string ,
+    msg_type string ,
+    distance string ,
+    message string
+  ) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+  with serdeproperties('hbase.columns.mapping'=':key,info:msg_time,info:sender_nickyname, info:sender_account,info:sender_sex,info:sender_ip,info:sender_os,info:sender_phone_type,info:sender_network,info:sender_gps,info:receiver_nickyname,info:receiver_ip,info:receiver_account,info:receiver_os,info:receiver_phone_type,info:receiver_network,info:receiver_gps,info:receiver_sex,info:msg_type,info:distance,info:message') tblproperties('hbase.table.name'='htbl_momo_msg');
+  ```
+
+- 3、**分析查询**
+
+  ```sql
+  -- 基础查询
+  SELECT id, msg_time, sender_nickyname,receiver_nickyname, distance
+  FROM momo_msg 
+  LIMIT 10;
+  
+  
+  -- 统计每个小时的消息数
+  SELECT SUBSTR(msg_time, 0, 13) AS hour, count(*) AS total
+  FROM momo_msg
+  GROUP BY SUBSTR(msg_time, 0, 13);
+  ```
 
 ### 5. Phoenix即席查询
 
