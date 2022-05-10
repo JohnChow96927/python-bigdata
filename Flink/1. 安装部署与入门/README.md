@@ -1058,10 +1058,10 @@ $ yarn application -kill application_1633441564219_0001
 
 ```ini
 # 优雅 停止应用，如果设置重启次数，即使停止应用，也会重启，一直到超过次数以后，才能真正停止应用
-echo "stop" | /export/server/flink-yarn/bin/yarn-session.sh -id application_1633441564219_0001
+echo "stop" | /export/server/flink-yarn/bin/yarn-session.sh -id application_1652172418810_0001
 
 # kill 命令，直接将运行在yarn应用杀死，毫不留情
-yarn application -kill application_1633441564219_0001
+yarn application -kill application_1652172418810_0001
 ```
 
 #### 5.4. Per-Job模式
