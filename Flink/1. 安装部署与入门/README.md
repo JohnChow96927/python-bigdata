@@ -6,24 +6,6 @@ Apache Flink是一个框架和分布式处理引擎，用于对无界和有界�
 
 ## 大数据分析引擎
 
-> 梳理整个大数据课程，分为四大阶段，具体如下所示：
-
-```ini
-1）、HADOOP 离线阶段：
-	基础课程（LINUX + ZOOKEEPER + HADOOP + HIVE）和项目课程（亿品新零售）
-	
-2）、SPARK 内存分析阶段：
-	基础课程（PySpark）和项目课程（一站制造项目）
-	
-3）、大数据实时存储阶段：
-	Flume、Redis、Kafka、HBase、
-	
-4）、FLINK 流式计算阶段：
-	基础课程（FLINK：流计算及SQL&Table API）和项目课程
-```
-
-![1633392172368](assets/1633392172368.png)
-
 > 大数据分析领域，数据分析类型：==离线批处理分析（Batch）==和==实时流计算分析（Streaming）==。
 
 ```ini
