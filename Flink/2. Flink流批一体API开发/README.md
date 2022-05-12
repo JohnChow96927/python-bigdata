@@ -403,6 +403,123 @@ public class ${NAME} {
 
 ## II. Data Source & Data Sink
 
+### 1. 基本数据源
+
+针对Flink 流计算来说，数据源可以是**有界数据源（静态数据）**，也可以是**无界数据源（流式数据）**，原因在于Flink框架中，==将数据统一封装称为`DataStream`数据流==。
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/overview/#data-sources
+
+![](assets/1630118613881.png)
+
+```ini
+1、基于File文件数据源
+	readTextFile(path)
+
+2、Sockect 数据源
+	socketTextStream 
+	
+3、基于Collection数据源
+	fromCollection(Collection)
+	fromElements(T ...)
+	fromSequence(from, to)，相当于Python中range
+
+4、自定义Custom数据源
+	env.addSource()
+	官方提供接口：
+		SourceFunction			非并行
+		RichSourceFunction 
+		
+		ParallelSourceFunction  并行
+		RichParallelSourceFunction 
+```
+
+> 基于==集合Collection==数据源Source，一般用于学习测试。
+
+![1633532195634](assets/1633532195634.png)
+
+```java
+package cn.itcast.flink.source;
+
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.util.Arrays;
+
+/**
+ * Flink 流计算数据源：基于集合的Source，分别为可变参数、集合和自动生成数据
+ *      TODO: 基于集合数据源Source构建DataStream，属于有界数据流，当数据处理完成以后，应用结束
+ */
+public class StreamSourceCollectionDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		// 方式一：可变参数
+		DataStreamSource<String> dataStream01 = env.fromElements("spark", "flink", "mapreduce");
+		dataStream01.print();
+
+		// 方式二：集合对象
+		DataStreamSource<String> dataStream02 = env.fromCollection(Arrays.asList("spark", "flink", "mapreduce"));
+		dataStream02.printToErr();
+
+		// 方式三：自动生成序列数字
+		DataStreamSource<Long> dataStream03 = env.fromSequence(1, 10);
+		dataStream03.print();
+
+		// 5. 触发执行-execute
+		env.execute("StreamSourceCollectionDemo") ;
+	}
+
+}
+```
+
+> 基于文件数据源， 一般用于学习测试，演示代码如下所示：
+
+![](assets/1630897373473.png)
+
+> 从文本文件加载数据时，可以是压缩文件，支持压缩格式如下图。
+
+![1633532375484](assets/1633532375484.png)
+
+> 案例演示代码：`StreamSourceFileDemo`
+
+```java
+package cn.itcast.flink.source;
+
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+/**
+ * Flink 流计算数据源：基于文件的Source
+ */
+public class StreamSourceFileDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		// 方式一：读取文本文件
+		DataStreamSource<String> dataStream01 = env.readTextFile("datas/words.txt");
+		dataStream01.printToErr();
+
+		// 方式二：读取压缩文件
+		DataStreamSource<String> dataStream02 = env.readTextFile("datas/words.txt");
+		dataStream02.print();
+
+		// 5. 触发执行-execute
+		env.execute("StreamSourceFileDemo") ;
+	}
+
+}
+```
+
+
+
 
 
 ## III. DataStream Transformations
