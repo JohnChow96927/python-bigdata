@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Flink/2. Flink流批一体API开发/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Flink/2. Flink流批一体API开发/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +119,7 @@
       <option name="presentableId" value="Default" />
       <updated>1652169494902</updated>
       <workItem from="1652169496188" duration="3835000" />
-      <workItem from="1652341526812" duration="5078000" />
+      <workItem from="1652341526812" duration="5675000" />
     </task>
     <servers />
   </component>
