@@ -1343,6 +1343,81 @@ public class TransformationMaxMinDemo {
 }
 ```
 
+### 8. union和connect算子
+
+> - 1）`union`函数：可以`合并多个同类型的数据流`，并生成同类型的数据流，即可以将多个DataStream[T]合并为一个新的DataStream[T]。
+>
+> [数据将按照先进先出（First In First Out）的模式合并，且不去重。]()
+
+![](assets/1615013745959.png)
+
+> - 2）、`connect`函数：与union函数功能类似，`用来连接两个数据流`，且2个数据流数据**类型可不一样**。
+
+![](assets/1615013828054.png)
+
+1. connect只能连接两个数据流，union可以连接多个数据流；
+2. connect所连接的两个数据流的数据类型可以不一致，union所连接的两个数据流的数据类型必须一致；
+
+> **案例演示**，分别对2个流DataStream进行union和connect操作：
+>
+> - 将两个String类型的流进行`union`；
+> - 将一个String类型和一个Long类型的流进行`connect`；
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.streaming.api.datastream.ConnectedStreams;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.co.CoMapFunction;
+
+/**
+ * Flink中流计算DataStream转换函数：合并union和连接connect
+ */
+public class TransformationUnionConnectDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStream<String> dataStream01 = env.fromElements("A", "B", "C", "D");
+		DataStream<String> dataStream02 = env.fromElements("aa", "bb", "cc", "dd");
+		DataStream<Integer> dataStream03 = env.fromElements(1, 2, 3, 4);
+
+		// 3. 数据转换-transformation
+		// TODO: 两个流进行union
+		DataStream<String> unionDataStream = dataStream01.union(dataStream02);
+		//unionDataStream.printToErr();
+
+		// TODO: 两个流进行连接, connect 应用场景在于 -> 大表对小表（偶尔变化）数据 关联操作
+		ConnectedStreams<String, Integer> connectDataStream = dataStream01.connect(dataStream03);
+		// 对连接流中数据进行处理操作
+		connectDataStream.map(new CoMapFunction<String, Integer, String>() {
+			// 对连接左边流中每条数据计算操作
+			@Override
+			public String map1(String leftValue) throws Exception {
+				return "map1: left -> " + leftValue;
+			}
+
+			// 对连接右边流中每条数据计算操作
+			@Override
+			public String map2(Integer rightValue) throws Exception {
+				return "map2: right -> " + rightValue;
+			}
+		}).printToErr();
+
+
+		// 4. 数据接收器-sink
+
+		// 5. 触发执行-execute
+		env.execute("TransformationUnionConnectDemo");
+	}
+
+}
+```
+
 
 
 
