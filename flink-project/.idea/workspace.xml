@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/flink-d2/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/JavaListTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/JavaThreadTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/MySQLJdbcReadTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/MySQLJdbcWriteTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/test.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Flink/2. Flink流批一体API开发/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Flink/2. Flink流批一体API开发/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +18,11 @@
   </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
+  </component>
+  <component name="DatabaseLocalColorSettings">
+    <colors>
+      <entry key="eaa06954-07da-49fe-a1b1-eb5150cf3ab9" value="Blue" />
+    </colors>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -61,8 +68,50 @@
     "WebServerToolWindowPanel.toolwindow.show.size": "false",
     "jdk.selected.JAVA_MODULE": "1.8",
     "settings.editor.selected.configurable": "preferences.pluginManager"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ],
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
+      "MySQL"
+    ]
   }
 }]]></component>
+  <component name="RunManager" selected="Application.MySQLJdbcWriteTest">
+    <configuration name="MySQLJdbcReadTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.flink.test.MySQLJdbcReadTest" />
+      <module name="flink-d2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.flink.test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MySQLJdbcWriteTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.johnchow.flink.test.MySQLJdbcWriteTest" />
+      <module name="flink-d2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.johnchow.flink.test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MySQLJdbcWriteTest" />
+        <item itemvalue="Application.MySQLJdbcReadTest" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration>C:\Users\JohnChow\AppData\Roaming\Subversion</configuration>
@@ -75,7 +124,7 @@
       <option name="presentableId" value="Default" />
       <updated>1652169494902</updated>
       <workItem from="1652169496188" duration="3835000" />
-      <workItem from="1652341526812" duration="880000" />
+      <workItem from="1652341526812" duration="1979000" />
     </task>
     <servers />
   </component>
