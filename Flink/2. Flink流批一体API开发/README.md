@@ -114,3 +114,114 @@ public class JavaThreadTest {
 
 ![1652307642516](assets/1652307642516.png)
 
+## 回顾III. MySQL JDBC
+
+> 在Java中提供JDBC接口准备，方便对数据库进行操作，以MySQL为例，编写JDBC代码读写表数据。
+
+- 创建表：
+
+```SQL
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS db_flink ;
+-- 创建表
+CREATE TABLE IF NOT EXISTS db_flink.t_student (
+                             id int(11) NOT NULL AUTO_INCREMENT,
+                             name varchar(255) DEFAULT NULL,
+                             age int(11) DEFAULT NULL,
+                             PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- 插入数据
+INSERT INTO db_flink.t_student VALUES ('1', 'jack', 18);
+INSERT INTO db_flink.t_student VALUES ('1', 'jack', 18);
+INSERT INTO db_flink.t_student VALUES ('2', 'tom', 19);
+INSERT INTO db_flink.t_student VALUES ('3', 'rose', 20);
+INSERT INTO db_flink.t_student VALUES ('4', 'tom', 19);
+
+-- 查询数据
+SELECT id, name, age FROM db_flink.t_student ;
+```
+
+- JDBC方式读取数据
+
+```JAva
+package cn.itcast.flink.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+/**
+ * 基于JDBC方式读取MySQL数据库表中数据
+ */
+public class MySQLJdbcReadTest {
+
+	public static void main(String[] args) throws Exception{
+		// step1、加载驱动
+		Class.forName("com.mysql.jdbc.Driver") ;
+		// step2、获取连接Connection
+		Connection conn = DriverManager.getConnection(
+			"jdbc:mysql://node1.itcast.cn:3306/?useSSL=false",
+			"root",
+			"123456"
+		);
+		// step3、创建Statement对象，设置语句（INSERT、SELECT）
+		PreparedStatement pstmt = conn.prepareStatement("SELECT id, name, age FROM db_flink.t_student") ;
+		// step4、执行操作，获取ResultSet对象
+		ResultSet result = pstmt.executeQuery();
+		// step5、遍历获取数据
+		while (result.next()){
+			// 获取每个字段的值
+			int stuId = result.getInt("id");
+			String stuName = result.getString("name");
+			int stuAge = result.getInt("age");
+			System.out.println("id = " + stuId + ", name = " + stuName + ", age = " + stuAge);
+		}
+		// step6、关闭连接
+		result.close();
+		pstmt.close();
+		conn.close();
+	}
+
+}
+```
+
+- JDBC方式写入数据
+
+```Java
+package cn.itcast.flink.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+/**
+ * 基于JDBC方式写入数据到MySQL数据库表中
+ */
+public class MySQLJdbcWriteTest {
+
+	public static void main(String[] args) throws Exception{
+		// step1、加载驱动
+		Class.forName("com.mysql.jdbc.Driver") ;
+		// step2、获取连接Connection
+		Connection conn = DriverManager.getConnection(
+			"jdbc:mysql://node1.itcast.cn:3306/?useSSL=false",
+			"root",
+			"123456"
+		);
+		// step3、创建Statement对象，设置语句（INSERT、SELECT）
+		PreparedStatement pstmt = conn.prepareStatement("INSERT INTO db_flink.t_student(id, name, age) VALUES (?, ?, ?)") ;
+		// step4、执行操作
+		pstmt.setInt(1, 99);
+		pstmt.setString(2, "Jetty");
+		pstmt.setInt(3, 28);
+		pstmt.executeUpdate();
+		// step5、关闭连接
+		pstmt.close();
+		conn.close();
+	}
+
+}
+```
+
