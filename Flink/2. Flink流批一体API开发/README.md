@@ -1418,7 +1418,103 @@ public class TransformationUnionConnectDemo {
 }
 ```
 
+### 9. Side Outputs
 
+> 在Flink流计算中，提供API函数，将1个流分割为多个流，使用`split`算子和`select`算子。
+
+![](assets/1615014460187.png)
+
+> `Split`就是将一个流分成多个流，`Select`就是获取分流后对应的数据。
+
+[DataStream中split函数，分割流的本质：给DataStream流中`每条数据打上标签Tag`，最后依据标签Tag获取具体分割的流数据。]()
+
+
+
+> 分割流`函数split`已经过时，并且在新版本中已经被删除，Flink提供：`侧边输出SideOutput`方式，可以将1个流进行侧边输出多个流。
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/side_output/
+
+![](assets/1626678384814.png)
+
+- 第1步、定义输出标签`OutputTag`
+  - `OutputTag<String> outputTag = new OutputTag<String>("side-output") {};`
+  - 比如需要输出2个流，定义2个OutputTag标签
+- 第2步、调用DataStream中`process`底层处理函数，进行判断，划分OutputTag。
+
+![](assets/1615015464537.png)
+
+> 案例演示：对流中的数据**按照奇数和偶数进行分流**，并获取分流后的数据
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
+
+/**
+ * Flink 流计算中转换算子：使用侧边流SideOutputs
+ */
+public class TransformationSideOutputsDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<Integer> inputStream = env.fromElements(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		// 3. 数据转换-transformation
+		/*
+			对数据流进行分割，使用sideOutput侧边输出算子实现，将奇数数字放在一个流，将偶数数字放在一个流，todo：原来数据流中数据平方处理
+		 */
+		// step1、定义分割流标签
+		OutputTag<Integer> oddTag = new OutputTag<Integer>("side-odd") {};
+		OutputTag<Integer> evenTag = new OutputTag<Integer>("side-even") {};
+		
+		// step2、调用process函数，对流中数据处理及打标签
+		SingleOutputStreamOperator<String> mainStream = inputStream.process(new ProcessFunction<Integer, String>() {
+			// 表示对流中每条数据处理
+			@Override
+			public void processElement(Integer value, Context ctx, Collector<String> out) throws Exception {
+				// todo: 流中每条数据原来该怎么计算依然如何计算，比如值平方
+				int squareValue = value * value ;
+				out.collect(squareValue + "");
+
+				// step3、判断数据是奇数还是偶数，打上对应标签
+				if(value % 2 == 0){
+					ctx.output(evenTag, value);
+				}else{
+					ctx.output(oddTag, value);
+				}
+			}
+		});
+
+		// 4. 数据终端-sink
+		mainStream.printToErr();
+
+		// step4、获取侧边流，依据标签
+		DataStream<Integer> oddStream = mainStream.getSideOutput(oddTag);
+		oddStream.print("odd>");
+
+		DataStream<Integer> evenStream = mainStream.getSideOutput(evenTag);
+		evenStream.print("even>");
+
+		// 5. 触发执行-execute
+		env.execute("TransformationSideOutputsDemo");
+	}
+
+}
+```
+
+运行上述流式计算程序，可以发现，原来数据流继续处理数据，依据OutputTag衍生侧边流，各自单独处理数据。
+
+![](assets/1630125475606.png)
 
 
 
