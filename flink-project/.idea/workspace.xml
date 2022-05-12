@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="" />
+    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/flink-d2/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flink-d2/src/main/java/com/johnchow/flink/test/JavaListTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +60,7 @@
     "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
     "WebServerToolWindowPanel.toolwindow.show.size": "false",
     "jdk.selected.JAVA_MODULE": "1.8",
-    "settings.editor.selected.configurable": "MavenSettings"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -71,6 +75,7 @@
       <option name="presentableId" value="Default" />
       <updated>1652169494902</updated>
       <workItem from="1652169496188" duration="3835000" />
+      <workItem from="1652341526812" duration="880000" />
     </task>
     <servers />
   </component>
