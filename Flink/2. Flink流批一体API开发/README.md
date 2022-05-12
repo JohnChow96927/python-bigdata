@@ -975,6 +975,88 @@ public class StreamSinkMySQLDemo {
 
 ![1633557641897](assets/1633557641897.png)
 
+### 2. map 算子
+
+> `map`函数使用说明：
+
+![](assets/1614826981456.png)
+
+> **需求**：将读取文本文件数据，每行JSON格式数据，转换为**ClickLog**对象，使用`map`函数完成。
+
+[将JSON格式字符串，解析转换为JavaBean对象，使用库：`fastJson`库]()
+
+```java
+package cn.itcast.flink.transformation;
+
+import com.alibaba.fastjson.JSON;
+import lombok.Data;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * Flink中流计算DataStream转换函数：map、flatMap和filter
+ */
+public class TransformationBasicDemo {
+
+	@Data
+	private static class ClickLog {
+		//频道ID
+		private long channelId;
+		//产品的类别ID
+		private long categoryId;
+
+		//产品ID
+		private long produceId;
+		//用户的ID
+		private long userId;
+		//国家
+		private String country;
+		//省份
+		private String province;
+		//城市
+		private String city;
+		//网络方式
+		private String network;
+		//来源方式
+		private String source;
+		//浏览器类型
+		private String browserType;
+		//进入网站时间
+		private Long entryTime;
+		//离开网站时间
+		private Long leaveTime;
+	}
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStream<String> inputDataStream = env.readTextFile("datas/click.log");
+
+		// 3. 数据转换-transformation
+		// TODO: 函数一【map函数】，将JSON转换为JavaBean对象
+		DataStream<ClickLog> clickDataStream = inputDataStream.map(new MapFunction<String, ClickLog>() {
+			@Override
+			public ClickLog map(String line) throws Exception {
+				return JSON.parseObject(line, ClickLog.class);
+			}
+		});
+		clickDataStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("TransformationBasicDemo") ;
+	}
+
+}
+```
+
 
 
 ## 附I. Maven模块
