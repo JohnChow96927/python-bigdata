@@ -327,6 +327,48 @@ public class ${NAME} {
 
 ![1652307926272](assets/1652307926272.png)
 
+### 2. 并行度设置
+
+> 一个Flink程序由多个Operator组成(`source、transformation和 sink`)。
+
+![](assets/1630241888273.png)
+
+> 一个Operator由多个并行的SubTask（以线程方式）来执行， 一个Operator的并行SubTask(数目就被称为该Operator(任务)的**并行度**(`Parallelism`)。
+
+![](assets/1630241797904.png)
+
+在Flink 中，并行度设置可以从4个层次级别指定，具体如下所示：
+
+![](assets/1630243097602.png)
+
+- 1）、==Operator Level（算子级别）==(可以使用)
+
+> 一个operator、source和sink的并行度可以通过调用 `setParallelism()`方法来指定。
+
+![1630243927963](assets/1630243927963.png)
+
+- 2）、==Execution Environment Level==（Env级别，可以使用)
+
+> 执行环境并行度可以通过调用`setParallelism()`方法指定。
+
+![1630243963333](assets/1630243963333.png)
+
+- 3）、==Client Level==(客户端级别，推荐使用)
+
+> 并行度可以在客户端将job提交到Flink时设定，对于CLI客户端，可以通过`-p`参数指定并行度
+
+![1630244027260](assets/1630244027260.png)
+
+- 4）、==System Level==（系统默认级别，尽量不使用）
+
+> 在系统级可以通过设置`flink-conf.yaml`文件中的`parallelism.default`属性来指定所有执行环境的默认并行度。
+
+总结：并行度的优先级：`算子级别 > env级别 > Client级别 > 系统默认级别` 
+
+- 1）、如果source不可以被并行执行，即使指定了并行度为多个，也不会生效
+- 2）、实际生产中，推荐`在算子级别显示指定各自的并行度`，方便进行显示和精确的资源控制。
+- 3）、slot是静态的概念，是**指taskmanager具有的并发执行能力**； `parallelism`是动态的概念，是指`程序运行时实际使用的并发能力`。
+
 
 
 ## II. Data Source & Data Sink
