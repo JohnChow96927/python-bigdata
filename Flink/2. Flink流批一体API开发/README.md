@@ -1675,7 +1675,21 @@ public class TransformationSideOutputsDemo {
 
 ## 附II. Lombok使用及插件安装
 
+> 定义JavaBean对象（POJO类）使用lombok注解方式完成，代码简洁。
 
+- 第一步、添加Maven依赖
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.12</version>
+</dependency>
+```
+
+- 第二步、IDEA安装插件：Lombok，图标logo为小辣椒。
+
+![1633575694952](assets/1633575694952.png)
 
 
 
