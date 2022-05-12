@@ -660,6 +660,146 @@ public class StreamSourceOrderDemo {
 
 ![](assets/1614999562804.png)
 
+### 3. MySQL Source
+
+> 需求：==从MySQL中实时加载数据，要求MySQL中的数据有变化，也能被实时加载出来==
+
+![](assets/1630120717030.png)
+
+- 1）、数据准备
+
+```SQL
+CREATE DATABASE IF NOT EXISTS db_flink ;
+
+
+CREATE TABLE IF NOT EXISTS db_flink.t_student (
+                             id int(11) NOT NULL AUTO_INCREMENT,
+                             name varchar(255) DEFAULT NULL,
+                             age int(11) DEFAULT NULL,
+                             PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO db_flink.t_student VALUES ('1', 'jack', 18);
+INSERT INTO db_flink.t_student VALUES ('2', 'tom', 19);
+INSERT INTO db_flink.t_student VALUES ('3', 'rose', 20);
+INSERT INTO db_flink.t_student VALUES ('4', 'tom', 19);
+
+INSERT INTO db_flink.t_student VALUES ('5', 'jack', 18);
+INSERT INTO db_flink.t_student VALUES ('6', 'rose', 20);
+```
+
+- 2）、自定义数据源：`MySQLSource`
+
+> 实现`run`方法，实现每隔1秒加载1次数据库表数据，此时数据有更新都会即使查询。
+
+```scala
+package cn.itcast.flink.source;
+
+import lombok.* ;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
+
+import java.sql.* ;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 从MySQL中实时加载数据：要求MySQL中的数据有变化，也能被实时加载出来
+ */
+public class StreamSourceMySQLDemo {
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Student {
+		private Integer id;
+		private String name;
+		private Integer age;
+	}
+
+	/**
+	 * 自定义数据源，从MySQL表中加载数据，并且实现增量加载
+	 */
+	private static class MySQLSource extends RichParallelSourceFunction<Student> {
+		// 定义变量，标识是否加载数据
+		private boolean isRunning = true ;
+
+		// 定义变量，open方法初始化，close方法关闭连接
+		private Connection conn = null ;
+		private PreparedStatement pstmt = null ;
+		private ResultSet result = null ;
+
+		// 初始化方法，在获取数据之前，准备工作
+		@Override
+		public void open(Configuration parameters) throws Exception {
+			// step1、加载驱动
+			Class.forName("com.mysql.jdbc.Driver") ;
+			// step2、获取连接Connection
+			conn = DriverManager.getConnection(
+				"jdbc:mysql://node1.itcast.cn:3306/?useSSL=false",
+				"root",
+				"123456"
+			);
+			// step3、创建Statement对象，设置语句（INSERT、SELECT）
+			pstmt = conn.prepareStatement("SELECT id, name, age FROM db_flink.t_student") ;
+		}
+
+		@Override
+		public void run(SourceContext<Student> ctx) throws Exception {
+			while (isRunning){
+				// step4、执行操作，获取ResultSet对象
+				result = pstmt.executeQuery();
+				// step5、遍历获取数据
+				while (result.next()){
+					// 获取每个字段的值
+					int stuId = result.getInt("id");
+					String stuName = result.getString("name");
+					int stuAge = result.getInt("age");
+					// 构建实体类对象
+					Student student = new Student(stuId, stuName, stuAge);
+					// 发送数据
+					ctx.collect(student);
+				}
+
+				// 每隔5秒加载一次数据库，获取数据
+				TimeUnit.SECONDS.sleep(5);
+			}
+		}
+
+		@Override
+		public void cancel() {
+			isRunning = false ;
+		}
+
+		// 收尾工作，当不再加载数据时，一些善后工作
+		@Override
+		public void close() throws Exception {
+			// step6、关闭连接
+			if(null != result) result.close();
+			if(null != pstmt) pstmt.close();
+			if(null != conn) conn.close();
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment() ;
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<Student> studentDataStream = env.addSource(new MySQLSource());
+
+		// 3. 数据转换-transformation
+		// 4. 数据终端-sink
+		studentDataStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("StreamSourceMySQLDemo") ;
+	}
+}
+```
+
 
 
 
