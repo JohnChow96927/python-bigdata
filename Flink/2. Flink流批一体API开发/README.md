@@ -1057,6 +1057,60 @@ public class TransformationBasicDemo {
 }
 ```
 
+### 3. flatMap 算子
+
+> `flatMap`：将集合中的每个元素变成一个或多个元素，并返回扁平化之后的结果，==flatMap = map + flattern==
+
+![](assets/1614827326944.png)
+
+> **案例演示说明**：依据`访问网站时间戳`转换为不同时间日期格式数据
+
+```ini
+Long类型日期时间：	1577890860000  
+				|
+				|进行格式
+				|
+String类型日期格式
+		yyyy-MM-dd-HH
+		yyyy-MM-dd
+		yyyy-MM
+```
+
+![1652309341621](assets/1652309341621.png)
+
+```java
+		// TODO: 函数二【flatMap】，每条数据转换为日期时间格式
+		/*
+		Long类型日期时间：	1577890860000
+							|
+							|进行格式
+							|
+		String类型日期格式
+				yyyy-MM-dd-HH
+				yyyy-MM-dd
+				yyyy-MM
+		 */
+		DataStream<String> flatMapDataStream = clickDataStream.flatMap(new FlatMapFunction<ClickLog, String>() {
+			@Override
+			public void flatMap(ClickLog clickLog, Collector<String> out) throws Exception {
+				// 获取访问数据
+				Long entryTime = clickLog.getEntryTime();
+				// 格式一：yyyy-MM-dd-HH
+				String hour = DateFormatUtils.format(entryTime, "yyyy-MM-dd-HH");
+				out.collect(hour);
+
+				// 格式二：yyyy-MM-dd
+				String day = DateFormatUtils.format(entryTime, "yyyy-MM-dd");
+				out.collect(day);
+
+				// 格式三：yyyy-MM
+				String month = DateFormatUtils.format(entryTime, "yyyy-MM");
+				out.collect(month);
+			}
+		});
+		//flatMapDataStream.printToErr();
+```
+
 
 
 ## 附I. Maven模块
