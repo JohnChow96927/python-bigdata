@@ -1111,6 +1111,25 @@ String类型日期格式
 		//flatMapDataStream.printToErr();
 ```
 
+### 4. filter 算子
+
+> `filter`：按照指定的条件对集合中的元素进行过滤，过滤出返回true/符合条件的元素
+
+![](assets/1614827820790.png)
+
+> 需求：==过滤出clickLog中使用谷歌浏览器访问的日志==
+
+```java
+		// TODO: 函数三【filter函数】，过滤使用谷歌浏览器数据
+		DataStream<ClickLog> filterDataStream = clickDataStream.filter(new FilterFunction<ClickLog>() {
+			@Override
+			public boolean filter(ClickLog clickLog) throws Exception {
+				return "谷歌浏览器".equals(clickLog.getBrowserType());
+			}
+		});
+		//filterDataStream.printToErr();
+```
+
 
 
 ## 附I. Maven模块
