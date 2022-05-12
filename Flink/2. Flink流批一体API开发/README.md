@@ -225,3 +225,127 @@ public class MySQLJdbcWriteTest {
 }
 ```
 
+## I. 基础概念
+
+### 1. DataStream
+
+在Flink计算引擎中，将数据当做：==数据流DataStream==，分为**有界数据流**和**无界数据流**。
+
+> [任何类型的数据都可以形成一种事件流，如信用卡交易、传感器测量、机器日志、网站或移动应用程序上的==用户交互记录==，所有这些数据都形成一种流。]()
+
+![](assets/1614992955800.png)
+
+> - 1）、`有边界流（bounded stream`）：==有定义流的开始，也有定义流的结束。==有界流可以在摄取所有数据后再进行计算。有界流所有数据可以被排序，所以并不需要有序摄取。有界流处理通常被称为`批处理。`
+> - 2）、`无边界流（unbounded stream）`：==有定义流的开始，但没有定义流的结束==。它们会无休止地产生数据。无界流的数据必须持续处理，即数据被摄取后需要立刻处理。不能等到所有数据都到达再处理，因为输入是无限的，在任何时候输入都不会完成。处理无界数据通常要求以特定顺序摄取事件，例如事件发生的顺序，以便能够推断结果的完整性。
+
+`DataStream（数据流）`官方定义：
+
+![](assets/1614993124158.png)
+
+> `DataStream（数据流）`源码中定义：
+
+![](assets/1630115685862.png)
+
+> DataStream有如下几个子类：
+
+![1633571725510](assets/1633571725510.png)
+
+- 1）、`DataStreamSource`：
+  - 表示从数据源直接获取数据流DataStream，比如从Socket或Kafka直接消费数据
+- 2）、`KeyedStream`：
+  - 当DataStream数据流进行分组时（调用keyBy），产生流称为KeyedStream，按照指定Key分组；
+  - 通常情况下数据流被分组以后，需要进行窗口window操作或聚合操作。
+- 3）、`SingleOutputStreamOperator`：
+  - 当DataStream数据流没有进行keyBy分组，而是使用转换函数，产生的流称为SingleOutputStreamOperator。
+  - 比如使用filter、map、flatMap等函数，产生的流就是`SingleOutputStreamOperator`
+- 4）、`IterativeStream`：迭代流，表示对流中数据进行迭代计算，比如机器学习，图计算等。
+
+> `DataStream`类是泛型（类型参数），数据类型支持如下所示：
+
+![1633533861903](assets/1633533861903.png)
+
+> 在Flink计算引擎中，提供4个层次API，如下所示：
+
+![](assets/levels_of_abstraction.svg)
+
+> Flink中流计算DataStream层次API在使用时，还是包括三个方面：`Source/Transformation/Sink`
+
+![](assets/1614758699392.png)
+
+> 基于Flink开发流式计算程序五个步骤：
+
+```ini
+# 1）、Obtain an execution environment,
+	执行环境-env：StreamExecutionEnvironment
+	
+# 2）、Load/create the initial data,
+    数据源-source：DataStream
+    
+# 3）、Specify transformations on this data,
+    数据转换-transformation：DataStream API（算子，Operator）
+    
+# 4）、Specify where to put the results of your computations,
+    数据接收器-sink
+	
+# 5）、Trigger the program execution
+	触发执行-execute
+```
+
+![](assets/1614758736610.png)
+
+> 在IDEA中创建Flink Stream流计算编程模板：`FlinkClass`
+
+![1652279769455](assets/1652279769455.png)
+
+模块中内容：`FlinkClass`
+
+```java
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "") package ${PACKAGE_NAME};#end
+
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+public class ${NAME} {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		
+		// 2. 数据源-source
+		
+		// 3. 数据转换-transformation
+		
+		// 4. 数据终端-sink
+		
+		// 5. 触发执行-execute
+		env.execute("${NAME}") ;
+	}
+
+}  
+```
+
+> 依据上述定义FlinkStream模块Template，创建Flink Stream编程类：`StreamDemo`
+
+![1652307926272](assets/1652307926272.png)
+
+
+
+## II. Data Source & Data Sink
+
+
+
+## III. DataStream Transformations
+
+
+
+## 附I. Maven模块
+
+
+
+## 附II. Lombok使用及插件安装
+
+
+
+
+
+
+
