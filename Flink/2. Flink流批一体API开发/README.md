@@ -518,6 +518,148 @@ public class StreamSourceFileDemo {
 }
 ```
 
+### 2. 自定数据源
+
+> 在Flink 流计算中，提供**数据源Source**接口，用户实现自定义数据源，可以从任何地方获取数据。
+
+![](assets/1630119138251.png)
+
+```ini
+1、SourceFunction：
+	非并行数据源(并行度parallelism=1)
+
+2、RichSourceFunction：
+	多功能非并行数据源(并行度parallelism=1)
+
+3、ParallelSourceFunction：
+	并行数据源(并行度parallelism>=1)
+
+4、RichParallelSourceFunction：
+	多功能并行数据源(parallelism>=1)，Kafka数据源使用该接口
+```
+
+> 实际项目中，如果需要自定义数据源，实现接口：RichSourceFunction或`RichParallelSourceFunction`。
+
+![1630897568085](assets/1630897568085.png)
+
+> 查看`SourceFunction`接口中方法：
+
+![](assets/1630978997414.png)
+
+```ini
+# 第一个方法：run
+	实时从数据源端加载数据，并且发送给下一个Operator算子，进行处理
+	实时产生数据
+
+# 第二个方法：cancel
+	字面意思：取消
+	当将Job作业取消时，不在从数据源端读取数据
+	
+# 总结：当基于数据源接口自定义数据源时，只要实现上述2个 方法即可。
+```
+
+![](assets/1630979179210.png)
+
+> 需求：==每隔1秒随机生成一条订单信息(订单ID、用户ID、订单金额、时间戳)==
+
+![1614999061257](assets/1614999061257.png)
+
+> 创建类：`OrderSource`，实现接口【`RichParallelSourceFunction`】，实现其中`run`和`cancel`方法。
+
+![1630897686112](assets/1630897686112.png)
+
+> 编程实现自定义数据源：`StreamSourceOrderDemo`，实时产生交易订单数据。
+
+```java
+package cn.itcast.flink.source;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
+
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 每隔1秒随机生成一条订单信息(订单ID、用户ID、订单金额、时间戳)
+	 * - 随机生成订单ID：UUID
+	 * - 随机生成用户ID：0-2
+	 * - 随机生成订单金额：0-100
+	 * - 时间戳为当前系统时间：current_timestamp
+ */
+public class StreamSourceOrderDemo {
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Order {
+		private String id;
+		private Integer userId;
+		private Double money;
+		private Long orderTime;
+	}
+
+	/**
+	 * 自定义数据源，继承抽象类：RichParallelSourceFunction，并行的和富有的
+	 */
+	private static class OrderSource extends RichParallelSourceFunction<Order> {
+		// 定义变量，用于标识是否产生数据
+		private boolean isRunning = true ;
+
+		// 表示产生数据，从数据源Source源源不断加载数据
+		@Override
+		public void run(SourceContext<Order> ctx) throws Exception {
+			Random random = new Random();
+			while (isRunning){
+				// 产生交易订单数据
+				Order order = new Order(
+					UUID.randomUUID().toString(), //
+					random.nextInt(2), //
+					(double)random.nextInt(100), //
+					System.currentTimeMillis()
+				);
+				// 发送交易订单数据
+				ctx.collect(order);
+
+				// 每隔1秒产生1条数据，休眠1秒钟
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+
+		// 取消从数据源加载数据
+		@Override
+		public void cancel() {
+			isRunning = false ;
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment() ;
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<Order> orderDataStream = env.addSource(new OrderSource());
+
+		// 3. 数据转换-transformation
+		// 4. 数据接收器-sink
+		orderDataStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("StreamSourceOrderDemo") ;
+	}
+
+}
+```
+
+运行流式计算程序，查看模拟产生订单数据：
+
+![](assets/1614999562804.png)
+
 
 
 
