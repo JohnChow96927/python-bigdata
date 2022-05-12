@@ -955,6 +955,26 @@ public class StreamSinkMySQLDemo {
 
 ## III. DataStream Transformations
 
+### 1. 算子概述
+
+> 从DataStream数据流转换角度看Transformation算子（函数），有如下四类操作：
+
+文档：https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/operators/overview/
+
+![](assets/1615012994651.png)
+
+- 1）、第一类是对于`单条记录的操作`，比如筛除掉不符合要求的记录（Filter 操作），或者将每条记录都做一个转换（Map 操作）
+
+- 2）、第二类是对`多条记录的操作`。比如说统计一个小时内的订单总成交量，就需要将一个小时内的所有订单记录的成交量加到一起。为了支持这种类型的操作，就得通过 Window 将需要的记录关联到一起进行处理
+
+- 3）、第三类是对`多个流进行操作并转换为单个流`。例如，多个流可以通过 Union、Join 或Connect 等操作合到一起。这些操作合并的逻辑不同，但是它们最终都会产生了一个新的统一的流，从而可以进行一些跨流的操作。
+
+- 4）、第四类是DataStream支持与合并对称的`拆分操作`，即`把一个流按一定规则拆分为多个流`（Split 操作），每个流是之前流的一个子集，这样我们就可以对不同的流作不同的处理。
+
+> 先讲解一些DataStream中最基本Operator算子使用，也是使用比较多。
+
+![1633557641897](assets/1633557641897.png)
+
 
 
 ## 附I. Maven模块
