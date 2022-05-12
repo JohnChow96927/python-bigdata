@@ -371,6 +371,36 @@ public class ${NAME} {
 
 
 
+### 3. 资源槽Slot
+
+![1633569666984](assets/1633569666984.png)
+
+> Flink中运行Task任务（SubTask）在Slot资源槽中：
+> [Slot为子任务SubTask运行资源抽象，每个TaskManager运行时设置Slot个数。]()
+
+```ini
+官方建议：
+	Slot资源槽个数  =  CPU Core核数
+也就是说，
+    分配给TaskManager多少CPU Core核数，可以等价为Slot个数
+```
+
+![](assets/1626485199097.png)
+
+> 每个TaskManager运行时设置内存大小：[TaskManager中内存==平均==划分给Slot]()。
+
+```
+举例说明：
+	假设TaskManager中分配内存为：4GB，Slot个数为4个，此时每个Slot分配内存就是 4GB / 4 = 1GB 内存	
+```
+
+> 每个Slot中运行SubTask子任务，以线程Thread方式运行。
+>
+> - 不同类型SubTask任务，可以运行在同一个Slot中，称为：[Slot Sharded 资源槽共享]()
+> - 相同类型SubTask任务必须运行在不同Slot中。
+
+![](assets/1630759894498.png)
+
 ## II. Data Source & Data Sink
 
 
