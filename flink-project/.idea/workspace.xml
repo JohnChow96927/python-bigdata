@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/flink-d1/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d1/src/main/java/com/johnchow/flink/WordCount.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d1/src/main/java/com/johnchow/flink/batch/BatchWordCount.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d1/src/main/java/com/johnchow/flink/mode/ExecutionWordCount.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d1/src/main/java/com/johnchow/flink/straem/StreamWordCount.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flink-d1/src/main/resources/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Flink/1. 安装部署与入门/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Flink/1. 安装部署与入门/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="b70d3b9d-3cb5-45cf-9e3b-84134e28b48e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,7 +70,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1652169494902</updated>
-      <workItem from="1652169496188" duration="3834000" />
+      <workItem from="1652169496188" duration="3835000" />
     </task>
     <servers />
   </component>
