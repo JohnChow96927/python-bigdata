@@ -975,7 +975,7 @@ public class StreamSinkMySQLDemo {
 
 ![1633557641897](assets/1633557641897.png)
 
-### 2. map 算子
+### 2. map算子
 
 > `map`函数使用说明：
 
@@ -1057,7 +1057,7 @@ public class TransformationBasicDemo {
 }
 ```
 
-### 3. flatMap 算子
+### 3. flatMap算子
 
 > `flatMap`：将集合中的每个元素变成一个或多个元素，并返回扁平化之后的结果，==flatMap = map + flattern==
 
@@ -1111,7 +1111,7 @@ String类型日期格式
 		//flatMapDataStream.printToErr();
 ```
 
-### 4. filter 算子
+### 4. filter算子
 
 > `filter`：按照指定的条件对集合中的元素进行过滤，过滤出返回true/符合条件的元素
 
@@ -1130,7 +1130,72 @@ String类型日期格式
 		//filterDataStream.printToErr();
 ```
 
+### 5. keyBy算子
 
+![1648506139233](assets/1648506139233.png)
+
+> **keyBy**函数表示：==按照指定的key来对流中的数据进行分组==，分组后流称为`KeyedStream`，要么聚合操作（调用**reduce、fold或aggregate**函数等等），要么进行窗口操作window。
+
+![1633558043279](assets/1633558043279.png)
+
+在Flink中如果是批处理，分组使用函数：`groupBy`，从Flink 1.12以后开始，由于流批一体，无论是流计算还是批处理，分组函数：`keyBy`。
+
+> 在使用keyBy函数时，可以指定`下标索引`（数据类型为**元组**）、指定`属性名称`（数据类型为**JavaBean**）或指定`KeySelector选择器`。
+
+![](assets/1615013505157.png)
+
+> **案例代码演示**：从TCP Socket消费数据，进行词频统计，先过滤和分词，再分组和聚合。
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * Flink中流计算DataStream转换函数：keyBy和sum函数
+ *      TODO: flatMap（直接二元组）和KeySelector选择器、sum函数聚合
+ */
+public class TransformationKeyByDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(2);
+
+		// 2. 数据源-source
+		DataStream<String> inputDataStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3. 数据转换-transformation
+		SingleOutputStreamOperator<Tuple2<String, Integer>> outputStream = inputDataStream
+			// 3-1. 过滤脏数据, TODO: Java 8 提供Lambda表达式
+			.filter(line -> line.trim().length() > 0)
+			// 3-2. 每行数据分割为单词，并转换为二元组
+			.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws Exception {
+					String[] words = line.trim().split("\\s+");
+					for (String word : words) {
+						out.collect(Tuple2.of(word, 1));
+					}
+				}
+			})
+			// 3-3. 按照单词分组，并且组内数据求和，TODO: Java 8 提供Lambda表达式
+			.keyBy(tuple -> tuple.f0).sum("f1");
+
+		// 4. 数据接收器-sink
+		outputStream.printToErr();
+
+		// 5. 触发执行
+		env.execute("TransformationKeyByDemo");
+	}
+
+}
+```
 
 ## 附I. Maven模块
 
