@@ -1287,6 +1287,64 @@ public class TransformationReduceDemo {
 }
 ```
 
+### 7. max和min算子
+
+> 在DataStream API中，对数据按照keyBy分组，直接获取最大或最小值函数：`min与minBy，及max与maxBy`。
+
+- **max或min**：`只会求出最大或最小的那个字段`，其他的字段不管
+- **minBy**：`会求出最大或最小的那个字段和对应的其他的字段`
+
+![1633558587672](assets/1633558587672.png)
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+/**
+ * Flink中流计算DataStream转换函数：min与minBy、max与maxBy函数
+ */
+public class TransformationMaxMinDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStream<Tuple3<String, String, Integer>> inputDataStream = env.fromElements(
+			Tuple3.of("上海", "浦东新区", 777),
+			Tuple3.of("上海", "闵行区", 999),
+			Tuple3.of("上海", "杨浦区", 666),
+			Tuple3.of("上海", "静安区", 888)
+		);
+
+		// 3. 数据转换-transformation
+		// TODO: max 最大值使用
+		DataStream<Tuple3<String, String, Integer>> minDataStream = inputDataStream
+			.keyBy(tuple -> tuple.f0)
+			.max(2);
+		minDataStream.printToErr("max>");
+
+		// TODO: maxBy 最大值使用
+		DataStream<Tuple3<String, String, Integer>> minByDataStream = inputDataStream
+			.keyBy(tuple -> tuple.f0)
+			.maxBy(2);
+		minByDataStream.print("maxBy");
+
+		// 4. 数据接收器-sink
+
+		// 5. 触发执行-execute
+		env.execute("TransformationMaxMinDemo");
+	}
+
+}
+```
+
+
+
 
 
 
