@@ -1197,6 +1197,100 @@ public class TransformationKeyByDemo {
 }
 ```
 
+### 6. reduce算子
+
+> [`reduce`：对Key分组中的元素进行`聚合`]()，有2个参数 `（x, y)`，其中 `x ：tmp`为聚合中间临时变量， `y：item`为聚合中每个元素。
+
+[reduce 算子，仅仅针对DataStream被keyBy分组后KeyedStream数据进行聚合]()
+
+![](assets/1614830283976.png)
+
+> **案例代码演示**：修改词频统计WordCount程序，使用reduce代替 进行组内数据求和。
+
+![](assets/1630116704969.png)
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+
+/**
+ * Flink中流计算DataStream转换函数：reduce聚合函数
+ */
+public class TransformationReduceDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(2);
+
+		// 2. 数据源-source
+		DataStream<String> inputDataStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3. 数据转换-transformation
+		// todo: 过滤脏数据和转换为单词而源自
+		SingleOutputStreamOperator<Tuple2<String, Integer>> tupleDataStream = inputDataStream
+			// 3-1. 过滤脏数据，todo：Java 8 提供Lambda表达式
+			.filter(line -> line.trim().length() > 0)
+			// 3-2. 每行数据分割为单词，并转换为二元组
+			.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws Exception {
+					String[] words = line.trim().split("\\s+");
+					for (String word : words) {
+						out.collect(Tuple2.of(word, 1));
+					}
+				}
+			});
+		// todo: 3-3. 使用reduce算子，对keyBy分组后流数据进行聚合操作（组内求和）
+		SingleOutputStreamOperator<Tuple2<String, Integer>> outputDataStream = tupleDataStream
+			.keyBy(tuple -> tuple.f0)
+			.reduce(new ReduceFunction<Tuple2<String, Integer>>() {
+				// todo： sc.parallisize([1, 2, 3, 4, 5]).reduce(lambda tmp, item: tmp + item)), tmp 初始值为分区第一个元素
+				@Override
+				public Tuple2<String, Integer> reduce(Tuple2<String, Integer> tmp,
+				                                      Tuple2<String, Integer> item) throws Exception {
+					System.out.println("tmp = " + tmp + ", item = " + item);
+					/*
+						tmp：表示keyBy分组中每个Key对应结果值
+							key -> spark,  tmp -> (spark, 10)
+							todo： 如果第一次对key数据聚合，直接将数据赋值给tmp
+						item: 表示使用keyBy分组后组内数据
+							(spark, 1)
+					 */
+					// 获取以前计算你只
+					Integer historyValue = tmp.f1;
+					// 获取现在传递值
+					Integer currentValue = item.f1;
+
+					// 计算最新值
+					int latestValue = historyValue + currentValue ;
+
+					//返回结果
+					return Tuple2.of(tmp.f0, latestValue);
+				}
+			});
+
+		// 4. 数据接收器-sink
+		outputDataStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("TransformationReduceDemo");
+	}
+
+}
+```
+
+
+
+
+
 ## 附I. Maven模块
 
 
