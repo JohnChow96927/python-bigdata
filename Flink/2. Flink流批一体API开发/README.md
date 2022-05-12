@@ -800,9 +800,158 @@ public class StreamSourceMySQLDemo {
 }
 ```
 
+### 4. MySQL Sink
+
+> Flink 流计算中数据接收器Sink，基本数据保存和自定义Sink保存。
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/overview/#data-sinks
+
+![1633559866553](assets/1633559866553.png)
+
+```ini
+# 1、写入文件，API已经过时，不推荐使用
+	writeAsText
+	writeAsCsv
+	
+# 2、打印控制台，开发测试使用
+	print，标准输出
+	printToErr,错误输出
+	
+# 3、写入Socket
+	很少使用
+	
+# 4、自定义数据接收器Sink
+	Sink接口：SinkFunction、RichSinkFunction
+	datastream.addSink 添加流式数据输出Sink
+	
+	# 需求：Flink 流式计算程序，实时从Kafka消费数据（保险行业），将数据ETL转换，存储到HBase表
+		Flink 1.10版本中，DataStream未提供与HBase集成Connector连接器
+		自定实现SinkFunction接口，向HBase表写入数据即可
+		https://www.jianshu.com/p/1c29750ed814
+```
+
+![](assets/1615018013630.png)
+
+> 将数据写入文件方法：`writeAsText`和`writeAsCsv`全部过时，提供新的Connector：`StreamingFileSink`
+
+![](assets/1630126098791.png)
+
+> **需求**：将Flink集合中的数据集DataStream，通过自定义Sink保存到MySQL。
+
+```ini
+CREATE DATABASE IF NOT EXISTS db_flink ;
 
 
+CREATE TABLE IF NOT EXISTS db_flink.t_student (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    name varchar(255) DEFAULT NULL,
+    age int(11) DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+INSERT INTO db_flink.t_student VALUES ('100', 'zhangsan', 24);
+```
+
+> [当自定义Flink中Sink时，需要实现接口：`SinkFunction`或`RichSinkFunction`]()
+
+```java
+package cn.itcast.flink.sink;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+/**
+ * 案例演示：自定义Sink，将数据保存至MySQL表中，继承RichSinkFunction
+ */
+public class StreamSinkMySQLDemo {
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	private static class Student {
+		private Integer id;
+		private String name;
+		private Integer age;
+	}
+
+	/**
+	 * 自定义Sink接收器，将DataStream中数据写入到MySQL数据库表中
+	 */
+	private static class MySQLSink extends RichSinkFunction<Student> {
+		// 定义变量，在open方法实例化，在close方法关闭
+		private Connection conn = null ;
+		private PreparedStatement pstmt = null ;
+
+		// 初始化工作
+		@Override
+		public void open(Configuration parameters) throws Exception {
+			// step1、加载驱动
+			Class.forName("com.mysql.jdbc.Driver") ;
+			// step2、获取连接Connection
+			conn = DriverManager.getConnection(
+				"jdbc:mysql://node1.itcast.cn:3306/?useSSL=false",
+				"root",
+				"123456"
+			);
+			// step3、创建Statement对象，设置语句（INSERT）
+			pstmt = conn.prepareStatement("INSERT INTO db_flink.t_student(id, name, age) VALUES (?, ?, ?)");
+		}
+
+		// TODO：数据流中每条数据进行输出操作，调用invoke方法
+		@Override
+		public void invoke(Student student, Context context) throws Exception {
+			// step4、执行操作
+			pstmt.setInt(1, student.id);
+			pstmt.setString(2, student.name);
+			pstmt.setInt(3, student.age);
+
+			pstmt.executeUpdate();
+		}
+
+		// 收尾工作
+		@Override
+		public void close() throws Exception {
+			// step5、关闭连接
+			if(null != pstmt) pstmt.close();
+			if(null != conn) conn.close();
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<Student> inputDataStream = env.fromElements(
+			new Student(13, "wangwu", 20),
+			new Student(14, "zhaoliu", 19),
+			new Student(15, "laoda", 25),
+			new Student(16, "laoer", 23)
+		);
+		// inputDataStream.printToErr();
+
+		// 3. 数据转换-transformation
+
+		// 4. 数据终端-sink
+		MySQLSink mySQLSink = new MySQLSink();
+		inputDataStream.addSink(mySQLSink) ;
+
+		// 5. 触发执行-execute
+		env.execute("StreamSinkMySQLDemo");
+	}
+
+}
+```
 
 ## III. DataStream Transformations
 
