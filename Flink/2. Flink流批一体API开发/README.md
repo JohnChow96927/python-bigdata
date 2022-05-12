@@ -1420,8 +1420,6 @@ public class TransformationUnionConnectDemo {
 
 [DataStream中split函数，分割流的本质：给DataStream流中`每条数据打上标签Tag`，最后依据标签Tag获取具体分割的流数据。]()
 
-
-
 > 分割流`函数split`已经过时，并且在新版本中已经被删除，Flink提供：`侧边输出SideOutput`方式，可以将1个流进行侧边输出多个流。
 
 https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/dev/datastream/side_output/
