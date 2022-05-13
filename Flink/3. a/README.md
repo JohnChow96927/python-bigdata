@@ -92,7 +92,7 @@ public class WordCountDemo {
 
 > 在Flink流计算中DataStream提供一些列分区函数
 
-![](assets/1615017111627.png)
+![ ](assets/1615017111627.png)
 
 > 在DataStream函数中提供7种方式，具体如下所示：
 
@@ -338,6 +338,159 @@ public class _02StreamRichDemo {
 执行程序，结果如下截图：
 
 ![1633727345373](assets/1633727345373.png)
+
+### 3. ProcessFunction
+
+> [Flink DataStream API中最底层API，提供`process`方法，其中需要实现`ProcessFunction`函数]()
+
+![1633727578106](assets/1633727578106.png)
+
+> 查看抽象类：`ProcessFunction`源码，最主要方法：`processElement`，对流中每条数据进行处理。
+
+![](assets/1630510940515.png)
+
+> 案例演示：使用`process`函数，代替filter函数，实现对数据过滤操作。
+
+![](assets/1631258456525.png)
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
+
+/**
+ * 使用Flink 计算引擎实现流式数据处理：从Socket接收数据，对数据进行过滤【filter】和【process】
+ */
+public class _03StreamFilterDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		DataStreamSource<String> inputStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3. 数据转换-transformation
+		// TODO: DataStream中filter属于高级API函数
+		SingleOutputStreamOperator<String> filterStream = inputStream.filter(
+			new FilterFunction<String>() {
+				@Override
+				public boolean filter(String line) throws Exception {
+					return null != line && line.trim().length() > 0;
+				}
+			}
+		);
+		filterStream.printToErr("filter>");
+
+		// TODO: 可以使用底层API方法 -> process
+		SingleOutputStreamOperator<String> processStream = inputStream.process(
+			new ProcessFunction<String, String>() {
+				@Override
+				public void processElement(String line, Context ctx, Collector<String> out) throws Exception {
+					if(null != line && line.trim().length() > 0){
+						out.collect(line);
+					}
+				}
+			}
+		);
+		processStream.printToErr("process>");
+
+		// 4. 数据接收器-sink
+		// 5. 执行应用-execute
+		env.execute("StreamProcessDemo");
+	}
+
+}
+
+```
+
+> ​		在词频统计案例中，使用`filter/flatMap/map`三个方法处理DataStream数据，可以直接使用`process`方法完成。
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
+
+/**
+ * 使用Flink 计算引擎实现流式数据处理：从Socket接收数据，使用process方法数据处理
+ */
+public class _04StreamProcessDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		DataStreamSource<String> inputStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3. 数据转换-transformation
+		DataStream<Tuple2<String, Integer>> tupleStream = inputStream
+			// 3-1 过滤脏数据
+			.filter(new FilterFunction<String>() {
+				@Override
+				public boolean filter(String line) throws Exception {
+					return null != line && line.trim().length() > 0;
+				}
+			})
+			// 3-2 将每行数据按照分隔符分割为单词
+			.flatMap(new FlatMapFunction<String, String>() {
+				@Override
+				public void flatMap(String line, Collector<String> out) throws Exception {
+					for (String word : line.trim().split("\\s+")) {
+						out.collect(word);
+					}
+				}
+			})
+			// 3-3 转换每个单词为二元组，表示单词出现一次
+			.map(new MapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public Tuple2<String, Integer> map(String word) throws Exception {
+					return Tuple2.of(word, 1);
+				}
+			});
+		tupleStream.printToErr("filter-flatMap-map>");
+
+		// TODO: 可以使用底层API方法 -> process
+		DataStream<Tuple2<String, Integer>> processStream = inputStream.process(
+			new ProcessFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public void processElement(String line, Context ctx, Collector<Tuple2<String, Integer>> out) throws Exception {
+					// a. 过滤获取符合条件的数据
+					if(null != line && line.trim().length() > 0){
+						// b. 分割单词
+						String[] words = line.trim().split("\\s+");
+						// c. 转换二元组并输出
+						for (String word : words) {
+							out.collect(Tuple2.of(word, 1));
+						}
+					}
+				}
+			}
+		);
+		processStream.printToErr("process>");
+
+		// 4. 数据终端-sink
+		// 5. 执行应用-execute
+		env.execute("StreamProcessDemo");
+	}
+
+}
+```
 
 
 
