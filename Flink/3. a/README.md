@@ -740,6 +740,60 @@ https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datas
 
 ![](assets/1615004513959.png)
 
+### 5. KafkaSource
+
+> **Flink 1.12** 版本中，提供基于新API接口`Data Source`实现Kafka 数据源：`KafkaSource`，消费数据更加简单
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datastream/kafka/#kafka-source
+
+![1633734820058](assets/1633734820058.png)
+
+> 案例演示：从Kafka消费数据，进行实时流式处理。
+
+```Java
+package cn.itcast.flink.connector;
+
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+/**
+ * Flink从Kafka消费数据，指定topic名称和反序列化类
+ */
+public class _06StreamKafkaSourceDemo {
+
+	public static void main(String[] args) throws Exception{
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(3);
+
+		// 2. 数据源-source
+		// 2-1. 创建KafkaSource对象，设置属性
+		KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
+			.setBootstrapServers("node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092")
+			.setTopics("flink-topic")
+			.setGroupId("my-group")
+			.setStartingOffsets(OffsetsInitializer.earliest())
+			.setValueOnlyDeserializer(new SimpleStringSchema())
+			.build();
+		// 2-2. 添加数据源
+		DataStream<String> kafkaStream = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "KafkaSource");
+
+		// 3. 数据转换-transformation
+		// 4. 数据接收器-sink
+		kafkaStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("StreamKafkaSourceDemo") ;
+	}
+
+}
+
+```
+
 
 
 ## III. 批处理高级特性
