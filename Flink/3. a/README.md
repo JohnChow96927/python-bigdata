@@ -1064,6 +1064,153 @@ public class _09StreamJdbcSinkDemo {
 }
 ```
 
+### 8. Streaming File Sink
+
+> 大数据业务场景中，经常有一种场景：[外部数据发送到kafka中，Flink作为中间件消费Kafka数据并进行业务处理，处理完成之后的数据可能还需要写入到数据库或者文件系统中，如写入HDFS中]()。
+
+![](assets/1630912235647.png)
+
+`StreamingFileSink`是**Flink1.7**中推出的新特性，可以用来**将分区文件写入到支持 Flink FileSystem 接口的文件系统**中，==支持Exactly-Once语义==。
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datastream/streamfile_sink/
+
+> Streaming File Sink 会将数据写入到桶Bucket（认可Hive中分区目录）中，可以设置存储目录名称、文件大小和文件名称。
+
+- 由于输入流可能是无界的，因此每个桶中的数据被划分为多个有限大小的文件。
+- 如何分桶是可以配置的，默认使用基于时间的分桶策略，这种策略每个小时创建一个新的桶，桶中包含的文件将记录所有该小时内从流中接收到的数据。
+
+![1633735826924](assets/1633735826924.png)
+
+桶目录中的实际输出数据会被划分为多个部分文件（part file），每一个接收桶数据的 Sink Subtask ，至少包含一个部分文件（part file）。
+
+- 额外的部分文件（part file）将根据滚动策略创建，滚动策略是可以配置的。
+- 默认的策略是根据文件大小和超时时间来滚动文件。
+- 超时时间指打开文件的最长持续时间，以及文件关闭前的最长非活动时间。
+
+
+
+[使用 StreamingFileSink 时需要启用 Checkpoint ，每次做 Checkpoint 时写入完成。如果 Checkpoint 被禁用，部分文件（part file）将永远处于 'in-progress' 或 'pending' 状态，下游系统无法安全地读取。]()
+
+> 案例演示：==编写Flink程序，自定义数据源产生交易订单数据，接收后的数据流式方式存储到本地文件系统==
+
+```ini
+# 1. 执行环境-env
+	1-1.设置并行度为：3
+	1-2.设置Checkpoint检查点，如果不设置，数据不会写入文件
+	
+# 2. 数据源-source
+	自定义数据源，产生交易订单数据
+	数据格式：e7057860-e88,u-14395,94.24,1630142114565
+	
+# 4. 数据接收器-sink
+	4-1. 设置数据存储文件格式
+	4-2. 设置输出文件大小滚动策略，什么时候产生新文件
+	4-3. 设置文件的名称
+	4-4. 添加Sink，设置并行度为：1
+	
+# 5.触发执行-execute
+```
+
+> 具体代码如下所示：
+
+```Java
+package cn.itcast.flink.connector;
+
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
+import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.DateTimeBucketAssigner;
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Flink Stream 流计算，将DataStream 保存至文件系统，使用FileSystem Connector
+ */
+public class _10StreamFileSinkDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(3);
+		// TODO: 设置检查点
+		env.enableCheckpointing(1000) ;
+
+		// 2. 数据源-source
+		DataStreamSource<String> orderDataStream = env.addSource(new OrderSource());
+		//orderDataStream.print();
+
+		// 3. 数据转换-transformation
+		// 4. 数据终端-sink
+		StreamingFileSink<String> fileSink = StreamingFileSink
+			// 4-1. 设置存储文件格式，Row行存储
+			.forRowFormat(
+				new Path("datas/file-sink"), new SimpleStringEncoder<String>()
+			)
+			// 4-2. 设置桶分配政策,默认基于时间的分配器，每小时产生一个桶，格式如下yyyy-MM-dd--HH
+			.withBucketAssigner(new DateTimeBucketAssigner<>())
+			// 4-3. 设置数据文件滚动策略
+			.withRollingPolicy(
+				DefaultRollingPolicy.builder()
+					.withRolloverInterval(TimeUnit.SECONDS.toMillis(5))
+					.withInactivityInterval(TimeUnit.SECONDS.toMillis(10))
+					.withMaxPartSize(2 * 1024 * 1024)
+					.build()
+			)
+			// 4-4. 设置文件名称
+			.withOutputFileConfig(
+				OutputFileConfig.builder()
+					.withPartPrefix("itcast")
+					.withPartSuffix(".log")
+					.build()
+			)
+			.build();
+		// 4-4. 数据流DataStream添加Sink
+		orderDataStream.addSink(fileSink).setParallelism(1);
+
+		// 5. 触发执行
+		env.execute("StreamFileSinkDemo");
+	}
+
+	/**
+	 * 自定义数据源，实时产生交易订单数据
+	 */
+	private static class OrderSource implements ParallelSourceFunction<String> {
+		private boolean isRunning = true ;
+		private FastDateFormat format = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
+		@Override
+		public void run(SourceContext<String> ctx) throws Exception {
+			Random random = new Random();
+			while (isRunning){
+				// 交易订单
+				long timeMillis = System.currentTimeMillis();
+				String orderId = format.format(timeMillis) + (10000 + random.nextInt(10000))  ;
+				String userId = "u_" + (10000 + random.nextInt(10000)) ;
+				double orderMoney = new BigDecimal(random.nextDouble() * 100).setScale(2, RoundingMode.HALF_UP).doubleValue() ;
+				String output = orderId + "," + userId + "," + orderMoney + "," + timeMillis ;
+				System.out.println(output);
+				// 输出
+				ctx.collect(output);
+				TimeUnit.MILLISECONDS.sleep(100);
+			}
+		}
+
+		@Override
+		public void cancel() {
+			isRunning = false ;
+		}
+	}
+}
+```
+
 
 
 ## III. 批处理高级特性
