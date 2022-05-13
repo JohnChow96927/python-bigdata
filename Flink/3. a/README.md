@@ -1470,6 +1470,93 @@ public class _12StreamRedisSinkDemo {
 
 ## III. 批处理高级特性
 
+### 1. Accamulator
+
+Flink中的==累加器Accumulator== ，与Mapreduce counter的应用场景类似，可以很好地**观察task在运行期间的数据变化**，如在Flink job任务中的**算子函数**中操作累加器，在任务执行结束之后才能获得累加器的最终结果。
+
+> Flink有以下内置累加器，每个累加器都实现了`Accumulator`接口：
+
+![](assets/1614843761829.png)
+
+> 使用累加器进行累加统计操作时，步骤如下：
+
+```ini
+1.创建累加器
+	private IntCounter numLines = new IntCounter();
+2.注册累加器
+	getRuntimeContext().addAccumulator("num-lines", this.numLines);
+3.使用累加器
+	this.numLines.add(1);
+4.获取累加器的结果
+	myJobExecutionResult.getAccumulatorResult("num-lines")
+```
+
+> **编写程序**：对数据源读取的数据进行计数Counter，最终输出所出来的数据条目数。
+
+![](assets/1630765454090.png)
+
+```Java
+package cn.itcast.flink.other;
+
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.api.common.accumulators.IntCounter;
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.operators.MapOperator;
+import org.apache.flink.configuration.Configuration;
+
+/**
+ * 演示Flink中累加器Accumulator使用，统计处理的条目数
+ */
+public class _13BatchAccumulatorDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataSource<String> dataset = env.readTextFile("datas/click.log");
+
+		/*
+			累加器应用到转换函数中定义和使用的，当Job执行完成以后，可以获取值，必须使用Rich富函数
+		 */
+		// 3. 数据转换-transformation
+		// TODO: 此处，使用map函数，不做任何处理，仅仅为了使用累加器
+		MapOperator<String, String> mapDataSet = dataset.map(new RichMapFunction<String, String>() {
+			// TODO：step1、定义累加器
+			private IntCounter counter = new IntCounter() ;
+
+			@Override
+			public void open(Configuration parameters) throws Exception {
+				// TODO: step2、注册累加器
+				getRuntimeContext().addAccumulator("counter", counter);
+			}
+
+			@Override
+			public String map(String value) throws Exception {
+				// TODO: step3、使用累加器进行计数
+				counter.add(1);
+
+				return value;
+			}
+		});
+
+		// 4. 数据终端-sink
+		mapDataSet.writeAsText("datas/click.txt").setParallelism(1);
+
+		// 5. 触发执行-execute
+		JobExecutionResult jobResult = env.execute("BatchAccumulatorDemo");
+
+		// TODO: step4. 获取累加器的值
+		Object counter = jobResult.getAccumulatorResult("counter");
+		System.out.println("Counter = " + counter);
+	}
+
+}
+```
+
 
 
 ## 附I.  Maven模块创建
