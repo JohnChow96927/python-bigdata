@@ -2008,3 +2008,66 @@ public class _15BatchDistributedCacheDemo {
 ```
 
 ## 附II. Redis Hash数据类型
+
+```ini
+# Redis
+	1. 数据库，NoSQL = Not Only SQL
+	
+	2. Key/Value 存储类型数据库
+	
+	3. name -> value：5种常见数据类型
+			String，List，Hash，Set，ZSet
+			Hash哈希：
+				类似Python中字典dict
+				类似Java集合中映射Map
+	
+	4. 如果是Hash类型
+		key 	field	value
+```
+
+> Redis支持五种数据类型：**String、Hash、List、Set、ZSet**，哈希类型Hash是指键值对里的==value本身存储的也是一个个的KV键值对==，类似于python中的dict和java中的map集合。
+
+![Redis-Hash](assets/Redis-Hash.png)
+
+> Redis中哈希Hash对象常用命令如下表：
+
+![1633737224761](assets/1633737224761.png)
+
+> 基本命令演示如下所示：
+
+![1633737276695](assets/1633737276695.png)
+
+```bash
+[root@node1 ~]# /export/server/redis/bin/redis-cli 
+127.0.0.1:6379> 
+127.0.0.1:6379> KEYS *
+1) "name"
+2) "age"
+3) "gender"
+4) "stu:1001"
+127.0.0.1:6379> hset s_1001 name lisi
+(integer) 1
+127.0.0.1:6379> hset s_1001 age 25
+(integer) 1
+127.0.0.1:6379> hset s_1001 gender male
+(integer) 1
+127.0.0.1:6379> 
+127.0.0.1:6379> KEYS *
+1) "age"
+2) "name"
+3) "s_1001"
+127.0.0.1:6379> 
+127.0.0.1:6379> HGETALL s_1001
+1) "name"
+2) "lisi"
+3) "age"
+4) "25"
+5) "gender"
+6) "male"
+127.0.0.1:6379> HGET s_1001 name
+"lisi"
+127.0.0.1:6379> 
+127.0.0.1:6379> HGET s_1001 age
+"25"
+```
+
