@@ -520,6 +520,95 @@ https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datas
 
 ![1633733511032](assets/1633733511032.png)
 
+
+
+### 2. FlinkKafkaConsumer
+
+> 当从Kafka消费数据时，工具类：`FlinkKafkaConsumer` ，相关说明如下：
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datastream/kafka/#kafka-sourcefunction
+
+![1644935565784](assets/1644935565784.png)
+
+1. 订阅的主题：`topic`，一个Topic名称或一个列表（多个Topic）
+2. 反序列化规则：`deserialization`
+3. 消费者属性-集群地址：`bootstrap.servers`
+4. 消费者属性-消费者组id(如果不设置，会有默认的，但是默认的不方便管理)：`group.id`
+
+> 当从Kafka消费数据时，需要指定反序列化实现类：**将Kafka读取二进制数据，转换为String对象**。
+
+![](assets/1626666454835.png)
+
+> Kafka Consumer消费数据，反序列化数据说明：
+
+![](assets/1615002366921.png)
+
+> 启动Zookeeper和Kafka集群，命令如下：
+
+```bash
+[root@node1 ~]# zookeeper-daemons.sh start
+[root@node1 ~]# kafka-daemons.sh start
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-topics.sh --list --bootstrap-server node1.itcast.cn:9092
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-topics.sh --create --topic flink-topic --bootstrap-server node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092 --replication-factor 1 --partitions 3
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-console-producer.sh --topic flink-topic --broker-list node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092
+```
+
+> 编程实现从Kafka消费数据，演示代码如下：
+
+```Java
+package cn.itcast.flink.connector;
+
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+
+import java.util.Properties;
+
+/**
+ * Flink从Kafka消费数据，指定topic名称和反序列化类
+ */
+public class _05StreamFlinkKafkaConsumerDemo {
+
+	public static void main(String[] args) throws Exception{
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(3);
+
+		// 2. 数据源-source
+		// 2-1. 创建消费Kafka数据时属性
+		Properties props = new Properties();
+		props.setProperty("bootstrap.servers", "node1.itcast.cn:9092,node2.itcast.cn:9092,node3.itcast.cn:9092");
+		props.setProperty("group.id", "test");
+		// 2-2. 构建FlinkKafkaConsumer实例对象
+		FlinkKafkaConsumer<String> kafkaConsumer = new FlinkKafkaConsumer<String>(
+			"flink-topic", //
+			new SimpleStringSchema(), //
+			props
+		);
+		// 2-3. 添加Source
+		DataStream<String> kafkaStream = env.addSource(kafkaConsumer);
+
+		// 3. 数据转换-transformation
+		// 4. 数据接收器-sink
+		kafkaStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("StreamFlinkKafkaConsumerDemo") ;
+	}
+
+}
+```
+
+> 其中最核心的部分就是：创建`FlinkKafkaConsumer`对象，传递参数值
+
+![](assets/1615003045455.png)
+
+
+
 ## III. 批处理高级特性
 
 
