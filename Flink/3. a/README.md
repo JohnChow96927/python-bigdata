@@ -1557,6 +1557,159 @@ public class _13BatchAccumulatorDemo {
 }
 ```
 
+### 2. 广播变量Broadcast
+
+> Flink支持广播，可以==将数据广播到TaskManager==上就可以==供TaskManager中的SubTask/task==去使用，`数据存储到内存`中。
+
+![](assets/1614844524079.png)
+
+1. 可以理解广播就是一个公共的共享变量
+2. 将一个数据集广播后，不同的Task都可以在节点上获取到
+3. 每个节点只存一份
+4. 如果不使用广播，每一个Task都会拷贝一份数据集，造成`内存资源浪费`
+
+> - 第一、广播变量是要把`dataset`广播到内存中，所以广播的数据量不能太大，否则会出现`OOM`
+> - 第二、广播变量的值不可修改，这样才能确保每个节点获取到的值都是一致的
+
+使用广播变量步骤：
+
+```ini
+1：广播数据
+	.withBroadcastSet(DataSet, "name");
+	
+2：获取广播的数据
+	Collection<> broadcastSet = getRuntimeContext().getBroadcastVariable("name");
+	
+3：使用广播数据
+```
+
+> 将`studentDS(学号,姓名)`集合广播出去(广播到各个TaskManager内存中)，然后使用`scoreDS(学号,学科,成绩)`和广播数据(学号,姓名)进行关联，得到这样格式的数据：`(姓名,学科,成绩)`
+
+```Java
+		// 大表数据
+		DataSource<Tuple3<Integer, String, Integer>> scoreDataSet = env.fromCollection(
+			Arrays.asList(
+				Tuple3.of(1, "语文", 50),
+				Tuple3.of(1, "数学", 70),
+				Tuple3.of(1, "英语", 86),
+				Tuple3.of(2, "语文", 80),
+				Tuple3.of(2, "数学", 86),
+				Tuple3.of(2, "英语", 96),
+				Tuple3.of(3, "语文", 90),
+				Tuple3.of(3, "数学", 68),
+				Tuple3.of(3, "英语", 92)
+			)
+		);
+		// 小表数据
+		DataSource<Tuple2<Integer, String>> studentDataSet = env.fromCollection(
+			Arrays.asList(
+				Tuple2.of(1, "张三"),
+				Tuple2.of(2, "李四"),
+				Tuple2.of(3, "王五")
+			)
+		);
+```
+
+![](assets/1626506982406.png)
+
+> 编写代码，完成小数据集DataSet广播，与大数据集进行关联操作，代码如下所示：
+
+```java
+package cn.itcast.flink.other;
+
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.operators.MapOperator;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.configuration.Configuration;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Flink 批处理中广播变量：将小数据集广播至TaskManager内存中，便于使用
+ */
+public class _14BatchBroadcastDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// 2. 数据源-source：从本地集合构建2个DataSet
+		// 大表数据
+		DataSource<Tuple3<Integer, String, Integer>> scoreDataSet = env.fromCollection(
+			Arrays.asList(
+				Tuple3.of(1, "语文", 50),
+				Tuple3.of(1, "数学", 70),
+				Tuple3.of(1, "英语", 86),
+				Tuple3.of(2, "语文", 80),
+				Tuple3.of(2, "数学", 86),
+				Tuple3.of(2, "英语", 96),
+				Tuple3.of(3, "语文", 90),
+				Tuple3.of(3, "数学", 68),
+				Tuple3.of(3, "英语", 92)
+			)
+		);
+		// 小表数据
+		DataSource<Tuple2<Integer, String>> studentDataSet = env.fromCollection(
+			Arrays.asList(
+				Tuple2.of(1, "张三"),
+				Tuple2.of(2, "李四"),
+				Tuple2.of(3, "王五")
+			)
+		);
+
+
+		// 3. 数据转换-transform：使用map函数，定义加强映射函数RichMapFunction，使用广播变量值
+		/*
+			(1, "语文", 50) -> "张三" , "语文", 50
+		*/
+		MapOperator<Tuple3<Integer, String, Integer>, String> resultDataSet = scoreDataSet
+			.map(new RichMapFunction<Tuple3<Integer, String, Integer>, String>() {
+
+				// 定义Map集合，存储广播数据，方便依据key获取value值
+				private Map<Integer, String> stuMap = new HashMap<>() ;
+
+				@Override
+				public void open(Configuration parameters) throws Exception {
+					// TODO: step2、获取广播的数据集
+					List<Tuple2<Integer, String>> list = getRuntimeContext().getBroadcastVariable("students");
+
+					// TODO: step3、使用广播数据集，将数据放入到Map集合中
+					for (Tuple2<Integer, String> tuple : list) {
+						stuMap.put(tuple.f0, tuple.f1) ;
+					}
+				}
+
+				@Override
+				public String map(Tuple3<Integer, String, Integer> value) throws Exception {
+					// value :  (1, "语文", 50) ->     "张三" , "语文", 50
+					Integer studentId = value.f0;
+					String subjectName = value.f1;
+					Integer score = value.f2;
+
+					// 依据学生ID获取名称
+					String studentName = stuMap.getOrDefault(studentId, "未知");
+
+					// 拼凑字符串并返回
+					return studentName + ", " + subjectName + ", "  + score;
+				}
+			})
+			// TODO: step1、将小表数据广播出去，哪个函数使用，就在后面进行广播
+			.withBroadcastSet(studentDataSet, "students");
+
+		// 4. 数据终端-sink
+		resultDataSet.printToErr();
+	}
+
+}
+```
+
 
 
 ## 附I.  Maven模块创建
