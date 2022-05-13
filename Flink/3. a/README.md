@@ -607,6 +607,112 @@ public class _05StreamFlinkKafkaConsumerDemo {
 
 ![](assets/1615003045455.png)
 
+### 3. Start Offset
+
+> 从Kafka 消费数据时，可以设置从Kafka Topic中**哪个偏移量位置**开始消费数据，默认情况下，第一次运行，从Kafka Topic==最大偏移量==开始消费数据。
+
+![](assets/1615003252876.png)
+
+> - 第一、`earliest`：从最起始位置开始消费，当然不一定是从0开始，因为如果数据过期就清掉
+>   了，所以可以理解为从现存的数据里最小位置开始消费；
+> - 第二、`latest`：从最末位置开始消费；
+> - 第三、`per-partition assignment`：对每个分区都指定一个offset，再从offset位置开始消费
+>
+> [在Kafka Consumer 参数中，有一个参数，可以进行设置，表示从哪里开始消费读取数据。]()
+
+![](assets/1615003360692.png)
+
+> Flink 提供**KafkaConnector**连接器中提供`5种方式`，指定从哪里开始消费数据。默认情况下，==从Kafka消费数据时，采用的是：`latest`，最新偏移量开始消费数据==。
+
+![](assets/1615003411884.png)
+
+> 1. `setStartFromGroupOffsets`：
+>    - 从groupId上次消费数据记录开始消费，将上次消费偏移量存储在topic【`__consumer_offsets`】；
+>    - 如果消费组时第一次消费数据，从最大偏移量开始消费。
+> 2. `setStartFromEarliest`：从最小偏移量消费数据
+> 3. `setStartFromLatest`：从最大偏移量消费数据
+> 4. `setStartFromTimestamp`：消费每条数据时间戳大于指定时间戳
+> 5. `setStartFromSpecificOffsets`：从指定偏移量开始消费数据，偏移量值大于设置偏移量
+
+![](assets/1630902783099.png)
+
+> 在代码中设置消费数据起始位置相关API如下所示：
+
+![](assets/1615003820024.png)
+
+> 案例演示代码如下所示：
+
+```Java
+package cn.itcast.flink.connector;
+
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.internals.KafkaTopicPartition;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * Flink从Kafka消费数据，指定topic名称和反序列化类，可以指定消费数据开始偏移量
+ */
+public class _06StreamFlinkKafkaConsumerOffsetDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment() ;
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		// 从Kafka消费数据时，设置参数值
+		Properties props = new Properties() ;
+		props.setProperty("bootstrap.servers", "node1.itcast.cn:9092");
+		props.setProperty("group.id", "test1");
+		// 传递参数，创建FlinkKafkaConsumer实例对象
+		FlinkKafkaConsumer<String> kafkaConsumer = new FlinkKafkaConsumer<String>(
+			"flink-topic",
+			new SimpleStringSchema(),
+			props
+		) ;
+		// TODO: 1、Flink从topic中最初的数据开始消费
+		//kafkaConsumer.setStartFromEarliest() ;
+
+		// TODO: 2、Flink从topic中最新的数据开始消费
+		//kafkaConsumer.setStartFromLatest();
+
+		// TODO: 3、Flink从topic中指定的group上次消费的位置开始消费，所以必须配置group.id参数
+		//kafkaConsumer.setStartFromGroupOffsets() ;
+
+		// TODO: 4、Flink从topic中指定的offset开始，这个比较复杂，需要手动指定offset
+		Map<KafkaTopicPartition, Long> offsets = new HashMap<>();
+		offsets.put(new KafkaTopicPartition("flink-topic", 0), 100L);
+		offsets.put(new KafkaTopicPartition("flink-topic", 1), 90L);
+		offsets.put(new KafkaTopicPartition("flink-topic", 2), 110L);
+		//kafkaConsumer.setStartFromSpecificOffsets(offsets);
+
+		// TODO: 5、指定时间戳消费数据
+		kafkaConsumer.setStartFromTimestamp(1644935966961L) ;
+
+		// 从Kafka消费数据
+		DataStreamSource<String> kafkaDataStream = env.addSource(kafkaConsumer);
+
+		// 3. 数据转换-transformation
+		// 4. 数据终端-sink
+		kafkaDataStream.printToErr();
+
+		// 5. 触发执行-execute
+		env.execute("StreamFlinkKafkaConsumerOffsetDemo") ;
+	}
+
+}
+```
+
+> [上面所设置消费偏移量位置，表示不考虑流式程序从Checkpoint检查点或保存点SavePoint恢复。]()
+
+![](assets/1630900903800.png)
+
 
 
 ## III. 批处理高级特性
