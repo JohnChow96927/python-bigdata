@@ -1710,7 +1710,110 @@ public class _14BatchBroadcastDemo {
 }
 ```
 
+### 3. 分布式缓存Cache
 
+> Flink提供了一个类似于Hadoop的分布式缓存，让并行运行实例的函数可以在本地访问。
+
+![1633729245551](assets/1633729245551.png)
+
+- 广播变量：使用数据为数据集DataSet，将其广播到TaskManager内存中，被Task使用；
+- 分布式缓存：缓存数据文件数据，数据放在文件中；
+
+[广播变量是将`变量（DataSet）`分发到各个TaskManager节点的内存上，分布式缓存是将`文件缓存`到各个TaskManager节点上]()
+
+> 编码步骤：
+
+![](assets/1614845982591.png)
+
+> 修改上述使用广播变量，进行大表与小表数据案例，将小表数据放入文件中，采用分布式缓存，然后关联。
+
+![1633729431614](assets/1633729431614.png)
+
+```java
+package cn.itcast.flink.other;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.operators.MapOperator;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.configuration.Configuration;
+
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Flink 批处理中分布式缓存：将小文件数据进行缓存
+ */
+public class _15BatchDistributedCacheDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1);
+
+		// TODO: step1、将数据文件进行缓存，不能太大，属于小文件数据
+		env.registerCachedFile("datas/distribute_cache_student", "cache_students");
+
+		// 2. 数据源-source：从本地集合构建DataSet
+		DataSource<Tuple3<Integer, String, Integer>> scoreDataSet = env.fromCollection(
+			Arrays.asList(
+				Tuple3.of(1, "语文", 50),
+				Tuple3.of(1, "数学", 70),
+				Tuple3.of(1, "英语", 86),
+				Tuple3.of(2, "语文", 80),
+				Tuple3.of(2, "数学", 86),
+				Tuple3.of(2, "英语", 96),
+				Tuple3.of(3, "语文", 90),
+				Tuple3.of(3, "数学", 68),
+				Tuple3.of(3, "英语", 92)
+			)
+		);
+
+		// 3. 数据转换-transform：使用map函数，定义加强映射函数RichMapFunction，使用广播变量值
+		/*
+			(1, "语文", 50) -> "张三" , "语文", 50
+		*/
+		MapOperator<Tuple3<Integer, String, Integer>, String> resultDataSet = scoreDataSet.map(new RichMapFunction<Tuple3<Integer, String, Integer>, String>() {
+
+			// 定义Map集合，存储缓存文件中数据
+			private Map<Integer, String> stuMap = new HashMap<>() ;
+
+			@Override
+			public void open(Configuration parameters) throws Exception {
+				// TODO: step2、获取分布式缓存文件数据
+				File file = getRuntimeContext().getDistributedCache().getFile("cache_students");
+
+				// TODO: step3、获取缓存文件中数据
+				List<String> list = FileUtils.readLines(file, Charset.defaultCharset());  // 1,张三
+				for (String item : list) {
+					String[] array = item.split(",");
+					stuMap.put(Integer.valueOf(array[0]), array[1]) ;
+				}
+			}
+
+			@Override
+			public String map(Tuple3<Integer, String, Integer> value) throws Exception {
+				// value : (1, "语文", 50) -> "张三" , "语文", 50
+				// 获取学生id，查询出学生名称
+				String studentName = stuMap.getOrDefault(value.f0, "未知");
+
+				// 拼凑字符串，返回数据
+				return studentName + ", " + value.f1 + ", " + value.f2;
+			}
+		});
+
+		// 4. 数据终端-sink
+		resultDataSet.printToErr();
+	}
+
+}
+```
 
 ## 附I.  Maven模块创建
 
