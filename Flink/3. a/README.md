@@ -492,11 +492,33 @@ public class _04StreamProcessDemo {
 }
 ```
 
-
-
 ## II. DataStream Connector
 
+### 1. Kafka Connector
 
+> 在Flink框架中，专门为一些存储系统提供**Connector连接器**，方便用户进行**读取**数据（Data Source 数据源）和**保存**数据(Data Sink数据接收器）。
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datastream/overview/
+
+![1633733143791](assets/1633733143791.png)
+
+> Kafka Connector连接器，既可以作为==数据源Source==加载数据，又可以作为==数据接收器Sink==保存数据。
+
+![1633733272433](assets/1633733272433.png)
+
+> 使用Kafka Connector连接器，添加Maven 依赖：
+
+```xml
+<dependency>
+    <groupId>org.apache.flink</groupId>
+    <artifactId>flink-connector-kafka_2.11</artifactId>
+    <version>1.13.1</version>
+</dependency>
+```
+
+> 在Kafka Connector连接器中提供Source数据源和Sink接收器类，在**Flink 1.12**版本中提供基于新的类从Kafka消费数据：`KafkaSource`。
+
+![1633733511032](assets/1633733511032.png)
 
 ## III. 批处理高级特性
 
