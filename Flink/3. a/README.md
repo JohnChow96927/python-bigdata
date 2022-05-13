@@ -242,6 +242,103 @@ public class _13StreamPartitionDemo {
 }
 ```
 
+### 2. RichFunction
+
+> “==富函数==”是DataStream API提供的一个函数类的接口，==所有Flink函数类都有其Rich版本==。它与常规函数的不同在于，可以**获取运行环境的上下文，并拥有一些生命周期方法**，所以可以实现更复杂的功能。
+
+![1633726660232](assets/1633726660232.png)
+
+> `RichFunction`有一个生命周期的概念，典型的生命周期方法有：`open`和`close` 方法。
+
+![1633726703278](assets/1633726703278.png)
+
+- `open()`方法：
+  - rich function的初始化方法，当一个算子例如map或者filter被调用之前open()会被调用。
+- `close()`方法：
+  - 生命周期中的最后一个调用的方法，做一些清理工作。
+- `getRuntimeContext()`方法：
+  - 提供了函数的RuntimeContext的一些信息，例如函数执行的并行度，任务的名字，以及state状态。
+
+> **案例代码演示**：从Socket读取数据，将字符串类型值，转换保存2位小数Double数值。
+
+![1633727172723](assets/1633727172723.png)
+
+测试数据：
+
+```ini
+DataStream<String> inputStream = env.fromElements("0.124444", "0.899999", "0.345612", "0.870001");
+```
+
+具体代码如下：
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.text.DecimalFormat;
+
+public class _02StreamRichDemo {
+
+	public static void main(String[] args) throws Exception{
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration()) ;
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<String> inputStream = env.fromElements("0.124444", "0.899999", "0.345612", "0.870001");
+
+		// 3. 数据转换-transformation
+		// TODO: 使用map函数处理流中每条数据
+		DataStream<String> mapStream = inputStream.map(new MapFunction<String, String>() {
+			DecimalFormat format = new DecimalFormat("#0.00");
+			@Override
+			public String map(String value) throws Exception {
+				return format.format(Double.parseDouble(value));
+			}
+		});
+		mapStream.print("map>");
+
+		// TODO: 使用richMap函数，处理流中每条数据
+		SingleOutputStreamOperator<String> richStream = inputStream.map(new RichMapFunction<String, String>() {
+			DecimalFormat format = null ;
+
+			@Override
+			public void open(Configuration parameters) throws Exception {
+				System.out.println("invoke：open() ............................");
+				format = new DecimalFormat("#0.00");
+			}
+
+			@Override
+			public String map(String value) throws Exception {
+				return format.format(Double.parseDouble(value));
+			}
+
+			@Override
+			public void close() throws Exception {
+				System.out.println("invoke：close() ............................");
+			}
+		});
+		richStream.printToErr("rich>");
+
+		// 4. 数据接收器-sink
+		// 5. 触发执行-execute
+		env.execute("StreamRichDemo") ;
+	}
+
+}
+```
+
+执行程序，结果如下截图：
+
+![1633727345373](assets/1633727345373.png)
+
 
 
 ## II. DataStream Connector
