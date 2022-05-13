@@ -713,6 +713,33 @@ public class _06StreamFlinkKafkaConsumerOffsetDemo {
 
 ![](assets/1630900903800.png)
 
+### 4. 新增Topic和分区发现
+
+> 有一个 Flink Job需要将五份数据聚合到一起，五份数据对应**5个 kafka topic**，随着业务增长，**新增一类数据，同时新增1个 Kafka topic**，如何在==不重启作业==的情况下作业自动感知新的 topic。
+>
+> [新增TOPIC数据，如何Flink Job感知？]()
+
+![](assets/1615004418912.png)
+
+https://nightlies.apache.org/flink/flink-docs-release-1.13/docs/connectors/datastream/kafka/#topic-partition-subscription
+
+> Flink Kafka Source数据源，提供对应机制：`topic 发现`。
+
+- 对于新增Topic来说，可以设置消费Topic名称时，采用`正则表达式`即可；
+- topic名称设置：`java.util.regex.Pattern.compile("test-topic-[0-9]")`
+
+![](assets/1630900067607.png)
+
+> Flink Job从一个固定的Kafka topic 读数据，开始该 topic 有**7 个 partition**，但随着业务的增长数据量变大，需要对**Kafka partition 个数进行扩容**，由 ==7 个扩容到 14==。该情况下如何在==不重启作业==情况下动态感知新扩容的 partition？
+>
+> ==对Topic增加分区，如何Flink job感知==
+
+![](assets/1615004492974.png)
+
+> 构建 ==FlinkKafkaConsumer== 时的 `Properties` 中设置`flink.partition-discovery.interval-millis` 参数为非负值，==表示开启动态发现的开关，及设置的时间间隔==，启动一个单独的线程定期去Kafka获取最新的meta信息。
+
+![](assets/1615004513959.png)
+
 
 
 ## III. 批处理高级特性
