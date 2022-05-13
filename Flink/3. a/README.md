@@ -1333,9 +1333,140 @@ public class _11StreamBatchFileSinkDemo {
 }
 ```
 
+### 10. RedisSink
 
+> Flink中提供`Connector：RedisSink`，将DataStream可以保存到Redis数据库中。
 
+https://bahir.apache.org/docs/flink/current/flink-streaming-redis/
 
+> - 1）、添加Maven 依赖
+
+```xml
+<dependency>
+  <groupId>org.apache.bahir</groupId>
+  <artifactId>flink-connector-redis_2.11</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+> - 2）、核心类：`RedisSink`，创建对象，传递`RedisMapper`实例
+
+![1633737688338](assets/1633737688338.png)
+
+> - 3）、`RedisMapper`映射接口方法：
+
+![1633737868423](assets/1633737868423.png)
+
+> - 4）、官方实例代码：
+
+![1633737732983](assets/1633737732983.png)
+
+> 案例演示：==将Flink集合中的数据通过RedisSink进行保存==
+
+```java
+package cn.itcast.flink.connector;
+
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.redis.RedisSink;
+import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
+import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommand;
+import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommandDescription;
+import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
+import org.apache.flink.util.Collector;
+
+/**
+ * 案例演示：将数据保存至Redis中，直接使用官方提供Connector
+ *      https://bahir.apache.org/docs/flink/current/flink-streaming-redis/
+ */
+public class _12StreamRedisSinkDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(1) ;
+
+		// 2. 数据源-source
+		DataStreamSource<String> inputDataStream = env.socketTextStream("node1.itcast.cn", 9999);
+
+		// 3. 数据转换-transformation
+		SingleOutputStreamOperator<Tuple2<String, Integer>> resultDataStream = inputDataStream
+			// a. 过滤数据
+			.filter(line -> null != line && line.trim().length() > 0)
+			// b. 分割单词
+			.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
+				@Override
+				public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws Exception {
+					String[] words = line.trim().split("\\W+");
+					for (String word : words) {
+						out.collect(Tuple2.of(word, 1));
+					}
+				}
+			})
+			// c. 按照单词分组及对组内聚合操作
+			.keyBy(tuple -> tuple.f0).sum("f1");
+		//resultDataStream.printToErr();
+
+		// 4. 数据终端-sink
+		/*
+			spark -> 15
+			flink -> 20
+			hive -> 10
+			--------------------------------------------
+			Redis 数据结构：哈希Hash
+				Key:
+					flink:word:count
+				Value: 哈希
+					field  value
+					spark  15
+					flink  20
+					hive   10
+			命令：
+				HSET flink:word:count spark 15
+		 */
+		// 4-1. 构建Redis Server配置
+		FlinkJedisPoolConfig config = new FlinkJedisPoolConfig.Builder()
+			.setHost("node1.itcast.cn")
+			.setPort(6379)
+			.setDatabase(0)
+			.setMinIdle(3)
+			.setMaxIdle(8)
+			.setMaxTotal(8)
+			.build();
+		// 4-2. 构建RedisMapper实例
+		RedisMapper<Tuple2<String, Integer>> redisMapper = new RedisMapper<Tuple2<String, Integer>>() {
+			// HSET flink:word:count spark 15 -> 拆分到如下三个方法中
+			@Override
+			public RedisCommandDescription getCommandDescription() {
+				return new RedisCommandDescription(RedisCommand.HSET, "flink:word:count");
+			}
+
+			@Override
+			public String getKeyFromData(Tuple2<String, Integer> data) {
+				return data.f0;
+			}
+
+			@Override
+			public String getValueFromData(Tuple2<String, Integer> data) {
+				return data.f1 + "";
+			}
+		};
+		// 4-3. 创建RedisSink对象
+		RedisSink<Tuple2<String, Integer>> redisSink = new RedisSink<Tuple2<String, Integer>>(
+			config, redisMapper
+		);
+		// 4-4. 添加Sink
+		resultDataStream.addSink(redisSink) ;
+
+		// 5. 触发执行-execute
+		env.execute("StreamRedisSinkDemo") ;
+	}
+
+}
+```
 
 ## III. 批处理高级特性
 
