@@ -794,6 +794,168 @@ public class _06StreamKafkaSourceDemo {
 
 ```
 
+### 6. FlinkKafkaProducer
+
+> Flink提供Connector连接器中支持Kafka的`Source数据源`和`数据终端Sink`。==Flink Kafka Sink核心类：`FlinkKafkaProducer`==。
+
+![1633734986429](assets/1633734986429.png)
+
+> 1. topic 名称
+> 2. 序列化：将Java对象转byte[]
+> 3. Kafka Server地址信息
+> 4. 容错语义
+
+![1644936807281](assets/1644936807281.png)
+
+> **准备工作**：启动集群、创建Topic，命令如下
+
+```bash
+[root@node1 ~]# zookeeper-daemons.sh start
+[root@node1 ~]# kafka-daemons.sh start
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-topics.sh --list --bootstrap-server node1.itcast.cn:9092
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-topics.sh --create --topic flink-topic --bootstrap-server node1.itcast.cn:9092 --replication-factor 1 --partitions 3
+
+[root@node1 ~]# /export/server/kafka/bin/kafka-console-consumer.sh --topic flink-topic --bootstrap-server node1.itcast.cn:9092
+```
+
+> 案例演示：==自定义Source数据源，产生交易订单数据，将其转换为JSON字符串，实时保存到Kafka topic==
+
+```Java
+package cn.itcast.flink.connector;
+
+import com.alibaba.fastjson.JSON;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
+import javax.annotation.Nullable;
+import java.util.Properties;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 案例演示：将数据保存至Kafka Topic中，直接使用官方提供Connector
+ *      /export/server/kafka/bin/kafka-console-consumer.sh --bootstrap-server node1.itcast.cn:9092 --topic flink-topic
+ */
+public class _08StreamFlinkKafkaProducerDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setParallelism(3) ;
+
+		// 2. 数据源-source
+		DataStreamSource<Order> orderDataStream = env.addSource(new OrderSource());
+
+		// 3. 数据转换-transformation：将Order订单对象转换JSON字符串
+		SingleOutputStreamOperator<String> jsonDataStream = orderDataStream.map(new MapFunction<Order, String>() {
+			@Override
+			public String map(Order order) throws Exception {
+				// 将Order实例转换JSON字符串，使用fastJson库
+				return JSON.toJSONString(order);
+			}
+		});
+
+		// 4. 数据终端-sink
+		// 4-1. 向Kafka写入数据时属性配置
+		Properties props = new Properties();
+		props.setProperty("bootstrap.servers", "node1.itcast.cn:9092,node2.itcast.cn:9092，node3.itcast.cn:9092");
+		// 4-2. 创建FlinkKafkaProducer实例
+		FlinkKafkaProducer<String> kafkaSink = new FlinkKafkaProducer<String>(
+			"flink-topic", //
+			new KafkaStringSchema("flink-topic"), //
+			props, //
+			FlinkKafkaProducer.Semantic.EXACTLY_ONCE
+		);
+		// 4-3. 数据流添加Sink
+		jsonDataStream.addSink(kafkaSink);
+
+		// 5. 触发执行-execute
+		env.execute("StreamFlinkKafkaProducerDemo") ;
+	}
+
+	/**
+	 * 实现接口KafkaSerializationSchema，将交易订单数据JSON字符串进行序列化操作
+	 */
+	private static class KafkaStringSchema implements KafkaSerializationSchema<String> {
+		private String topic ;
+
+		public KafkaStringSchema(String topic){
+			this.topic = topic ;
+		}
+
+		public String getTopic() {
+			return topic;
+		}
+
+		public void setTopic(String topic) {
+			this.topic = topic;
+		}
+
+		@Override
+		public ProducerRecord<byte[], byte[]> serialize(String element, @Nullable Long timestamp) {
+			return new ProducerRecord<>(this.topic, element.getBytes());
+		}
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Order {
+		private String id;
+		private Integer userId;
+		private Double money;
+		private Long orderTime;
+	}
+
+	/**
+	 * 自定义数据源：每隔1秒产生1条交易订单数据
+	 */
+	private static class OrderSource extends RichParallelSourceFunction<Order> {
+		// 定义标识变量，表示是否产生数据
+		private boolean isRunning = true;
+
+		// 模拟产生交易订单数据
+		@Override
+		public void run(SourceContext<Order> ctx) throws Exception {
+			Random random = new Random() ;
+			while (isRunning){
+				// 构建交易订单数据
+				Order order = new Order(
+					UUID.randomUUID().toString().substring(0, 18), //
+					random.nextInt(2) + 1 , //
+					random.nextDouble() * 100 ,//
+					System.currentTimeMillis()
+				);
+
+				// 将数据输出
+				ctx.collect(order);
+
+				// 每隔1秒产生1条数据，线程休眠
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+
+		@Override
+		public void cancel() {
+			isRunning = false ;
+		}
+	}
+
+}
+```
+
 
 
 ## III. 批处理高级特性
