@@ -88,6 +88,160 @@ public class WordCountDemo {
 
 ## I. DataStream Operators
 
+### 1. Physical Partitioning
+
+> 在Flink流计算中DataStream提供一些列分区函数
+
+![](assets/1615017111627.png)
+
+> 在DataStream函数中提供7种方式，具体如下所示：
+
+![1633559290200](assets/1633559290200.png)
+
+- 第一、GlobalPartitioner
+
+> 分区器功能：会**将所有的数据都发送到下游的某个算子实例**(subtask id = 0)。
+
+![1630913630837](assets/1630913630837.png)
+
+- 第二、BroadcastPartitioner
+
+> 分区器功能：发送到下游**所有**的算子实例。
+
+![1630913732824](assets/1630913732824.png)
+
+- 第三、ForwardPartitioner
+
+> 分区器功能：发送到下游对应的第1个task，保证上下游算子并行度一致，即**上游算子与下游算子是1:1关系**。
+
+![1630913817662](assets/1630913817662.png)
+
+[在上下游的算子没有指定分区器的情况下，如果上下游的算子并行度一致，则使用ForwardPartitioner，否则使用RebalancePartitioner，对于ForwardPartitioner，必须保证上下游算子并行度一致，否则会抛出异常]()
+
+- 第四、ShufflePartitioner
+
+> 分区器功能：**随机选择**一个下游算子实例进行发送
+
+![1630913684411](assets/1630913684411.png)
+
+- 第五、RebalancePartitioner
+
+> 分区器功能：通过**循环**的方式依次发送到下游的task。
+
+![1630913968853](assets/1630913968853.png)
+
+> [在Flink批处理中（离线数据分析中），如果数据倾斜，直接调用`rebalance`函数，将数据均衡分配。]()
+
+![1633592974862](assets/1633592974862.png)
+
+- 第六、RescalePartitioner
+
+> 分区器功能：基于上下游Operator并行度，将记录以循环的方式输出到下游Operator每个实例。
+
+![1615017302141](assets/1615017302141.png)
+
+> 案例代码演示：DataStream中各种数据分区函数使用
+
+```java
+package cn.itcast.flink.transformation;
+
+import org.apache.flink.api.common.functions.Partitioner;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Flink 流计算中转换函数：对流数据进行分区，函数如下：
+ *      global、broadcast、forward、shuffle、rebalance、rescale、partitionCustom
+ */
+public class _13StreamPartitionDemo {
+
+	public static void main(String[] args) throws Exception {
+		// 1. 执行环境-env
+		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+		env.setParallelism(1);
+
+		// 2. 数据源-source
+		DataStreamSource<Tuple2<Integer, String>> dataStream = env.addSource(
+			new RichParallelSourceFunction<Tuple2<Integer, String>>() {
+				private boolean isRunning = true ;
+
+				@Override
+				public void run(SourceContext<Tuple2<Integer, String>> ctx) throws Exception {
+					int index = 1 ;
+					Random random = new Random();
+					String[] chars = new String[]{
+						"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+						"P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+					};
+					while (isRunning){
+						Tuple2<Integer, String> tuple = Tuple2.of(index, chars[random.nextInt(chars.length)]);
+						ctx.collect(tuple);
+
+						TimeUnit.SECONDS.sleep(2);
+						index ++ ;
+					}
+				}
+
+				@Override
+				public void cancel() {
+					isRunning = false ;
+				}
+			}
+		);
+		//dataStream.printToErr();
+
+		// 3. 数据转换-transformation
+		// TODO: 1、global函数，将所有数据发往1个分区Partition
+		DataStream<Tuple2<Integer, String>> globalDataStream = dataStream.global();
+		//globalDataStream.print().setParallelism(3);
+
+		// TODO: 2、broadcast函数， 广播数据
+		DataStream<Tuple2<Integer, String>> broadcastDataStream = dataStream.broadcast();
+		//broadcastDataStream.printToErr().setParallelism(3);
+
+		// TODO: 3、forward函数，上下游并发一样时 一对一发送
+		//DataStream<Tuple2<Integer, String>> forwardDataStream = dataStream.setParallelism(3).forward();
+		//forwardDataStream.print().setParallelism(3) ;
+
+		// TODO: 4、shuffle函数，随机均匀分配
+		DataStream<Tuple2<Integer, String>> shuffleDataStream = dataStream.shuffle();
+		//shuffleDataStream.printToErr().setParallelism(3);
+
+		// TODO: 5、rebalance函数，轮流分配
+		DataStream<Tuple2<Integer, String>> rebalanceDataStream = dataStream.rebalance();
+		//rebalanceDataStream.print().setParallelism(3) ;
+
+		// TODO: 6、rescale函数，本地轮流分配
+//		DataStream<Tuple2<Integer, String>> rescaleDataStream = dataStream.setParallelism(4).rescale();
+//		rescaleDataStream.printToErr().setParallelism(2);
+
+		// TODO: 7、partitionCustom函数，自定义分区规则
+		DataStream<Tuple2<Integer, String>> customDataStream = dataStream.partitionCustom(
+			new Partitioner<Integer>() {
+				@Override
+				public int partition(Integer key, int numPartitions) {
+					return key % 2;
+				}
+			},
+			tuple -> tuple.f0
+		);
+		customDataStream.printToErr().setParallelism(2);
+
+		// 4. 数据终端-sink
+
+		// 5. 触发执行-execute
+		env.execute("StreamRepartitionDemo");
+	}
+}
+```
+
 
 
 ## II. DataStream Connector
