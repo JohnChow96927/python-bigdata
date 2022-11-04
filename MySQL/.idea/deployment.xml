@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="root@node1.itcast.cn:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/../Hadoop离线" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$/../就业指导文档/220114" web="/" />
+            <mapping local="$PROJECT_DIR$/../离线新零售数仓项目" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
